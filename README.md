@@ -1,4 +1,4 @@
-Watt Depot
+WattDepot
 ==========
 
 WattDepot is an open source, RESTful web service that collects electricity data (such as current power utilization or cumulative power utilization) from meters and stores it in a database. The data can then be retrieved by other tools for visualization and analysis. It is designed to provide infrastructure for experimentation and development of "Smart Grid" applications.
