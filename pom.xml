@@ -150,7 +150,7 @@
             <version>${opencsv.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.wimpi.modbus</groupId>
+            <groupId>net.wimpi</groupId>
             <artifactId>jamod</artifactId>
             <version>${modbus-jamod.version}</version>
         </dependency>
