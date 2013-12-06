@@ -9,7 +9,7 @@
 
         <!-- Database connection settings -->
         <property name="connection.driver_class">org.postgresql.Driver</property>
-        <property name="connection.url">jdbc:postgresql://localhost:5432/wattdepot3</property>
+        <property name="connection.url">jdbc:postgresql://localhost:5432/wattdepot</property>
         <property name="connection.username">wattdepot</property>
         <property name="connection.password">topedttaw</property>
         <!-- <property name="connection.driver_class">org.h2.Driver</property> 
@@ -37,22 +37,22 @@
         <!-- Drop and re-create the database schema on startup -->
         <property name="hbm2ddl.auto">create</property>
 
-        <mapping resource="org/wattdepot3/datamodel/Depository.hbm.xml" />
+        <mapping resource="org/wattdepot/datamodel/Depository.hbm.xml" />
         <mapping
-            resource="org/wattdepot3/server/depository/impl/hibernate/DepositoryImpl.hbm.xml" />
-        <mapping resource="org/wattdepot3/datamodel/Measurement.hbm.xml" />
+            resource="org/wattdepot/server/depository/impl/hibernate/DepositoryImpl.hbm.xml" />
+        <mapping resource="org/wattdepot/datamodel/Measurement.hbm.xml" />
         <mapping
-            resource="org/wattdepot3/server/depository/impl/hibernate/MeasurementImpl.hbm.xml" />
-        <mapping resource="org/wattdepot3/datamodel/MeasurementType.hbm.xml" />
-        <mapping resource="org/wattdepot3/datamodel/Property.hbm.xml" />
-        <mapping resource="org/wattdepot3/datamodel/Sensor.hbm.xml" />
-        <mapping resource="org/wattdepot3/datamodel/SensorGroup.hbm.xml" />
-        <mapping resource="org/wattdepot3/datamodel/SensorLocation.hbm.xml" />
-        <mapping resource="org/wattdepot3/datamodel/SensorModel.hbm.xml" />
-        <mapping resource="org/wattdepot3/datamodel/CollectorMetaData.hbm.xml" />
-        <mapping resource="org/wattdepot3/datamodel/UserGroup.hbm.xml" />
-        <mapping resource="org/wattdepot3/datamodel/UserInfo.hbm.xml" />
-        <mapping resource="org/wattdepot3/datamodel/UserPassword.hbm.xml" />
+            resource="org/wattdepot/server/depository/impl/hibernate/MeasurementImpl.hbm.xml" />
+        <mapping resource="org/wattdepot/datamodel/MeasurementType.hbm.xml" />
+        <mapping resource="org/wattdepot/datamodel/Property.hbm.xml" />
+        <mapping resource="org/wattdepot/datamodel/Sensor.hbm.xml" />
+        <mapping resource="org/wattdepot/datamodel/SensorGroup.hbm.xml" />
+        <mapping resource="org/wattdepot/datamodel/SensorLocation.hbm.xml" />
+        <mapping resource="org/wattdepot/datamodel/SensorModel.hbm.xml" />
+        <mapping resource="org/wattdepot/datamodel/CollectorMetaData.hbm.xml" />
+        <mapping resource="org/wattdepot/datamodel/UserGroup.hbm.xml" />
+        <mapping resource="org/wattdepot/datamodel/UserInfo.hbm.xml" />
+        <mapping resource="org/wattdepot/datamodel/UserPassword.hbm.xml" />
 
     </session-factory>
 

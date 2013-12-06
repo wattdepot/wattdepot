@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Oct 28, 2013 2:55:11 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping default-lazy="false">
+    <class name="org.wattdepot.datamodel.Depository" table="DEPOSITORY">
+        <id name="id" type="java.lang.String">
+            <column name="ID" />
+            <generator class="assigned" />
+        </id>
+        <property name="name" type = "java.lang.String">
+            <column name="NAME" />
+        </property>
+        <many-to-one name="measurementType" class="org.wattdepot.datamodel.MeasurementType" fetch="join">
+            <column name="MEASUREMENTTYPE" />
+        </many-to-one>
+        <many-to-one name="owner" class="org.wattdepot.datamodel.UserGroup" fetch="join">
+            <column name="OWNER" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

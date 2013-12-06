@@ -5,9 +5,9 @@ import static org.junit.Assert.assertEquals;
 import java.io.File;
 
 import org.junit.Test;
-import org.wattdepot3.util.UserHome;
+import org.wattdepot.util.UserHome;
 
-import static org.wattdepot3.util.UserHome.USER_HOME_PROPERTY;
+import static org.wattdepot.util.UserHome.USER_HOME_PROPERTY;
 
 /**
  * Tests the WattDepotUserHome class. Portions of this code are adapted from

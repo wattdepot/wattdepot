@@ -29,29 +29,31 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.wattdepot3.client.ClientProperties;
-import org.wattdepot3.datamodel.Depository;
+import org.wattdepot.client.ClientProperties;
+import org.wattdepot.client.restlet.WattDepotAdminClient;
+import org.wattdepot.client.restlet.WattDepotClient;
+import org.wattdepot.datamodel.CollectorMetaData;
+import org.wattdepot.datamodel.CollectorMetaDataList;
+import org.wattdepot.datamodel.Depository;
+import org.wattdepot.datamodel.Measurement;
+import org.wattdepot.datamodel.MeasurementType;
+import org.wattdepot.datamodel.MeasurementTypeList;
+import org.wattdepot.datamodel.Sensor;
+import org.wattdepot.datamodel.SensorGroup;
+import org.wattdepot.datamodel.SensorGroupList;
+import org.wattdepot.datamodel.SensorList;
+import org.wattdepot.datamodel.SensorLocation;
+import org.wattdepot.datamodel.SensorModel;
+import org.wattdepot.datamodel.SensorModelList;
+import org.wattdepot.datamodel.UserGroup;
+import org.wattdepot.datamodel.UserInfo;
+import org.wattdepot.datamodel.UserPassword;
+import org.wattdepot.exception.IdNotFoundException;
+import org.wattdepot.exception.MeasurementTypeException;
+import org.wattdepot.exception.NoMeasurementException;
+import org.wattdepot.server.WattDepotServer;
 import org.wattdepot3.datamodel.InstanceFactory;
-import org.wattdepot3.datamodel.SensorLocation;
-import org.wattdepot3.datamodel.Measurement;
-import org.wattdepot3.datamodel.MeasurementType;
-import org.wattdepot3.datamodel.MeasurementTypeList;
-import org.wattdepot3.datamodel.Sensor;
-import org.wattdepot3.datamodel.SensorGroup;
-import org.wattdepot3.datamodel.SensorGroupList;
-import org.wattdepot3.datamodel.SensorList;
-import org.wattdepot3.datamodel.SensorModel;
-import org.wattdepot3.datamodel.SensorModelList;
-import org.wattdepot3.datamodel.CollectorMetaData;
-import org.wattdepot3.datamodel.CollectorMetaDataList;
-import org.wattdepot3.datamodel.UserGroup;
-import org.wattdepot3.datamodel.UserInfo;
-import org.wattdepot3.datamodel.UserPassword;
-import org.wattdepot3.exception.IdNotFoundException;
-import org.wattdepot3.exception.MeasurementTypeException;
-import org.wattdepot3.exception.NoMeasurementException;
 //import org.wattdepot3.test.WattDepotTestHelper;
-import org.wattdepot3.server.WattDepotServer;
 
 /**
  * TestWattDepotClient - Test cases for the WattDepotClient class.
@@ -153,7 +155,7 @@ public class TestWattDepotClient {
 
   /**
    * Test method for
-   * {@link org.wattdepot3.client.restlet.WattDepotClient#WattDepotClient(java.lang.String, java.lang.String, java.lang.String)}
+   * {@link org.wattdepot.client.restlet.WattDepotClient#WattDepotClient(java.lang.String, java.lang.String, java.lang.String)}
    * .
    */
   @Test

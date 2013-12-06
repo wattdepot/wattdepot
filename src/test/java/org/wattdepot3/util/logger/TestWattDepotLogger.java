@@ -5,8 +5,8 @@ import static org.junit.Assert.assertEquals;
 import java.util.logging.Logger;
 
 import org.junit.Test;
-import org.wattdepot3.util.UserHome;
-import org.wattdepot3.util.logger.WattDepotLogger;
+import org.wattdepot.util.UserHome;
+import org.wattdepot.util.logger.WattDepotLogger;
 
 /**
  * Tests the WattDepotLogger class. Portions of this code are adapted from

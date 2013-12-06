@@ -21,7 +21,8 @@ package org.wattdepot3.server.depository.impl.hibernate;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.wattdepot3.server.ServerProperties;
+import org.wattdepot.server.ServerProperties;
+import org.wattdepot.server.depository.impl.hibernate.WattDepotImpl;
 
 /**
  * TestWattDepotImpl - Test cases for the WattDepotImpl.
@@ -52,7 +53,7 @@ public class TestWattDepotImpl {
 
   /**
    * Test method for
-   * {@link org.wattdepot3.server.depository.impl.hibernate.WattDepotImpl#getUserGroups()}
+   * {@link org.wattdepot.server.depository.impl.hibernate.WattDepotImpl#getUserGroups()}
    * .
    */
   @Test
@@ -66,7 +67,7 @@ public class TestWattDepotImpl {
 
   /**
    * Test method for
-   * {@link org.wattdepot3.server.depository.impl.hibernate.WattDepotImpl#getUsers()}
+   * {@link org.wattdepot.server.depository.impl.hibernate.WattDepotImpl#getUsers()}
    * .
    */
   @Test

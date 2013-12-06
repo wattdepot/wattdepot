@@ -20,7 +20,7 @@ package org.wattdepot3.test;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.wattdepot3.server.WattDepotServer;
+import org.wattdepot.server.WattDepotServer;
 
 /**
  * WattDepotTestHelper - Provides helpful utility methods to WattDepot server

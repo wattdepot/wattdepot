@@ -11,7 +11,7 @@ import java.util.List;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.junit.Test;
-import org.wattdepot3.util.tstamp.Tstamp;
+import org.wattdepot.util.tstamp.Tstamp;
 
 /**
  * Tests the Tstamp class.

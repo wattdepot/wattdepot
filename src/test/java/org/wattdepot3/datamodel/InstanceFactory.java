@@ -26,8 +26,20 @@ import java.util.Set;
 import javax.measure.unit.Unit;
 import javax.xml.datatype.DatatypeConfigurationException;
 
-import org.wattdepot3.util.DateConvert;
-import org.wattdepot3.util.UnitsHelper;
+import org.wattdepot.datamodel.CollectorMetaData;
+import org.wattdepot.datamodel.Depository;
+import org.wattdepot.datamodel.Measurement;
+import org.wattdepot.datamodel.MeasurementType;
+import org.wattdepot.datamodel.Property;
+import org.wattdepot.datamodel.Sensor;
+import org.wattdepot.datamodel.SensorGroup;
+import org.wattdepot.datamodel.SensorLocation;
+import org.wattdepot.datamodel.SensorModel;
+import org.wattdepot.datamodel.UserGroup;
+import org.wattdepot.datamodel.UserInfo;
+import org.wattdepot.datamodel.UserPassword;
+import org.wattdepot.util.DateConvert;
+import org.wattdepot.util.UnitsHelper;
 
 /**
  * InstanceFactory - Utility class that has static methods for creating
