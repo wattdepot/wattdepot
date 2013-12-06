@@ -42,6 +42,7 @@
         <httpunit.version>1.7</httpunit.version>
         <icu4j.version>52.1</icu4j.version>
         <jackson.version>1.9.11</jackson.version>
+        <jacoco.version>0.6.3.201306030806</jacoco.version>
         <jasypt.version>1.9.1</jasypt.version>
         <jcs.version>1.3</jcs.version>
         <jscience.version>4.3.1</jscience.version>
@@ -66,6 +67,8 @@
         <pmd.plugin.version>2.6</pmd.plugin.version>
         <site.plugin.version>3.3</site.plugin.version>
         <surefire.plugin.version>2.15</surefire.plugin.version>
+
+        <jacoco.ut.execution.data.file>${project.build.directory}/coverage-reports/jacoco-ut.exec</jacoco.ut.execution.data.file>
 
         <config.dir>${basedir}</config.dir>
         <findbugs.filter.file>${config.dir}/findbugs.exclude.xml</findbugs.filter.file>
@@ -180,6 +183,11 @@
             <artifactId>hibernate-c3p0</artifactId>
             <version>${hibernate-core.version}</version>
         </dependency>
+<!--         <dependency>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>${jacoco.version}</version>
+        </dependency> -->
         <dependency>
             <groupId>org.jasypt</groupId>
             <artifactId>jasypt</artifactId>
@@ -288,12 +296,55 @@
                     <target>1.7</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.6.3.201306030806</version>
+                <executions>
+                    <!-- Prepares the property pointing to the JaCoCo runtime 
+                        agent which is passed as VM argument when Maven the Surefire plugin is executed. -->
+                    <execution>
+                        <id>pre-unit-test</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Sets the path to the file which contains 
+                                the execution data. -->
+                            <destFile>${jacoco.ut.execution.data.file}</destFile>
+                            <!-- Sets the name of the property containing 
+                                the settings for JaCoCo runtime agent. -->
+                            <propertyName>surefireArgLine</propertyName>
+                        </configuration>
+                    </execution>
+                    <!-- Ensures that the code coverage report for unit tests 
+                        is created after unit tests have been run. -->
+                    <execution>
+                        <id>post-unit-test</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Sets the path to the file which contains 
+                                the execution data. -->
+                            <dataFile>${jacoco.ut.execution.data.file}</dataFile>
+                            <!-- Sets the output directory for the code coverage 
+                                report. -->
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Run JUnit tests during "test" phase -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.plugin.version}</version>
                 <configuration>
+                    <!-- Sets the VM argument line used when unit tests are run. -->
+                    <argLine>${surefireArgLine}</argLine>                
                     <excludes>
                         <exclude>**/TestDb*.java</exclude>
                     </excludes>

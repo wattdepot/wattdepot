@@ -182,7 +182,7 @@ public class ServerProperties {
    */
   private void initializeProperties(String serverSubdir) throws Exception {
     String userHome = UserHome.getHomeString();
-    String wattDepot3Home = userHome + "/.wattdepot/";
+    String wattDepot3Home = userHome + "/.wattdepot3/";
     String serverHome = null;
     if (serverSubdir == null) {
       serverHome = wattDepot3Home + "server";
