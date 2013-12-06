@@ -1,0 +1,478 @@
+
+<!-- ************************** Modal Dialogs ****************************** -->
+<!-- *********** Users ************ -->
+<!-- Add User -->
+<div class="modal fade" id="addUserModal" tabindex="-1" role="dialog"
+    aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Add/Edit User</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <form>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">First
+                                Name</label>
+                            <div class="col-md-9">
+                                <input type="text" name="user_firstname"
+                                    class="form-control">
+                                <p class="help-block">First name.</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Last
+                                Name</label>
+                            <div class="col-md-9">
+                                <input type="text" name="user_lastname"
+                                    class="form-control">
+                                <p class="help-block">Last name.</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Email
+                                Address</label>
+                            <div class="col-md-9">
+                                <input type="email" name="user_email"
+                                    class="form-control">
+                                <p class="help-block">email address.</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Username</label>
+                            <div class="col-md-9">
+                                <input type="text" name="user_id"
+                                    class="form-control">
+                                <p class="help-block">Unique user
+                                    name.</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Password</label>
+                            <div class="col-md-9">
+                                <input type="password"
+                                    name="user_password"
+                                    class="form-control">
+                                <p class="help-block">Password.</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">
+                                <input type="checkbox" name="user_admin">
+                                is an admin?
+                            </label>
+                            <div class="clearfix"></div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                    data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary"
+                    onclick="putNewUser();">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<!-- Delete User -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1" role="dialog"
+    aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Delete User</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <b>Delete User </b>
+                </p>
+                <div id="del_user_id"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                    data-dismiss="modal">Close</button>
+                <button id="delete_button" type="button"
+                    class="btn btn-primary" onclick="deleteUser();">Delete
+                    User</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- / .modal -->
+
+<!-- ************ User Groups ********** -->
+<!-- Add user group is in Admin.ftl since it uses FreeMarker templates. -->
+<!-- Don't have Edit User Group yet -->
+<!-- Delete User Group -->
+<div class="modal fade" id="deleteUserGroupModal" tabindex="-1"
+    role="dialog" aria-labelledby="deleteUserGroupModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Delete User Group</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <b>Delete User Grup </b>
+                </p>
+                <div id="del_usergroup_id"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                    data-dismiss="modal">Close</button>
+                <button id="delete_button" type="button"
+                    class="btn btn-primary" onclick="deleteUserGroup();">Delete
+                    User Group</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- / .modal -->
+
+<!-- ********** Depositories ********** -->
+<!-- Delete Depository -->
+<div class="modal fade" id="deleteDepositoryModal" tabindex="-1"
+    role="dialog" aria-labelledby="deleteDepositoryModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Delete Depository</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <b>Delete Depository </b>
+                </p>
+                <div id="del_depository_id"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                    data-dismiss="modal">Close</button>
+                <button id="delete_button" type="button"
+                    class="btn btn-primary"
+                    onclick="deleteDepository();">Delete
+                    Depository</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- / .modal -->
+
+<!-- *********** Locations ********** -->
+<!-- Add Location -->
+<div class="modal fade" id="addLocationModal" tabindex="-1"
+    role="dialog" aria-labelledby="addLocationModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Add/Edit Sensor Location</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <form>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Location
+                                Name</label>
+                            <div class="col-md-9">
+                                <input type="text" name="location_id"
+                                    class="form-control">
+                                <p class="help-block">Unique location name.</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Latitude</label>
+                            <div class="col-md-9">
+                                <input type="number"
+                                    name="location_latitude"
+                                    class="form-control">
+                                <p class="help-block">Decimal Latitude.</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Longitude</label>
+                            <div class="col-md-9">
+                                <input type="number"
+                                    name="location_longitude"
+                                    class="form-control">
+                                <p class="help-block">Decimal Longitude</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Altitude</label>
+                            <div class="col-md-9">
+                                <input type="number"
+                                    name="location_altitude"
+                                    class="form-control">
+                                <p class="help-block">Altitude in meters</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Description</label>
+                            <div class="col-md-9">
+                                <input type="text"
+                                    name="location_description"
+                                    class="form-control">
+                                <p class="help-block">Brief description</p>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                    data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary"
+                    onclick="putNewLocation();">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<!-- Delete Location -->
+<div class="modal fade" id="deleteLocationModal" tabindex="-1"
+    role="dialog" aria-labelledby="deleteLocationModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Delete Location</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <b>Delete Location </b>
+                </p>
+                <div id="del_location_id"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                    data-dismiss="modal">Close</button>
+                <button id="delete_button" type="button"
+                    class="btn btn-primary" onclick="deleteLocation();">Delete
+                    Location</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- / .modal -->
+
+<!-- *********** Sensor Models ********** -->
+<!-- Add SensorModel -->
+<div class="modal fade" id="addModelModal" tabindex="-1" role="dialog"
+    aria-labelledby="addModelModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Add/Edit Sensor Model</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <form>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Sensor
+                                Model Name</label>
+                            <div class="col-md-9">
+                                <input type="text" name="model_id"
+                                    class="form-control">
+                                <p class="help-block">Name of the Sensor Model.</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Protocol</label>
+                            <div class="col-md-9">
+                                <input type="text" name="model_protocol"
+                                    class="form-control">
+                                <p class="help-block">The protocol the sensor follows.</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Type</label>
+                            <div class="col-md-9">
+                                <input type="text" name="model_type"
+                                    class="form-control">
+                                <p class="help-block">The type of the model.</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Version</label>
+                            <div class="col-md-9">
+                                <input type="text" name="model_version"
+                                    class="form-control">
+                                <p class="help-block">The version of the model.</p>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                    data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary"
+                    onclick="putNewModel();">Save changes</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<!-- Delete SensorModel -->
+<div class="modal fade" id="deleteModelModal" tabindex="-1"
+    role="dialog" aria-labelledby="deleteModelModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Delete Sensor Model</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <b>Delete Sensor Model </b>
+                </p>
+                <div id="del_model_id"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                    data-dismiss="modal">Close</button>
+                <button id="delete_button" type="button"
+                    class="btn btn-primary" onclick="deleteModel();">Delete
+                    Sensor Model</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- / .modal -->
+
+<!-- Delete Sensor -->
+<div class="modal fade" id="deleteSensorModal" tabindex="-1"
+    role="dialog" aria-labelledby="deleteSensorModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Delete Sensor</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <b>Delete Sensor </b>
+                </p>
+                <div id="del_sensor_id"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                    data-dismiss="modal">Close</button>
+                <button id="delete_button" type="button"
+                    class="btn btn-primary" onclick="deleteSensor();">Delete
+                    Sensor</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- / .modal -->
+
+<!-- Delete SensorGroup -->
+<div class="modal fade" id="deleteSensorGroupModal" tabindex="-1"
+    role="dialog" aria-labelledby="deleteSensorGroupModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Delete Sensor Group</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <b>Delete Sensor Group </b>
+                </p>
+                <div id="del_sensorgroup_id"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                    data-dismiss="modal">Close</button>
+                <button id="delete_button" type="button"
+                    class="btn btn-primary"
+                    onclick="deleteSensorGroup();">Delete
+                    Sensor Group</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- / .modal -->
+
+<!-- Delete SensorProcess -->
+<div class="modal fade" id="deleteSensorProcessModal" tabindex="-1"
+    role="dialog" aria-labelledby="deleteSensorProcessModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Delete Collector Metadata</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <b>Delete Collector Metadata </b>
+                </p>
+                <div id="del_sensorprocess_id"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                    data-dismiss="modal">Close</button>
+                <button id="delete_button" type="button"
+                    class="btn btn-primary"
+                    onclick="deleteSensorProcess();">Delete
+                    Collector Metadata</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- / .modal -->

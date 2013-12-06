@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+    <session-factory>
+
+        <!-- Database connection settings -->
+        <property name="connection.driver_class">org.postgresql.Driver</property>
+        <property name="connection.url">jdbc:postgresql://localhost:5432/wattdepot3</property>
+        <property name="connection.username">wattdepot</property>
+        <property name="connection.password">topedttaw</property>
+        <!-- <property name="connection.driver_class">org.h2.Driver</property> 
+            <property name="connection.url">jdbc:h2:mem:db1;DB_CLOSE_DELAY=-1;MVCC=TRUE</property> 
+            <property name="connection.username">sa</property> <property name="connection.password" 
+            /> -->
+        <!-- JDBC connection pool (use the built-in) -->
+        <!-- <property name="connection.pool_size">1</property> -->
+
+        <property name="hibernate.c3p0.min_size">5</property>
+        <property name="hibernate.c3p0.max_size">20</property>
+        <property name="hibernate.c3p0.timeout">300</property>
+        <property name="hibernate.c3p0.max_statements">50</property>
+        <property name="hibernate.c3p0.idle_test_period">3000</property>
+  
+        <!-- SQL dialect -->
+        <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+        <!-- <property name="dialect">org.hibernate.dialect.H2Dialect</property> -->
+        <!-- Disable the second-level cache -->
+        <property name="cache.provider_class">org.hibernate.cache.internal.NoCacheProvider</property>
+
+        <!-- Echo all executed SQL to stdout -->
+        <property name="show_sql">false</property>
+
+        <!-- Drop and re-create the database schema on startup -->
+        <property name="hbm2ddl.auto">create</property>
+
+        <mapping resource="org/wattdepot3/datamodel/Depository.hbm.xml" />
+        <mapping
+            resource="org/wattdepot3/server/depository/impl/hibernate/DepositoryImpl.hbm.xml" />
+        <mapping resource="org/wattdepot3/datamodel/Measurement.hbm.xml" />
+        <mapping
+            resource="org/wattdepot3/server/depository/impl/hibernate/MeasurementImpl.hbm.xml" />
+        <mapping resource="org/wattdepot3/datamodel/MeasurementType.hbm.xml" />
+        <mapping resource="org/wattdepot3/datamodel/Property.hbm.xml" />
+        <mapping resource="org/wattdepot3/datamodel/Sensor.hbm.xml" />
+        <mapping resource="org/wattdepot3/datamodel/SensorGroup.hbm.xml" />
+        <mapping resource="org/wattdepot3/datamodel/SensorLocation.hbm.xml" />
+        <mapping resource="org/wattdepot3/datamodel/SensorModel.hbm.xml" />
+        <mapping resource="org/wattdepot3/datamodel/CollectorMetaData.hbm.xml" />
+        <mapping resource="org/wattdepot3/datamodel/UserGroup.hbm.xml" />
+        <mapping resource="org/wattdepot3/datamodel/UserInfo.hbm.xml" />
+        <mapping resource="org/wattdepot3/datamodel/UserPassword.hbm.xml" />
+
+    </session-factory>
+
+</hibernate-configuration>
