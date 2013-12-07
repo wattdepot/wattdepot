@@ -73,7 +73,6 @@ import org.wattdepot.restlet.SensorModelResource;
 import org.wattdepot.restlet.SensorModelsResource;
 import org.wattdepot.restlet.SensorResource;
 import org.wattdepot.restlet.SensorsResource;
-import org.wattdepot.server.ServerProperties;
 import org.wattdepot.util.DateConvert;
 import org.wattdepot.util.logger.WattDepotLogger;
 
