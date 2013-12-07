@@ -1,6 +1,6 @@
 # Welcome to WattDepot
 
   * [Installation](/wattdepot/installation)
-  * [Developer Guide](/wattdepot/developerguide/)
+  * [Developer Guide](/wattdepot/developerguide/index)
 
 

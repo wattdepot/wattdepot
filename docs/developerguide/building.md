@@ -1,16 +1,6 @@
-## Building WattDepot
+# Building WattDepot
 
-### Checking out sources from GitHub
-
-(to be written)
-
-### Setting up Eclipse for development
-
-(to be written)
-
-### Building using Maven
-
-(to be written)
+Explain the maven commands used to build and test the system and what gets output as a result. 
 
 
 
