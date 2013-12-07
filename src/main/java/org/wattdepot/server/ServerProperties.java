@@ -1,5 +1,5 @@
 /**
- * ServerProperties.java This file is part of WattDepot 3.
+ * ServerProperties.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -106,7 +106,7 @@ public class ServerProperties {
       initializeProperties(serverSubdir);
     }
     catch (Exception e) {
-      Logger.getLogger("org.wattdepot.server").severe("Error initializing server properties. " + e.getMessage());
+      Logger.getLogger("org.wattdepot.properties").severe("Error initializing server properties. " + e.getMessage());
     }
   }
 

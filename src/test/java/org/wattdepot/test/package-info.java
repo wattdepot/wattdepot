@@ -2,7 +2,7 @@
  * Support classes for testing WattDepot3 Servers.
  * 
  * 
- * package-info.java This file is part of WattDepot 3.
+ * package-info.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *

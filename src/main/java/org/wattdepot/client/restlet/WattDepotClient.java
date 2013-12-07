@@ -1,5 +1,5 @@
 /**
- * WattDepotClient.java This file is part of WattDepot 3.
+ * WattDepotClient.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -21,6 +21,7 @@ package org.wattdepot.client.restlet;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
+import java.util.logging.Logger;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 
@@ -30,6 +31,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
+import org.wattdepot.client.ClientProperties;
 import org.wattdepot.client.WattDepotInterface;
 import org.wattdepot.datamodel.CollectorMetaData;
 import org.wattdepot.datamodel.CollectorMetaDataList;
@@ -71,7 +73,9 @@ import org.wattdepot.restlet.SensorModelResource;
 import org.wattdepot.restlet.SensorModelsResource;
 import org.wattdepot.restlet.SensorResource;
 import org.wattdepot.restlet.SensorsResource;
+import org.wattdepot.server.ServerProperties;
 import org.wattdepot.util.DateConvert;
+import org.wattdepot.util.logger.WattDepotLogger;
 
 /**
  * WattDepotClient - high-level Java implementation that communicates with a
@@ -84,11 +88,18 @@ import org.wattdepot.util.DateConvert;
  */
 public class WattDepotClient implements WattDepotInterface {
 
+  /** The URI for the WattDepot server. */
   private String wattDepotUri;
   /** The HTTP authentication approach. */
   private ChallengeScheme scheme = ChallengeScheme.HTTP_BASIC;
+  /** The credentials for this client. */
   private ChallengeResponse authentication;
+  /** The Group this client belongs to. */
   private String groupId;
+  /** The logger for this client. */
+  private Logger logger;
+  /** The client properties. */
+  private ClientProperties properties;
 
   /**
    * Creates a new WattDepotClient.
@@ -107,7 +118,10 @@ public class WattDepotClient implements WattDepotInterface {
    */
   public WattDepotClient(String serverUri, String username, String password)
       throws BadCredentialException {
-    System.out.println("Client " + serverUri + ", " + username + ", " + password);
+    this.properties = new ClientProperties();
+    this.logger = WattDepotLogger.getLogger("org.wattdepot.client",
+        properties.get(ClientProperties.CLIENT_HOME_DIR));
+    logger.info("Client " + serverUri + ", " + username + ", " + password);
     this.authentication = new ChallengeResponse(this.scheme, username, password);
     if (serverUri == null) {
       throw new IllegalArgumentException("serverUri cannot be null");

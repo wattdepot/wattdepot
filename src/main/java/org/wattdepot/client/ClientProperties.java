@@ -1,5 +1,5 @@
 /**
- * ClientProperties.java This file is part of WattDepot 3.
+ * ClientProperties.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 import org.wattdepot.util.UserHome;
 
@@ -71,7 +72,8 @@ public class ClientProperties {
       initializeProperties(clientSubdir);
     }
     catch (Exception e) {
-      System.out.println("Error initializing client properties. " + e.getMessage());
+      Logger.getLogger("org.wattdepot.properties").info(
+          "Error initializing client properties. " + e.getMessage());
     }
   }
 
@@ -130,8 +132,9 @@ public class ClientProperties {
     Properties systemProperties = System.getProperties();
     systemProperties.putAll(properties);
     System.setProperties(systemProperties);
-    
+
   }
+
   /**
    * Reads in the properties in wattdepot3-client.properties if the file exists,
    * and provides default values for all properties not mentioned in this file.
@@ -145,6 +148,7 @@ public class ClientProperties {
    *           if there is a problem.
    */
   private void initializeProperties(String clientSubdir) throws Exception {
+    Logger logger = Logger.getLogger("org.wattdepot.properties");
     String userHome = UserHome.getHomeString();
     String wattDepot3Home = userHome + "/.wattdepot3/";
     String clientHome = null;
@@ -154,7 +158,7 @@ public class ClientProperties {
     else {
       clientHome = wattDepot3Home + clientSubdir;
     }
-    String propFileName = clientHome + "/wattdepot3-client.properties";
+    String propFileName = clientHome + "/wattdepot-client.properties";
     String defaultUserName = "admin";
     String defaultUserPassword = "admin";
     String defaultServerHost = "localhost";
@@ -168,26 +172,26 @@ public class ClientProperties {
     properties.setProperty(WATTDEPOT_SERVER_HOST, defaultServerHost);
     properties.setProperty(PORT_KEY, defaultPort);
     properties.setProperty(TEST_PORT_KEY, defaultTestPort);
-    // grab all of the properties in the environment
-    Map<String, String> systemProps = System.getenv();
-    for (Map.Entry<String, String> prop : systemProps.entrySet()) {
-      if (prop.getKey().startsWith("wattdepot3-server.")) {
-        properties.setProperty(prop.getKey(), prop.getValue());
-      }
-    }
     // Use properties from file, if they exist.
     FileInputStream stream = null;
     try {
       stream = new FileInputStream(propFileName);
       properties.load(stream);
-      System.out.println("Loading Server properties from: " + propFileName);
+      logger.info("Loading Server properties from: " + propFileName);
     }
     catch (IOException e) {
-      System.out.println(propFileName + " not found. Using default client properties.");
+      logger.info(propFileName + " not found. Using default client properties.");
     }
     finally {
       if (stream != null) {
         stream.close();
+      }
+    }
+    // grab all of the properties in the environment
+    Map<String, String> systemProps = System.getenv();
+    for (Map.Entry<String, String> prop : systemProps.entrySet()) {
+      if (prop.getKey().startsWith("wattdepot-server.")) {
+        properties.setProperty(prop.getKey(), prop.getValue());
       }
     }
     addClientSystemProperties(this.properties);
@@ -206,7 +210,7 @@ public class ClientProperties {
     Properties systemProperties = System.getProperties();
     for (Map.Entry<Object, Object> entry : systemProperties.entrySet()) {
       String sysPropName = (String) entry.getKey();
-      if (sysPropName.startsWith("wattdepot3-client.")) {
+      if (sysPropName.startsWith("wattdepot-client.")) {
         String sysPropValue = (String) entry.getValue();
         properties.setProperty(sysPropName, sysPropValue);
       }
