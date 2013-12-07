@@ -7,7 +7,7 @@ WattDepot is an open source set of services that can be used to:
 
 WattDepot provides a unique combination of useful features:
 
-*WattDepot is agnostic about the kinds of meters used to monitor data, and whether the data is utility-scale or personal-scale.* WattDepot implements a REST protocol for data transmission that can be used to implement clients for a wide variety of devices; the major constraint is that these devices need to have Internet access. WattDepot clients can be written in any language that supports the HTTP protocol. We provide a high-level client library for Java.
+*WattDepot is agnostic about the kinds of meters used to monitor data, and whether the data is utility-scale or personal-scale.* WattDepot implements an HTTP-based protocol for data transmission that can be used to implement clients for a wide variety of devices; the major constraint is that these devices need to have Internet access. WattDepot clients can be written in any language that supports the HTTP protocol. We provide a high-level client library for Java.
 
 *WattDepot can represent aggregations of data sources.* For example, a building might have multiple meters monitoring energy consumption, one per floor. WattDepot can represent the power consumed by individual floors, as well as an aggregate source representing the building as a whole. Aggregations can be nested, so that floors can be aggregated into buildings, buildings into neighborhoods, and neighborhoods into cities.
 
