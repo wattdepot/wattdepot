@@ -4,7 +4,7 @@ The WattDepot branch model is a simplified version of the [nvie branch model](ht
 
 Here is a summary of the branching model:
 
-<img src="http://nvie.com/img/2009/12/Screen-shot-2009-12-24-at-11.32.03.png"/>
+<img class="img-responsive" src="http://nvie.com/img/2009/12/Screen-shot-2009-12-24-at-11.32.03.png"/>
 
 ## The master and develop branches
 
