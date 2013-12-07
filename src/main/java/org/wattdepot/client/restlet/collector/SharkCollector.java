@@ -210,14 +210,14 @@ public class SharkCollector extends MultiThreadedCollector {
       System.exit(1);
     }
     if (cmd.hasOption("h")) {
-      formatter.printHelp("EGaugeCollector", options);
+      formatter.printHelp("SharkCollector", options);
       System.exit(0);
     }
     if (cmd.hasOption("s")) {
       serverUri = cmd.getOptionValue("s");
     }
     else {
-      serverUri = "http://localhost:8119/";
+      serverUri = "http://localhost:8192/";
     }
     if (cmd.hasOption("u")) {
       username = cmd.getOptionValue("u");
