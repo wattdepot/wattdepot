@@ -8,12 +8,7 @@ branches:
     - development
 env:
     global:
-      - DATABASE_URL=postgres://postgres@127.0.0.1:5432/wattdepot
-postgres:
-    adapter: postgresql
-    database: wattdepot
-    username: postgres
+      - DATABASE_URL=postgres://wattdepot:wattdepot@127.0.0.1:5432/wattdepot
 before_script:
-  - psql -c 'create database wattdepot;' -U postgres
-
-
+  - psql -c "create user wattdepot with password 'wattdepot';" -U postgres
+  - psql -c "create database wattdepot owner wattdepot;" -U postgres
