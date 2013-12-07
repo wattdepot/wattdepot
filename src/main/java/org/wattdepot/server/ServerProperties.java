@@ -20,6 +20,7 @@ package org.wattdepot.server;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -208,7 +209,7 @@ public class ServerProperties {
     properties.setProperty(DB_USER_NAME, "myuser");
     properties.setProperty(DB_PASSWORD, "secret");
     properties.setProperty(DB_SHOW_SQL, "false");
-    properties.setProperty(DB_TABLE_UPDATE, "update");
+    properties.setProperty(DB_TABLE_UPDATE, "create");
     properties.setProperty(TEST_PORT_KEY, defaultTestPort);
     properties.setProperty(TEST_WATT_DEPOT_IMPL_KEY, defaultWattDepotImpl);
 
@@ -236,6 +237,23 @@ public class ServerProperties {
     }
     addServerSystemProperties(this.properties);
     trimProperties(properties);
+
+    // get PORT and DATABASE_URL for heroku
+    String webPort = System.getenv("PORT");
+    if (webPort != null && ! webPort.isEmpty()) {
+      properties.setProperty(PORT_KEY, webPort);
+    }
+    
+    String databaseURL = System.getenv("DATABASE_URL");
+    if (databaseURL != null && ! databaseURL.isEmpty()) {
+      URI dbUri = new URI(databaseURL);
+      String username = dbUri.getUserInfo().split(":")[0];
+      String password = dbUri.getUserInfo().split(":")[1];
+      String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + dbUri.getPath();
+      properties.setProperty(DB_USER_NAME, username);
+      properties.setProperty(DB_PASSWORD, password);
+      properties.setProperty(DB_CONNECTION_URL, dbUrl);
+    }
 
     System.out.println(echoProperties());
   }

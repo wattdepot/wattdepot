@@ -1,0 +1,19 @@
+language: java
+jdk:
+  - oraclejdk7
+# whitelist
+branches:
+  only:
+    - master
+    - development
+env:
+    global:
+      - DATABASE_URL=postgres://postgres@127.0.0.1:5432/wattdepot
+postgres:
+    adapter: postgresql
+    database: wattdepot
+    username: postgres
+before_script:
+  - psql -c 'create database wattdepot;' -U postgres
+
+
