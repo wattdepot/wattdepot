@@ -2,7 +2,7 @@
 
 
 ## Overview
-WattDepot documentation is built using the [Viewdocs system](http://progrium.viewdocs.io/viewdocs).  You can access the documentation associated with our master branch at [http://wattdepot.viewdocs.io/wattdepot](http://wattdepot.viewdocs.io/wattdepot).  The updated version is generally available within 10 seconds after making the commit.  (Currently, due to issues with Viewdocs, it is best to commit documentation directly to the master branch.  I expect that we will soon be able to manage documentation using our [branch model](/branching).
+WattDepot documentation is built using the [Viewdocs system](http://progrium.viewdocs.io/viewdocs).  You can access the documentation associated with our master branch at [http://wattdepot.viewdocs.io/wattdepot](http://wattdepot.viewdocs.io/wattdepot).  The updated version is generally available within 10 seconds after making the commit.  (Currently, due to issues with Viewdocs, it is best to commit documentation directly to the master branch.  I expect that we will soon be able to manage documentation using our [branch model](/developerguide/branching).
 
 WattDepot documentation is maintained in the [docs](https://github.com/wattdepot/wattdepot/tree/master/docs) directory, and consists of a set of files in what is basically [Markdown format](http://daringfireball.net/projects/markdown/syntax), although Viewdocs imposes a few changes.
 
