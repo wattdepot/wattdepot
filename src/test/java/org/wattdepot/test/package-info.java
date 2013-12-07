@@ -23,4 +23,4 @@
  * @author Cam Moore
  *
  */
-package org.wattdepot3.test;
+package org.wattdepot.test;

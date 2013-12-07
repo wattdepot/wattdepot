@@ -18,12 +18,19 @@
  */
 package org.wattdepot.server;
 
+import static org.wattdepot.server.ServerProperties.LOGGING_LEVEL_KEY;
+import static org.wattdepot.server.ServerProperties.SERVER_HOME_DIR;
+
+import java.util.logging.Logger;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.wattdepot.util.logger.RestletLoggerUtil;
+import org.wattdepot.util.logger.WattDepotLogger;
 
 /**
  * WattDepotServer - The main class that starts up the WattDepotServer
@@ -34,9 +41,16 @@ import org.apache.commons.cli.PosixParser;
  */
 public class WattDepotServer {
 
+  /** Holds the Restlet component for the server. */
   private WattDepotComponent restletServer;
+  /** Holds the WattDepot persistent store for the server. */
   private WattDepot depot;
+  /** Holds the ServerProperties instance associated with this server. */
   private ServerProperties serverProperties;
+  /** Holds the WattDepotLogger for the server. */
+  private Logger logger = null;
+  /** Holds the hostname associated with this Server. */
+  private String hostName = null;
 
   /**
    * Default constructor.
@@ -82,6 +96,12 @@ public class WattDepotServer {
   public static WattDepotServer newInstance(ServerProperties properties) throws Exception {
     int port = Integer.parseInt(properties.get(ServerProperties.PORT_KEY));
     WattDepotServer server = new WattDepotServer();
+    RestletLoggerUtil.removeRestletLoggers();
+    server.serverProperties = properties;
+    server.logger = WattDepotLogger.getLogger("org.wattdepot.server",
+        properties.get(ServerProperties.SERVER_HOME_DIR));
+    server.hostName = server.serverProperties.getFullHost();
+
     server.depot = (WattDepot) Class.forName(properties.get(ServerProperties.WATT_DEPOT_IMPL_KEY))
         .getConstructor(ServerProperties.class).newInstance(properties);
     if (server.depot.getSessionOpen() != server.depot.getSessionClose()) {
@@ -97,8 +117,18 @@ public class WattDepotServer {
     }
     server.depot.setServerProperties(properties);
     server.restletServer = new WattDepotComponent(server.depot, port);
-    server.serverProperties = properties;
+
+    // Set up logging.
+    RestletLoggerUtil.useFileHandler(server.serverProperties.get(SERVER_HOME_DIR));
+    WattDepotLogger.setLoggingLevel(server.logger, server.serverProperties.get(LOGGING_LEVEL_KEY));
+    server.logger.warning("Starting WattDepot server.");
+    server.logger.warning("Host: " + server.hostName);
+    server.logger.info(server.serverProperties.echoProperties());
+//    Logger hibernate = Logger.getLogger("org.hibernate");
     server.restletServer.start();
+    
+    server.logger.warning("WattDepot server now running.");
+    
     return server;
   }
 

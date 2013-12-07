@@ -39,7 +39,7 @@ public final class WattDepotLogger {
     }
     else {
       String logDirString = serverHome + "/logs/";
-      System.out.println("logDirString: " + logDirString); // DEBUG
+//      System.out.println("logDirString: " + logDirString); // DEBUG
       File logDir = new File(logDirString);
       boolean dirsOk = logDir.mkdirs();
       if (!dirsOk && !logDir.exists()) {

@@ -53,6 +53,7 @@ public class WattDepotComponent extends Component {
     setName("WattDepot HTTP API Server");
     setDescription("WattDepot3 RESTful server.");
     setAuthor("Cam Moore");
+    getLogService().setLoggerName("org.wattdepot.server");
     // Add a CLAP client connector
     getClients().add(Protocol.CLAP);
     getClients().add(Protocol.FILE);

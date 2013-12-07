@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot3.server.depository.impl.hibernate;
+package org.wattdepot.server.depository.impl.hibernate;
 
 import org.junit.After;
 import org.junit.Before;

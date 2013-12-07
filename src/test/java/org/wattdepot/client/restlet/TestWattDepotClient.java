@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot3.client.restlet;
+package org.wattdepot.client.restlet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -35,6 +35,7 @@ import org.wattdepot.client.restlet.WattDepotClient;
 import org.wattdepot.datamodel.CollectorMetaData;
 import org.wattdepot.datamodel.CollectorMetaDataList;
 import org.wattdepot.datamodel.Depository;
+import org.wattdepot.datamodel.InstanceFactory;
 import org.wattdepot.datamodel.Measurement;
 import org.wattdepot.datamodel.MeasurementType;
 import org.wattdepot.datamodel.MeasurementTypeList;
@@ -52,8 +53,6 @@ import org.wattdepot.exception.IdNotFoundException;
 import org.wattdepot.exception.MeasurementTypeException;
 import org.wattdepot.exception.NoMeasurementException;
 import org.wattdepot.server.WattDepotServer;
-import org.wattdepot3.datamodel.InstanceFactory;
-//import org.wattdepot3.test.WattDepotTestHelper;
 
 /**
  * TestWattDepotClient - Test cases for the WattDepotClient class.
