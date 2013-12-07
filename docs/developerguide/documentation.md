@@ -24,5 +24,25 @@ Adding a new section to a documentation guide is a little more complicated. View
 
 ### Images
 
-You can add images using the regular img element, but it is good to add the "img-responsive" class to that tag in order to get the Bootstrap responsive image formatting. 
+You can add images using the regular img element, but it is good to add the "img-responsive" class to that tag in order to get the Bootstrap responsive image formatting.
+
+### Code
+
+Use the standard triple backslash GitHub mechanism for code highlighting:
+
+Here's some Java code:
+
+```java
+/**
+ * Simple model class used for form data retrieval.
+ * @author Philip Johnson
+ */
+public class Person extends Model {
+  private static final long serialVersionUID = -2206212996405933705L;
+  /** The form name.*/
+  public String name;
+  /** The form gender.*/
+  public String gender;
+}
+```
 
