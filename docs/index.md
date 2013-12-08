@@ -15,5 +15,7 @@ WattDepot development began in 2009.  Its development has been sponsored by the 
 
 Peruse this website to learn more about the project.  Feel free to contact Professor Philip Johnson, johnson@hawaii.edu, if you have questions about getting involved with the project. Or post a question to our [discussion group](https://groups.google.com/forum/#!forum/wattdepot-users), or create an item in our [issues list](https://github.com/wattdepot/wattdepot/issues/milestones). 
 
+## Legacy versions
 
+This site documents version 3 of WattDepot, which provides a lot of new functionality, but breaks compatibility with previous versions of WattDepot. Version 3 has also not been tested and used in production as much as the previous release. For more information, see the home of the [previous major release of WattDepot](http://csdl.github.io/wattdepot/)
 
