@@ -102,16 +102,29 @@ body {
           </li>
 	  </ul>
 
-          <ul class="nav navbar-nav navbar-right">
-  	    <li class="navbar-right"><a href="http://github.com/wattdepot/wattdepot">GitHub</a></li>
+          <ul class="nav navbar-nav navbar-right visible-xs">
+  	    <li class="navbar-right"><a href="http://github.com/wattdepot/wattdepot">GitHub</li>
   	  </ul>
       </div>
     </div>
   </div>
 
+  <a class="hidden-xs" href="https://github.com/wattdepot/wattdepot"><img height="100" style="position: absolute; top: 0; right: 0; border: 0; z-index: 1050;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"></a>
+
 <div class="container">  
 {{CONTENT}}
 </div>
+
+<footer>
+  <div class="navbar navbar-fixed-bottom" role="navigation">
+    <div class="container">
+      <ul class="nav navbar-nav">
+       <li><p class="navbar-text hidden-xs">CI Status:</p></li></li>
+       <li><a href="https://travis-ci.org/wattdepot/wattdepot"><img src="https://api.travis-ci.org/wattdepot/wattdepot.png"/></a></li>
+      </ul>
+     </div>
+   </div>
+</footer>
   
   <!-- Load Bootstrap JavaScript components -->
   <script src="http://code.jquery.com/jquery.min.js"></script>
