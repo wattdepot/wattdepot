@@ -20,7 +20,7 @@ master somehow and then tagged with a release number.
 
 ## Optional branches
 
-There are three other branch types: feature, release and hotfix. 
+There are three other possible branch types that you can choose to use if you want: feature, release and hotfix. 
 
 *Feature branches* are used to develop new features for the upcoming or
 a distant future release.
@@ -37,7 +37,7 @@ also meant to prepare for a new production release, albeit
 unplanned. They arise from the necessity to act immediately upon an
 undesired state of a live production version.
 
-## Continous integration
+## Continuous integration
 
 Both the master and develop branches are under continuous integration control.  All developers should be notified by email when the build fails on either branch.
 
