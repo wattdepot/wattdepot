@@ -64,6 +64,11 @@ public class ServerProperties {
    * 'create' | 'create-drop'.
    */
   public static final String DB_TABLE_UPDATE = "wattdepot-server.db.update";
+  /**
+   * Enable logging in the server. Logging may hide some stacktraces. Should be
+   * True for production.
+   */
+  public static final String ENABLE_LOGGING_KEY = "wattdepot-server.enable.logging";
   /** The logging level key. */
   public static final String LOGGING_LEVEL_KEY = "wattdepot-server.logging.level";
   /** The WattDepot implementation class during testing. */
@@ -106,7 +111,8 @@ public class ServerProperties {
       initializeProperties(serverSubdir);
     }
     catch (Exception e) {
-      Logger.getLogger("org.wattdepot.properties").severe("Error initializing server properties. " + e.getMessage());
+      Logger.getLogger("org.wattdepot.properties").severe(
+          "Error initializing server properties. " + e.getMessage());
     }
   }
 
@@ -228,6 +234,7 @@ public class ServerProperties {
     properties.setProperty(DB_PASSWORD, "secret");
     properties.setProperty(DB_SHOW_SQL, "false");
     properties.setProperty(DB_TABLE_UPDATE, "update");
+    properties.setProperty(ENABLE_LOGGING_KEY, TRUE);
     properties.setProperty(LOGGING_LEVEL_KEY, "INFO");
     properties.setProperty(CONTEXT_ROOT_KEY, "wattdepot");
     properties.setProperty(TEST_PORT_KEY, defaultTestPort);
