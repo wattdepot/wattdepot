@@ -86,7 +86,7 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
     if (owner != null) {
       if (!depot.getSensorIds(groupId).contains(sensor.getId())) {
         try {
-          depot.defineSensor(sensor.getName(), sensor.getUri(), sensor.getLocation(),
+          depot.defineSensor(sensor.getName(), sensor.getUri(), sensor.getSensorLocation(),
               sensor.getModel(), owner);
         }
         catch (UniqueIdException e) {

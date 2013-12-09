@@ -47,6 +47,8 @@ public class ClientProperties {
   public static final String PORT_KEY = "wattdepot3-server.port";
   /** The wattdepot3 server port key during testing. */
   public static final String TEST_PORT_KEY = "wattdepot3-server.test.port";
+  /** The logging level key. */
+  public static final String LOGGING_LEVEL_KEY = "wattdepot-client.logging.level";
 
   /** Where we store the properties. */
   private Properties properties;
@@ -172,6 +174,7 @@ public class ClientProperties {
     properties.setProperty(WATTDEPOT_SERVER_HOST, defaultServerHost);
     properties.setProperty(PORT_KEY, defaultPort);
     properties.setProperty(TEST_PORT_KEY, defaultTestPort);
+    properties.setProperty(LOGGING_LEVEL_KEY, "INFO");
     // Use properties from file, if they exist.
     FileInputStream stream = null;
     try {

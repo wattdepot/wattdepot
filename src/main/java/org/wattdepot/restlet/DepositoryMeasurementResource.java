@@ -45,10 +45,8 @@ public interface DepositoryMeasurementResource {
    * Defined the DEL
    * /wattdepot/{group_id}/depository/{depository_id}/measurement/ API call.
    * 
-   * @param meas
-   *          The Measurement to delete.
    */
   @Delete
-  public void remove(Measurement meas);
+  public void remove();
 
 }

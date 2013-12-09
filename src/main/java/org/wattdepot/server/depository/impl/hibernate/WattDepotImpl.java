@@ -874,7 +874,7 @@ public class WattDepotImpl extends WattDepot {
     for (Sensor s : getSensors(UserGroup.ADMIN_GROUP_NAME)) {
       if (s.getId().equals(id)) {
         if (s.getOwner().getId().equals(groupId) || groupId.contains(UserGroup.ADMIN_GROUP_NAME)) {
-          Hibernate.initialize(s.getLocation());
+          Hibernate.initialize(s.getSensorLocation());
           Hibernate.initialize(s.getModel());
           return s;
         }
@@ -899,7 +899,7 @@ public class WattDepotImpl extends WattDepot {
         if (s.getOwner().getId().equals(groupId) || groupId.contains(UserGroup.ADMIN_GROUP_NAME)) {
           for (Sensor sens : s.getSensors()) {
             Hibernate.initialize(sens);
-            Hibernate.initialize(sens.getLocation());
+            Hibernate.initialize(sens.getSensorLocation());
             Hibernate.initialize(sens.getModel());
           }
           return s;
@@ -1409,7 +1409,7 @@ public class WattDepotImpl extends WattDepot {
     for (Property p : sensor.getProperties()) {
       session.saveOrUpdate(p);
     }
-    session.saveOrUpdate(sensor.getLocation());
+    session.saveOrUpdate(sensor.getSensorLocation());
     session.saveOrUpdate(sensor.getModel());
     session.saveOrUpdate(sensor);
   }

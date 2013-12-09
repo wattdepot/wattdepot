@@ -106,6 +106,7 @@ public class DepositoryMeasurementsServerResource extends WattDepotServerResourc
       catch (DatatypeConfigurationException e) {
         setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
       }
+      getLogger().info(ret.toString());
       return ret;
     }
     else {

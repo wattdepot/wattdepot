@@ -20,6 +20,7 @@ package org.wattdepot.server;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.restlet.Component;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -72,6 +73,7 @@ public class WattDepotComponent extends Component {
     @SuppressWarnings("rawtypes")
     ObjectMapper mapper = ((JacksonRepresentation) rep).getObjectMapper();
     mapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
+    mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     getDefaultHost().attachDefault(app);
     app.setComponent(this);
 

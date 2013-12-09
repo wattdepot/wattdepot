@@ -34,7 +34,7 @@ public interface DepositoriesResource {
    * 
    * @return a List of the defined Locations.
    */
-  @Get
+  @Get("json")
   public DepositoryList retrieve();
 
 }

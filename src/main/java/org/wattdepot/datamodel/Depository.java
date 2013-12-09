@@ -123,6 +123,14 @@ public class Depository {
   }
 
   /**
+   * @param measId The measurement id.
+   * @return The Measurement with the given id or null.
+   */
+  public Measurement getMeasurement(String measId) {
+    throw new RuntimeException("Not implemented");
+  }
+  
+  /**
    * @param sensor
    *          the Sensor.
    * @return A list of all the measurements made by the Sensor.

@@ -160,13 +160,6 @@ public class Sensor {
   }
 
   /**
-   * @return the location
-   */
-  public SensorLocation getLocation() {
-    return sensorLocation;
-  }
-
-  /**
    * @return the model
    */
   public SensorModel getModel() {
@@ -273,14 +266,6 @@ public class Sensor {
    */
   public void setId(String id) {
     this.id = id;
-  }
-
-  /**
-   * @param sensorLocation
-   *          the location to set
-   */
-  public void setLocation(SensorLocation sensorLocation) {
-    this.sensorLocation = sensorLocation;
   }
 
   /**
