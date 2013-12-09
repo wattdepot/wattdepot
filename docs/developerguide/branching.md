@@ -20,7 +20,7 @@ master somehow and then tagged with a release number.
 
 ## Making releases
 
-Most non-documentation implementation effort should be committed to the develop branch.  When appropriate, the develop branch will be merged into master and a release will be made.  This procedure is documented [here](release).  For the time being, Cam is the only one who will make releases. 
+Most non-documentation implementation effort should be committed to the develop branch.  When appropriate, the develop branch will be merged into master and a release will be made.  This procedure is documented [here](developerguide/release).  For the time being, Cam is the only one who will make releases. 
 
 ## Optional branches
 
