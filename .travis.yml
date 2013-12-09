@@ -1,0 +1,17 @@
+language: java
+jdk:
+  - oraclejdk7
+# whitelist
+branches:
+  only:
+    - master
+    - develop
+notifications:
+  email:
+    - wattdepot-dev@googlegroups.com
+env:
+    global:
+      - DATABASE_URL=postgres://wattdepot:wattdepot@127.0.0.1:5432/wattdepot
+before_script:
+  - psql -c "create user wattdepot with password 'wattdepot';" -U postgres
+  - psql -c "create database wattdepot owner wattdepot;" -U postgres
