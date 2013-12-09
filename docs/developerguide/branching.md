@@ -16,7 +16,11 @@ There are two main branches:
 
 When the source code in the develop branch reaches a stable point and
 is ready to be released, all of the changes should be merged back into
-master somehow and then tagged with a release number. 
+master somehow and then tagged with a release number.
+
+## Making releases
+
+Most non-documentation implementation effort should be committed to the develop branch.  When appropriate, the develop branch will be merged into master and a release will be made.  This procedure is documented [here](release).  For the time being, Cam is the only one who will make releases. 
 
 ## Optional branches
 
