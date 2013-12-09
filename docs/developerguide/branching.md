@@ -43,7 +43,7 @@ Both the master and develop branches are under continuous integration control.  
 
 ## The docs/ directory
 
-The documentation directory deviates from the nvie branching model.  It is fine to commit changes to the docs/ directory directly to master if the updates improve the documentation (i.e. [http://wattdepot.org](http://wattdepot.org).  If the changes are specific to an upcoming release (i.e. an API change), then you can commit the changes to the develop branch (or to a feature branch).
+The documentation directory deviates from the nvie branching model.  It is fine to commit changes to the docs/ directory directly to master if the updates improve the documentation (i.e. [http://wattdepot.org](http://wattdepot.org)).  If the changes are specific to an upcoming release (i.e. an API change), then you can commit the changes to the develop branch (or to a feature branch).
 
 
 
