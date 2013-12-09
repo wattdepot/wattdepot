@@ -1,5 +1,5 @@
 /**
- * MeasurementList.java This file is part of WattDepot 3.
+ * MeasurementList.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -48,6 +48,14 @@ public class MeasurementList {
    */
   public void setMeasurements(ArrayList<Measurement> measurements) {
     this.measurements = measurements;
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "MeasurementList [measurements=" + measurements + "]";
   }
 
 }

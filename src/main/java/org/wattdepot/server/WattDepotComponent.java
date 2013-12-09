@@ -1,5 +1,5 @@
 /**
- * WattDepotComponent.java This file is part of WattDepot 3.
+ * WattDepotComponent.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -20,6 +20,7 @@ package org.wattdepot.server;
 
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.restlet.Component;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -53,6 +54,7 @@ public class WattDepotComponent extends Component {
     setName("WattDepot HTTP API Server");
     setDescription("WattDepot3 RESTful server.");
     setAuthor("Cam Moore");
+    getLogService().setLoggerName("org.wattdepot.server");
     // Add a CLAP client connector
     getClients().add(Protocol.CLAP);
     getClients().add(Protocol.FILE);
@@ -71,6 +73,7 @@ public class WattDepotComponent extends Component {
     @SuppressWarnings("rawtypes")
     ObjectMapper mapper = ((JacksonRepresentation) rep).getObjectMapper();
     mapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
+    mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     getDefaultHost().attachDefault(app);
     app.setComponent(this);
 

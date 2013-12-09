@@ -1,5 +1,5 @@
 /**
- * JScience.java created This file is part of WattDepot 3.
+ * JScience.java created This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *

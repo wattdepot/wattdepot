@@ -1,5 +1,5 @@
 /**
- * DepositoryMeasurementServerResource.java This file is part of WattDepot 3.
+ * DepositoryMeasurementServerResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -84,12 +84,13 @@ public class DepositoryMeasurementServerResource extends WattDepotServerResource
    * @see org.wattdepot3.restlet.DepositoryMeasurementResource#remove(org.wattdepot3.datamodel.Measurement)
    */
   @Override
-  public void remove(Measurement meas) {
+  public void remove() {
     getLogger().log(Level.INFO, "DEL /wattdepot/{" + groupId + "}/depository/{" + depositoryId
-        + "}/measurement/{" + measId + "} with " + meas);
+        + "}/measurement/{" + measId + "}");
     try {
       Depository depository = depot.getWattDeposiory(depositoryId, groupId);
       if (depository != null) {
+        Measurement meas = depository.getMeasurement(measId);
         depository.deleteMeasurement(meas);
       }
       else {

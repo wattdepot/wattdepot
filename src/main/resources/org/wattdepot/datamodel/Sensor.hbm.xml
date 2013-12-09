@@ -14,7 +14,7 @@
         <property name="uri" type="java.lang.String">
             <column name="URI" />
         </property>
-        <many-to-one name="location" class="org.wattdepot.datamodel.SensorLocation" fetch="join">
+        <many-to-one name="sensorLocation" class="org.wattdepot.datamodel.SensorLocation" fetch="join">
             <column name="LOCATION" />
         </many-to-one>
         <many-to-one name="model" class="org.wattdepot.datamodel.SensorModel" fetch="join">

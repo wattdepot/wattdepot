@@ -5,7 +5,10 @@ jdk:
 branches:
   only:
     - master
-    - development
+    - develop
+notifications:
+  email:
+    - wattdepot-dev@googlegroups.com
 env:
     global:
       - DATABASE_URL=postgres://wattdepot:wattdepot@127.0.0.1:5432/wattdepot

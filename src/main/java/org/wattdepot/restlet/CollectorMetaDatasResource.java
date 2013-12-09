@@ -1,5 +1,5 @@
 /**
- * CollectorMetaDatasResouce.java This file is part of WattDepot 3.
+ * CollectorMetaDatasResouce.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *

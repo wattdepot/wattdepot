@@ -1,5 +1,5 @@
 /**
- * ServerProperties.java This file is part of WattDepot 3.
+ * ServerProperties.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -24,6 +24,7 @@ import java.net.URI;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 import org.wattdepot.util.UserHome;
 
@@ -37,6 +38,8 @@ import org.wattdepot.util.UserHome;
 public class ServerProperties {
   /** The full path to the server's home directory. */
   public static final String SERVER_HOME_DIR = "wattdepot-server.homedir";
+  /** The hostname key. */
+  public static final String HOSTNAME_KEY = "wattdepot-server.hostname";
   /** Name of property used to store the admin username. */
   public static final String ADMIN_USER_NAME = "wattdepot-server.admin.name";
   /** Name of property used to store the admin password. */
@@ -45,6 +48,8 @@ public class ServerProperties {
   public static final String WATT_DEPOT_IMPL_KEY = "wattdepot-server.wattdepot.impl";
   /** The wattdepot server port key. */
   public static final String PORT_KEY = "wattdepot-server.port";
+  /** The context root key. */
+  public static final String CONTEXT_ROOT_KEY = "wattdepot-server.context.root";
   /** The database connection driver class. */
   public static final String DB_CONNECTION_DRIVER = "wattdepot-server.db.connection.driver";
   /** The database connection driver url. */
@@ -60,10 +65,28 @@ public class ServerProperties {
    * 'create' | 'create-drop'.
    */
   public static final String DB_TABLE_UPDATE = "wattdepot-server.db.update";
+  /**
+   * Enable logging in the server. Logging may hide some stacktraces. Should be
+   * True for production.
+   */
+  public static final String ENABLE_LOGGING_KEY = "wattdepot-server.enable.logging";
+  /** The logging level key. */
+  public static final String LOGGING_LEVEL_KEY = "wattdepot-server.logging.level";
   /** The WattDepot implementation class during testing. */
   public static final String TEST_WATT_DEPOT_IMPL_KEY = "wattdepot-server.test.wattdepot.impl";
   /** The wattdepot server port key during testing. */
   public static final String TEST_PORT_KEY = "wattdepot-server.test.port";
+  /** Heroku key. */
+  public static final String USE_HEROKU_KEY = "wattdepot-server.heroku";
+  /** Heroku test key. */
+  public static final String TEST_HEROKU_KEY = "wattdepot-server.test.heroku";
+  /** The hostname for Heroku. */
+  public static final String HEROKU_HOSTNAME_KEY = "wattdepot-server.heroku.hostname";
+  /** The heroku database URL. */
+  public static final String HEROKU_DATABASE_URL_KEY = "wattdepot-server.heroku.db.url";
+
+  private static String FALSE = "false";
+  private static String TRUE = "true";
 
   /** Where we store the properties. */
   private Properties properties;
@@ -89,7 +112,8 @@ public class ServerProperties {
       initializeProperties(serverSubdir);
     }
     catch (Exception e) {
-      System.out.println("Error initializing server properties. " + e.getMessage());
+      Logger.getLogger("org.wattdepot.properties").severe(
+          "Error initializing server properties. " + e.getMessage());
     }
   }
 
@@ -169,11 +193,10 @@ public class ServerProperties {
   }
 
   /**
-   * Reads in the properties in
-   * ~/.wattdepot/server/wattdepot-server.properties if this file exists, and
-   * provides default values for all properties not mentioned in this file. Will
-   * also add any pre-existing System properties that start with
-   * "wattdepot-server.".
+   * Reads in the properties in ~/.wattdepot/server/wattdepot-server.properties
+   * if this file exists, and provides default values for all properties not
+   * mentioned in this file. Will also add any pre-existing System properties
+   * that start with "wattdepot-server.".
    * 
    * @param serverSubdir
    *          The name of the subdirectory used to store all files for this
@@ -182,6 +205,7 @@ public class ServerProperties {
    *           if errors occur.
    */
   private void initializeProperties(String serverSubdir) throws Exception {
+    Logger logger = Logger.getLogger("org.wattdepot.properties");
     String userHome = UserHome.getHomeString();
     String wattDepot3Home = userHome + "/.wattdepot3/";
     String serverHome = null;
@@ -203,6 +227,7 @@ public class ServerProperties {
     properties.setProperty(ADMIN_USER_NAME, defaultAdminName);
     properties.setProperty(ADMIN_USER_PASSWORD, defaultAdminPassword);
     properties.setProperty(WATT_DEPOT_IMPL_KEY, defaultWattDepotImpl);
+    properties.setProperty(HOSTNAME_KEY, "localhost");
     properties.setProperty(PORT_KEY, defaultPort);
     properties.setProperty(DB_CONNECTION_DRIVER, "org.postgresql.Driver");
     properties.setProperty(DB_CONNECTION_URL, "jdbc:postgresql://localhost:5432/wattdepot");
@@ -210,8 +235,13 @@ public class ServerProperties {
     properties.setProperty(DB_PASSWORD, "secret");
     properties.setProperty(DB_SHOW_SQL, "false");
     properties.setProperty(DB_TABLE_UPDATE, "create");
+    properties.setProperty(ENABLE_LOGGING_KEY, TRUE);
+    properties.setProperty(LOGGING_LEVEL_KEY, "INFO");
+    properties.setProperty(CONTEXT_ROOT_KEY, "wattdepot");
     properties.setProperty(TEST_PORT_KEY, defaultTestPort);
     properties.setProperty(TEST_WATT_DEPOT_IMPL_KEY, defaultWattDepotImpl);
+    properties.setProperty(USE_HEROKU_KEY, FALSE);
+    properties.setProperty(TEST_HEROKU_KEY, FALSE);
 
     // grab all of the properties in the environment
     Map<String, String> systemProps = System.getenv();
@@ -225,10 +255,11 @@ public class ServerProperties {
     try {
       stream = new FileInputStream(propFileName);
       properties.load(stream);
-      System.out.println("Loading Server properties from: " + propFileName);
+      logger.info("Loading Server properties from: " + propFileName);
+
     }
     catch (IOException e) {
-      System.out.println(propFileName + " not found. Using default server properties.");
+      logger.info(propFileName + " not found. Using default server properties.");
     }
     finally {
       if (stream != null) {
@@ -237,7 +268,6 @@ public class ServerProperties {
     }
     addServerSystemProperties(this.properties);
     trimProperties(properties);
-
     // get PORT and DATABASE_URL for heroku
     String webPort = System.getenv("PORT");
     if (webPort != null && ! webPort.isEmpty()) {
@@ -255,7 +285,6 @@ public class ServerProperties {
       properties.setProperty(DB_CONNECTION_URL, dbUrl);
     }
 
-    System.out.println(echoProperties());
   }
 
   /**
@@ -274,6 +303,39 @@ public class ServerProperties {
         String sysPropValue = (String) entry.getValue();
         properties.setProperty(sysPropName, sysPropValue);
       }
+    }
+  }
+
+  /**
+   * Returns the fully qualified host name, such as
+   * "http://localhost:9876/wattdepot/". Note, the String will end with "/", so
+   * there is no need to append another if you are constructing a URI.
+   * 
+   * @return The fully qualified host name.
+   */
+  public String getFullHost() {
+    // We have a special case for Heroku here, which leaves out the port number.
+    // This is needed
+    // because Heroku apps listen on a private port on localhost, but remote
+    // connections into
+    // the server always come on port 80. This causes problems because the port
+    // number is used
+    // in at least 3 places: by the Server to decide what port number to bind to
+    // (on Heroku this
+    // is the private port # given by the $PORT environment variable), the
+    // announced URL of the
+    // server to the public (always 80 on Heroku, though usually left out of URI
+    // to default to
+    // 80), and the URI of parent resources such as a Source in a SensorData
+    // resource (should be
+    // the public port on Heroku).
+    if (properties.getProperty(USE_HEROKU_KEY).equals(TRUE)
+        || properties.getProperty(TEST_HEROKU_KEY).equals(TRUE)) {
+      return "http://" + get(HOSTNAME_KEY) + ":80/" + get(CONTEXT_ROOT_KEY) + "/";
+    }
+    else {
+      return "http://" + get(HOSTNAME_KEY) + ":" + get(PORT_KEY) + "/" + get(CONTEXT_ROOT_KEY)
+          + "/";
     }
   }
 

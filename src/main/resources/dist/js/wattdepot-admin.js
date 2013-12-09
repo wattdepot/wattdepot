@@ -434,7 +434,7 @@ function deleteLocation() {
 
 // ****************** Sensors **************************
 function putNewSensor() {
-    var name = $("input[name='sensor_id']").val();
+    var name = $("input[name='sensor_name']").val();
     var uri = $("input[name='sensor_uri']").val();
     var selected_loc = $("select[name='sensor_location']").val();
     var loc = buildLocation(selected_loc);

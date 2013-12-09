@@ -1,5 +1,5 @@
 /**
- * DepositoriesResource.java This file is part of WattDepot 3.
+ * DepositoriesResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -34,7 +34,7 @@ public interface DepositoriesResource {
    * 
    * @return a List of the defined Locations.
    */
-  @Get
+  @Get("json")
   public DepositoryList retrieve();
 
 }

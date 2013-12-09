@@ -1,4 +1,4 @@
-package org.wattdepot3.util.logger;
+package org.wattdepot.util.logger;
 
 import static org.junit.Assert.assertEquals;
 

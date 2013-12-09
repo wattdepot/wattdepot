@@ -36,15 +36,15 @@ public final class RestletLoggerUtil {
     // System.out.println("In useFileHandler");
     for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements();) {
       String logName = en.nextElement();
-      // System.out.println("logName is: '" + logName + "'");
+//      System.out.println("logName is: '" + logName + "'");
       if ((logName.startsWith("com.noelios") || logName.startsWith("org.restlet") || "global"
           .equals(logName))
           && (logManager.getLogger(logName) != null)) {
         // First, get rid of current Handlers
         Logger logger = logManager.getLogger(logName);
-        // System.out.println("logger is: " + logger);
+//        System.out.println("logger is: " + logger);
         logger = logger.getParent();
-        // System.out.println("parent logger is: " + logger);
+//        System.out.println("parent logger is: " + logger);
         Handler[] handlers = logger.getHandlers();
         for (Handler handler : handlers) {
           logger.removeHandler(handler);
@@ -88,7 +88,7 @@ public final class RestletLoggerUtil {
     for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements();) {
       String logName = en.nextElement();
       if ((logName.startsWith("com.noelios") || logName.startsWith("org.restlet") || "global"
-          .equals(logName))
+          .equals(logName) || logName.startsWith("org.hibernate"))
           && (logManager.getLogger(logName) != null)) {
         Logger logger = logManager.getLogger(logName);
         logger = logger.getParent();

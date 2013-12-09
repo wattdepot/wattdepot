@@ -1,5 +1,5 @@
 /**
- * DepositoryMeasurementsServerResource.java This file is part of WattDepot 3.
+ * DepositoryMeasurementsServerResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -106,6 +106,7 @@ public class DepositoryMeasurementsServerResource extends WattDepotServerResourc
       catch (DatatypeConfigurationException e) {
         setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
       }
+      getLogger().info(ret.toString());
       return ret;
     }
     else {

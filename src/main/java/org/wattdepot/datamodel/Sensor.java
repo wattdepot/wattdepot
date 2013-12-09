@@ -1,5 +1,5 @@
 /**
- * Sensor.java This file is part of WattDepot 3.
+ * Sensor.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -160,13 +160,6 @@ public class Sensor {
   }
 
   /**
-   * @return the location
-   */
-  public SensorLocation getLocation() {
-    return sensorLocation;
-  }
-
-  /**
    * @return the model
    */
   public SensorModel getModel() {
@@ -273,14 +266,6 @@ public class Sensor {
    */
   public void setId(String id) {
     this.id = id;
-  }
-
-  /**
-   * @param sensorLocation
-   *          the location to set
-   */
-  public void setLocation(SensorLocation sensorLocation) {
-    this.sensorLocation = sensorLocation;
   }
 
   /**

@@ -1,5 +1,5 @@
 /**
- * WattDepotTestHelper.java This file is part of WattDepot 3.
+ * WattDepotTestHelper.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot3.test;
+package org.wattdepot.test;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

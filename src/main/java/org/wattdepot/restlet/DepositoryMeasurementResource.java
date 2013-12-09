@@ -1,5 +1,5 @@
 /**
- * DepositoryMeasurementResource.java This file is part of WattDepot 3.
+ * DepositoryMeasurementResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -45,10 +45,8 @@ public interface DepositoryMeasurementResource {
    * Defined the DEL
    * /wattdepot/{group_id}/depository/{depository_id}/measurement/ API call.
    * 
-   * @param meas
-   *          The Measurement to delete.
    */
   @Delete
-  public void remove(Measurement meas);
+  public void remove();
 
 }

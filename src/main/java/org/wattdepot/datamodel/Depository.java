@@ -1,5 +1,5 @@
 /**
- * Depository.java This file is part of WattDepot 3.
+ * Depository.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -122,6 +122,14 @@ public class Depository {
     return id;
   }
 
+  /**
+   * @param measId The measurement id.
+   * @return The Measurement with the given id or null.
+   */
+  public Measurement getMeasurement(String measId) {
+    throw new RuntimeException("Not implemented");
+  }
+  
   /**
    * @param sensor
    *          the Sensor.

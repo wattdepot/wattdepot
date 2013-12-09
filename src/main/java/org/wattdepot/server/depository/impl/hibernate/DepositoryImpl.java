@@ -1,5 +1,5 @@
 /**
- * DepositoryImpl.java This file is part of WattDepot 3.
+ * DepositoryImpl.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -18,8 +18,8 @@
  */
 package org.wattdepot.server.depository.impl.hibernate;
 
-import java.util.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
@@ -109,7 +109,8 @@ public class DepositoryImpl extends Depository {
    * @param owner
    *          The owner.
    */
-  public DepositoryImpl(String name, MeasurementType measurementType, UserGroup owner) {
+  public DepositoryImpl(String name, MeasurementType measurementType,
+      UserGroup owner) {
     super(name, measurementType, owner);
   }
 
@@ -127,6 +128,29 @@ public class DepositoryImpl extends Depository {
     session.delete(meas);
     session.getTransaction().commit();
     session.close();
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.datamodel.Depository#getMeasurement(java.lang.String)
+   */
+  @Override
+  public Measurement getMeasurement(String measId) {
+    Measurement ret = null;
+    Session session = Manager.getFactory(serverProperties).openSession();
+    session.beginTransaction();
+    @SuppressWarnings("unchecked")
+    List<MeasurementImpl> measurements = (List<MeasurementImpl>) session
+        .createQuery("FROM MeasurementImpl").list();
+    for (MeasurementImpl meas : measurements) {
+      if (meas.getId().equals(measId)) {
+        ret = meas;
+      }
+    }
+    session.getTransaction().commit();
+    session.close();    
+    return ret;
   }
 
   /*
@@ -165,8 +189,8 @@ public class DepositoryImpl extends Depository {
     List<MeasurementImpl> measurements = (List<MeasurementImpl>) session
         .createQuery(
             "FROM MeasurementImpl WHERE date >= :start AND date <= :end AND depository = :depository")
-        .setParameter("start", start).setParameter("end", end).setParameter("depository", this)
-        .list();
+        .setParameter("start", start).setParameter("end", end)
+        .setParameter("depository", this).list();
     for (MeasurementImpl meas : measurements) {
       if (meas.getSensor().equals(sensor)) {
         ret.add(meas);
@@ -203,7 +227,7 @@ public class DepositoryImpl extends Depository {
   /**
    * @return the serverProperties
    */
-  public ServerProperties getServerProperties() {
+  public ServerProperties serverProperties() {
     return serverProperties;
   }
 
@@ -217,7 +241,8 @@ public class DepositoryImpl extends Depository {
    * @throws NoMeasurementException
    *           If there aren't any measurements around the time.
    */
-  public Double getValue(Sensor sensor, Date timestamp) throws NoMeasurementException {
+  public Double getValue(Sensor sensor, Date timestamp)
+      throws NoMeasurementException {
     Double ret = null;
     Session session = Manager.getFactory(serverProperties).openSession();
     session.beginTransaction();
@@ -227,8 +252,8 @@ public class DepositoryImpl extends Depository {
         .createQuery(
             "FROM MeasurementImpl WHERE date = :time AND measurementType = :measType"
                 + " AND depository = :name").setParameter("time", timestamp)
-        .setParameter("measType", getMeasurementType().getUnits()).setParameter("name", this)
-        .list();
+        .setParameter("measType", getMeasurementType().getUnits())
+        .setParameter("name", this).list();
     if (result.size() > 0) {
       for (MeasurementImpl meas : result) {
         if (meas.getSensor().equals(sensor)) {
@@ -243,15 +268,15 @@ public class DepositoryImpl extends Depository {
           .createQuery(
               "FROM MeasurementImpl WHERE date <= :time AND measurementType = :measType"
                   + " AND depository = :name").setParameter("time", timestamp)
-          .setParameter("measType", getMeasurementType().getUnits()).setParameter("name", this)
-          .list();
+          .setParameter("measType", getMeasurementType().getUnits())
+          .setParameter("name", this).list();
       @SuppressWarnings("unchecked")
       List<MeasurementImpl> after = (List<MeasurementImpl>) session
           .createQuery(
               "FROM MeasurementImpl WHERE date >= :time AND measurementType = :measType"
                   + " AND depository = :name").setParameter("time", timestamp)
-          .setParameter("measType", getMeasurementType().getUnits()).setParameter("name", this)
-          .list();
+          .setParameter("measType", getMeasurementType().getUnits())
+          .setParameter("name", this).list();
       MeasurementImpl justBefore = null;
       for (MeasurementImpl b : before) {
         if (b.getSensor().equals(sensor)) {
@@ -287,18 +312,20 @@ public class DepositoryImpl extends Depository {
           else if (justBefore == null && justAfter == null) {
             session.getTransaction().commit();
             session.close();
-            throw new NoMeasurementException("Cannot find measurements before or after "
-                + timestamp);
+            throw new NoMeasurementException(
+                "Cannot find measurements before or after " + timestamp);
           }
           else if (justBefore == null) {
             session.getTransaction().commit();
             session.close();
-            throw new NoMeasurementException("Cannot find measurement before " + timestamp);
+            throw new NoMeasurementException("Cannot find measurement before "
+                + timestamp);
           }
           else if (justAfter == null) {
             session.getTransaction().commit();
             session.close();
-            throw new NoMeasurementException("Cannot find measurement after " + timestamp);
+            throw new NoMeasurementException("Cannot find measurement after "
+                + timestamp);
           }
         }
       }
@@ -320,7 +347,8 @@ public class DepositoryImpl extends Depository {
    * @throws NoMeasurementException
    *           if there are no measurements around the start or end time.
    */
-  public Double getValue(Sensor sensor, Date start, Date end) throws NoMeasurementException {
+  public Double getValue(Sensor sensor, Date start, Date end)
+      throws NoMeasurementException {
     Double endVal = getValue(sensor, end);
     Double startVal = getValue(sensor, start);
     if (endVal != null && startVal != null) {
@@ -382,8 +410,8 @@ public class DepositoryImpl extends Depository {
         .createQuery(
             "FROM MeasurementImpl WHERE date = :time AND measurementType = :measType"
                 + " AND depository = :name").setParameter("time", timestamp)
-        .setParameter("measType", getMeasurementType().getUnits()).setParameter("name", this)
-        .list();
+        .setParameter("measType", getMeasurementType().getUnits())
+        .setParameter("name", this).list();
     if (result.size() > 0) {
       for (MeasurementImpl meas : result) {
         if (meas.getSensor().equals(sensor)) {
@@ -398,15 +426,15 @@ public class DepositoryImpl extends Depository {
           .createQuery(
               "FROM MeasurementImpl WHERE date <= :time AND measurementType = :measType"
                   + " AND depository = :name").setParameter("time", timestamp)
-          .setParameter("measType", getMeasurementType().getUnits()).setParameter("name", this)
-          .list();
+          .setParameter("measType", getMeasurementType().getUnits())
+          .setParameter("name", this).list();
       @SuppressWarnings("unchecked")
       List<MeasurementImpl> after = (List<MeasurementImpl>) session
           .createQuery(
               "FROM MeasurementImpl WHERE date >= :time AND measurementType = :measType"
                   + " AND depository = :name").setParameter("time", timestamp)
-          .setParameter("measType", getMeasurementType().getUnits()).setParameter("name", this)
-          .list();
+          .setParameter("measType", getMeasurementType().getUnits())
+          .setParameter("name", this).list();
       MeasurementImpl justBefore = null;
       for (MeasurementImpl b : before) {
         if (b.getSensor().equals(sensor)) {
@@ -437,8 +465,8 @@ public class DepositoryImpl extends Depository {
             if ((deltaT / 1000) > gapSeconds) {
               session.getTransaction().commit();
               session.close();
-              throw new MeasurementGapException("Gap of " + (deltaT / 1000) + "s is longer than "
-                  + gapSeconds);
+              throw new MeasurementGapException("Gap of " + (deltaT / 1000)
+                  + "s is longer than " + gapSeconds);
             }
             Long t3 = timestamp.getTime();
             Long toDate = t3 - t1;
@@ -448,18 +476,20 @@ public class DepositoryImpl extends Depository {
           else if (justBefore == null && justAfter == null) {
             session.getTransaction().commit();
             session.close();
-            throw new NoMeasurementException("Cannot find measurements before or after "
-                + timestamp);
+            throw new NoMeasurementException(
+                "Cannot find measurements before or after " + timestamp);
           }
           else if (justBefore == null) {
             session.getTransaction().commit();
             session.close();
-            throw new NoMeasurementException("Cannot find measurement before " + timestamp);
+            throw new NoMeasurementException("Cannot find measurement before "
+                + timestamp);
           }
           else if (justAfter == null) {
             session.getTransaction().commit();
             session.close();
-            throw new NoMeasurementException("Cannot find measurement after " + timestamp);
+            throw new NoMeasurementException("Cannot find measurement after "
+                + timestamp);
           }
         }
       }
@@ -480,8 +510,8 @@ public class DepositoryImpl extends Depository {
     session.beginTransaction();
     @SuppressWarnings("unchecked")
     List<MeasurementImpl> result = (List<MeasurementImpl>) session
-        .createQuery("FROM MeasurementImpl WHERE depository = :name").setParameter("name", this)
-        .list();
+        .createQuery("FROM MeasurementImpl WHERE depository = :name")
+        .setParameter("name", this).list();
     ArrayList<Sensor> sensors = new ArrayList<Sensor>();
     for (Measurement meas : result) {
       if (!sensors.contains(meas.getSensor())) {
@@ -501,8 +531,8 @@ public class DepositoryImpl extends Depository {
   public List<Sensor> listSensors(Session session) {
     @SuppressWarnings("unchecked")
     List<MeasurementImpl> result = (List<MeasurementImpl>) session
-        .createQuery("FROM MeasurementImpl WHERE depository = :name").setParameter("name", this)
-        .list();
+        .createQuery("FROM MeasurementImpl WHERE depository = :name")
+        .setParameter("name", this).list();
     ArrayList<Sensor> sensors = new ArrayList<Sensor>();
     for (Measurement meas : result) {
       if (!sensors.contains(meas.getSensor())) {
@@ -523,8 +553,9 @@ public class DepositoryImpl extends Depository {
   @Override
   public void putMeasurement(Measurement meas) throws MeasurementTypeException {
     if (!meas.getMeasurementType().equals(getMeasurementType().getUnits())) {
-      throw new MeasurementTypeException("Measurement's type " + meas.getMeasurementType()
-          + " does not match " + getMeasurementType());
+      throw new MeasurementTypeException("Measurement's type "
+          + meas.getMeasurementType() + " does not match "
+          + getMeasurementType());
     }
 
     Session session = Manager.getFactory(serverProperties).openSession();
@@ -563,7 +594,7 @@ public class DepositoryImpl extends Depository {
     for (Property p : sensor.getProperties()) {
       session.saveOrUpdate(p);
     }
-    session.saveOrUpdate(sensor.getLocation());
+    session.saveOrUpdate(sensor.getSensorLocation());
     session.saveOrUpdate(sensor.getModel());
     session.saveOrUpdate(sensor);
   }
@@ -572,7 +603,7 @@ public class DepositoryImpl extends Depository {
    * @param serverProperties
    *          the serverProperties to set
    */
-  public void setServerProperties(ServerProperties serverProperties) {
+  public void serverProperties(ServerProperties serverProperties) {
     this.serverProperties = serverProperties;
   }
 
