@@ -1,0 +1,12 @@
+org.wattdepot.client
+org.wattdepot.client.restlet
+org.wattdepot.client.restlet.collector
+org.wattdepot.datamodel
+org.wattdepot.exception
+org.wattdepot.restlet
+org.wattdepot.server
+org.wattdepot.server.depository.impl.hibernate
+org.wattdepot.server.restlet
+org.wattdepot.util
+org.wattdepot.util.logger
+org.wattdepot.util.tstamp
