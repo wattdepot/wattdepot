@@ -1,9 +1,24 @@
 # Release process
 
-The release process consists of several steps. The first step occurs when the `develop` branch is 
+The release process consists of several steps.
+
+## Entry conditions
+Before starting the release process the `develop` branch must be 
 ready for release, all unit tests, checkstyle, findbugs, pmd, etc. pass 
 [TravisCI](https://travis-ci.org/).
 
+
+## Step 1 Create release branch in Github and merge it into the master branch.
+
+<div class="panel-group" id="step1-group">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <h4 class="panel-title">
+        <a data-toggle="collapse" data-parent="#step1-group" href="#collapseStep1">Show step1 details</a>
+      </h4>
+    </div>
+    <div id="collapseStep1" class="panel-collapse collapse">
+      <div class="panel-body">
 1. Create a release branch from the `develop` branch. Release branches support preparation of a 
 new production release. They allow for last-minute dotting of i’s and crossing t’s. Furthermore,
 they allow for minor bug fixes and preparing meta-data for a release (version number, build dates, 
@@ -30,6 +45,13 @@ passes all unit tests, checkstyle, findbugs, pmd, etc.
 6. Ensure that the `master` branch passes all unit tests, checkstyle, findbugs, pmd, etc.
 
     $ mvn package
+
+      </div>
+    </div>
+  </div>
+</div>
+
+## Step 2 Upload the Release's Javadocs to GitHub.
     
 7. Upload the Release's Javadocs to *GitHub*.
 
@@ -67,5 +89,7 @@ passes all unit tests, checkstyle, findbugs, pmd, etc.
 10. (Optional) Delete the old release branch.
 
     $ git branch -d release-3.0.1
+
+## Step 3 Create a GitHub release.
 
 11. Create a *Github* release.
