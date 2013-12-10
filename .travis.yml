@@ -8,7 +8,10 @@ branches:
     - develop
 notifications:
   email:
-    - wattdepot-dev@googlegroups.com
+    - yongwen.xu@gmail.com
+    - philipmjohnson@gmail.com
+    - carleton.moore@gmail.com
+    - rbrewer@lava.net
 env:
     global:
       - DATABASE_URL=postgres://wattdepot:wattdepot@127.0.0.1:5432/wattdepot
