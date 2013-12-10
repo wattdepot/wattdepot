@@ -1,0 +1,143 @@
+
+<!DOCTYPE html><html><head>
+<title>WattDepot</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootswatch/3.0.2/spacelab/bootstrap.min.css"/>
+<link rel="stylesheet" href="http://fgrehm.github.io/viewdocs-yeti/stylesheets/pygment_trac.css"/>
+
+<!--  Load site-specific customizations after bootstrap. -->
+<style type="text/css">
+body {
+  /* adding top/bottom padding since we're using fixed navbars. */
+  padding-top: 70px;  
+  padding-bottom: 70px;
+  color: #222; /* Darken the light gray font color defined in spacelab theme. */
+}
+
+.navbar-brand {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.navbar-toggle .icon-bar {
+  background-color: gray;
+}
+</style>
+
+<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.6.2/html5shiv.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/respond.js/1.2.0/respond.js"></script>
+<![endif]-->
+</head>
+<body>
+
+  <!-- Responsive navbar -->
+  <div class="navbar navbar-fixed-top" role="navigation">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <!--  Display three horizontal lines when navbar collapsed. -->
+          <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="http://wattdepot.org/"><img height="50" src="http://www.gravatar.com/avatar/db86ef42cc64f51e6e53171e24faa9e2.png"/></a>
+      </div>
+      <div class="collapse navbar-collapse">
+        <ul class="nav navbar-nav">
+
+      <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Overview <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="/wattdepot/overview/motivation">Motivation</a></li>
+              <li><a href="/wattdepot/overview/domainmodel">Domain model</a></li>
+              <li><a href="/wattdepot/overview/architecture">Architecture</a></li>
+              <li><a href="/wattdepot/overview/publications">Publications</a></li>
+              <li><a href="/wattdepot/overview/news">News</a></li>
+              <li><a href="/wattdepot/overview/history">History</a></li>
+              <li><a href="https://groups.google.com/forum/#!forum/wattdepot-users">Discussion Group</a></li>
+            </ul>
+          </li>
+
+      <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Installation Guide <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="/wattdepot/installationguide/prerequisites">Environment prerequisites</a></li>
+              <li><a href="/wattdepot/installationguide/installation">Obtaining the system</a></li>
+              <li><a href="/wattdepot/installationguide/deploy-local">Deploying locally</a></li>
+              <li><a href="/wattdepot/installationguide/deploy-heroku">Deploying to Heroku</a></li>
+              <li><a href="/wattdepot/installationguide/administration">Administering</a></li>
+            </ul>
+          </li>
+
+      <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">User Guide <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="/wattdepot/userguide/definitions">Defining entities</a></li>
+              <li><a href="/wattdepot/userguide/retrieval">Retrieving data</a></li>
+            </ul>
+          </li>
+
+      <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Developer Guide <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="/wattdepot/developerguide/prerequisites">Environment prerequisites</a></li>
+              <li><a href="/wattdepot/developerguide/downloading">Downloading WattDepot sources</a></li>
+              <li><a href="/wattdepot/developerguide/building">Building the system</a></li>
+              <li><a href="/wattdepot/developerguide/branching">WattDepot branching model</a></li>
+              <li><a href="/wattdepot/developerguide/release">Making a release</a></li>
+              <li class="divider"></li>
+              <li><a href="/wattdepot/developerguide/writing-sensors">Writing sensors</a></li>
+              <li><a href="/wattdepot/developerguide/writing-clients">Writing clients</a></li>
+              <li class="divider"></li>
+              <li><a href="/wattdepot/developerguide/evaluating-performance">Evaluating WattDepot performance</a></li>
+              <li><a href="/wattdepot/developerguide/documentation">Documenting the system</a></li>
+              <li class="divider"></li>
+              <li><a href="https://github.com/wattdepot/wattdepot/blob/master/LICENSE.md">License</a></li>
+            </ul>
+          </li>
+
+      <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">API Guides <b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="/wattdepot/api/http">HTTP API</a></li>
+              <li><a href="/wattdepot/api/javadoc">JavaDocs</a></li>
+            </ul>
+          </li>
+      </ul>
+
+          <ul class="nav navbar-nav navbar-right visible-xs">
+        <li class="navbar-right"><a href="http://github.com/wattdepot/wattdepot">GitHub</a></li><a href="http://github.com/wattdepot/wattdepot">
+      </a></ul><a href="http://github.com/wattdepot/wattdepot">
+      </a></div><a href="http://github.com/wattdepot/wattdepot">
+    </a></div><a href="http://github.com/wattdepot/wattdepot">
+  </a></div><a href="http://github.com/wattdepot/wattdepot">
+
+  </a><a class="hidden-xs" href="https://github.com/wattdepot/wattdepot"><img height="100" style="position: absolute; top: 0; right: 0; border: 0; z-index: 1050;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub"/></a>
+
+<div class="container">  
+WattDepot JavaDoc.
+<ul>
+    <li><a href="/wattdepot/javadoc/3.0.0-M1/">Release 3.0.0-M1</a>
+</ul>
+
+</div>
+
+<footer>
+  <div class="navbar navbar-fixed-bottom" role="navigation">
+    <div class="container">
+      <ul class="nav navbar-nav">
+       <li><p class="navbar-text hidden-xs">Continuous Integration:</p></li>
+       <li><a href="https://travis-ci.org/wattdepot/wattdepot"><img src="https://api.travis-ci.org/wattdepot/wattdepot.png?branch=master"/> (master)</a></li>
+       <li><a href="https://travis-ci.org/wattdepot/wattdepot"><img src="https://api.travis-ci.org/wattdepot/wattdepot.png?branch=develop"/> (develop)</a></li>
+      </ul>
+     </div>
+   </div>
+</footer>
+  
+  <!-- Load Bootstrap JavaScript components -->
+  <script src="http://code.jquery.com/jquery.min.js"></script>
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+
+
+
+</body></html>
