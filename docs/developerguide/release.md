@@ -74,5 +74,29 @@ passes all unit tests, checkstyle, findbugs, pmd, etc.
     
     $ git checkout master 
     
+9. Edit the docs/api/javadoc.md file to include a link to the javadoc files.
+
+    \[Release 3.0.1\]\(http://wattdepot.github.io/wattdepot/javadoc/3.0.0-M1/\)
+    
+    
 ## Step 3 Create a GitHub release.
 
+1. Go to the [WattDepot GitHub page](https://github.com/wattdepot/wattdepot).
+
+2. Click on the `release(s)` link in the toolbar.
+
+3. On the Releases page click the `Draft a new release` button.
+
+4. Fill out the Tag version input field with the version of the release (e.g. 3.0.1) on branch 
+`master`.
+
+5. Fill in the Release title (e.g. 'Release 3.0.1').
+
+6. Fill in the description of the release.
+
+7. Drag the wattdepot-<version>.jar file from your `target` directory to the "Attach binaries for
+this release by dropping them here." box.
+
+8. Click the "This is a pre-release" checkbox if it is.
+
+9. Click the "Publish release".

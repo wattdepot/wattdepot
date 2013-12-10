@@ -58,6 +58,11 @@ public class TestClientProperties {
     assertNotNull(props);    
   }
 
+  @Test
+  public void autoFail() {
+    fail("to cause the build to fail.");
+  }
+  
   /**
    * Test method for {@link org.wattdepot.client.ClientProperties#get(java.lang.String)}.
    */
