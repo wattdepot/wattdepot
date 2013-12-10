@@ -10,15 +10,6 @@ ready for release, all unit tests, checkstyle, findbugs, pmd, etc. pass
 
 ## Step 1 Create release branch in Github and merge it into the master branch.
 
-<div class="panel-group" id="step1-group">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h4 class="panel-title">
-        <a data-toggle="collapse" data-parent="#step1-group" href="#collapseStep1">Show step1 details</a>
-      </h4>
-    </div>
-    <div id="collapseStep1" class="panel-collapse collapse">
-      <div class="panel-body">
 1. Create a release branch from the `develop` branch. Release branches support preparation of a 
 new production release. They allow for last-minute dotting of i’s and crossing t’s. Furthermore,
 they allow for minor bug fixes and preparing meta-data for a release (version number, build dates, 
@@ -46,50 +37,42 @@ passes all unit tests, checkstyle, findbugs, pmd, etc.
 
     $ mvn package
 
-      </div>
-    </div>
-  </div>
-</div>
+7. (Optional) Delete the old release branch.
 
-## Step 2 Upload the Release's Javadocs to GitHub.
-    
-7. Upload the Release's Javadocs to *GitHub*.
+    $ git branch -d release-3.0.1
 
-    1. Move the `target/site/apidocs` to a safe place (e.g. Your home directory).
-
-    2. Checkout the `gh-pages` branch.
-    
-    3. Create a new directory under the `javadoc/` subdirectory with the number of your release.
-    
-        $ cd javadoc/
-        $ mkdir 3.0.1
-        
-    4. Move the contents of the saved `apidocs` directory into the new directory.
-    
-    5. Edit the `index.html` file to add the new directory to the list of Release Javadocs.
-    
-    6. Add all the changes to the `gh-branch`.
-    
-        $ git commit -a -m "Javadoc for 3.0.1"
-        
-    7. Push the changes to the `gh-pages` branch.
-    
-        $ git push origin gh-pages.
-        
-    8. Switch back the `master` branch.
-    
-        $ git checkout master 
-    
 8. Push the changes to *Github*.
 
     $ git push origin master
     
 9. Check that continuous integration passes [TravisCI](https://travis-ci.org/).
   
-10. (Optional) Delete the old release branch.
+## Step 2 Upload the Release's Javadocs to GitHub.
+    
+1. Move the `target/site/apidocs` to a safe place (e.g. Your home directory).
 
-    $ git branch -d release-3.0.1
-
+2. Checkout the `gh-pages` branch.
+    
+3. Create a new directory under the `javadoc/` subdirectory with the number of your release.
+    
+    $ cd javadoc/
+    $ mkdir 3.0.1
+        
+4. Move the contents of the saved `apidocs` directory into the new directory.
+    
+5. Edit the `index.html` file to add the new directory to the list of Release Javadocs.
+    
+6. Add all the changes to the `gh-branch`.
+    
+    $ git commit -a -m "Javadoc for 3.0.1"
+        
+7. Push the changes to the `gh-pages` branch.
+    
+    $ git push origin gh-pages.
+        
+8. Switch back the `master` branch.
+    
+    $ git checkout master 
+    
 ## Step 3 Create a GitHub release.
 
-11. Create a *Github* release.
