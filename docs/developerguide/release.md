@@ -76,7 +76,7 @@ passes all unit tests, checkstyle, findbugs, pmd, etc.
     
 9. Edit the docs/api/javadoc.md file to include a link to the javadoc files.
 
-    \[Release 3.0.1\]\(http://wattdepot.github.io/wattdepot/javadoc/3.0.0-M1/\)
+    \[Release 3.0.1\](http://wattdepot.github.io/wattdepot/javadoc/3.0.1/)
     
     
 ## Step 3 Create a GitHub release.
@@ -99,4 +99,4 @@ this release by dropping them here." box.
 
 8. Click the "This is a pre-release" checkbox if it is.
 
-9. Click the "Publish release".
+9. Click the "Publish release" button.
