@@ -1,7 +1,8 @@
 # Release process
 
 The release process consists of several steps. The first step occurs when the `develop` branch is 
-ready for release, all unit tests, checkstyle, findbugs, pmd, etc. pass.
+ready for release, all unit tests, checkstyle, findbugs, pmd, etc. pass 
+[TravisCI](https://travis-ci.org/).
 
 1. Create a release branch from the `develop` branch. Release branches support preparation of a 
 new production release. They allow for last-minute dotting of i’s and crossing t’s. Furthermore,
@@ -30,20 +31,41 @@ passes all unit tests, checkstyle, findbugs, pmd, etc.
 
     $ mvn package
     
-7. Tag the `master` branch.
+7. Upload the Release's Javadocs to *GitHub*.
 
-    $ git tag -a v3.0.1 -m "Release 3.0.1"
+    1. Move the `target/site/apidocs` to a safe place (e.g. Your home directory).
+
+    2. Checkout the `gh-pages` branch.
+    
+    3. Create a new directory under the `javadoc/` subdirectory with the number of your release.
+    
+        $ cd javadoc/
+        $ mkdir 3.0.1
+        
+    4. Move the contents of the saved `apidocs` directory into the new directory.
+    
+    5. Edit the `index.html` file to add the new directory to the list of Release Javadocs.
+    
+    6. Add all the changes to the `gh-branch`.
+    
+        $ git commit -a -m "Javadoc for 3.0.1"
+        
+    7. Push the changes to the `gh-pages` branch.
+    
+        $ git push origin gh-pages.
+        
+    8. Switch back the `master` branch.
+    
+        $ git checkout master 
     
 8. Push the changes to *Github*.
 
     $ git push origin master
     
-9. (Optional) Delete the old release branch.
+9. Check that continuous integration passes [TravisCI](https://travis-ci.org/).
+  
+10. (Optional) Delete the old release branch.
 
     $ git branch -d release-3.0.1
 
-10. Create a *Github* release.
-
-Document how to create a new release of the system.
-
-Involves committing a new snapshot of JavaDocs, updating release number in pom.xml, merging develop branch to master, etc.
+11. Create a *Github* release.
