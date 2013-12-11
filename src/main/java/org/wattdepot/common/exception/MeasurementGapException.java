@@ -19,7 +19,8 @@
 package org.wattdepot.common.exception;
 
 /**
- * An exception that is thrown when a repository the gap between two measurements is too large.
+ * An exception that is thrown when a request for a value in a depository and
+ * the gap between the two adjacent measurements is too large.
  * 
  * @author Cam Moore
  */
@@ -38,22 +39,26 @@ public class MeasurementGapException extends Exception {
   }
 
   /**
-   * @param message A String the message about the Exception.
+   * @param message
+   *          A String the message about the Exception.
    */
   public MeasurementGapException(String message) {
     super(message);
   }
 
   /**
-   * @param cause The Throwable cause of the Exception.
+   * @param cause
+   *          The Throwable cause of the Exception.
    */
   public MeasurementGapException(Throwable cause) {
     super(cause);
   }
 
   /**
-   * @param message A String message about the exception.
-   * @param cause The Throwable cause of the exception.
+   * @param message
+   *          A String message about the exception.
+   * @param cause
+   *          The Throwable cause of the exception.
    */
   public MeasurementGapException(String message, Throwable cause) {
     super(message, cause);

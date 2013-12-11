@@ -19,7 +19,7 @@
 package org.wattdepot.common.exception;
 
 /**
- * An exception that is thrown when a repository cannot find a measurement.
+ * An exception that is thrown when a depository cannot find a measurement.
  * 
  * @author Cam Moore
  */
