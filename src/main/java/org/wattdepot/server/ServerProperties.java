@@ -26,7 +26,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
-import org.wattdepot.util.UserHome;
+import org.wattdepot.common.util.UserHome;
 
 /**
  * ServerProperties - Provides access to the values stored in the

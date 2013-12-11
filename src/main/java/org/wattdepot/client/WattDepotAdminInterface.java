@@ -18,10 +18,10 @@
  */
 package org.wattdepot.client;
 
-import org.wattdepot.datamodel.UserGroup;
-import org.wattdepot.datamodel.UserInfo;
-import org.wattdepot.datamodel.UserPassword;
-import org.wattdepot.exception.IdNotFoundException;
+import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.domainmodel.UserPassword;
+import org.wattdepot.common.exception.IdNotFoundException;
 
 /**
  * WattDepotAdminInterface - Provides all the functionality of the

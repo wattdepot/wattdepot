@@ -1,0 +1,42 @@
+<body>
+WattDepot models the domain of measurement collection, storage, and analysis through the following conceptual entities.
+
+<h2>Sensors</h2>
+
+Sensors represent the device that measures the physical universe. Sensors have:
+<ul>
+<li> URIs - A Internet address where collector processes can access their measurements.</li> 
+<li> Locations - The location on the earth of the sensor (e.g. Latitude, Longitude, Altitude, Description).</li>
+<li> Models A description of the type of sensor, the protocol and version it is using.</li>
+<li> Properties - A potentially empty list of properties that describe the individual sensor.</li>
+</ul>
+
+Another use for sensors is to create a 'forecast' sensor.  This sensor can make forecast measurements about the future.
+
+
+<h2>Sensor Groups</h2>
+
+Sensor groups are, simply, groups of sensors. WattDepot uses these groups for aggregation. We can group all the energy sensors in a building into a single group.
+
+<h2>Collectors</h2>
+
+Collectors are processes that contact a Sensor and produce measurements. Collector is a representation of how often to poll a Sensor and the Depository in which to store the measurements. Collectors should use the Collector Metadata to control their activities.
+
+<h2>Depositories</h2>
+
+Depositories are responsible for storing the measurements made by the Sensors. They have an associated measurement type.
+
+<h2>Measurements</h2>
+
+Measurements are made by Sensors and consist of the sensor that made the measurement, the time the measurement was made, the value of the measurement and the measurement type.
+
+<h2>Measured Values</h2>
+
+Measured values are often interpolated from sensor measurements. There are two primary Measured Values, point values and difference values.
+
+Point values are calculated at a single point in time. If the time corresponds to a measurement then WattDepot returns the measurement's value. If the time is between two measurements WattDepot calculates the linear interpolated value and returns it.
+
+For Difference values, WattDepot gets the value for the start and end points then subtracts the start value from the end value and returns the result.
+
+
+</body>

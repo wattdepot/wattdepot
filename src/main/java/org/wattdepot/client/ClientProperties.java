@@ -25,28 +25,28 @@ import java.util.Properties;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
-import org.wattdepot.util.UserHome;
+import org.wattdepot.common.util.UserHome;
 
 /**
  * ClientProperties - Provides access to the values stored in the
- * wattdepot3-client.properties file.
+ * wattdepot-client.properties file.
  * 
  * @author Cam Moore
  * 
  */
 public class ClientProperties {
   /** The full path to the client's home directory. */
-  public static final String CLIENT_HOME_DIR = "wattdepot3-client.homedir";
+  public static final String CLIENT_HOME_DIR = "wattdepot-client.homedir";
   /** Name of property used to store the username. */
-  public static final String USER_NAME = "wattdepot3-client.user.name";
+  public static final String USER_NAME = "wattdepot-client.user.name";
   /** Name of property used to store the password. */
-  public static final String USER_PASSWORD = "wattdepot3-client.user.password";
-  /** The wattdepot3 server host. */
-  public static final String WATTDEPOT_SERVER_HOST = "wattdepot3-server.hostname";
-  /** The wattdepot3 server port key. */
-  public static final String PORT_KEY = "wattdepot3-server.port";
-  /** The wattdepot3 server port key during testing. */
-  public static final String TEST_PORT_KEY = "wattdepot3-server.test.port";
+  public static final String USER_PASSWORD = "wattdepot-client.user.password";
+  /** The wattdepot server host. */
+  public static final String WATTDEPOT_SERVER_HOST = "wattdepot-server.hostname";
+  /** The wattdepot server port key. */
+  public static final String PORT_KEY = "wattdepot-server.port";
+  /** The wattdepot server port key during testing. */
+  public static final String TEST_PORT_KEY = "wattdepot-server.test.port";
   /** The logging level key. */
   public static final String LOGGING_LEVEL_KEY = "wattdepot-client.logging.level";
 
@@ -138,10 +138,10 @@ public class ClientProperties {
   }
 
   /**
-   * Reads in the properties in wattdepot3-client.properties if the file exists,
+   * Reads in the properties in wattdepot-client.properties if the file exists,
    * and provides default values for all properties not mentioned in this file.
    * Will also add any pre-existing System properties that start with
-   * "wattdepot3-client.".
+   * "wattdepot-client.".
    * 
    * @param clientSubdir
    *          The name of the subdirectory used to store all files for this

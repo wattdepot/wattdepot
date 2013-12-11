@@ -21,26 +21,27 @@ package org.wattdepot.server;
 import java.util.List;
 import java.util.Set;
 
-import org.wattdepot.datamodel.CollectorMetaData;
-import org.wattdepot.datamodel.Depository;
-import org.wattdepot.datamodel.MeasurementType;
-import org.wattdepot.datamodel.Property;
-import org.wattdepot.datamodel.Sensor;
-import org.wattdepot.datamodel.SensorGroup;
-import org.wattdepot.datamodel.SensorLocation;
-import org.wattdepot.datamodel.SensorModel;
-import org.wattdepot.datamodel.UserGroup;
-import org.wattdepot.datamodel.UserInfo;
-import org.wattdepot.datamodel.UserPassword;
-import org.wattdepot.exception.IdNotFoundException;
-import org.wattdepot.exception.MissMatchedOwnerException;
-import org.wattdepot.exception.UniqueIdException;
-import org.wattdepot.util.SensorModelHelper;
-import org.wattdepot.util.Slug;
-import org.wattdepot.util.UnitsHelper;
+import org.wattdepot.common.domainmodel.CollectorMetaData;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.MeasurementType;
+import org.wattdepot.common.domainmodel.Property;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.domainmodel.SensorLocation;
+import org.wattdepot.common.domainmodel.SensorModel;
+import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.domainmodel.UserPassword;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MissMatchedOwnerException;
+import org.wattdepot.common.exception.UniqueIdException;
+import org.wattdepot.common.util.SensorModelHelper;
+import org.wattdepot.common.util.Slug;
+import org.wattdepot.common.util.UnitsHelper;
 
 /**
- * WattDepot abstract interface.
+ * WattDepot persistence abstract interface. Different persistence implementations should subclass
+ * this class and implement their persistence schemes.
  * 
  * @author Cam Moore
  * 

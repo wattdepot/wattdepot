@@ -1,5 +1,5 @@
 /**
- * Test classes for the WattDepot3 client package.
+ * Test classes for the WattDepot client package.
  *
  * @author Cam Moore
  *
