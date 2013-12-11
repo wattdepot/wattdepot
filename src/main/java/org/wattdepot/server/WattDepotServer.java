@@ -29,8 +29,9 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.wattdepot.util.logger.RestletLoggerUtil;
-import org.wattdepot.util.logger.WattDepotLogger;
+import org.wattdepot.common.util.logger.RestletLoggerUtil;
+import org.wattdepot.common.util.logger.WattDepotLogger;
+import org.wattdepot.server.impl.restlet.WattDepotComponent;
 
 /**
  * WattDepotServer - The main class that starts up the WattDepotServer

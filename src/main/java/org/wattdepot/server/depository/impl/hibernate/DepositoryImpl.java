@@ -23,15 +23,15 @@ import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
-import org.wattdepot.datamodel.Depository;
-import org.wattdepot.datamodel.Measurement;
-import org.wattdepot.datamodel.MeasurementType;
-import org.wattdepot.datamodel.Property;
-import org.wattdepot.datamodel.Sensor;
-import org.wattdepot.datamodel.UserGroup;
-import org.wattdepot.exception.MeasurementGapException;
-import org.wattdepot.exception.MeasurementTypeException;
-import org.wattdepot.exception.NoMeasurementException;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.MeasurementType;
+import org.wattdepot.common.domainmodel.Property;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.exception.MeasurementGapException;
+import org.wattdepot.common.exception.MeasurementTypeException;
+import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.server.ServerProperties;
 
 /**
@@ -118,7 +118,7 @@ public class DepositoryImpl extends Depository {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot3.datamodel.Depository#deleteMeasurement(org.wattdepot3.datamodel
+   * org.wattdepot.datamodel.Depository#deleteMeasurement(org.wattdepot.datamodel
    * .Measurement)
    */
   @Override
@@ -157,7 +157,7 @@ public class DepositoryImpl extends Depository {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot3.datamodel.Depository#getMeasurements(org.wattdepot3.datamodel
+   * org.wattdepot.datamodel.Depository#getMeasurements(org.wattdepot.datamodel
    * .Sensor)
    */
   @Override
@@ -205,8 +205,8 @@ public class DepositoryImpl extends Depository {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot3.datamodel.Depository#getMeasurements(org.hibernate.Session,
-   * org.wattdepot3.datamodel.Sensor)
+   * org.wattdepot.datamodel.Depository#getMeasurements(org.hibernate.Session,
+   * org.wattdepot.datamodel.Sensor)
    */
   @Override
   public List<Measurement> getMeasurements(Session session, Sensor sensor) {
@@ -502,7 +502,7 @@ public class DepositoryImpl extends Depository {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.datamodel.Depository#getSensors()
+   * @see org.wattdepot.datamodel.Depository#getSensors()
    */
   @Override
   public List<Sensor> listSensors() {

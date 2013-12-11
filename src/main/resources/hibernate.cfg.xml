@@ -37,22 +37,22 @@
         <!-- Drop and re-create the database schema on startup -->
         <property name="hbm2ddl.auto">create</property>
 
-        <mapping resource="org/wattdepot/datamodel/Depository.hbm.xml" />
+        <mapping resource="org/wattdepot/common/domainmodel/Depository.hbm.xml" />
         <mapping
             resource="org/wattdepot/server/depository/impl/hibernate/DepositoryImpl.hbm.xml" />
-        <mapping resource="org/wattdepot/datamodel/Measurement.hbm.xml" />
+        <mapping resource="org/wattdepot/common/domainmodel/Measurement.hbm.xml" />
         <mapping
             resource="org/wattdepot/server/depository/impl/hibernate/MeasurementImpl.hbm.xml" />
-        <mapping resource="org/wattdepot/datamodel/MeasurementType.hbm.xml" />
-        <mapping resource="org/wattdepot/datamodel/Property.hbm.xml" />
-        <mapping resource="org/wattdepot/datamodel/Sensor.hbm.xml" />
-        <mapping resource="org/wattdepot/datamodel/SensorGroup.hbm.xml" />
-        <mapping resource="org/wattdepot/datamodel/SensorLocation.hbm.xml" />
-        <mapping resource="org/wattdepot/datamodel/SensorModel.hbm.xml" />
-        <mapping resource="org/wattdepot/datamodel/CollectorMetaData.hbm.xml" />
-        <mapping resource="org/wattdepot/datamodel/UserGroup.hbm.xml" />
-        <mapping resource="org/wattdepot/datamodel/UserInfo.hbm.xml" />
-        <mapping resource="org/wattdepot/datamodel/UserPassword.hbm.xml" />
+        <mapping resource="org/wattdepot/common/domainmodel/MeasurementType.hbm.xml" />
+        <mapping resource="org/wattdepot/common/domainmodel/Property.hbm.xml" />
+        <mapping resource="org/wattdepot/common/domainmodel/Sensor.hbm.xml" />
+        <mapping resource="org/wattdepot/common/domainmodel/SensorGroup.hbm.xml" />
+        <mapping resource="org/wattdepot/common/domainmodel/SensorLocation.hbm.xml" />
+        <mapping resource="org/wattdepot/common/domainmodel/SensorModel.hbm.xml" />
+        <mapping resource="org/wattdepot/common/domainmodel/CollectorMetaData.hbm.xml" />
+        <mapping resource="org/wattdepot/common/domainmodel/UserGroup.hbm.xml" />
+        <mapping resource="org/wattdepot/common/domainmodel/UserInfo.hbm.xml" />
+        <mapping resource="org/wattdepot/common/domainmodel/UserPassword.hbm.xml" />
 
     </session-factory>
 

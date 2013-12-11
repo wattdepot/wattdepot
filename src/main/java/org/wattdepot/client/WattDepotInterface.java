@@ -20,29 +20,29 @@ package org.wattdepot.client;
 
 import java.util.Date;
 
-import org.wattdepot.datamodel.CollectorMetaData;
-import org.wattdepot.datamodel.CollectorMetaDataList;
-import org.wattdepot.datamodel.Depository;
-import org.wattdepot.datamodel.DepositoryList;
-import org.wattdepot.datamodel.Measurement;
-import org.wattdepot.datamodel.MeasurementList;
-import org.wattdepot.datamodel.MeasurementType;
-import org.wattdepot.datamodel.MeasurementTypeList;
-import org.wattdepot.datamodel.Sensor;
-import org.wattdepot.datamodel.SensorGroup;
-import org.wattdepot.datamodel.SensorGroupList;
-import org.wattdepot.datamodel.SensorList;
-import org.wattdepot.datamodel.SensorLocation;
-import org.wattdepot.datamodel.SensorLocationList;
-import org.wattdepot.datamodel.SensorModel;
-import org.wattdepot.datamodel.SensorModelList;
-import org.wattdepot.exception.IdNotFoundException;
-import org.wattdepot.exception.MeasurementGapException;
-import org.wattdepot.exception.MeasurementTypeException;
-import org.wattdepot.exception.NoMeasurementException;
+import org.wattdepot.common.domainmodel.CollectorMetaData;
+import org.wattdepot.common.domainmodel.CollectorMetaDataList;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.DepositoryList;
+import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.MeasurementList;
+import org.wattdepot.common.domainmodel.MeasurementType;
+import org.wattdepot.common.domainmodel.MeasurementTypeList;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.domainmodel.SensorGroupList;
+import org.wattdepot.common.domainmodel.SensorList;
+import org.wattdepot.common.domainmodel.SensorLocation;
+import org.wattdepot.common.domainmodel.SensorLocationList;
+import org.wattdepot.common.domainmodel.SensorModel;
+import org.wattdepot.common.domainmodel.SensorModelList;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MeasurementGapException;
+import org.wattdepot.common.exception.MeasurementTypeException;
+import org.wattdepot.common.exception.NoMeasurementException;
 
 /**
- * WattDepotInterface - The CRUD interface to the WattDepot3 server for regular
+ * WattDepotInterface - The CRUD interface to the WattDepot server for regular
  * users.
  * 
  * @author Cam Moore

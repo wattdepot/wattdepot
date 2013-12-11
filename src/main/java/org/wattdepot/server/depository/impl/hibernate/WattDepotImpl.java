@@ -26,25 +26,25 @@ import javax.measure.unit.Unit;
 
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
-import org.wattdepot.datamodel.CollectorMetaData;
-import org.wattdepot.datamodel.Depository;
-import org.wattdepot.datamodel.Measurement;
-import org.wattdepot.datamodel.MeasurementType;
-import org.wattdepot.datamodel.Property;
-import org.wattdepot.datamodel.Sensor;
-import org.wattdepot.datamodel.SensorGroup;
-import org.wattdepot.datamodel.SensorLocation;
-import org.wattdepot.datamodel.SensorModel;
-import org.wattdepot.datamodel.UserGroup;
-import org.wattdepot.datamodel.UserInfo;
-import org.wattdepot.datamodel.UserPassword;
-import org.wattdepot.exception.IdNotFoundException;
-import org.wattdepot.exception.MissMatchedOwnerException;
-import org.wattdepot.exception.UniqueIdException;
+import org.wattdepot.common.domainmodel.CollectorMetaData;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.MeasurementType;
+import org.wattdepot.common.domainmodel.Property;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.domainmodel.SensorLocation;
+import org.wattdepot.common.domainmodel.SensorModel;
+import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.domainmodel.UserPassword;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MissMatchedOwnerException;
+import org.wattdepot.common.exception.UniqueIdException;
+import org.wattdepot.common.util.SensorModelHelper;
+import org.wattdepot.common.util.Slug;
 import org.wattdepot.server.ServerProperties;
 import org.wattdepot.server.WattDepot;
-import org.wattdepot.util.SensorModelHelper;
-import org.wattdepot.util.Slug;
 
 /**
  * WattDepotImpl - Hibernate implementation of the WattDepot abstract class.
@@ -139,9 +139,9 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#defineLocation(java.lang.String,
+   * @see org.wattdepot.server.WattDepot#defineLocation(java.lang.String,
    * java.lang.Double, java.lang.Double, java.lang.Double, java.lang.String,
-   * org.wattdepot3.datamodel.UserGroup)
+   * org.wattdepot.datamodel.UserGroup)
    */
   @Override
   public SensorLocation defineLocation(String id, Double latitude, Double longitude,
@@ -172,7 +172,7 @@ public class WattDepotImpl extends WattDepot {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot3.server.WattDepot#defineMeasurementType(java.lang.String,
+   * org.wattdepot.server.WattDepot#defineMeasurementType(java.lang.String,
    * java.lang.String)
    */
   @Override
@@ -198,9 +198,9 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#defineSensor(java.lang.String,
-   * java.lang.String, org.wattdepot3.datamodel.Location,
-   * org.wattdepot3.datamodel.SensorModel, org.wattdepot3.datamodel.UserGroup)
+   * @see org.wattdepot.server.WattDepot#defineSensor(java.lang.String,
+   * java.lang.String, org.wattdepot.datamodel.Location,
+   * org.wattdepot.datamodel.SensorModel, org.wattdepot.datamodel.UserGroup)
    */
   @Override
   public Sensor defineSensor(String id, String uri, SensorLocation l, SensorModel sm,
@@ -227,8 +227,8 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#defineSensorGroup(java.lang.String,
-   * java.util.List, org.wattdepot3.datamodel.UserGroup)
+   * @see org.wattdepot.server.WattDepot#defineSensorGroup(java.lang.String,
+   * java.util.List, org.wattdepot.datamodel.UserGroup)
    */
   @Override
   public SensorGroup defineSensorGroup(String id, Set<Sensor> sensors, UserGroup owner)
@@ -260,9 +260,9 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#defineSensorModel(java.lang.String,
+   * @see org.wattdepot.server.WattDepot#defineSensorModel(java.lang.String,
    * java.lang.String, java.lang.String, java.lang.String,
-   * org.wattdepot3.datamodel.UserGroup)
+   * org.wattdepot.datamodel.UserGroup)
    */
   @Override
   public SensorModel defineSensorModel(String id, String protocol, String type, String version)
@@ -287,9 +287,9 @@ public class WattDepotImpl extends WattDepot {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot3.server.WattDepot#defineCollectorMetaData(java.lang.String,
-   * org.wattdepot3.datamodel.Sensor, java.lang.Long, java.lang.String,
-   * org.wattdepot3.datamodel.UserGroup)
+   * org.wattdepot.server.WattDepot#defineCollectorMetaData(java.lang.String,
+   * org.wattdepot.datamodel.Sensor, java.lang.Long, java.lang.String,
+   * org.wattdepot.datamodel.UserGroup)
    */
   @Override
   public CollectorMetaData defineCollectorMetaData(String id, Sensor sensor, Long pollingInterval,
@@ -318,7 +318,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#defineUserGroup(java.lang.String,
+   * @see org.wattdepot.server.WattDepot#defineUserGroup(java.lang.String,
    * java.util.List)
    */
   @Override
@@ -347,7 +347,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#defineUserInfo(java.lang.String,
+   * @see org.wattdepot.server.WattDepot#defineUserInfo(java.lang.String,
    * java.lang.String, java.lang.String, java.lang.String, java.lang.String,
    * java.lang.Boolean, java.util.Set)
    */
@@ -375,7 +375,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#defineUserPassword(java.lang.String,
+   * @see org.wattdepot.server.WattDepot#defineUserPassword(java.lang.String,
    * java.lang.String)
    */
   @Override
@@ -394,8 +394,8 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#defineWattDepository(java.lang.String,
-   * java.lang.String, java.lang.String, org.wattdepot3.datamodel.UserGroup)
+   * @see org.wattdepot.server.WattDepot#defineWattDepository(java.lang.String,
+   * java.lang.String, java.lang.String, org.wattdepot.datamodel.UserGroup)
    */
   @Override
   public Depository defineWattDepository(String name, MeasurementType measurementType,
@@ -424,7 +424,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#deleteLocation(java.lang.String,
+   * @see org.wattdepot.server.WattDepot#deleteLocation(java.lang.String,
    * java.lang.String)
    */
   @Override
@@ -449,7 +449,7 @@ public class WattDepotImpl extends WattDepot {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot3.server.WattDepot#deleteMeasurementType(java.lang.String)
+   * org.wattdepot.server.WattDepot#deleteMeasurementType(java.lang.String)
    */
   @Override
   public void deleteMeasurementType(String slug) throws IdNotFoundException {
@@ -471,7 +471,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#deleteSensor(java.lang.String,
+   * @see org.wattdepot.server.WattDepot#deleteSensor(java.lang.String,
    * java.lang.String)
    */
   @Override
@@ -495,7 +495,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#deleteSensorGroup(java.lang.String,
+   * @see org.wattdepot.server.WattDepot#deleteSensorGroup(java.lang.String,
    * java.lang.String)
    */
   @Override
@@ -519,7 +519,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#deleteSensorModel(java.lang.String,
+   * @see org.wattdepot.server.WattDepot#deleteSensorModel(java.lang.String,
    * java.lang.String)
    */
   @Override
@@ -543,7 +543,7 @@ public class WattDepotImpl extends WattDepot {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot3.server.WattDepot#deleteCollectorMetaData(java.lang.String,
+   * org.wattdepot.server.WattDepot#deleteCollectorMetaData(java.lang.String,
    * java.lang.String)
    */
   @Override
@@ -567,7 +567,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#deleteUser(java.lang.String)
+   * @see org.wattdepot.server.WattDepot#deleteUser(java.lang.String)
    */
   @Override
   public void deleteUser(String id) throws IdNotFoundException {
@@ -623,7 +623,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#deleteUserGroup(java.lang.String)
+   * @see org.wattdepot.server.WattDepot#deleteUserGroup(java.lang.String)
    */
   @Override
   public void deleteUserGroup(String id) throws IdNotFoundException {
@@ -713,7 +713,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#deleteUserPassword(java.lang.String)
+   * @see org.wattdepot.server.WattDepot#deleteUserPassword(java.lang.String)
    */
   @Override
   public void deleteUserPassword(String userId) throws IdNotFoundException {
@@ -733,7 +733,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#deleteWattDepository(java.lang.String,
+   * @see org.wattdepot.server.WattDepot#deleteWattDepository(java.lang.String,
    * java.lang.String)
    */
   @Override
@@ -755,7 +755,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getLocation(java.lang.String,
+   * @see org.wattdepot.server.WattDepot#getLocation(java.lang.String,
    * java.lang.String)
    */
   @Override
@@ -777,7 +777,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getLocationIds()
+   * @see org.wattdepot.server.WattDepot#getLocationIds()
    */
   @Override
   public List<String> getLocationIds(String groupId) {
@@ -811,7 +811,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getLocations(java.lang.String)
+   * @see org.wattdepot.server.WattDepot#getLocations(java.lang.String)
    */
   @Override
   public List<SensorLocation> getLocations(String groupId) {
@@ -828,7 +828,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getMeasurementType(java.lang.String)
+   * @see org.wattdepot.server.WattDepot#getMeasurementType(java.lang.String)
    */
   @Override
   public MeasurementType getMeasurementType(String slug) {
@@ -843,7 +843,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getMeasurementTypes()
+   * @see org.wattdepot.server.WattDepot#getMeasurementTypes()
    */
   @SuppressWarnings("unchecked")
   @Override
@@ -866,7 +866,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getSensor(java.lang.String,
+   * @see org.wattdepot.server.WattDepot#getSensor(java.lang.String,
    * java.lang.String)
    */
   @Override
@@ -889,7 +889,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getSensorGroup(java.lang.String,
+   * @see org.wattdepot.server.WattDepot#getSensorGroup(java.lang.String,
    * java.lang.String)
    */
   @Override
@@ -915,7 +915,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getSensorGroupIds()
+   * @see org.wattdepot.server.WattDepot#getSensorGroupIds()
    */
   @Override
   public List<String> getSensorGroupIds(String groupId) {
@@ -954,7 +954,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getSensorGroups(java.lang.String)
+   * @see org.wattdepot.server.WattDepot#getSensorGroups(java.lang.String)
    */
   @Override
   public List<SensorGroup> getSensorGroups(String groupId) {
@@ -971,7 +971,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getSensorIds()
+   * @see org.wattdepot.server.WattDepot#getSensorIds()
    */
   @Override
   public List<String> getSensorIds(String groupId) {
@@ -985,7 +985,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getSensorModel(java.lang.String,
+   * @see org.wattdepot.server.WattDepot#getSensorModel(java.lang.String,
    * java.lang.String)
    */
   @Override
@@ -1001,7 +1001,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getSensorModelIds()
+   * @see org.wattdepot.server.WattDepot#getSensorModelIds()
    */
   @Override
   public List<String> getSensorModelIds() {
@@ -1031,7 +1031,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getSensorModels(java.lang.String)
+   * @see org.wattdepot.server.WattDepot#getSensorModels(java.lang.String)
    */
   @Override
   public List<SensorModel> getSensorModels() {
@@ -1048,7 +1048,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getCollectorMetaData(java.lang.String,
+   * @see org.wattdepot.server.WattDepot#getCollectorMetaData(java.lang.String,
    * java.lang.String)
    */
   @Override
@@ -1091,7 +1091,7 @@ public class WattDepotImpl extends WattDepot {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot3.server.WattDepot#getCollectorMetaDatas(java.lang.String)
+   * org.wattdepot.server.WattDepot#getCollectorMetaDatas(java.lang.String)
    */
   @Override
   public List<CollectorMetaData> getCollectorMetaDatas(String groupId) {
@@ -1108,7 +1108,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getCollectorMetaDataIds()
+   * @see org.wattdepot.server.WattDepot#getCollectorMetaDataIds()
    */
   @Override
   public List<String> getCollectorMetaDataIds(String groupId) {
@@ -1142,7 +1142,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getSensors(java.lang.String)
+   * @see org.wattdepot.server.WattDepot#getSensors(java.lang.String)
    */
   @Override
   public List<Sensor> getSensors(String groupId) {
@@ -1173,7 +1173,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getUser(java.lang.String)
+   * @see org.wattdepot.server.WattDepot#getUser(java.lang.String)
    */
   @SuppressWarnings("unchecked")
   @Override
@@ -1198,7 +1198,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getUserGroup(java.lang.String)
+   * @see org.wattdepot.server.WattDepot#getUserGroup(java.lang.String)
    */
   @SuppressWarnings("unchecked")
   @Override
@@ -1223,7 +1223,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getUserGroupIds()
+   * @see org.wattdepot.server.WattDepot#getUserGroupIds()
    */
   @Override
   public List<String> getUserGroupIds() {
@@ -1237,7 +1237,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getUserGroups()
+   * @see org.wattdepot.server.WattDepot#getUserGroups()
    */
   @SuppressWarnings("unchecked")
   @Override
@@ -1256,7 +1256,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getUserIds()
+   * @see org.wattdepot.server.WattDepot#getUserIds()
    */
   @Override
   public List<String> getUserIds() {
@@ -1270,7 +1270,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getUserPassword(java.lang.String)
+   * @see org.wattdepot.server.WattDepot#getUserPassword(java.lang.String)
    */
   @Override
   public UserPassword getUserPassword(String id) {
@@ -1295,7 +1295,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getUsers()
+   * @see org.wattdepot.server.WattDepot#getUsers()
    */
   @SuppressWarnings("unchecked")
   @Override
@@ -1315,7 +1315,7 @@ public class WattDepotImpl extends WattDepot {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot3.server.WattDepot#getUsersGroup(org.wattdepot3.datamodel.
+   * org.wattdepot.server.WattDepot#getUsersGroup(org.wattdepot.datamodel.
    * UserInfo)
    */
   @Override
@@ -1331,7 +1331,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getWattDeposiory(java.lang.String,
+   * @see org.wattdepot.server.WattDepot#getWattDeposiory(java.lang.String,
    * java.lang.String)
    */
   @Override
@@ -1369,7 +1369,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getWattDepositories(java.lang.String)
+   * @see org.wattdepot.server.WattDepot#getWattDepositories(java.lang.String)
    */
   @Override
   public List<Depository> getWattDepositories(String groupId) {
@@ -1386,7 +1386,7 @@ public class WattDepotImpl extends WattDepot {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot3.server.WattDepot#getWattDepositoryIds()
+   * @see org.wattdepot.server.WattDepot#getWattDepositoryIds()
    */
   @Override
   public List<String> getWattDepositoryIds(String groupId) {
@@ -1418,7 +1418,7 @@ public class WattDepotImpl extends WattDepot {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot3.server.WattDepot#updateLocation(org.wattdepot3.datamodel
+   * org.wattdepot.server.WattDepot#updateLocation(org.wattdepot.datamodel
    * .Location)
    */
   @Override
@@ -1438,7 +1438,7 @@ public class WattDepotImpl extends WattDepot {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot3.server.WattDepot#updateMeasurementType(org.wattdepot3.datamodel
+   * org.wattdepot.server.WattDepot#updateMeasurementType(org.wattdepot.datamodel
    * .MeasurementType)
    */
   @Override
@@ -1458,7 +1458,7 @@ public class WattDepotImpl extends WattDepot {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot3.server.WattDepot#updateSensor(org.wattdepot3.datamodel.Sensor
+   * org.wattdepot.server.WattDepot#updateSensor(org.wattdepot.datamodel.Sensor
    * )
    */
   @Override
@@ -1481,7 +1481,7 @@ public class WattDepotImpl extends WattDepot {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot3.server.WattDepot#updateSensorGroup(org.wattdepot3.datamodel
+   * org.wattdepot.server.WattDepot#updateSensorGroup(org.wattdepot.datamodel
    * .SensorGroup)
    */
   @Override
@@ -1501,7 +1501,7 @@ public class WattDepotImpl extends WattDepot {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot3.server.WattDepot#updateSensorModel(org.wattdepot3.datamodel
+   * org.wattdepot.server.WattDepot#updateSensorModel(org.wattdepot.datamodel
    * .SensorModel)
    */
   @Override
@@ -1521,7 +1521,7 @@ public class WattDepotImpl extends WattDepot {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot3.server.WattDepot#updateCollectorMetaData(org.wattdepot3.
+   * org.wattdepot.server.WattDepot#updateCollectorMetaData(org.wattdepot.
    * datamodel .CollectorMetaData)
    */
   @Override
@@ -1544,7 +1544,7 @@ public class WattDepotImpl extends WattDepot {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot3.server.WattDepot#updateUserGroup(org.wattdepot3.datamodel
+   * org.wattdepot.server.WattDepot#updateUserGroup(org.wattdepot.datamodel
    * .UserGroup)
    */
   @Override
@@ -1564,7 +1564,7 @@ public class WattDepotImpl extends WattDepot {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot3.server.WattDepot#updateUserInfo(org.wattdepot3.datamodel
+   * org.wattdepot.server.WattDepot#updateUserInfo(org.wattdepot.datamodel
    * .UserInfo)
    */
   @Override
@@ -1583,7 +1583,7 @@ public class WattDepotImpl extends WattDepot {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot3.server.WattDepot#updateUserPassword(org.wattdepot3.datamodel
+   * org.wattdepot.server.WattDepot#updateUserPassword(org.wattdepot.datamodel
    * .UserPassword)
    */
   @Override

@@ -22,9 +22,9 @@ import java.sql.Date;
 
 import javax.measure.unit.Unit;
 
-import org.wattdepot.datamodel.Depository;
-import org.wattdepot.datamodel.Measurement;
-import org.wattdepot.datamodel.Sensor;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.Sensor;
 
 /**
  * MeasurementImpl - Hibernate persistant version of Measurement. It is 'stored'
