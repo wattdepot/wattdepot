@@ -1,6 +1,9 @@
 # JavaDoc API Guide
 
-Provide links to both a snapshot of javadocs (from a nightly build/continuous integration server) as well as to the javadocs associated with each release.
+## Latest release
 
-[Release 3.0.0-M3](http://wattdepot.github.io/wattdepot/javadoc/3.0.0-M3/)
-[Release 3.0.0-M1](http://wattdepot.github.io/wattdepot/javadoc/3.0.0-M1/)
+* [Release 3.0.0-M3](http://wattdepot.github.io/wattdepot/javadoc/3.0.0-M3/)
+
+## Old releases
+
+* [Release 3.0.0-M1](http://wattdepot.github.io/wattdepot/javadoc/3.0.0-M1/)
