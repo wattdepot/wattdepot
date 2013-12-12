@@ -1,0 +1,13 @@
+org.wattdepot.client
+org.wattdepot.client.httpapi
+org.wattdepot.client.httpapi.collector
+org.wattdepot.common
+org.wattdepot.common.domainmodel
+org.wattdepot.common.exception
+org.wattdepot.common.httpapi
+org.wattdepot.common.util
+org.wattdepot.common.util.logger
+org.wattdepot.common.util.tstamp
+org.wattdepot.server
+org.wattdepot.server.depository.impl.hibernate
+org.wattdepot.server.httpapi
