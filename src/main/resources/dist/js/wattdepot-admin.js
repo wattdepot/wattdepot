@@ -42,6 +42,10 @@ function getKnownMeasurementType(id) {
     return MEASUREMENTTYPES[id];
 };
 
+function getKnownLocation(id) {
+    return LOCATIONS[id];
+};
+
 function buildDepository(id) {
     var depInfo = getKnownDepository(id);
     var owner = getKnownUserGroup(depInfo['ownerId']);
@@ -53,10 +57,6 @@ function buildDepository(id) {
     };
     return depository;
 }
-
-function getKnownLocation(id) {
-    return LOCATIONS[id];
-};
 
 function buildLocation(id) {
     var locInfo = getKnownLocation(id);
@@ -104,7 +104,7 @@ function buildSensor(id) {
         "id" : sensorInfo['id'],
         "name" : sensorInfo['name'],
         "uri" : sensorInfo['uri'],
-        "location" : loc,
+        "sensorLocation" : loc,
         "model" : model,
         "owner" : owner,
         "properties" : sensorInfo['properties']
@@ -444,7 +444,7 @@ function putNewSensor() {
     var sensor = {
         "name" : name,
         "uri" : uri,
-        "location" : loc,
+        "sensorLocation" : loc,
         "model" : model,
         "owner" : owner
     };
@@ -476,7 +476,7 @@ function putNewInlineSensorProperty() {
         "id" : old_sensor.id,
         "name" : old_sensor.name,
         "uri" : old_sensor.uri,
-        "location" : loc,
+        "sensorLocation" : loc,
         "model" : model,
         "owner" : owner,
         "properties" : old_sensor.properties

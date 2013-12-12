@@ -448,7 +448,7 @@ $(function(){
                 <div class="col-md-9">
                   <select class="form-control" name="sensor_location">
                   <#list locations as l>
-                    <option value="${l.id}">${l.id}</option>
+                    <option value="${l.id}">${l.name}</option>
                   </#list>
                   </select>
                   <p class="help-block">Select the optional location for the sensor.</p>
@@ -459,7 +459,7 @@ $(function(){
                 <div class="col-md-9">
                   <select class="form-control" name="sensor_model">
                   <#list sensormodels as sm>
-                    <option value="${sm.id}">${sm.id}</option>
+                    <option value="${sm.id}">${sm.name}</option>
                   </#list>
                   </select>
                   <p class="help-block">Select the model for the sensor.</p>
@@ -811,7 +811,7 @@ MODELS["${m.id}"] = {"id": "${m.id}", "name": "${m.name}", "protocol": "${m.prot
 </#list>
 var SENSORS = {};
 <#list sensors as s>
-SENSORS["${s.id}"] = {"id": "${s.id}", "name": "${s.name}", "uri": "${s.uri}", "locationId": "<#if s.getLocation()??>${s.location.id}</#if>", "modelId": "<#if s.getModel()??>${s.model.id}</#if>", "ownerId": "${s.owner.id}", "properties" : [<#assign k = s.properties?size><#list s.properties as p>{"key":"${p.key}", "value":"${p.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]};
+SENSORS["${s.id}"] = {"id": "${s.id}", "name": "${s.name}", "uri": "${s.uri}", "locationId": "<#if s.getSensorLocation()??>${s.sensorLocation.id}</#if>", "modelId": "<#if s.getModel()??>${s.model.id}</#if>", "ownerId": "${s.owner.id}", "properties" : [<#assign k = s.properties?size><#list s.properties as p>{"key":"${p.key}", "value":"${p.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]};
 </#list>
 var SENSORGROUPS = {};
 <#list sensorgroups as sg>
