@@ -180,7 +180,7 @@ public class ClientProperties {
     try {
       stream = new FileInputStream(propFileName);
       properties.load(stream);
-      logger.info("Loading Server properties from: " + propFileName);
+      logger.info("Loading Client properties from: " + propFileName);
     }
     catch (IOException e) {
       logger.info(propFileName + " not found. Using default client properties.");

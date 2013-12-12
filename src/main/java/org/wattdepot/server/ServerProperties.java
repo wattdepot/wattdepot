@@ -218,7 +218,7 @@ public class ServerProperties {
     String propFileName = serverHome + "/wattdepot-server.properties";
     String defaultAdminName = "admin";
     String defaultAdminPassword = "admin";
-    String defaultWattDepotImpl = "org.wattdepot.server.depository.impl.hibernate.WattDepotImpl";
+    String defaultWattDepotImpl = "org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl";
     String defaultPort = "8192";
     String defaultTestPort = "8194";
     this.properties = new Properties();
@@ -243,6 +243,7 @@ public class ServerProperties {
     properties.setProperty(USE_HEROKU_KEY, FALSE);
     properties.setProperty(TEST_HEROKU_KEY, FALSE);
 
+    logger.finest(echoProperties());
     // grab all of the properties in the environment
     Map<String, String> systemProps = System.getenv();
     for (Map.Entry<String, String> prop : systemProps.entrySet()) {
@@ -250,6 +251,7 @@ public class ServerProperties {
         properties.setProperty(prop.getKey(), prop.getValue());
       }
     }
+    logger.finest(echoProperties());
     // Use properties from file, if they exist.
     FileInputStream stream = null;
     try {
@@ -268,14 +270,15 @@ public class ServerProperties {
     }
     addServerSystemProperties(this.properties);
     trimProperties(properties);
+    logger.finest(echoProperties());
     // get PORT and DATABASE_URL for heroku
     String webPort = System.getenv("PORT");
-    if (webPort != null && ! webPort.isEmpty()) {
+    if (webPort != null && !webPort.isEmpty()) {
       properties.setProperty(PORT_KEY, webPort);
     }
-    
+
     String databaseURL = System.getenv("DATABASE_URL");
-    if (databaseURL != null && ! databaseURL.isEmpty()) {
+    if (databaseURL != null && !databaseURL.isEmpty()) {
       URI dbUri = new URI(databaseURL);
       String username = dbUri.getUserInfo().split(":")[0];
       String password = dbUri.getUserInfo().split(":")[1];
@@ -284,7 +287,7 @@ public class ServerProperties {
       properties.setProperty(DB_PASSWORD, password);
       properties.setProperty(DB_CONNECTION_URL, dbUrl);
     }
-
+    
   }
 
   /**

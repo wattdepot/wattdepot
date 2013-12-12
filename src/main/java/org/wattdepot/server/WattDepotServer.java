@@ -31,7 +31,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.wattdepot.common.util.logger.RestletLoggerUtil;
 import org.wattdepot.common.util.logger.WattDepotLogger;
-import org.wattdepot.server.impl.restlet.WattDepotComponent;
+import org.wattdepot.server.httpapi.WattDepotComponent;
 
 /**
  * WattDepotServer - The main class that starts up the WattDepotServer
@@ -45,7 +45,7 @@ public class WattDepotServer {
   /** Holds the Restlet component for the server. */
   private WattDepotComponent restletServer;
   /** Holds the WattDepot persistent store for the server. */
-  private WattDepot depot;
+  private WattDepotPersistence depot;
   /** Holds the ServerProperties instance associated with this server. */
   private ServerProperties serverProperties;
   /** Holds the WattDepotLogger for the server. */
@@ -107,7 +107,8 @@ public class WattDepotServer {
         properties.get(ServerProperties.SERVER_HOME_DIR));
     server.hostName = server.serverProperties.getFullHost();
 
-    server.depot = (WattDepot) Class.forName(properties.get(ServerProperties.WATT_DEPOT_IMPL_KEY))
+    String depotClass = properties.get(ServerProperties.WATT_DEPOT_IMPL_KEY);
+    server.depot = (WattDepotPersistence) Class.forName(depotClass)
         .getConstructor(ServerProperties.class).newInstance(properties);
     if (server.depot.getSessionOpen() != server.depot.getSessionClose()) {
       throw new RuntimeException("opens and closed mismatched.");
@@ -163,7 +164,7 @@ public class WattDepotServer {
   /**
    * @return the depot
    */
-  public WattDepot getDepot() {
+  public WattDepotPersistence getDepot() {
     return depot;
   }
 

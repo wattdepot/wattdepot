@@ -22,7 +22,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.wattdepot.server.ServerProperties;
-import org.wattdepot.server.depository.impl.hibernate.WattDepotImpl;
+import org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl;
 
 /**
  * TestWattDepotImpl - Test cases for the WattDepotImpl.
@@ -32,7 +32,7 @@ import org.wattdepot.server.depository.impl.hibernate.WattDepotImpl;
  */
 public class TestWattDepotImpl {
 
-  private WattDepotImpl impl;
+  private WattDepotPersistenceImpl impl;
 
   /**
    * @throws java.lang.Exception
@@ -40,7 +40,7 @@ public class TestWattDepotImpl {
    */
   @Before
   public void setUp() throws Exception {
-    impl = new WattDepotImpl(new ServerProperties());
+    impl = new WattDepotPersistenceImpl(new ServerProperties());
   }
 
   /**
@@ -53,7 +53,7 @@ public class TestWattDepotImpl {
 
   /**
    * Test method for
-   * {@link org.wattdepot.server.depository.impl.hibernate.WattDepotImpl#getUserGroups()}
+   * {@link org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl#getUserGroups()}
    * .
    */
   @Test
@@ -67,7 +67,7 @@ public class TestWattDepotImpl {
 
   /**
    * Test method for
-   * {@link org.wattdepot.server.depository.impl.hibernate.WattDepotImpl#getUsers()}
+   * {@link org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl#getUsers()}
    * .
    */
   @Test
