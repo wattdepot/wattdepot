@@ -8,21 +8,31 @@
 
 <!--  Load site-specific customizations after bootstrap. -->
 <style type="text/css">
+
+/* adding top/bottom padding since we're using fixed navbars. */
+/* Darken the light gray font color defined in spacelab theme. */
 body {
-  /* adding top/bottom padding since we're using fixed navbars. */
   padding-top: 70px;  
   padding-bottom: 70px;
-  color: #222; /* Darken the light gray font color defined in spacelab theme. */
+  color: #222; 
 }
 
+/* Allow wattdepot logo to use up all space in navbar. */
 .navbar-brand {
   padding-top: 0;
   padding-bottom: 0;
 }
 
+/* The pill box didn't display without this fix. */
 .navbar-toggle .icon-bar {
   background-color: gray;
 }
+
+/* I feel the default h2 font size is too big, so adjust them all down. */
+h2, .h2 {font-size: 26px;}
+h3, .h3 {font-size: 22px;}
+h4, .h4 {font-size: 18px;}
+
 </style>
 
 <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
