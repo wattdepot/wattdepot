@@ -6,4 +6,4 @@ There may be several architectural diagrams to illustrate different configuratio
 
 For reference purposes, here is an old architecture diagram to start with:
 
-<img class="img-responsive" src="http://wattdepot.googlecode.com/svn/wiki/WattDepotInput-1.0.png">
+<img class="img-responsive" src="https://raw.github.com/wattdepot/wattdepot/master/docs/overview/architecture.png">

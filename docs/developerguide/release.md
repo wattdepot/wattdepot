@@ -18,8 +18,9 @@ features for the next big release.
 
     $ git checkout -b release-3.0.1 develop
 
-2. Update the version number, minor bug fixes, meta-data, etc.  Ensure that the release branch 
-passes all unit tests, checkstyle, findbugs, pmd, etc.
+2. Update the version number in the `pom.xml` file, minor bug fixes, meta-data, etc.  Ensure that the release branch 
+passes all unit tests, checkstyle, findbugs, pmd, etc. Don't forget to update the `Procfile` file to point to the
+new wattdepot-*version number*.jar file.
 
 3. Commit all the changes to the release branch.
 
