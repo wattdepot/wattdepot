@@ -1,5 +1,5 @@
 /**
- * UserGroupResource.java This file is part of WattDepot.
+ * MeasurementTypeResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -16,41 +16,42 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.common.httpapi;
+package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
+import org.restlet.resource.Post;
 import org.restlet.resource.Put;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.MeasurementType;
 
 /**
- * UserGroupResource - HTTP Interface for data model UserGroup.
+ * MeasurementTypeResource - HTTP Interface for data model MeasurementType.
  * 
  * @author Cam Moore
  * 
  */
-public interface UserGroupResource {
+public interface MeasurementTypeResource {
 
   /**
-   * Defines GET /wattdepot/{group_id}/usergroup/{usergroup_id} API call.
+   * Defines GET /wattdepot/measurementtype/{measurementtype_id} API call.
    * 
-   * @return The UserGroup with the given id. The id is sent in the request.
+   * @return The MeasurementType with the given id. The id is sent in the request.
    */
   @Get("json") // Use JSON as transport encoding.
-  public UserGroup retrieve();
+  public MeasurementType retrieve();
 
   /**
-   * Defines the PUT /wattdepot/{group_id}/usergroup/ API call.
+   * Defines the POST /wattdepot/measurementtype/{measurementtype_id} API call.
    * 
-   * @param usergroup
-   *          The UserGroup to store.
+   * @param measurementType
+   *          The MeasurementType to store.
    */
-  @Put
-  public void store(UserGroup usergroup);
+  @Post("json")
+  public void update(MeasurementType measurementType);
 
   /**
-   * Defined the DEL /wattdepot/{group_id}/usergroup/{usergroup_id} API call. The id is sent in the
-   * request.
+   * Defined the DEL /wattdepot/measurementtype/{measurementtype_id} API call. The id is sent
+   * in the request.
    */
   @Delete
   public void remove();

@@ -22,20 +22,22 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
+import org.wattdepot.common.http.api.SensorModelPutResource;
 import org.wattdepot.common.http.api.SensorModelResource;
 
 /**
- * SensorModelServerResource - Handles the SensorModel HTTP API
- * ("/wattdepot/sensormodel/", "/wattdepot/sensormodel/{sensormodel_id}").
+ * SensorModelServerResource - Handles the SensorModel HTTP PUT API
+ * ("/wattdepot/public/sensor-model/").
  * 
  * @author Cam Moore
  * 
  */
-public class SensorModelServerResource extends WattDepotServerResource implements
-    SensorModelResource {
+public class SensorModelPutServerResource extends WattDepotServerResource implements
+    SensorModelPutResource {
 
   /** The sensormodel_id from the request. */
   private String sensorModelId;
@@ -48,24 +50,7 @@ public class SensorModelServerResource extends WattDepotServerResource implement
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.sensorModelId = getAttribute("sensormodel_id");
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.restlet.SensorModelResource#retrieve()
-   */
-  @Override
-  public SensorModel retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/sensormodel/{" + sensorModelId + "}");
-    SensorModel model = null;
-    model = depot.getSensorModel(sensorModelId);
-    if (model == null) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "SensorModel " + sensorModelId
-          + " is not defined.");
-    }
-    return model;
+    this.sensorModelId = getAttribute(Labels.SENSOR_MODEL_ID);
   }
 
   /*
@@ -75,9 +60,8 @@ public class SensorModelServerResource extends WattDepotServerResource implement
    * .datamodel.SensorModel)
    */
   @Override
-  public void update(SensorModel sensormodel) {
-    getLogger().log(Level.INFO,
-        "POST /wattdepot/sensormodel/{" + sensorModelId + "} with " + sensormodel);
+  public void store(SensorModel sensormodel) {
+    getLogger().log(Level.INFO, "PUT /wattdepot/sensormodel/ with " + sensormodel);
     if (!depot.getSensorModelIds().contains(sensormodel.getId())) {
       try {
         depot.defineSensorModel(sensormodel.getName(), sensormodel.getProtocol(),
@@ -88,24 +72,7 @@ public class SensorModelServerResource extends WattDepotServerResource implement
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_CONFLICT, "Can't update unknown SensorModel.");
+      depot.updateSensorModel(sensormodel);
     }
   }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.restlet.SensorModelResource#remove()
-   */
-  @Override
-  public void remove() {
-    getLogger().log(Level.INFO, "DEL /wattdepot/sensormodel/{" + sensorModelId + "}");
-    try {
-      depot.deleteSensorModel(sensorModelId);
-    }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-    }
-  }
-
 }

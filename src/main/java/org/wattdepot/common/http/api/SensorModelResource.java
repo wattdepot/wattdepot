@@ -1,5 +1,5 @@
 /**
- * SensorLocationResource.java This file is part of WattDepot.
+ * SensorModelResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -16,41 +16,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.common.httpapi;
+package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
-import org.restlet.resource.Put;
-import org.wattdepot.common.domainmodel.SensorLocation;
+import org.restlet.resource.Post;
+import org.wattdepot.common.domainmodel.SensorModel;
 
 /**
- * LocationResource - HTTP Interface for data model Location.
+ * SensorModelResource - HTTP Interface for data model SensorModel.
  * 
  * @author Cam Moore
  * 
  */
-public interface SensorLocationResource {
+public interface SensorModelResource {
 
   /**
-   * Defines GET /wattdepot/{group_id}/location/{location_id} API call.
+   * Defines GET /wattdepot/sensormodel/{sensormodel_id} API call.
    * 
-   * @return The Location with the given id. The id is sent in the request.
+   * @return The SensorModel with the given id. The id is sent in the request.
    */
   @Get("json") // Use JSON as transport encoding.
-  public SensorLocation retrieve();
+  public SensorModel retrieve();
 
   /**
-   * Defines the PUT /wattdepot/{group_id}/location/ API call.
+   * Defines the PUT /wattdepot/sensormodel/ API call.
    * 
-   * @param sensorLocation
-   *          The Location to store.
+   * @param sensormodel
+   *          The SensorModel to store.
    */
-  @Put("json")
-  public void store(SensorLocation sensorLocation);
+  @Post("json")
+  public void update(SensorModel sensormodel);
 
   /**
-   * Defined the DEL /wattdepot/{group_id}/location/{location_id} API call. The id is sent
-   * in the request.
+   * Defined the DEL /wattdepot/sensormodel/{sensormodel_id} API call. The id is
+   * sent in the request.
    */
   @Delete
   public void remove();

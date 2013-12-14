@@ -34,6 +34,9 @@ public class UserGroup {
   public static final String ADMIN_GROUP_NAME = "admin";
   /** The admin user group. */
   public static final UserGroup ADMIN_GROUP = new UserGroup(ADMIN_GROUP_NAME);
+  
+  /** The public user group. All groups can see publicly owned objects. */
+  public static final UserGroup PUBLIC_GROUP = new UserGroup(Labels.PUBLIC);
 
   /** A unique id. */
   protected String id;
@@ -43,7 +46,7 @@ public class UserGroup {
   protected Set<UserInfo> users;
 
   static {
-    ADMIN_GROUP.add(UserInfo.ADMIN);
+    ADMIN_GROUP.add(UserInfo.ROOT);
   }
 
   /**

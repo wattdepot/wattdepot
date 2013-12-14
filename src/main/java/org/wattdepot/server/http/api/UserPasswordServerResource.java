@@ -25,7 +25,7 @@ import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
-import org.wattdepot.common.httpapi.UserPasswordResource;
+import org.wattdepot.common.http.api.UserPasswordResource;
 
 /**
  * UserPasswordServerResource - Handles the UserPassword HTTP API

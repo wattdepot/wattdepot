@@ -1,5 +1,5 @@
 /**
- * SensorModelResource.java This file is part of WattDepot.
+ * SensorGroupResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -16,40 +16,40 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.common.httpapi;
+package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Put;
-import org.wattdepot.common.domainmodel.SensorModel;
+import org.wattdepot.common.domainmodel.SensorGroup;
 
 /**
- * SensorModelResource - HTTP Interface for data model SensorModel.
+ * SensorGroupResource - HTTP Interface for data model SensorGroup.
  * 
  * @author Cam Moore
  * 
  */
-public interface SensorModelResource {
+public interface SensorGroupResource {
 
   /**
-   * Defines GET /wattdepot/sensormodel/{sensormodel_id} API call.
+   * Defines GET /wattdepot/sensorgroup/{sensorgroup_id} API call.
    * 
-   * @return The SensorModel with the given id. The id is sent in the request.
+   * @return The SensorGroup with the given id. The id is sent in the request.
    */
   @Get("json") // Use JSON as transport encoding.
-  public SensorModel retrieve();
+  public SensorGroup retrieve();
 
   /**
-   * Defines the PUT /wattdepot/sensormodel/ API call.
+   * Defines the PUT /wattdepot/sensorgroup/ API call.
    * 
-   * @param sensormodel
-   *          The SensorModel to store.
+   * @param sensorgroup
+   *          The SensorGroup to store.
    */
   @Put
-  public void store(SensorModel sensormodel);
+  public void store(SensorGroup sensorgroup);
 
   /**
-   * Defined the DEL /wattdepot/sensormodel/{sensormodel_id} API call. The id is
+   * Defined the DEL /wattdepot/sensorgroup/{sensorgroup_id} API call. The id is
    * sent in the request.
    */
   @Delete

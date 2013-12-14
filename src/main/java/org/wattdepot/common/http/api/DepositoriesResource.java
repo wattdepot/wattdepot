@@ -1,5 +1,5 @@
 /**
- * DepositoryValueResource.java This file is part of WattDepot.
+ * DepositoriesResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -16,28 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.common.httpapi;
-
-import java.util.List;
+package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.DepositoryList;
 
 /**
- * DepositorySensorsResource - HTTP Interface for getting the Sensors that have
- * contributed measurements to the Depository.
+ * LocationsResource - The HTTP API for Locations.
  * 
  * @author Cam Moore
  * 
  */
-public interface DepositorySensorsResource {
+public interface DepositoriesResource {
 
   /**
-   * Defines GET /wattdepot/{group_id}/depository/{depository_id}/sensors/ API call.
+   * Defines the GET /wattdepot/{group_id}/depositories/ API call.
    * 
-   * @return An ArrayList of the Sensors that have sent measurements to the depository.
+   * @return a List of the defined Locations.
    */
   @Get("json")
-  // Use JSON ast transport encoding.
-  public List<Sensor> retrieve();
+  public DepositoryList retrieve();
+
 }

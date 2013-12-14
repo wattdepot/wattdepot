@@ -27,7 +27,7 @@ import org.wattdepot.common.domainmodel.UserGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
-import org.wattdepot.common.httpapi.SensorLocationResource;
+import org.wattdepot.common.http.api.SensorLocationResource;
 
 /**
  * LocationResource - WattDepot 3 Location Resource handles the Location HTTP

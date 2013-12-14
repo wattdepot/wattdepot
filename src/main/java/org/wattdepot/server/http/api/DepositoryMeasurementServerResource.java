@@ -26,7 +26,7 @@ import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
-import org.wattdepot.common.httpapi.DepositoryMeasurementResource;
+import org.wattdepot.common.http.api.DepositoryMeasurementResource;
 
 /**
  * DepositoryMeasurementServerResource - Handles the Measurement HTTP API

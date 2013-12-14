@@ -29,7 +29,7 @@ import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
-import org.wattdepot.common.httpapi.UserInfoResource;
+import org.wattdepot.common.http.api.UserInfoResource;
 
 /**
  * UserInfoServerResource - Handles the UserInfo HTTP API

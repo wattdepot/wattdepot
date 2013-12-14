@@ -22,7 +22,7 @@ import java.util.logging.Level;
 
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.MeasurementTypeList;
-import org.wattdepot.common.httpapi.MeasurementTypesResource;
+import org.wattdepot.common.http.api.MeasurementTypesResource;
 
 /**
  * MeasurementTypesServerResource - ServerResource that handles the URI

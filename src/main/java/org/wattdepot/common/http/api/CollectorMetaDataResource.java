@@ -1,5 +1,5 @@
 /**
- * DepositoryMeasurementResource.java This file is part of WattDepot.
+ * CollectorMetaDataResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -16,35 +16,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.common.httpapi;
+package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Delete;
+import org.restlet.resource.Get;
 import org.restlet.resource.Put;
-import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.CollectorMetaData;
 
 /**
- * DepositoryMeasurementResource - HTTP Interface for storing, deleting, getting
- * a Measurement.
+ * SensorProcessResource - HTTP Interface for data process SensorProcess.
  * 
  * @author Cam Moore
  * 
  */
-public interface DepositoryMeasurementResource {
+public interface CollectorMetaDataResource {
 
   /**
-   * Defines PUT /wattdepot/{group_id}/depository/{depository_id}/measurement/
-   * API call.
+   * Defines GET /wattdepot/sensorprocess/{sensorprocess_id} API call.
    * 
-   * @param meas
-   *          The Measurement to store.
+   * @return The SensorProcess with the given id. The id is sent in the request.
+   */
+  @Get("json") // Use JSON as transport encoding.
+  public CollectorMetaData retrieve();
+
+  /**
+   * Defines the PUT /wattdepot/sensorprocess/ API call.
+   * 
+   * @param sensorprocess
+   *          The SensorProcess to store.
    */
   @Put
-  public void store(Measurement meas);
+  public void store(CollectorMetaData sensorprocess);
 
   /**
-   * Defined the DEL
-   * /wattdepot/{group_id}/depository/{depository_id}/measurement/ API call.
-   * 
+   * Defined the DEL /wattdepot/sensorprocess/{sensorprocess_id} API call. The
+   * id is sent in the request.
    */
   @Delete
   public void remove();

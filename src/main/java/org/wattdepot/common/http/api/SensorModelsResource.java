@@ -1,5 +1,5 @@
 /**
- * UserResource.java This file is part of WattDepot.
+ * SensorModelsResouce.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -16,43 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.common.httpapi;
+package org.wattdepot.common.http.api;
 
-import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
-import org.restlet.resource.Put;
-import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.domainmodel.SensorModelList;
 
 /**
- * UserResource - HTTP Interface for data model User.
- * 
+ * SensorModelsResouce - HTTP Interface for SensorModels.
+ *
  * @author Cam Moore
- * 
+ *
  */
-public interface UserInfoResource {
-
+public interface SensorModelsResource {
   /**
-   * Defines GET /wattdepot/user/{user_id} API call.
+   * Defines the GET /wattdepot/sensormodels/ API call.
    * 
-   * @return The User with the given id. The id is sent in the request.
+   * @return a List of the defined SensorModels.
    */
   @Get("json") // Use JSON as transport encoding.
-  public UserInfo retrieve();
+  public SensorModelList retrieve();
 
-  /**
-   * Defines the PUT /wattdepot/user/ API call.
-   * 
-   * @param user
-   *          The User to store.
-   */
-  @Put()
-  public void store(UserInfo user);
-
-  /**
-   * Defined the DEL /wattdepot/user/{user_id} API call. The id is sent in the
-   * request.
-   */
-  @Delete
-  public void remove();
 
 }

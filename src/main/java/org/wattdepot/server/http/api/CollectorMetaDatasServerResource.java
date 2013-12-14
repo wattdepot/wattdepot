@@ -22,7 +22,7 @@ import java.util.logging.Level;
 
 import org.wattdepot.common.domainmodel.CollectorMetaData;
 import org.wattdepot.common.domainmodel.CollectorMetaDataList;
-import org.wattdepot.common.httpapi.CollectorMetaDatasResource;
+import org.wattdepot.common.http.api.CollectorMetaDatasResource;
 
 /**
  * SensorProcessesServerResource - Handles the SensorProcesses HTTP API

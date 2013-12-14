@@ -1,5 +1,5 @@
 /**
- * CollectorMetaDataResource.java This file is part of WattDepot.
+ * UserGroupResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -16,41 +16,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.common.httpapi;
+package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Put;
-import org.wattdepot.common.domainmodel.CollectorMetaData;
+import org.wattdepot.common.domainmodel.UserGroup;
 
 /**
- * SensorProcessResource - HTTP Interface for data process SensorProcess.
+ * UserGroupResource - HTTP Interface for data model UserGroup.
  * 
  * @author Cam Moore
  * 
  */
-public interface CollectorMetaDataResource {
+public interface UserGroupResource {
 
   /**
-   * Defines GET /wattdepot/sensorprocess/{sensorprocess_id} API call.
+   * Defines GET /wattdepot/{group_id}/usergroup/{usergroup_id} API call.
    * 
-   * @return The SensorProcess with the given id. The id is sent in the request.
+   * @return The UserGroup with the given id. The id is sent in the request.
    */
   @Get("json") // Use JSON as transport encoding.
-  public CollectorMetaData retrieve();
+  public UserGroup retrieve();
 
   /**
-   * Defines the PUT /wattdepot/sensorprocess/ API call.
+   * Defines the PUT /wattdepot/{group_id}/usergroup/ API call.
    * 
-   * @param sensorprocess
-   *          The SensorProcess to store.
+   * @param usergroup
+   *          The UserGroup to store.
    */
   @Put
-  public void store(CollectorMetaData sensorprocess);
+  public void store(UserGroup usergroup);
 
   /**
-   * Defined the DEL /wattdepot/sensorprocess/{sensorprocess_id} API call. The
-   * id is sent in the request.
+   * Defined the DEL /wattdepot/{group_id}/usergroup/{usergroup_id} API call. The id is sent in the
+   * request.
    */
   @Delete
   public void remove();

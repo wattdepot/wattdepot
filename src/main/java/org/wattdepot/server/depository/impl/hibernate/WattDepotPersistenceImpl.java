@@ -19,6 +19,7 @@
 package org.wattdepot.server.depository.impl.hibernate;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -66,7 +67,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   public WattDepotPersistenceImpl(ServerProperties properties) {
     super();
     setServerProperties(properties);
-    UserPassword adminPassword = getUserPassword(UserInfo.ADMIN.getId());
+    UserPassword adminPassword = getUserPassword(UserInfo.ROOT.getId());
     if (getSessionClose() != getSessionOpen()) {
       throw new RuntimeException("opens and closed mismatched.");
     }
@@ -84,6 +85,28 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     }
     else {
       updateUserPassword(adminPassword);
+      if (getSessionClose() != getSessionOpen()) {
+        throw new RuntimeException("opens and closed mismatched.");
+      }
+    }
+    UserGroup pub = getUserGroup(UserGroup.PUBLIC_GROUP.getId());
+    if (getSessionClose() != getSessionOpen()) {
+      throw new RuntimeException("opens and closed mismatched.");
+    }
+    if (pub == null) {
+      try {
+        defineUserGroup(UserGroup.PUBLIC_GROUP.getId(), new HashSet<UserInfo>());
+        if (getSessionClose() != getSessionOpen()) {
+          throw new RuntimeException("opens and closed mismatched.");
+        }
+      }
+      catch (UniqueIdException e) {
+        // what do we do here?
+        e.printStackTrace();
+      }
+    }
+    else {
+      updateUserGroup(pub);
       if (getSessionClose() != getSessionOpen()) {
         throw new RuntimeException("opens and closed mismatched.");
       }
@@ -110,15 +133,15 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
         throw new RuntimeException("opens and closed mismatched.");
       }
     }
-    UserInfo adminUser = getUser(UserInfo.ADMIN.getId());
+    UserInfo adminUser = getUser(UserInfo.ROOT.getId());
     if (getSessionClose() != getSessionOpen()) {
       throw new RuntimeException("opens and closed mismatched.");
     }
     if (adminUser == null) {
       try {
-        defineUserInfo(UserInfo.ADMIN.getId(), UserInfo.ADMIN.getFirstName(),
-            UserInfo.ADMIN.getLastName(), UserInfo.ADMIN.getEmail(), UserInfo.ADMIN.getAdmin(),
-            UserInfo.ADMIN.getProperties());
+        defineUserInfo(UserInfo.ROOT.getId(), UserInfo.ROOT.getFirstName(),
+            UserInfo.ROOT.getLastName(), UserInfo.ROOT.getEmail(), UserInfo.ROOT.getAdmin(),
+            UserInfo.ROOT.getProperties());
         if (getSessionClose() != getSessionOpen()) {
           throw new RuntimeException("opens and closed mismatched.");
         }
@@ -129,7 +152,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       }
     }
     else {
-      updateUserInfo(UserInfo.ADMIN);
+      updateUserInfo(UserInfo.ROOT);
       if (getSessionClose() != getSessionOpen()) {
         throw new RuntimeException("opens and closed mismatched.");
       }

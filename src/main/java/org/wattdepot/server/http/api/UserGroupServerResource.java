@@ -25,11 +25,12 @@ import org.restlet.resource.ResourceException;
 import org.restlet.security.MemoryRealm;
 import org.restlet.security.Role;
 import org.restlet.security.User;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.UserGroup;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
-import org.wattdepot.common.httpapi.UserGroupResource;
+import org.wattdepot.common.http.api.UserGroupResource;
 
 /**
  * UserGroupServerResource - Handles the HTTP API
@@ -51,7 +52,7 @@ public class UserGroupServerResource extends WattDepotServerResource implements 
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.userGroupId = getAttribute("usergroup_id");
+    this.userGroupId = getAttribute(Labels.USER_GROUP_ID);
   }
 
   /*

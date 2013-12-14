@@ -1,5 +1,5 @@
 /**
- * DepositoriesResource.java This file is part of WattDepot.
+ * UsersResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -16,25 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.common.httpapi;
+package org.wattdepot.common.http.api;
+
+import java.util.ArrayList;
 
 import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.DepositoryList;
+import org.wattdepot.common.domainmodel.UserInfo;
 
 /**
- * LocationsResource - The HTTP API for Locations.
+ * UsersResource - The HTTP API for Users.
  * 
  * @author Cam Moore
  * 
  */
-public interface DepositoriesResource {
+public interface UserInfosResource {
 
   /**
-   * Defines the GET /wattdepot/{group_id}/depositories/ API call.
+   * Defines the GET /wattdepot/users/ API call.
    * 
-   * @return a List of the defined Locations.
+   * @return a List of the defined Users.
    */
-  @Get("json")
-  public DepositoryList retrieve();
+  @Get("json") // Use JSON as transport encoding.
+  public ArrayList<UserInfo> retrieve();
 
 }

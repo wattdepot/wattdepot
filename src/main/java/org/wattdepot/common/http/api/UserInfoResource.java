@@ -1,5 +1,5 @@
 /**
- * SensorResource.java This file is part of WattDepot.
+ * UserResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -16,41 +16,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.common.httpapi;
+package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Put;
-import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.UserInfo;
 
 /**
- * SensorResource - HTTP Interface for data model Sensor.
+ * UserResource - HTTP Interface for data model User.
  * 
  * @author Cam Moore
  * 
  */
-public interface SensorResource {
+public interface UserInfoResource {
 
   /**
-   * Defines GET /wattdepot/sensor/{sensor_id} API call.
+   * Defines GET /wattdepot/user/{user_id} API call.
    * 
-   * @return The Sensor with the given id. The id is sent in the request.
+   * @return The User with the given id. The id is sent in the request.
    */
   @Get("json") // Use JSON as transport encoding.
-  public Sensor retrieve();
+  public UserInfo retrieve();
 
   /**
-   * Defines the PUT /wattdepot/sensor/ API call.
+   * Defines the PUT /wattdepot/user/ API call.
    * 
-   * @param sensor
-   *          The Sensor to store.
+   * @param user
+   *          The User to store.
    */
-  @Put
-  public void store(Sensor sensor);
+  @Put()
+  public void store(UserInfo user);
 
   /**
-   * Defined the DEL /wattdepot/sensor/{sensor_id} API call. The id is sent
-   * in the request.
+   * Defined the DEL /wattdepot/user/{user_id} API call. The id is sent in the
+   * request.
    */
   @Delete
   public void remove();

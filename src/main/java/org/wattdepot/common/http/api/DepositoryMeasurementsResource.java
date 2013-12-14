@@ -1,5 +1,5 @@
 /**
- * MeasurementTypesResource.java This file is part of WattDepot.
+ * DepositoryValueResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -16,25 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.common.httpapi;
+package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.MeasurementTypeList;
+import org.wattdepot.common.domainmodel.MeasurementList;
 
 /**
- * MeasurementTypesResource - The HTTP API for MeasurementTypes.
+ * DepositorySensorsResource - HTTP Interface for getting the Measurements in
+ * the Depository.
  * 
  * @author Cam Moore
  * 
  */
-public interface MeasurementTypesResource {
+public interface DepositoryMeasurementsResource {
 
   /**
-   * Defines the GET /wattdepot/measurementtypes/ API call.
+   * Defines GET /wattdepot/{group_id}/depository/{depository_id}/measurements/ API call.
    * 
-   * @return a List of the defined MeasurementTypes.
+   * @return An ArrayList of the Measurements that have sent measurements to the
+   *         depository.
    */
-  @Get("json")  // Use JSON as transport encoding.
-  public MeasurementTypeList retrieve();
-
+  @Get("json")
+  // Use JSON as transport encoding.
+  public MeasurementList retrieve();
 }

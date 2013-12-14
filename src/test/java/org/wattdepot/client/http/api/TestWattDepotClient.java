@@ -118,24 +118,20 @@ public class TestWattDepotClient {
     ClientProperties properties = new ClientProperties();
     this.logger = WattDepotLogger.getLogger("org.wattdepot.client",
         properties.get(ClientProperties.CLIENT_HOME_DIR));
-    WattDepotLogger.setLoggingLevel(logger,
-        properties.get(ClientProperties.LOGGING_LEVEL_KEY));
+    WattDepotLogger.setLoggingLevel(logger, properties.get(ClientProperties.LOGGING_LEVEL_KEY));
     logger.finest("setUp()");
     ClientProperties props = new ClientProperties();
     props.setTestProperties();
-    this.serverURL = "http://"
-        + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
+    this.serverURL = "http://" + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
         + props.get(ClientProperties.PORT_KEY) + "/";
     logger.finest(serverURL);
-    admin = new WattDepotAdminClient(serverURL,
-        props.get(ClientProperties.USER_NAME),
+    admin = new WattDepotAdminClient(serverURL, props.get(ClientProperties.USER_NAME),
         props.get(ClientProperties.USER_PASSWORD));
     admin.putUserPassword(testPassword);
     admin.putUser(testUser);
     admin.putUserGroup(testGroup);
     admin.putMeasurementType(InstanceFactory.getMeasurementType());
-    test = new WattDepotClient(serverURL, testPassword.getId(),
-        testPassword.getPlainText());
+    test = new WattDepotClient(serverURL, testPassword.getId(), testPassword.getPlainText());
     test.isHealthy();
     test.getWattDepotUri();
   }
@@ -148,7 +144,9 @@ public class TestWattDepotClient {
   public void tearDown() throws Exception {
     logger.finest("tearDown()");
     admin.deleteUser(testPassword.getId());
+    String groupid = testGroup.getId();
     admin.deleteUserGroup(testGroup.getId());
+    admin.deleteUserPassword(testUser.getId());
   }
 
   /**
@@ -172,8 +170,8 @@ public class TestWattDepotClient {
       fail("We used good credentials");
     }
     try {
-      WattDepotClient bad = new WattDepotClient("http://localhost",
-          testPassword.getId(), testPassword.getPlainText());
+      WattDepotClient bad = new WattDepotClient("http://localhost", testPassword.getId(),
+          testPassword.getPlainText());
       fail(bad + " should not exist.");
     }
     catch (IllegalArgumentException e) {
@@ -183,8 +181,8 @@ public class TestWattDepotClient {
       fail("We used good credentials");
     }
     try {
-      WattDepotClient bad = new WattDepotClient(serverURL,
-          testPassword.getId(), testPassword.getEncryptedPassword());
+      WattDepotClient bad = new WattDepotClient(serverURL, testPassword.getId(),
+          testPassword.getEncryptedPassword());
       fail(bad + " should not exist.");
     }
     catch (BadCredentialException e) {
@@ -214,7 +212,13 @@ public class TestWattDepotClient {
       assertEquals(depo, ret);
       ret.setSlug("new_slug");
       // update instance (UPDATE)
-      test.updateDepository(ret);
+      try {
+        test.updateDepository(ret);
+        fail("Can't update depository.");
+      }
+      catch (Exception e) {
+        // expected.
+      }
       list = test.getDepositories();
       assertTrue(list.getDepositories().size() == 1);
       // delete instance (DELETE)
@@ -232,8 +236,7 @@ public class TestWattDepotClient {
     }
 
     // error conditions
-    Depository bogus = new Depository("bogus", depo.getMeasurementType(),
-        depo.getOwner());
+    Depository bogus = new Depository("bogus", depo.getMeasurementType(), depo.getOwner());
     try {
       test.deleteDepository(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -285,9 +288,8 @@ public class TestWattDepotClient {
       fail("Should have " + loc);
     }
     // error conditions
-    SensorLocation bogus = new SensorLocation("bogus", loc.getLatitude(),
-        loc.getLongitude(), loc.getAltitude(), loc.getDescription(),
-        loc.getOwner());
+    SensorLocation bogus = new SensorLocation("bogus", loc.getLatitude(), loc.getLongitude(),
+        loc.getAltitude(), loc.getDescription(), loc.getOwner());
     try {
       test.deleteLocation(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -304,7 +306,14 @@ public class TestWattDepotClient {
   public void testMeasurementType() {
     MeasurementType type = InstanceFactory.getMeasurementType();
     // Put new instance (CREATE)
-    test.putMeasurementType(type);
+    try {
+      test.putMeasurementType(type);
+      fail("Test User should not be able to put a Public Measurement Type.");
+    }
+    catch (Exception e) {
+      // expected since test isn't admin.
+      admin.putMeasurementType(type);
+    }
     // Get list
     MeasurementTypeList list = test.getMeasurementTypes();
     int numTypes = list.getMeasurementTypes().size();
@@ -315,17 +324,31 @@ public class TestWattDepotClient {
       assertEquals(type, ret);
       ret.setUnits("W");
       // update instance (UPDATE)
-      test.updateMeasurementType(ret);
+      try {
+        test.updateMeasurementType(ret);
+        fail("Test User should not be able to update a Public Measurement Type.");
+      }
+      catch (Exception e) {
+        // expected
+        admin.updateMeasurementType(ret);
+      }
       list = test.getMeasurementTypes();
       assertNotNull(list);
-      assertTrue("Expecting " + numTypes + " got "
-          + list.getMeasurementTypes().size(), list.getMeasurementTypes()
-          .size() == numTypes);
+      assertTrue("Expecting " + numTypes + " got " + list.getMeasurementTypes().size(), list
+          .getMeasurementTypes().size() == numTypes);
       // delete instance (DELETE)
-      test.deleteMeasurementType(ret);
+      try {
+        test.deleteMeasurementType(ret);
+        fail("Test User should not be able to delete a Public Measurement Type.");
+      }
+      catch (Exception e) {
+        // expected.
+        admin.deleteMeasurementType(ret);
+      }
       try {
         ret = test.getMeasurementType(type.getId());
         assertNull(ret);
+        fail("Shouldn't get anything.");
       }
       catch (IdNotFoundException e) {
         // this is what we want.
@@ -336,8 +359,7 @@ public class TestWattDepotClient {
     }
 
     // error conditions
-    MeasurementType bogus = new MeasurementType("bogus_meas_type",
-        Unit.valueOf("dyn"));
+    MeasurementType bogus = new MeasurementType("bogus_meas_type", Unit.valueOf("dyn"));
     try {
       test.deleteMeasurementType(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -386,8 +408,8 @@ public class TestWattDepotClient {
       fail("Should have " + sensor);
     }
     // error conditions
-    Sensor bogus = new Sensor("bogus", sensor.getUri(),
-        sensor.getSensorLocation(), sensor.getModel(), sensor.getOwner());
+    Sensor bogus = new Sensor("bogus", sensor.getUri(), sensor.getSensorLocation(),
+        sensor.getModel(), sensor.getOwner());
     try {
       test.deleteSensor(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -435,8 +457,7 @@ public class TestWattDepotClient {
       fail("Should have " + group);
     }
     // error conditions
-    SensorGroup bogus = new SensorGroup("bogus", group.getSensors(),
-        group.getOwner());
+    SensorGroup bogus = new SensorGroup("bogus", group.getSensors(), group.getOwner());
     try {
       test.deleteSensorGroup(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -485,8 +506,8 @@ public class TestWattDepotClient {
       fail("Should have " + model);
     }
     // error conditions
-    SensorModel bogus = new SensorModel("bogus", model.getProtocol(),
-        model.getType(), model.getVersion());
+    SensorModel bogus = new SensorModel("bogus", model.getProtocol(), model.getType(),
+        model.getVersion());
     try {
       test.deleteSensorModel(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -558,29 +579,25 @@ public class TestWattDepotClient {
       test.putMeasurement(depo, m1);
       test.putMeasurement(depo, m3);
       Double val = test.getValue(depo, m1.getSensor(), m1.getDate());
-      assertTrue("Got " + val + " was expecting " + m1.getValue(), m1
-          .getValue().equals(val));
+      assertTrue("Got " + val + " was expecting " + m1.getValue(), m1.getValue().equals(val));
       val = test.getValue(depo, m2.getSensor(), m2.getDate());
-      assertTrue("Got " + val + " was expecting " + m1.getValue(), m1
-          .getValue().equals(val));
+      assertTrue("Got " + val + " was expecting " + m1.getValue(), m1.getValue().equals(val));
       // Get list
-      MeasurementList list = test.getMeasurements(depo, m1.getSensor(),
-          m1.getDate(), m3.getDate());
+      MeasurementList list = test.getMeasurements(depo, m1.getSensor(), m1.getDate(), m3.getDate());
       assertNotNull(list);
 
-      assertTrue("expecting " + 2 + " got " + list.getMeasurements().size(),
-          list.getMeasurements().size() == 2);
+      assertTrue("expecting " + 2 + " got " + list.getMeasurements().size(), list.getMeasurements()
+          .size() == 2);
       assertTrue(list.getMeasurements().contains(m1));
       assertTrue(list.getMeasurements().contains(m3));
       test.putMeasurement(depo, m2);
       try {
         test.deleteMeasurement(depo, m1);
-        list = test.getMeasurements(depo, m1.getSensor(), m1.getDate(),
-            m3.getDate());
+        list = test.getMeasurements(depo, m1.getSensor(), m1.getDate(), m3.getDate());
         assertNotNull(list);
 
-        assertTrue("expecting " + 2 + " got " + list.getMeasurements().size(),
-            list.getMeasurements().size() == 2);
+        assertTrue("expecting " + 2 + " got " + list.getMeasurements().size(), list
+            .getMeasurements().size() == 2);
       }
       catch (IdNotFoundException e) {
         fail(m1 + " does exist in the depo");
@@ -605,8 +622,7 @@ public class TestWattDepotClient {
     catch (MeasurementTypeException e) {
       // this is what we expect.
     }
-    bogus = new Measurement(m1.getSensor(), new Date(), new Double(1.0),
-        Unit.valueOf("dyn"));
+    bogus = new Measurement(m1.getSensor(), new Date(), new Double(1.0), Unit.valueOf("dyn"));
     try {
       test.deleteMeasurement(depo, bogus);
       fail(bogus + " isn't in the depot");

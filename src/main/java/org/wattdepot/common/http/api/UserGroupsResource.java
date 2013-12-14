@@ -1,5 +1,5 @@
 /**
- * CollectorMetaDatasResouce.java This file is part of WattDepot.
+ * UserGroupsResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -16,24 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.common.httpapi;
+package org.wattdepot.common.http.api;
+
+import java.util.ArrayList;
 
 import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.CollectorMetaDataList;
+import org.wattdepot.common.domainmodel.UserGroup;
 
 /**
- * SensorProcessesResouce - HTTP Interface for SensorProcesses.
+ * UserGroupsResource - The HTTP API for UserGroups.
  * 
  * @author Cam Moore
  * 
  */
-public interface CollectorMetaDatasResource {
+public interface UserGroupsResource {
+
   /**
-   * Defines the GET /wattdepot/sensorprocesses/ API call.
+   * Defines the GET /wattdepot/usergroups/ API call.
    * 
-   * @return a List of the defined SensorProcesses.
+   * @return a List of the defined UserGroups.
    */
   @Get("json") // Use JSON as transport encoding.
-  public CollectorMetaDataList retrieve();
+  public ArrayList<UserGroup> retrieve();
 
 }

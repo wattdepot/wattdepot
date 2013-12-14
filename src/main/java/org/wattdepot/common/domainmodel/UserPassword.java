@@ -31,7 +31,7 @@ public class UserPassword {
   public static final String ADMIN_USER_PASSWORD = "wattdepot-server.admin.password";
   
   /** The password for the admin user. */
-  public static final UserPassword ADMIN = new UserPassword(UserInfo.ADMIN.getId(), "admin");
+  public static final UserPassword ADMIN = new UserPassword(UserInfo.ROOT.getId(), "admin");
   private String id;
   private String encryptedPassword;
   private String plainText;

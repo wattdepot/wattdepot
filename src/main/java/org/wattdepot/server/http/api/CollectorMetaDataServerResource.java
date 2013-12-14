@@ -27,7 +27,7 @@ import org.wattdepot.common.domainmodel.UserGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
-import org.wattdepot.common.httpapi.CollectorMetaDataResource;
+import org.wattdepot.common.http.api.CollectorMetaDataResource;
 
 /**
  * CollectorMetaDataServerResource - Handles the CollectorMetaData HTTP API

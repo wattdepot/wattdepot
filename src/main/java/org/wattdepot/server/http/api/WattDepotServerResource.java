@@ -20,6 +20,7 @@ package org.wattdepot.server.http.api;
 
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.server.WattDepotPersistence;
 
 /**
@@ -45,6 +46,6 @@ public class WattDepotServerResource extends ServerResource {
   protected void doInit() throws ResourceException {
     WattDepotApplication app = (WattDepotApplication) getApplication();
     this.depot = app.getDepot();
-    this.groupId = getAttribute("group_id");
+    this.groupId = getAttribute(Labels.GROUP_ID);
   }
 }

@@ -31,7 +31,7 @@ import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.exception.MeasurementGapException;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.exception.NoMeasurementException;
-import org.wattdepot.common.httpapi.DepositoryValueResource;
+import org.wattdepot.common.http.api.DepositoryValueResource;
 import org.wattdepot.common.util.DateConvert;
 import org.wattdepot.server.depository.impl.hibernate.DepositoryImpl;
 

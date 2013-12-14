@@ -27,7 +27,7 @@ import org.wattdepot.common.domainmodel.UserGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
-import org.wattdepot.common.httpapi.SensorGroupResource;
+import org.wattdepot.common.http.api.SensorGroupResource;
 
 /**
  * SensorGroupServerResource - Handles the SensorGroup HTTP API

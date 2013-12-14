@@ -1,5 +1,5 @@
 /**
- * SensorGroupsResouce.java This file is part of WattDepot.
+ * MeasurementTypePutResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -16,24 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.common.httpapi;
+package org.wattdepot.common.http.api;
 
-import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.SensorGroupList;
+import org.restlet.resource.Put;
+import org.wattdepot.common.domainmodel.MeasurementType;
 
 /**
- * SensorGroupsResouce - HTTP Interface for SensorGroups.
- * 
+ * MeasurementTypePutResource
+ *
  * @author Cam Moore
- * 
+ *
  */
-public interface SensorGroupsResource {
+public interface MeasurementTypePutResource {
+
   /**
-   * Defines the GET /wattdepot/sensorgroups/ API call.
+   * Defines the PUT /wattdepot/measurementtype/ API call.
    * 
-   * @return a List of the defined SensorGroups.
+   * @param measurementType
+   *          The MeasurementType to store.
    */
-  @Get("json") // Use JSON as transport encoding.
-  public SensorGroupList retrieve();
+  @Put("json")
+  public void store(MeasurementType measurementType);
+
 
 }

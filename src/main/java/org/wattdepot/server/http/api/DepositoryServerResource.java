@@ -23,11 +23,12 @@ import java.util.logging.Level;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.UserGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
-import org.wattdepot.common.httpapi.DepositoryResource;
+import org.wattdepot.common.http.api.DepositoryResource;
 
 /**
  * DepositoryServerResource - Handles Depository HTTP API
@@ -50,7 +51,7 @@ public class DepositoryServerResource extends WattDepotServerResource implements
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.depositoryId = getAttribute("depository_id");
+    this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);
   }
 
   /*
@@ -60,7 +61,8 @@ public class DepositoryServerResource extends WattDepotServerResource implements
    */
   @Override
   public Depository retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/depository/{" + depositoryId + "}");
+    getLogger().log(Level.INFO,
+        "GET /wattdepot/{" + groupId + "}/depository/{" + depositoryId + "}");
     Depository depo = null;
     try {
       depo = depot.getWattDeposiory(depositoryId, groupId);
@@ -82,16 +84,12 @@ public class DepositoryServerResource extends WattDepotServerResource implements
    * datamodel.Depository)
    */
   @Override
-  public void store(Depository depository) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/{" + groupId + "}/depository/ with " + depository);
+  public void update(Depository depository) {
+    getLogger().log(Level.INFO,
+        "POST /wattdepot/{" + groupId + "}/depository/{" + depositoryId + "} with " + depository);
     UserGroup owner = depot.getUserGroup(groupId);
     if (owner != null) {
-      try {
-        depot.defineWattDepository(depository.getName(), depository.getMeasurementType(), owner);
-      }
-      catch (UniqueIdException e) {
-        setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
-      }
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Can't update a Depository.");
     }
     else {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, groupId + " does not exist.");
@@ -105,7 +103,8 @@ public class DepositoryServerResource extends WattDepotServerResource implements
    */
   @Override
   public void remove() {
-    getLogger().log(Level.INFO, "DEL /wattdepot/{" + groupId + "}/depository/{" + depositoryId + "}");
+    getLogger().log(Level.INFO,
+        "DEL /wattdepot/{" + groupId + "}/depository/{" + depositoryId + "}");
     try {
       depot.deleteWattDepository(depositoryId, groupId);
     }

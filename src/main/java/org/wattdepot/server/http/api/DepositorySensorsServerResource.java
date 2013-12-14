@@ -26,7 +26,7 @@ import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
-import org.wattdepot.common.httpapi.DepositorySensorsResource;
+import org.wattdepot.common.http.api.DepositorySensorsResource;
 
 /**
  * DepositorySensorsServerResource - Handles the Depository sensors HTTP API

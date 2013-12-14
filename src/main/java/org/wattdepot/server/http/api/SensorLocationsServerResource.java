@@ -22,7 +22,7 @@ import java.util.logging.Level;
 
 import org.wattdepot.common.domainmodel.SensorLocation;
 import org.wattdepot.common.domainmodel.SensorLocationList;
-import org.wattdepot.common.httpapi.SensorLocationsResource;
+import org.wattdepot.common.http.api.SensorLocationsResource;
 
 /**
  * LocationsServerResource - ServerResource that handles the URI

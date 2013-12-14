@@ -1,5 +1,5 @@
 /**
- * SensorsResouce.java This file is part of WattDepot.
+ * SensorModelResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -16,24 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.common.httpapi;
+package org.wattdepot.common.http.api;
 
-import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.SensorList;
+import org.restlet.resource.Put;
+import org.wattdepot.common.domainmodel.SensorModel;
 
 /**
- * SensorsResouce - HTTP Interface for Sensors.
+ * SensorModelResource - HTTP Interface for data model SensorModel.
  * 
  * @author Cam Moore
  * 
  */
-public interface SensorsResource {
+public interface SensorModelPutResource {
+
   /**
-   * Defines the GET /wattdepot/sensors/ API call.
+   * Defines the PUT /wattdepot/sensormodel/ API call.
    * 
-   * @return a List of the defined Sensors.
+   * @param sensormodel
+   *          The SensorModel to store.
    */
-  @Get("json") // Use JSON as transport encoding.
-  public SensorList retrieve();
+  @Put
+  public void store(SensorModel sensormodel);
 
 }

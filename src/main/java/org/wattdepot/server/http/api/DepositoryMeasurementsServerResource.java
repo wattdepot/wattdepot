@@ -31,7 +31,7 @@ import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementList;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
-import org.wattdepot.common.httpapi.DepositoryMeasurementsResource;
+import org.wattdepot.common.http.api.DepositoryMeasurementsResource;
 import org.wattdepot.common.util.DateConvert;
 
 /**
