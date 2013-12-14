@@ -20,6 +20,7 @@ package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
+import org.restlet.resource.Post;
 import org.restlet.resource.Put;
 import org.wattdepot.common.domainmodel.Sensor;
 
@@ -32,7 +33,7 @@ import org.wattdepot.common.domainmodel.Sensor;
 public interface SensorResource {
 
   /**
-   * Defines GET /wattdepot/sensor/{sensor_id} API call.
+   * Defines GET /wattdepot/sensor/{sensor-id} API call.
    * 
    * @return The Sensor with the given id. The id is sent in the request.
    */
@@ -49,7 +50,16 @@ public interface SensorResource {
   public void store(Sensor sensor);
 
   /**
-   * Defined the DEL /wattdepot/sensor/{sensor_id} API call. The id is sent
+   * Defines the POST /wattdepot/sensor/{sensor-id} API call.
+   * 
+   * @param sensor
+   *          The Sensor to update.
+   */
+  @Post
+  public void update(Sensor sensor);
+
+  /**
+   * Defined the DEL /wattdepot/sensor/{sensor-id} API call. The id is sent
    * in the request.
    */
   @Delete

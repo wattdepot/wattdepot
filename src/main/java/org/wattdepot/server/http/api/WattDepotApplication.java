@@ -172,46 +172,32 @@ public class WattDepotApplication extends Application {
     router.attach(API.ADMIN_URI, AdminServerResource.class);
     router.attach(API.DEPOSITORY_PUT_URI, DepositoryPutServerResource.class);
     router.attach(API.DEPOSITORY_URI, DepositoryServerResource.class);
-    router.attach(API.MEASUREMENT_PUT_URI, DepositoryMeasurementServerResource.class);
+    router.attach(API.MEASUREMENT_PUT_URI, DepositoryMeasurementPutServerResource.class);
     router.attach(API.MEASUREMENT_URI, DepositoryMeasurementServerResource.class);
     router.attach(API.MEASUREMENTS_URI, DepositoryMeasurementsServerResource.class);
     router.attach(API.DEPOSITORY_SENSORS_URI, DepositorySensorsServerResource.class);
     router.attach(API.MEASUREMENTS_GVIZ_URI, GvizDepositoryMeasurementsServerResource.class);
     router.attach(API.VALUE_URI, DepositoryValueServerResource.class);
-    router.attach(API.DEPOSITORIES_URI, DepositoriesServerResource.class); 
+    router.attach(API.DEPOSITORIES_URI, DepositoriesServerResource.class);
     router.attach(API.VALUE_GVIZ_URI, GvizDepositoryValueServerResource.class);
-    router.attach("/wattdepot/{group-id}/location/", SensorLocationServerResource.class);
-    router.attach("/wattdepot/{group-id}/location/{location_id}",
-        SensorLocationServerResource.class);
-    router.attach("/wattdepot/{group-id}/locations/", SensorLocationsServerResource.class);
-    router.attach("/wattdepot/{group-id}/sensor-group/", SensorGroupServerResource.class);
-    router.attach("/wattdepot/{group-id}/sensor-group/{sensorgroup-id}",
-        SensorGroupServerResource.class);
-    router.attach("/wattdepot/{group_id}/depositories/", DepositoriesServerResource.class);
-    router.attach("/wattdepot/{group_id}/location/", SensorLocationServerResource.class);
-    router.attach("/wattdepot/{group_id}/location/{location_id}",
-        SensorLocationServerResource.class);
-    router.attach("/wattdepot/{group_id}/locations/", SensorLocationsServerResource.class);
-    router.attach("/wattdepot/{group_id}/sensorgroup/", SensorGroupServerResource.class);
-    router.attach("/wattdepot/{group_id}/sensorgroup/{sensorgroup_id}",
-        SensorGroupServerResource.class);
-    router.attach("/wattdepot/{group-id}/sensor-groups/", SensorGroupsServerResource.class);
-    router.attach("/wattdepot/{group-id}/collector-metadata/",
-        CollectorMetaDataServerResource.class);
-    router.attach("/wattdepot/{group-id}/collector-metadata/{collectormetadata_id}",
-        CollectorMetaDataServerResource.class);
-    router.attach("/wattdepot/{group-id}/collector-metadatas/",
-        CollectorMetaDatasServerResource.class);
-    router.attach("/wattdepot/{group-id}/sensor/", SensorServerResource.class);
-    router.attach("/wattdepot/{group-id}/sensor/{sensor_id}", SensorServerResource.class);
-    router.attach("/wattdepot/{group-id}/sensors/", SensorsServerResource.class);
-    router.attach("/wattdepot/{group-id}/user/{user_id}", UserInfoServerResource.class);
-    router
-        .attach("/wattdepot/{group-id}/user-password/{user_id}", UserPasswordServerResource.class);
-    router.attach("/wattdepot/{group-id}/user-group/", UserGroupServerResource.class);
-    router
-        .attach("/wattdepot/{group-id}/user-group/{user-group-id}", UserGroupServerResource.class);
-    router.attach("/wattdepot/{group-id}/user-groups/", UserGroupsServerResource.class);
+    router.attach(API.SENSOR_LOCATION_PUT_URI, SensorLocationPutServerResource.class);
+    router.attach(API.SENSOR_LOCATION_URI, SensorLocationServerResource.class);
+    router.attach(API.SENSOR_LOCATIONS_URI, SensorLocationsServerResource.class);
+    router.attach(API.SENSOR_GROUP_PUT_URI, SensorGroupPutServerResource.class);
+    router.attach(API.SENSOR_GROUP_URI, SensorGroupServerResource.class);
+    router.attach(API.SENSOR_GROUPS_URI, SensorGroupsServerResource.class);
+    router.attach(API.DEPOSITORIES_URI, DepositoriesServerResource.class);
+    router.attach(API.COLLECTOR_META_DATA_PUT_URI, CollectorMetaDataServerResource.class);
+    router.attach(API.COLLECTOR_META_DATA_URI, CollectorMetaDataServerResource.class);
+    router.attach(API.COLLECTOR_META_DATAS_URI, CollectorMetaDatasServerResource.class);
+    router.attach(API.SENSOR_PUT_URI, SensorServerResource.class);
+    router.attach(API.SENSOR_URI, SensorServerResource.class);
+    router.attach(API.SENSORS_URI, SensorsServerResource.class);
+    router.attach(API.USER_URI, UserInfoServerResource.class);
+    router.attach(API.USER_PASSWORD_URI, UserPasswordServerResource.class);
+    router.attach(API.USER_GROUP_PUT_URI, UserGroupServerResource.class);
+    router.attach(API.USER_GROUP_URI, UserGroupServerResource.class);
+    router.attach(API.USER_GROUPS_URI, UserGroupsServerResource.class);
 
     ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(),
         ChallengeScheme.HTTP_BASIC, "WattDepot Realm");

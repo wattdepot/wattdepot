@@ -22,6 +22,7 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
@@ -48,7 +49,7 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.typeSlug = getAttribute("measurement_type_id");
+    this.typeSlug = getAttribute(Labels.MEASUREMENT_TYPE_ID);
   }
 
   /*

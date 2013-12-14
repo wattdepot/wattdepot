@@ -22,6 +22,7 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.UserGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -48,7 +49,7 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.sensorId = getAttribute("sensor_id");
+    this.sensorId = getAttribute(Labels.SENSOR_ID);
   }
 
   /*
@@ -76,8 +77,7 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.restlet.SensorResource#store(org.wattdepot.datamodel.Sensor
-   * )
+   * org.wattdepot.restlet.SensorResource#store(org.wattdepot.datamodel.Sensor )
    */
   @Override
   public void store(Sensor sensor) {
@@ -121,6 +121,36 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
     }
     catch (MissMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.common.http.api.SensorResource#update(org.wattdepot.common
+   * .domainmodel.Sensor)
+   */
+  @Override
+  public void update(Sensor sensor) {
+    getLogger().log(Level.INFO,
+        "POST /wattdepot/{" + groupId + "}/sensor/{" + sensorId + "} with " + sensor);
+    UserGroup owner = depot.getUserGroup(groupId);
+    if (owner != null) {
+      if (sensorId.equals(sensor.getId())) {
+        if (depot.getSensorIds(groupId).contains(sensor.getId())) {
+          depot.updateSensor(sensor);
+        }
+        else {
+          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, sensor.getName() + " is not defined.");
+        }
+      }
+      else {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Ids do not match.");
+      }
+    }
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, groupId + " does not exist.");
     }
   }
 

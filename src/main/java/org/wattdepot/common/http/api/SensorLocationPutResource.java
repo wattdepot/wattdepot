@@ -18,9 +18,7 @@
  */
 package org.wattdepot.common.http.api;
 
-import org.restlet.resource.Delete;
-import org.restlet.resource.Get;
-import org.restlet.resource.Post;
+import org.restlet.resource.Put;
 import org.wattdepot.common.domainmodel.SensorLocation;
 
 /**
@@ -29,15 +27,7 @@ import org.wattdepot.common.domainmodel.SensorLocation;
  * @author Cam Moore
  * 
  */
-public interface SensorLocationResource {
-
-  /**
-   * Defines GET /wattdepot/{group_id}/location/{location_id} API call.
-   * 
-   * @return The Location with the given id. The id is sent in the request.
-   */
-  @Get("json") // Use JSON as transport encoding.
-  public SensorLocation retrieve();
+public interface SensorLocationPutResource {
 
   /**
    * Defines the PUT /wattdepot/{group_id}/location/ API call.
@@ -45,14 +35,7 @@ public interface SensorLocationResource {
    * @param sensorLocation
    *          The Location to store.
    */
-  @Post("json")
-  public void update(SensorLocation sensorLocation);
-
-  /**
-   * Defined the DEL /wattdepot/{group_id}/location/{location_id} API call. The id is sent
-   * in the request.
-   */
-  @Delete
-  public void remove();
+  @Put("json")
+  public void store(SensorLocation sensorLocation);
 
 }

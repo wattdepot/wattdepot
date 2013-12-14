@@ -28,6 +28,7 @@ import org.wattdepot.common.domainmodel.UserGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
+import org.wattdepot.common.http.api.SensorGroupPutResource;
 import org.wattdepot.common.http.api.SensorGroupResource;
 
 /**
@@ -38,8 +39,8 @@ import org.wattdepot.common.http.api.SensorGroupResource;
  * @author Cam Moore
  * 
  */
-public class SensorGroupServerResource extends WattDepotServerResource implements
-    SensorGroupResource {
+public class SensorGroupPutServerResource extends WattDepotServerResource implements
+    SensorGroupPutResource {
 
   /** The sensorgroup_id from the request. */
   private String sensorGroupId;
@@ -58,70 +59,32 @@ public class SensorGroupServerResource extends WattDepotServerResource implement
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.restlet.SensorGroupResource#retrieve()
-   */
-  @Override
-  public SensorGroup retrieve() {
-    getLogger().log(Level.INFO,
-        "GET /wattdepot/{" + groupId + "}/sensorgroup/{" + sensorGroupId + "}");
-    SensorGroup group = null;
-    try {
-      group = depot.getSensorGroup(sensorGroupId, groupId);
-    }
-    catch (MissMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
-    }
-    if (group == null) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "SensorGroup " + sensorGroupId
-          + " is not defined.");
-
-    }
-    return group;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see org.wattdepot.restlet.SensorGroupResource#store(org.wattdepot
    * .datamodel.SensorGroup)
    */
   @Override
-  public void update(SensorGroup sensorgroup) {
+  public void store(SensorGroup sensorgroup) {
     getLogger()
         .log(Level.INFO, "PUT /wattdepot/{" + groupId + "}/sensorgroup/ with " + sensorgroup);
     UserGroup owner = depot.getUserGroup(groupId);
     if (owner != null) {
-      if (depot.getSensorGroupIds(groupId).contains(sensorgroup.getId())) {
-        depot.updateSensorGroup(sensorgroup);
+      if (!depot.getSensorGroupIds(groupId).contains(sensorgroup.getId())) {
+        try {
+          depot.defineSensorGroup(sensorgroup.getName(), sensorgroup.getSensors(), owner);
+        }
+        catch (UniqueIdException e) {
+          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+        }
+        catch (MissMatchedOwnerException e) {
+          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+        }
       }
       else {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Can't update undefined SensorGroup "
-            + sensorgroup.getName());
+        depot.updateSensorGroup(sensorgroup);
       }
     }
     else {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, groupId + " does not exist.");
     }
   }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.restlet.SensorGroupResource#remove()
-   */
-  @Override
-  public void remove() {
-    getLogger().log(Level.INFO,
-        "DEL /wattdepot/{" + groupId + "}/sensorgroup/{" + sensorGroupId + "}");
-    try {
-      depot.deleteSensorGroup(sensorGroupId, groupId);
-    }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-    }
-    catch (MissMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-    }
-  }
-
 }

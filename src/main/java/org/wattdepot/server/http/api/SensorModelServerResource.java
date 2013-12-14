@@ -22,6 +22,7 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
@@ -48,7 +49,7 @@ public class SensorModelServerResource extends WattDepotServerResource implement
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.sensorModelId = getAttribute("sensormodel_id");
+    this.sensorModelId = getAttribute(Labels.SENSOR_MODEL_ID);
   }
 
   /*
@@ -78,14 +79,8 @@ public class SensorModelServerResource extends WattDepotServerResource implement
   public void update(SensorModel sensormodel) {
     getLogger().log(Level.INFO,
         "POST /wattdepot/sensormodel/{" + sensorModelId + "} with " + sensormodel);
-    if (!depot.getSensorModelIds().contains(sensormodel.getId())) {
-      try {
-        depot.defineSensorModel(sensormodel.getName(), sensormodel.getProtocol(),
-            sensormodel.getType(), sensormodel.getVersion());
-      }
-      catch (UniqueIdException e) {
-        setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
-      }
+    if (depot.getSensorModelIds().contains(sensormodel.getId())) {
+      depot.updateSensorModel(sensormodel);
     }
     else {
       setStatus(Status.CLIENT_ERROR_CONFLICT, "Can't update unknown SensorModel.");

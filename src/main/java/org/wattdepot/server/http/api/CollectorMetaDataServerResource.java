@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.CollectorMetaData;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.UserGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
@@ -31,8 +32,8 @@ import org.wattdepot.common.http.api.CollectorMetaDataResource;
 
 /**
  * CollectorMetaDataServerResource - Handles the CollectorMetaData HTTP API
- * (("/wattdepot/{group_id}/sensorprocess/",
- * "/wattdepot/{group_id}/sensorprocess/{sensorprocess_id}").
+ * (("/wattdepot/{group-id}/collector-metadata/",
+ * "/wattdepot/{group-id}/collector-metadata/{collector-metadata-id}").
  * 
  * @author Cam Moore
  * 
@@ -40,8 +41,8 @@ import org.wattdepot.common.http.api.CollectorMetaDataResource;
 public class CollectorMetaDataServerResource extends WattDepotServerResource implements
     CollectorMetaDataResource {
 
-  /** The sensorprocess_id from the request. */
-  private String sensorProcessId;
+  /** The collector-metadata_id from the request. */
+  private String metaDataId;
 
   /*
    * (non-Javadoc)
@@ -51,7 +52,7 @@ public class CollectorMetaDataServerResource extends WattDepotServerResource imp
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.sensorProcessId = getAttribute("collectormetadata_id");
+    this.metaDataId = getAttribute(Labels.COLLECTOR_META_DATA_ID);
   }
 
   /*
@@ -62,16 +63,16 @@ public class CollectorMetaDataServerResource extends WattDepotServerResource imp
   @Override
   public CollectorMetaData retrieve() {
     getLogger().log(Level.INFO,
-        "GET /wattdepot/{" + groupId + "}/collectormetadata/{" + sensorProcessId + "}");
+        "GET /wattdepot/{" + groupId + "}/collectormetadata/{" + metaDataId + "}");
     CollectorMetaData process = null;
     try {
-      process = depot.getCollectorMetaData(sensorProcessId, groupId);
+      process = depot.getCollectorMetaData(metaDataId, groupId);
     }
     catch (MissMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
     }
     if (process == null) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "CollectorMetaData " + sensorProcessId
+      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "CollectorMetaData " + metaDataId
           + " is not defined.");
     }
     return process;
@@ -84,15 +85,15 @@ public class CollectorMetaDataServerResource extends WattDepotServerResource imp
    * .datamodel.CollectorMetaData)
    */
   @Override
-  public void store(CollectorMetaData sensorprocess) {
+  public void store(CollectorMetaData metadata) {
     getLogger().log(Level.INFO,
-        "PUT /wattdepot/{" + groupId + "}/sensorprocess/ with " + sensorprocess);
+        "PUT /wattdepot/{" + groupId + "}/collector-metadata/ with " + metadata);
     UserGroup owner = depot.getUserGroup(groupId);
     if (owner != null) {
-      if (!depot.getCollectorMetaDataIds(groupId).contains(sensorprocess.getId())) {
+      if (!depot.getCollectorMetaDataIds(groupId).contains(metadata.getId())) {
         try {
-          depot.defineCollectorMetaData(sensorprocess.getName(), sensorprocess.getSensor(),
-              sensorprocess.getPollingInterval(), sensorprocess.getDepositoryId(), owner);
+          depot.defineCollectorMetaData(metadata.getName(), metadata.getSensor(),
+              metadata.getPollingInterval(), metadata.getDepositoryId(), owner);
         }
         catch (UniqueIdException e) {
           setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
@@ -102,7 +103,8 @@ public class CollectorMetaDataServerResource extends WattDepotServerResource imp
         }
       }
       else {
-        depot.updateCollectorMetaData(sensorprocess);
+        setStatus(Status.CLIENT_ERROR_CONFLICT, "CollectorMeta " + metadata.getName()
+            + " is already defined.");
       }
     }
     else {
@@ -118,15 +120,44 @@ public class CollectorMetaDataServerResource extends WattDepotServerResource imp
   @Override
   public void remove() {
     getLogger().log(Level.INFO,
-        "DEL /wattdepot/{" + groupId + "}/sensorprocess/{" + sensorProcessId + "}");
+        "DEL /wattdepot/{" + groupId + "}/collector-metadata/{" + metaDataId + "}");
     try {
-      depot.deleteCollectorMetaData(sensorProcessId, groupId);
+      depot.deleteCollectorMetaData(metaDataId, groupId);
     }
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
     }
     catch (MissMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.common.http.api.CollectorMetaDataResource#update(org.wattdepot
+   * .common.domainmodel.CollectorMetaData)
+   */
+  @Override
+  public void update(CollectorMetaData metadata) {
+    getLogger().log(
+        Level.INFO,
+        "POST /wattdepot/{" + groupId + "}/collector-metadata/{" + metaDataId + "} with "
+            + metadata);
+    UserGroup owner = depot.getUserGroup(groupId);
+    if (owner != null) {
+      if (metadata.getId().equals(metaDataId)) {
+        if (depot.getCollectorMetaDataIds(groupId).contains(metadata.getId())) {
+          depot.updateCollectorMetaData(metadata);
+        }
+      }
+      else {
+        setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "Ids do not match.");
+      }
+    }
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, groupId + " does not exist.");
     }
   }
 

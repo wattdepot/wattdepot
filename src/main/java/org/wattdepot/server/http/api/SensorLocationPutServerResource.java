@@ -28,6 +28,7 @@ import org.wattdepot.common.domainmodel.UserGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
+import org.wattdepot.common.http.api.SensorLocationPutResource;
 import org.wattdepot.common.http.api.SensorLocationResource;
 
 /**
@@ -38,8 +39,8 @@ import org.wattdepot.common.http.api.SensorLocationResource;
  * @author Cam Moore
  * 
  */
-public class SensorLocationServerResource extends WattDepotServerResource implements
-    SensorLocationResource {
+public class SensorLocationPutServerResource extends WattDepotServerResource implements
+    SensorLocationPutResource {
 
   private String locationId;
 
@@ -57,42 +58,27 @@ public class SensorLocationServerResource extends WattDepotServerResource implem
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.restlet.LocationResource#retrieve()
-   */
-  @Override
-  public SensorLocation retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/location/{" + locationId + "}");
-    SensorLocation loc = null;
-    try {
-      loc = depot.getLocation(locationId, groupId);
-    }
-    catch (MissMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
-    }
-    if (loc == null) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Location " + locationId
-          + " is not defined.");
-    }
-    return loc;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see org.wattdepot.restlet.LocationResource#store(org.wattdepot.datamodel
    * .Location)
    */
   @Override
-  public void update(SensorLocation sensorLocation) {
-    getLogger().log(Level.INFO,
-        "POST /wattdepot/{" + groupId + "}/location/ with " + sensorLocation);
+  public void store(SensorLocation sensorLocation) {
+    getLogger()
+        .log(Level.INFO, "PUT /wattdepot/{" + groupId + "}/location/ with " + sensorLocation);
     UserGroup owner = depot.getUserGroup(groupId);
     if (owner != null) {
-      if (depot.getLocationIds(groupId).contains(sensorLocation.getId())) {
-        depot.updateLocation(sensorLocation);
+      if (!depot.getLocationIds(groupId).contains(sensorLocation.getId())) {
+        try {
+          depot.defineLocation(sensorLocation.getName(), sensorLocation.getLatitude(),
+              sensorLocation.getLongitude(), sensorLocation.getAltitude(),
+              sensorLocation.getDescription(), owner);
+        }
+        catch (UniqueIdException e) {
+          setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+        }
       }
       else {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensorLocation.getName() + " is not defined.");
+        depot.updateLocation(sensorLocation);
       }
     }
     else {
@@ -100,22 +86,4 @@ public class SensorLocationServerResource extends WattDepotServerResource implem
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.restlet.LocationResource#remove()
-   */
-  @Override
-  public void remove() {
-    getLogger().log(Level.INFO, "DEL /wattdepot/{" + groupId + "}/location/{" + locationId + "}");
-    try {
-      depot.deleteLocation(locationId, groupId);
-    }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-    }
-    catch (MissMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-    }
-  }
 }

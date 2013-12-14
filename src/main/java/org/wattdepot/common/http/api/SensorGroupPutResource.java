@@ -20,7 +20,7 @@ package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
-import org.restlet.resource.Post;
+import org.restlet.resource.Put;
 import org.wattdepot.common.domainmodel.SensorGroup;
 
 /**
@@ -29,15 +29,7 @@ import org.wattdepot.common.domainmodel.SensorGroup;
  * @author Cam Moore
  * 
  */
-public interface SensorGroupResource {
-
-  /**
-   * Defines GET /wattdepot/sensorgroup/{sensorgroup_id} API call.
-   * 
-   * @return The SensorGroup with the given id. The id is sent in the request.
-   */
-  @Get("json") // Use JSON as transport encoding.
-  public SensorGroup retrieve();
+public interface SensorGroupPutResource {
 
   /**
    * Defines the PUT /wattdepot/sensorgroup/ API call.
@@ -45,14 +37,7 @@ public interface SensorGroupResource {
    * @param sensorgroup
    *          The SensorGroup to store.
    */
-  @Post
-  public void update(SensorGroup sensorgroup);
-
-  /**
-   * Defined the DEL /wattdepot/sensorgroup/{sensorgroup_id} API call. The id is
-   * sent in the request.
-   */
-  @Delete
-  public void remove();
+  @Put
+  public void store(SensorGroup sensorgroup);
 
 }

@@ -58,7 +58,7 @@ public class DepositoryValueServer extends WattDepotServerResource {
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.sensorId = getQuery().getValues(Labels.SENSOR_ID);
+    this.sensorId = getQuery().getValues(Labels.SENSOR);
     this.start = getQuery().getValues(Labels.START);
     this.end = getQuery().getValues(Labels.END);
     this.timestamp = getQuery().getValues(Labels.TIMESTAMP);

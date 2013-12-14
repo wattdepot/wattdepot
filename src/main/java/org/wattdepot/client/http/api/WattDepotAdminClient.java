@@ -104,8 +104,12 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
   public void deleteUserPassword(String id) throws IdNotFoundException {
     ClientResource client = makeClient(getGroupId() + "/" + Labels.USER_PASSWORD + "/" + id);
     UserPasswordResource resource = client.wrap(UserPasswordResource.class);
-    resource.remove();
-    client.release();
+    try {
+      resource.remove();
+    }
+    finally {
+      client.release();
+    }
   }
 
   /*

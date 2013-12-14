@@ -31,6 +31,12 @@ public class Labels {
   /** The label for a given CollectorMetaData. */
   public static final String COLLECTOR_META_DATA = "collector-metadata";
 
+  /** The label for the CollectorMetaData id. */
+  public static final String COLLECTOR_META_DATA_ID = "collector-metadata-id";
+
+  /** The label for the CollectorMetaData id variable. */
+  public static final String COLLECTOR_META_DATA_ID_VAR = "{" + COLLECTOR_META_DATA_ID + "}";
+
   /** The label for all CollectorMetaDatas. */
   public static final String COLLECTOR_META_DATAS = "collector-metadatas";
 
@@ -95,7 +101,7 @@ public class Labels {
   public static final String MEASUREMENT_TYPE_ID = "measurement-type-id";
 
   /** Label for the measurment type id. */
-  public static final String MEASUREMENT_TYPE_ID_VAR = "{" + MEASUREMENT_ID + "}";
+  public static final String MEASUREMENT_TYPE_ID_VAR = "{" + MEASUREMENT_TYPE_ID + "}";
 
   /** The label for all the MeasurementTypes. */
   public static final String MEASUREMENT_TYPES = "measurement-types";
@@ -169,8 +175,14 @@ public class Labels {
   /** Label for the user id. */
   public static final String USER_ID_VAR = "{" + USER_ID + "}";
 
-  /** The URI for manipulating a given UserGroup. */
+  /** The label for UserPassword. */
   public static final String USER_PASSWORD = "user-password";
+
+  /** Label for the user-password id. */
+  public static final String USER_PASSWORD_ID = "user-password-id";
+
+  /** Label for the user-password id variable. */
+  public static final String USER_PASSWORD_ID_VAR = "{" + USER_PASSWORD_ID + "}";
 
   /** The URI for manipulating a given UserInfo. */
   public static final String USERS = "users";

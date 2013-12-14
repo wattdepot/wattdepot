@@ -24,6 +24,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.restlet.security.MemoryRealm;
 import org.restlet.security.User;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.UserGroup;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
@@ -49,7 +50,7 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.userId = getAttribute("user_id");
+    this.userId = getAttribute(Labels.USER_ID);
   }
 
   /*

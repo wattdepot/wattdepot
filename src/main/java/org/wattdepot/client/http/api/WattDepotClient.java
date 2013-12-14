@@ -65,8 +65,10 @@ import org.wattdepot.common.http.api.DepositoryValueResource;
 import org.wattdepot.common.http.api.MeasurementTypePutResource;
 import org.wattdepot.common.http.api.MeasurementTypeResource;
 import org.wattdepot.common.http.api.MeasurementTypesResource;
+import org.wattdepot.common.http.api.SensorGroupPutResource;
 import org.wattdepot.common.http.api.SensorGroupResource;
 import org.wattdepot.common.http.api.SensorGroupsResource;
+import org.wattdepot.common.http.api.SensorLocationPutResource;
 import org.wattdepot.common.http.api.SensorLocationResource;
 import org.wattdepot.common.http.api.SensorLocationsResource;
 import org.wattdepot.common.http.api.SensorModelPutResource;
@@ -829,8 +831,8 @@ public class WattDepotClient implements WattDepotInterface {
    */
   @Override
   public void putLocation(SensorLocation loc) {
-    ClientResource client = makeClient(this.groupId + "/" + Labels.LOCATION + "/" + loc.getId());
-    SensorLocationResource resource = client.wrap(SensorLocationResource.class);
+    ClientResource client = makeClient(this.groupId + "/" + Labels.LOCATION + "/");
+    SensorLocationPutResource resource = client.wrap(SensorLocationPutResource.class);
     try {
       resource.store(loc);
     }
@@ -912,9 +914,8 @@ public class WattDepotClient implements WattDepotInterface {
    */
   @Override
   public void putSensorGroup(SensorGroup group) {
-    ClientResource client = makeClient(this.groupId + "/" + Labels.SENSOR_GROUP + "/"
-        + group.getId());
-    SensorGroupResource resource = client.wrap(SensorGroupResource.class);
+    ClientResource client = makeClient(this.groupId + "/" + Labels.SENSOR_GROUP + "/");
+    SensorGroupPutResource resource = client.wrap(SensorGroupPutResource.class);
     try {
       resource.store(group);
     }
@@ -931,8 +932,7 @@ public class WattDepotClient implements WattDepotInterface {
    */
   @Override
   public void putSensorModel(SensorModel model) {
-    ClientResource client = makeClient(Labels.PUBLIC + "/" + Labels.SENSOR_MODEL + "/"
-        + model.getId());
+    ClientResource client = makeClient(Labels.PUBLIC + "/" + Labels.SENSOR_MODEL + "/");
     SensorModelPutResource resource = client.wrap(SensorModelPutResource.class);
     try {
       resource.store(model);
@@ -951,7 +951,15 @@ public class WattDepotClient implements WattDepotInterface {
    */
   @Override
   public void updateCollectorMetaData(CollectorMetaData process) {
-    putCollectorMetaData(process);
+    ClientResource client = makeClient(this.groupId + "/" + Labels.COLLECTOR_META_DATA + "/"
+        + process.getId());
+    CollectorMetaDataResource resource = client.wrap(CollectorMetaDataResource.class);
+    try {
+      resource.update(process);
+    }
+    finally {
+      client.release();
+    }
   }
 
   /*
