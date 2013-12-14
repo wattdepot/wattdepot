@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<!--
+    Wattdepot-apps Single Page Application
+
+    Kendyll Doi, Christopher Foo, Dylan Kobayashi 2012
+-->
+<html>
+    <head>
+        <title>WattDepot-SPA</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <script type="text/javascript" src="js/jquery-1.8.1.js"></script>
+        <script type="text/javascript" src="js/bootstrap.js"></script>
+        <script type="text/javascript" src="js/org.wattdepot.client.js"></script>
+        <script type="text/javascript" src="js/bootstrap-datepicker.js"></script>
+        <script type="text/javascript" src="js/bootstrap-timepicker.js"></script>
+        <script type="text/javascript" src="js/wattdepot-spa.js"></script>
+        <script type="text/javascript" src="js/permalink.js"></script>
+        <script type="text/javascript" src="js/chosen.jquery.js"></script>
+        <script type="text/javascript" src="js/cookie.js"></script>
+        <script type='text/javascript' src='http://www.google.com/jsapi'></script>
+        <link href="css/bootstrap.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="css/bootstrap-responsive.css" type="text/css"/>
+        <link rel="stylesheet" href="css/datepicker.css" />
+        <link rel="stylesheet" href="css/timepicker.css" />
+        <link rel="stylesheet" href="css/chosen.css" />
+        <link rel="stylesheet" href="css/wattdepot-spa.css" type="text/css"/>
+        <!--Qunit test-->
+        <!--<link rel="stylesheet" href="css/qunit-1.10.0.css">-->
+
+        <script type="text/javascript">
+            // Strip off everything after "/spa" to end of line, but add trailing "/"
+            var defaultServer=location.href.replace(/\/spa.*$/, "") + "/";
+            
+            // We don't support IE yet...
+            if(navigator.appName == 'Microsoft Internet Explorer') {
+                alert("WattDepot-SPA does not support Microsoft Internet Explorer, it may not work.\nWe recommend using Google Chrome or Mozilla Firefox for best results.");
+            }
+            
+            // Load the Visualization API and Annotated Timeline visualization
+            google.load('visualization', '1', {
+                'packages':['annotatedtimeline']
+            });
+                       
+            // Set a callback to run when the API is loaded.
+            google.setOnLoadCallback(function() {
+                loaded = true;
+            });
+        </script>
+    </head>
+    <body onload="loadServer()">
+        <div class="container-fluid">
+            <div class="row-fluid navbar topbar">
+                <div class="span12">
+                    <div class="span1">
+                        <a class="brand" href="index.html"> <img src="img/WD-spa.png"></a>
+                    </div>
+                    <div class="span2">
+                        <h3>WattDepot-SPA</h3>
+                    </div>
+                    <div class="span8 spacefix">
+
+                        <div class="form-inline span12">
+                            <label class="control-label ">Server Address:</label>
+                            <input type="text" class="span4" id="serverAddress"/>
+                            <button class="btn btn-primary" type="button" id="loginSubmit" data-dismiss="modal" onclick="shAdd()">Submit</button>
+
+                            <div class="btn-group" id="serverHist">
+                                <a class="btn dropdown-toggle" data-toggle="dropdown">
+                                    Server History<i class="icon-book"></i>
+                                    <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a onclick="clearAddressHistory()">Clear History</a></li>
+                                    <li><a onclick="showServerHistoryCookies()">Show cookie list(Debug purposes only)</a></li>
+                                    <li class="divider">Always show wattdepot</li>
+                                    <div id="shDefault"></div>
+                                    <li class="divider">History</li>
+
+                                    <div id="shList"></div>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="span1">
+                        <!-- Unit test button, should appear on far right
+                        <a type="button" class="btn btn-small" href="#unitTest" data-toggle="modal"><i class="icon-wrench"></i></a> -->
+                        <a type="button" class="btn btn-small pull-right" href="https://code.google.com/p/wattdepot-spa/wiki/UserInstructions" target="_blank"><i class="icon-question-sign"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="row-fluid">
+<!--                <div class="modal fade" id="unitTest">
+                    <div class="modal-header">
+                        <a class="close" data-dismiss="modal">&times;</a>
+                        <h3>Unit Test</h3>
+                        <button id="utStartButton" class="btn btn-small btn-primary" onclick="startUT();">Load</button>
+                    </div>
+                    <div id="modalUT" class="modal-body" hidden>
+                        <div id="qunit">
+                            <script src="js/qunit-1.10.0.js"></script>
+                            <script src="js/spa-unit.js"></script>
+                        </div>
+                    </div>
+                </div> -->
+
+                <script>
+        
+                    //--------------------------------------------------------------------------------------------------------------
+                    ///Start mark off for flsendata
+                    //arrays for usage with sensor data first/last time.
+                    var sensorSourceName; //this will hold names of sources for the FIRST known data point.
+                    var sensorDivName; //this will hold the name of a div associated
+                    var sensorSourceNameLast; //again holds name of source for the LAST known data point.
+                    var sensorDivNameLast; //holds name of div associated.
+          
+                    //This function is used to store the source and what div id that will be modified.
+                    //uses the global variable declared above.
+                    //used for the first data sensor
+                    function setSensorSourceDivFirst( source, divLocation){
+                        var sourcematchfound = false;
+                        for(var i = 0; i < sensorSourceName.length; i++){
+                            if(sensorSourceName[i] == source){
+                                sourcematchfound = true;
+                                sensorDivName[i] = divLocation;
+                            }
+                        }
+                        if (!sourcematchfound){
+                            sensorSourceName.push(source);
+                            sensorDivName.push(divLocation);
+                        }
+                    }
+                    //this function will retrieve the div id that a source needs to be written to
+                    function getSensorSourceDivFirst( source){
+                        var sourcematchfound = false;
+                        for(var i = 0; i < sensorSourceName.length; i++){
+                            if(sensorSourceName[i] == source){
+                                return sensorDivName[i];
+                            }
+                        }
+                    }
+                    //This function is used to store the source and what div id that will be modified.
+                    //except this is for the last data sensor.
+                    function setSensorSourceDivLast( source, divLocation){
+                        var sourcematchfound = false;
+                        for(var i = 0; i < sensorSourceNameLast.length; i++){
+                            if(sensorSourceNameLast[i] == source){
+                                sourcematchfound = true;
+                                sensorDivNameLast[i] = divLocation;
+                            }
+                        }
+                        if (!sourcematchfound){
+                            sensorSourceNameLast.push(source);
+                            sensorDivNameLast.push(divLocation);
+                        }
+                    }
+                    //retrieves div location of last data sensor
+                    function getSensorSourceDivLast(source){
+                        var sourcematchfound = false;
+                        for(var i = 0; i < sensorSourceNameLast.length; i++){
+                            if(sensorSourceNameLast[i] == source){
+                                return sensorDivNameLast[i];
+                            }
+                        }
+                    }
+          
+                    //this function is called from onChange().
+                    //it will store the source name and div location, then call the wattdepot function to retrieve the value.
+                    function getFirstSensor(name, formid){
+                        if(sensorSourceName == null){
+                            sensorSourceName = new Array();
+                            sensorDivName = new Array();
+                        }
+                        setSensorSourceDivFirst(name, formid);
+                        wdClient.getSourceSummary(
+                        name,
+                        printFirstSensor,
+                        function(){
+                            $(getSensorSourceDivFirst(wdClient.getSourceNameFromLink(name))).append('<div>Could not retrieve</div>');
+                        });
+                    }
+                    //call back function passed to wattdepot.
+                    //when it gets the data it parses and then edits the div id associated with that source.
+                    function printFirstSensor(data){
+                        var firstsensordata = data['SourceSummary']['FirstSensorData'];  
+                        var tempnametest = data['SourceSummary']['Href'];
+                        var senDate = wdClient.convertTimestampToDate(firstsensordata);
+                        $(getSensorSourceDivFirst(wdClient.getSourceNameFromLink(tempnametest))).empty();
+                        $(getSensorSourceDivFirst(wdClient.getSourceNameFromLink(tempnametest))).append('<div>' + padWithZero(senDate.getHours()) + ':' + padWithZero(senDate.getMinutes()) + '--' + padWithZero((senDate.getMonth() + 1)) + '/'+ padWithZero(senDate.getDate()) + '/'+ senDate.getFullYear() + '</div>');
+                        return firstsensordata;
+                    }
+          
+                    //this function is called from onChange().
+                    //it will store the source name and div location, then call the wattdepot function to retrieve the value.
+                    function getLatestSensor(name, formid){
+                        if(sensorSourceNameLast == null){
+                            sensorSourceNameLast = new Array();
+                            sensorDivNameLast = new Array();
+                        }
+                        setSensorSourceDivLast(name, formid);
+                        wdClient.getSourceSummary(
+                        name,
+                        printLastSensor,
+                        function(){
+                            $(getSensorSourceDivLast(name)).append('<div>Could not retrieve</div>');
+                        });
+                    }
+                    //call back function passed to wattdepot.
+                    //when it gets the data it parses and then edits the div id associated with that source.s
+                    function printLastSensor(data){
+                        var lastsensordata =  data['SourceSummary']['LastSensorData']; 
+                        var tempnametest = data['SourceSummary']['Href'];
+                        var senDate = wdClient.convertTimestampToDate(lastsensordata);
+                        $(getSensorSourceDivLast(wdClient.getSourceNameFromLink(tempnametest))).empty();
+                        $(getSensorSourceDivLast(wdClient.getSourceNameFromLink(tempnametest))).append('<div>' + padWithZero(senDate.getHours()) + ':' + padWithZero(senDate.getMinutes()) + '--' + padWithZero((senDate.getMonth() + 1)) + '/'+ padWithZero(senDate.getDate()) + '/'+ senDate.getFullYear() + '</div>');
+                        return lastsensordata;
+                    }
+          
+                    //end flsendata
+                    //-----------------------------------------------------------------------------------------------------------------------
+          
+                    // Clear the fields.
+                    $('#loginClear').click(function () {
+                        $('#serverAddress').val("");
+                    });
+           
+                    // Get sources
+                    $('#loginSubmit').click(function () {
+                        // Get client
+                        wdClient = org.WattDepot.Client($('#serverAddress').val());
+
+                        // Get all sources
+                        getSources();
+                    });
+                </script>
+            </div>
+            <!-- END Login Window; BEGIN MAIN "FRAME"-->
+            <div class="row-fluid">
+                <div id="main">
+                    <!-- Default Landing for Visualizer -->
+                    <p id="visualizerLanding">
+                        Welcome to WattDepot Visualizer.<br />
+                        The page should load automatically...<br/>
+                        If it does not load and the textbox above is blank, please enable Javascript. <br />
+                        If the textbox is filled, please check that the server URL is valid and click the Submit button.
+                    </p>
+
+                    <!-- Visualizer Control Panel -->
+                    <div id="visualizerControlPanel" style="display: none">
+                        <div class="row-fluid" id="formLabels" style="display: none">
+                            <div class="span2">Show?</div>
+                            <div id="sourceNameDiv" class="span2">Data Type:</div>
+                            <div class="span7">                            
+                                <div class="span5">Start Time:</div>
+                                <div class="span5">End Time: </div>
+                                <div class="span2">Interval:</div>
+                            </div>
+
+                        </div>
+                        <div id="visualizerFormsDiv"></div>
+                        <div id="controlPanelButtonRow" class="row-fluid">
+                            <div class="span8 control-group"><button id="visualizeButton" class="span2 btn btn-primary" onclick="visualize();" disabled>Visualize!</button>                              
+                                <div class="span10 control-group" id="permalink" style="display:none">Share URL:<input id="linkSpace" class="input-large" type="text" placeholder="Your Permalink" style="width:80%"></div>
+
+                            </div>
+                            <div class="span3 control-group" id="profile" style="display:none">
+                                <div id="newProfileDiv" class="row-fluid form-inline">
+                                    <div class="input-append">
+                                        <input id="newProfileText" class="span12" type="text" placeholder="Profile Name" onchange="if($(this).val() != ''){$('#newProfileButton').prop('disabled', false)} else {$('#newProfileButton').prop('disabled', true)}" onkeyup="if($(this).val() != ''){$('#newProfileButton').prop('disabled', false)} else {$('#newProfileButton').prop('disabled', true)}" onmouseout="if($(this).val() != ''){$('#newProfileButton').prop('disabled', false)} else {$('#newProfileButton').prop('disabled', true)}"/>
+                                        <button id="newProfileButton" class="btn" onclick="addNewProfile();" disabled>Save</button>
+                                    </div>
+                                </div>
+                                <div class="row-fluid">
+                                    <select id="profileSelect" class="span12" onchange="selectProfile()" disabled></select>
+                                </div>
+                            </div>
+                            <div id="addButtonDiv" class="span1 offset3 control-group"><a href="#" rel="tooltip" data-placement="left" title="Add a new source."><button class="btn" onclick="addVisualizerForm()"><i class="icon-plus-sign"></i></button></a></div>
+                        </div>
+                    </div>
+                    <hr />
+                    <div id='chartDiv' style='height: 400px; z-index: -1;'></div>
+                    <!-- END Visualizer Control Panel -->
+                </div>
+                <!-- END MAIN "FRAME" -->
+            </div>
+            <div class="row-fluid">
+
+                <!-- BEGIN Progress window -->
+                <div class="modal fade" id="progressWindow">
+                    <div class="modal-header">
+                        <h3>Visualizing...</h3>
+                    </div>
+
+                    <div class="modal-body">
+                        <div id="visualizeProgress" class="progress">
+                            <div id="visualizeProgressBar" class="bar" style="width: 0%;"></div>
+                        </div>
+                        <p id="progressLabel"></p>
+                        <p id="timeLabel"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" type="button" id="cancelQuery" data-dismiss="modal">Cancel</button>
+                        <script>
+                            $('#cancelQuery').click(function () {
+                                stopQueries();
+                                $('#visualizeButton').attr("disabled", false);
+                                $('#visualizeButton').empty();
+                                $('#visualizeButton').append("Visualize!");
+                            })
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

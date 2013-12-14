@@ -25,6 +25,7 @@ import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.resource.Directory;
+import org.restlet.routing.Redirector;
 import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
 import org.wattdepot.server.WattDepotPersistence;
@@ -141,6 +142,21 @@ public class WattDepotApplication extends Application {
     Directory directory = new Directory(getContext(), webRoot);
     directory.setListingAllowed(true);
     router.attach("/webroot/", directory);
+    
+    // Use CLAP (ClassLoader Access Protocol) to access SPA directory from filesystem or JAR
+    // Directory directory = new Directory(getContext(), "clap://application/spa/");
+    String spaRoot = "file:///" + System.getProperty("user.dir") + "/target/classes/dist/spa";
+    Directory spaDirectory = new Directory(getContext(), spaRoot);
+    spaDirectory.setIndexName("index.html");
+    router.attach("/spa/", spaDirectory);
+    router.attach("/spa", spaDirectory);
+
+    // For some reason, going directly to /spa/ does not direct users to index.hml, so create a
+    // different path that sends clients directly there.
+    Redirector redirector =
+        new Redirector(getContext(), "/wattdepot/spa/index.html", Redirector.MODE_CLIENT_PERMANENT);
+    router.attach("/app/", redirector);
+
     // router.attach("/wattdepot/", LoginPageServerResource.class);
     // router.attach("/wattdepot/login/", LoginServerResource.class);
     router.attach("/wattdepot/measurementtype/{measurementtype_id}",
@@ -160,10 +176,14 @@ public class WattDepotApplication extends Application {
         DepositoryMeasurementServerResource.class);
     router.attach("/wattdepot/{group_id}/depository/{depository_id}/measurements/",
         DepositoryMeasurementsServerResource.class);
+    router.attach("/wattdepot/{group_id}/depository/{depository_id}/measurements/gviz/",
+        GvizDepositoryMeasurementsServerResource.class);
     router.attach("/wattdepot/{group_id}/depository/{depository_id}/sensors/",
         DepositorySensorsServerResource.class);
     router.attach("/wattdepot/{group_id}/depository/{depository_id}/value/",
         DepositoryValueServerResource.class);
+    router.attach("/wattdepot/{group_id}/depository/{depository_id}/value/gviz/", 
+        GvizDepositoryValueServerResource.class);
     router.attach("/wattdepot/{group_id}/depositories/", DepositoriesServerResource.class);
     router.attach("/wattdepot/{group_id}/location/", SensorLocationServerResource.class);
     router.attach("/wattdepot/{group_id}/location/{location_id}", SensorLocationServerResource.class);

@@ -1,0 +1,62 @@
+/* 
+    Document   : wattdepot-spa
+    Created on : Sep 11, 2012, 2:06:17 PM
+    Author     : Christopher
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.bordered { 
+    border: 1px #000000 solid;
+}
+
+.form-header {
+    font-size: 20px;
+}
+
+#formLabels{
+    border-bottom-style: dotted;
+    border-color: gray;
+    border-bottom-width: 1px;
+}
+
+.invalid{
+    border: 3px red solid;
+}
+
+.form {
+    padding-top:10px;
+    padding-left:10px;
+    margin-bottom: 10px;
+    border-bottom-style: dotted;
+    border-color: gray;
+    border-bottom-width: 1px;
+}
+
+.no-space [class*="span"] {
+    margin-left: 0;
+}
+
+.brand{
+    width:100px;
+}
+
+.spacefix {
+    padding-top:10px;
+    padding-left:10px;
+    height:40px;
+}
+
+#serverAddress{
+    margin-top:6px;
+}
+
+.topbar{
+    border-bottom-color: #ebebeb;
+    border-bottom-style: ridge;
+    border-bottom-width: 2px;
+}
+
+.boundaryData{
+    font-size: 0.822em;
+}

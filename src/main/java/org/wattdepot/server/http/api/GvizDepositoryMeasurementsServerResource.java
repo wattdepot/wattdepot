@@ -19,7 +19,8 @@
 package org.wattdepot.server.http.api;
 
 import org.wattdepot.common.domainmodel.MeasurementList;
-import org.wattdepot.common.httpapi.DepositoryMeasurementsResource;
+import org.wattdepot.common.httpapi.GvizDepositoryMeasurementsResource;
+import org.wattdepot.common.util.GvizHelper;
 
 /**
  * DepositoryMeasurementsServerResource - Handles the Depository measurements
@@ -28,17 +29,35 @@ import org.wattdepot.common.httpapi.DepositoryMeasurementsResource;
  * @author Cam Moore
  * 
  */
-public class DepositoryMeasurementsServerResource extends DepositoryMeasurementsServer implements
-    DepositoryMeasurementsResource {
+public class GvizDepositoryMeasurementsServerResource extends DepositoryMeasurementsServer implements
+    GvizDepositoryMeasurementsResource {
+  
+  /** The GViz tqx query string. */
+  private String tqxString = null;
+  
+  /** The GViz tq query string. */
+  private String tqString = null;
 
+  /**
+   * Initialize with attributes from the Request.
+   */
+  @Override
+  protected void doInit() {
+    super.doInit();
+
+    this.tqxString = GvizHelper.getGvizQueryString(this, "tqx");
+    this.tqString = GvizHelper.getGvizQueryString(this, "tq");
+  }
+  
   /*
    * (non-Javadoc)
    * 
    * @see org.wattdepot.restlet.DepositoryMeasurementsResource#retrieve()
    */
   @Override
-  public MeasurementList retrieve() {
-    return doRetrieve();
+  public String retrieve() {
+    MeasurementList mList = doRetrieve();
+    return GvizHelper.getGvizResponse(mList, tqxString, tqString);
   }
 
 }
