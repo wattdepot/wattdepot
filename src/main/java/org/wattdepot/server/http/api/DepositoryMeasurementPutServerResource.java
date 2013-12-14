@@ -1,5 +1,5 @@
 /**
- * DepositorySensorsServerResource.java This file is part of WattDepot.
+ * DepositoryMeasurementServerResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -18,27 +18,29 @@
  */
 package org.wattdepot.server.http.api;
 
-import java.util.List;
 import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
-import org.wattdepot.common.http.api.DepositorySensorsResource;
+import org.wattdepot.common.http.api.DepositoryMeasurementPutResource;
+import org.wattdepot.common.http.api.DepositoryMeasurementResource;
 
 /**
- * DepositorySensorsServerResource - Handles the Depository sensors HTTP API
- * ("/wattdepot/{group_id}/depository/{depository_id}/sensors/").
+ * DepositoryMeasurementServerResource - Handles the Measurement HTTP API
+ * ("/wattdepot/{group_id}/depository/{depository_id}/measurement/").
  * 
  * @author Cam Moore
  * 
  */
-public class DepositorySensorsServerResource extends WattDepotServerResource implements
-    DepositorySensorsResource {
+public class DepositoryMeasurementPutServerResource extends WattDepotServerResource implements
+    DepositoryMeasurementPutResource {
   private String depositoryId;
+  private String measId;
 
   /*
    * (non-Javadoc)
@@ -49,31 +51,34 @@ public class DepositorySensorsServerResource extends WattDepotServerResource imp
   protected void doInit() throws ResourceException {
     super.doInit();
     this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);
+    this.measId = getAttribute(Labels.MEASUREMENT_ID);
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.restlet.DepositorySensorsResource#retrieve()
+   * @see
+   * org.wattdepot.restlet.DepositoryMeasurementResource#store(org.wattdepot3
+   * .datamodel.Measurement)
    */
   @Override
-  public List<Sensor> retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/depository/{" + depositoryId
-        + "}/sensors/");
-    Depository depository;
+  public void store(Measurement meas) {
+    getLogger().log(Level.INFO, "PUT /wattdepot/{" + groupId + "}/depository/{" + depositoryId
+        + "}/measurement/ with " + meas);
     try {
-      depository = depot.getWattDeposiory(depositoryId, groupId);
+      Depository depository = depot.getWattDeposiory(depositoryId, groupId);
       if (depository != null) {
-        return depository.listSensors();
+        depository.putMeasurement(meas);
       }
       else {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " not defined.");
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " does not exist.");
       }
     }
     catch (MissMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
     }
-    return null;
+    catch (MeasurementTypeException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+    }
   }
-
 }

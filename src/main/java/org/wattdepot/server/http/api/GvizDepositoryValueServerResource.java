@@ -19,7 +19,7 @@
 package org.wattdepot.server.http.api;
 
 import org.wattdepot.common.domainmodel.MeasuredValue;
-import org.wattdepot.common.httpapi.GvizDepositoryValueResource;
+import org.wattdepot.common.http.api.GvizDepositoryValueResource;
 import org.wattdepot.common.util.GvizHelper;
 
 //

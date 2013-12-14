@@ -26,6 +26,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.MeasuredValue;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.exception.MeasurementGapException;
@@ -57,13 +58,13 @@ public class DepositoryValueServer extends WattDepotServerResource {
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.sensorId = getQuery().getValues("sensor");
-    this.start = getQuery().getValues("start");
-    this.end = getQuery().getValues("end");
-    this.timestamp = getQuery().getValues("timestamp");
-    this.groupId = getAttribute("group_id");
-    this.depositoryId = getAttribute("depository_id");
-    this.gapSeconds = getQuery().getValues("gap");
+    this.sensorId = getQuery().getValues(Labels.SENSOR_ID);
+    this.start = getQuery().getValues(Labels.START);
+    this.end = getQuery().getValues(Labels.END);
+    this.timestamp = getQuery().getValues(Labels.TIMESTAMP);
+    this.groupId = getAttribute(Labels.GROUP_ID);
+    this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);
+    this.gapSeconds = getQuery().getValues(Labels.GAP);
   }
 
   /**

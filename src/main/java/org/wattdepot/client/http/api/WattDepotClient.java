@@ -56,6 +56,7 @@ import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.http.api.CollectorMetaDataResource;
 import org.wattdepot.common.http.api.CollectorMetaDatasResource;
 import org.wattdepot.common.http.api.DepositoriesResource;
+import org.wattdepot.common.http.api.DepositoryMeasurementPutResource;
 import org.wattdepot.common.http.api.DepositoryMeasurementResource;
 import org.wattdepot.common.http.api.DepositoryMeasurementsResource;
 import org.wattdepot.common.http.api.DepositoryPutResource;
@@ -853,7 +854,7 @@ public class WattDepotClient implements WattDepotInterface {
     }
     ClientResource client = makeClient(this.groupId + "/" + Labels.DEPOSITORY + "/"
         + depository.getId() + "/" + Labels.MEASUREMENT + "/");
-    DepositoryMeasurementResource resource = client.wrap(DepositoryMeasurementResource.class);
+    DepositoryMeasurementPutResource resource = client.wrap(DepositoryMeasurementPutResource.class);
     try {
       resource.store(measurement);
     }

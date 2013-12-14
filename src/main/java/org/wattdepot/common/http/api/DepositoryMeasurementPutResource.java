@@ -1,7 +1,7 @@
 /**
- * GvizResource.java This file is part of WattDepot.
+ * DepositoryMeasurementResource.java This file is part of WattDepot.
  *
- * Copyright (C) 2013  Yongwen Xu
+ * Copyright (C) 2013  Cam Moore
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,24 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.common.httpapi;
+package org.wattdepot.common.http.api;
 
-import org.restlet.resource.Get;
+import org.restlet.resource.Delete;
+import org.restlet.resource.Put;
+import org.wattdepot.common.domainmodel.Measurement;
 
 /**
- * GvizResource - HTTP Interface for getting the Google Visualization Data Source.
+ * DepositoryMeasurementResource - HTTP Interface for storing, deleting, getting
+ * a Measurement.
  * 
- * @author Yongwen Xu
+ * @author Cam Moore
  * 
  */
-public interface GvizDepositoryMeasurementsResource {
+public interface DepositoryMeasurementPutResource {
 
   /**
-   * Defines GET /wattdepot/{group_id}/gviz/ API call.
+   * Defines PUT /wattdepot/{group_id}/depository/{depository_id}/measurement/
+   * API call.
    * 
-   * @return Google Visualization data source.
+   * @param meas
+   *          The Measurement to store.
    */
-  @Get("json")
-  // Use JSON as transport encoding.
-  public String retrieve();
+  @Put
+  public void store(Measurement meas);
+
 }

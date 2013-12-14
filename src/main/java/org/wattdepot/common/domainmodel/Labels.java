@@ -45,13 +45,28 @@ public class Labels {
 
   /** Label for the depository id. */
   public static final String DEPOSITORY_ID_VAR = "{" + DEPOSITORY_ID + "}";
+  
+  /** The label for the earliest time. */
+  public static final String EARLIEST = "earliest";
 
+  /** The label for the end timestamp. */
+  public static final String END = "end";
+  
+  /** The label for gap. */
+  public static final String GAP = "gap";
+  
   /** Label for the group id. */
   public static final String GROUP_ID = "group-id";
 
   /** Label for the group id. */
   public static final String GROUP_ID_VAR = "{" + GROUP_ID + "}";
 
+  /** The label for google visualization. */
+  public static final String GVIZ = "gviz";
+  
+  /** The label for the latest time. */
+  public static final String LATEST = "latest";
+  
   /** The label for a given Location. */
   public static final String LOCATION = "location";
 
@@ -127,6 +142,12 @@ public class Labels {
   /** The label for all Sensors. */
   public static final String SENSORS = "sensors";
 
+  /** The label for the start timestamp.  */
+  public static final String START = "start";
+  
+  /** The label for the timestamp. */
+  public static final String TIMESTAMP = "timestamp";
+  
   /** The URI for manipulating a given UserInfo. */
   public static final String USER = "user";
 

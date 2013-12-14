@@ -19,7 +19,8 @@
 package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Delete;
-import org.restlet.resource.Put;
+import org.restlet.resource.Get;
+import org.restlet.resource.Post;
 import org.wattdepot.common.domainmodel.Measurement;
 
 /**
@@ -32,18 +33,30 @@ import org.wattdepot.common.domainmodel.Measurement;
 public interface DepositoryMeasurementResource {
 
   /**
-   * Defines PUT /wattdepot/{group_id}/depository/{depository_id}/measurement/
-   * API call.
+   * Defines POST
+   * /wattdepot/{group_id}/depository/{depository_id}/measurement/{measurement
+   * -id} API call.
+   * 
+   * @return The Measurement with the id {measurement-id}.
+   */
+  @Get
+  public Measurement retrieve();
+
+  /**
+   * Defines POST
+   * /wattdepot/{group_id}/depository/{depository_id}/measurement/{measurement
+   * -id} API call.
    * 
    * @param meas
    *          The Measurement to store.
    */
-  @Put
-  public void store(Measurement meas);
+  @Post
+  public void update(Measurement meas);
 
   /**
    * Defined the DEL
-   * /wattdepot/{group_id}/depository/{depository_id}/measurement/ API call.
+   * /wattdepot/{group_id}/depository/{depository_id}/measurement
+   * /{measurement-id} API call.
    * 
    */
   @Delete

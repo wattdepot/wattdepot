@@ -143,19 +143,22 @@ public class WattDepotApplication extends Application {
     Directory directory = new Directory(getContext(), webRoot);
     directory.setListingAllowed(true);
     router.attach("/webroot/", directory);
-    
-    // Use CLAP (ClassLoader Access Protocol) to access SPA directory from filesystem or JAR
-    // Directory directory = new Directory(getContext(), "clap://application/spa/");
+
+    // Use CLAP (ClassLoader Access Protocol) to access SPA directory from
+    // filesystem or JAR
+    // Directory directory = new Directory(getContext(),
+    // "clap://application/spa/");
     String spaRoot = "file:///" + System.getProperty("user.dir") + "/target/classes/dist/spa";
     Directory spaDirectory = new Directory(getContext(), spaRoot);
     spaDirectory.setIndexName("index.html");
     router.attach("/spa/", spaDirectory);
     router.attach("/spa", spaDirectory);
 
-    // For some reason, going directly to /spa/ does not direct users to index.hml, so create a
+    // For some reason, going directly to /spa/ does not direct users to
+    // index.hml, so create a
     // different path that sends clients directly there.
-    Redirector redirector =
-        new Redirector(getContext(), "/wattdepot/spa/index.html", Redirector.MODE_CLIENT_PERMANENT);
+    Redirector redirector = new Redirector(getContext(), "/wattdepot/spa/index.html",
+        Redirector.MODE_CLIENT_PERMANENT);
     router.attach("/app/", redirector);
 
     // router.attach("/wattdepot/", LoginPageServerResource.class);
@@ -169,29 +172,25 @@ public class WattDepotApplication extends Application {
     router.attach(API.ADMIN_URI, AdminServerResource.class);
     router.attach(API.DEPOSITORY_PUT_URI, DepositoryPutServerResource.class);
     router.attach(API.DEPOSITORY_URI, DepositoryServerResource.class);
-    router.attach("/wattdepot/{group-id}/depository/{depository_id}/measurement/",
-        DepositoryMeasurementServerResource.class);
-    router.attach("/wattdepot/{group-id}/depository/{depository_id}/measurement/{meas_id}",
-        DepositoryMeasurementServerResource.class);
-    router.attach("/wattdepot/{group-id}/depository/{depository_id}/measurements/",
-        DepositoryMeasurementsServerResource.class);
-    router.attach("/wattdepot/{group-id}/depository/{depository_id}/sensors/",
-    router.attach("/wattdepot/{group_id}/depository/{depository_id}/measurements/gviz/",
-        GvizDepositoryMeasurementsServerResource.class);
-    router.attach("/wattdepot/{group-id}/depository/{depository_id}/value/",
-        DepositoryValueServerResource.class);
-    router.attach(API.DEPOSITORIES_URI, DepositoriesServerResource.class);
-    router.attach("/wattdepot/{group_id}/depository/{depository_id}/value/gviz/", 
-        GvizDepositoryValueServerResource.class);
+    router.attach(API.MEASUREMENT_PUT_URI, DepositoryMeasurementServerResource.class);
+    router.attach(API.MEASUREMENT_URI, DepositoryMeasurementServerResource.class);
+    router.attach(API.MEASUREMENTS_URI, DepositoryMeasurementsServerResource.class);
+    router.attach(API.DEPOSITORY_SENSORS_URI, DepositorySensorsServerResource.class);
+    router.attach(API.MEASUREMENTS_GVIZ_URI, GvizDepositoryMeasurementsServerResource.class);
+    router.attach(API.VALUE_URI, DepositoryValueServerResource.class);
+    router.attach(API.DEPOSITORIES_URI, DepositoriesServerResource.class); 
+    router.attach(API.VALUE_GVIZ_URI, GvizDepositoryValueServerResource.class);
     router.attach("/wattdepot/{group-id}/location/", SensorLocationServerResource.class);
     router.attach("/wattdepot/{group-id}/location/{location_id}",
         SensorLocationServerResource.class);
     router.attach("/wattdepot/{group-id}/locations/", SensorLocationsServerResource.class);
     router.attach("/wattdepot/{group-id}/sensor-group/", SensorGroupServerResource.class);
     router.attach("/wattdepot/{group-id}/sensor-group/{sensorgroup-id}",
+        SensorGroupServerResource.class);
     router.attach("/wattdepot/{group_id}/depositories/", DepositoriesServerResource.class);
     router.attach("/wattdepot/{group_id}/location/", SensorLocationServerResource.class);
-    router.attach("/wattdepot/{group_id}/location/{location_id}", SensorLocationServerResource.class);
+    router.attach("/wattdepot/{group_id}/location/{location_id}",
+        SensorLocationServerResource.class);
     router.attach("/wattdepot/{group_id}/locations/", SensorLocationsServerResource.class);
     router.attach("/wattdepot/{group_id}/sensorgroup/", SensorGroupServerResource.class);
     router.attach("/wattdepot/{group_id}/sensorgroup/{sensorgroup_id}",
@@ -210,7 +209,8 @@ public class WattDepotApplication extends Application {
     router
         .attach("/wattdepot/{group-id}/user-password/{user_id}", UserPasswordServerResource.class);
     router.attach("/wattdepot/{group-id}/user-group/", UserGroupServerResource.class);
-    router.attach("/wattdepot/{group-id}/user-group/{user-group-id}", UserGroupServerResource.class);
+    router
+        .attach("/wattdepot/{group-id}/user-group/{user-group-id}", UserGroupServerResource.class);
     router.attach("/wattdepot/{group-id}/user-groups/", UserGroupsServerResource.class);
 
     ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(),
