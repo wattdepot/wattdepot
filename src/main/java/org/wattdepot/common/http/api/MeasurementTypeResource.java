@@ -21,7 +21,6 @@ package org.wattdepot.common.http.api;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
-import org.restlet.resource.Put;
 import org.wattdepot.common.domainmodel.MeasurementType;
 
 /**

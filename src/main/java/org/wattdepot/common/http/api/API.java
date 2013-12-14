@@ -223,7 +223,7 @@ public class API {
       + Labels.SENSOR_MODELS + "/";
 
   /**
-   * <b>/wattdepot/{group-id}/user/{user-id} URI for manipulating UserInfos.
+   * <b>/wattdepot/{group-id}/user/{user-id}</b> URI for manipulating UserInfos.
    * Supports GET, POST, and DELETE requests.
    */
   public static final String USER_URI = "/" + Labels.WATTDEPOT + "/" + Labels.GROUP_ID_VAR + "/"
@@ -251,7 +251,7 @@ public class API {
       + "/" + Labels.USER_GROUPS + "/";
 
   /**
-   * <b>/wattdepot/{group-id}/user/{user-id} URI for manipulating UserInfos.
+   * <b>/wattdepot/{group-id}/user/{user-id}</b> URI for manipulating UserInfos.
    * Supports GET, POST, and DELETE requests.
    */
   public static final String USER_PASSWORD_URI = "/" + Labels.WATTDEPOT + "/" + Labels.GROUP_ID_VAR + "/"

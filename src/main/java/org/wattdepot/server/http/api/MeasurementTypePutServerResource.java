@@ -26,7 +26,7 @@ import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.MeasurementTypePutResource;
 
 /**
- * MeasurementTypePutServerResource
+ * MeasurementTypePutServerResource handles the HTTP PUT API for MeasurementTypes.
  * 
  * @author Cam Moore
  * 

@@ -21,13 +21,9 @@ package org.wattdepot.server.http.api;
 import java.util.logging.Level;
 
 import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.SensorModel;
-import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.SensorModelPutResource;
-import org.wattdepot.common.http.api.SensorModelResource;
 
 /**
  * SensorModelServerResource - Handles the SensorModel HTTP PUT API
@@ -38,20 +34,6 @@ import org.wattdepot.common.http.api.SensorModelResource;
  */
 public class SensorModelPutServerResource extends WattDepotServerResource implements
     SensorModelPutResource {
-
-  /** The sensormodel_id from the request. */
-  private String sensorModelId;
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.restlet.resource.Resource#doInit()
-   */
-  @Override
-  protected void doInit() throws ResourceException {
-    super.doInit();
-    this.sensorModelId = getAttribute(Labels.SENSOR_MODEL_ID);
-  }
 
   /*
    * (non-Javadoc)

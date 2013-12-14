@@ -27,7 +27,6 @@ import org.wattdepot.common.domainmodel.SensorLocation;
 import org.wattdepot.common.domainmodel.UserGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
-import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.SensorLocationResource;
 
 /**

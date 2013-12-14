@@ -19,7 +19,7 @@
 package org.wattdepot.common.domainmodel;
 
 /**
- * Labels
+ * Labels Strings used to create the HTTP URLs and requests.
  * 
  * @author Cam Moore
  * 

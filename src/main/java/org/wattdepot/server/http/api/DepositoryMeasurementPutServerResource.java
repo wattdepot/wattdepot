@@ -28,7 +28,6 @@ import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.http.api.DepositoryMeasurementPutResource;
-import org.wattdepot.common.http.api.DepositoryMeasurementResource;
 
 /**
  * DepositoryMeasurementServerResource - Handles the Measurement HTTP API
@@ -40,7 +39,6 @@ import org.wattdepot.common.http.api.DepositoryMeasurementResource;
 public class DepositoryMeasurementPutServerResource extends WattDepotServerResource implements
     DepositoryMeasurementPutResource {
   private String depositoryId;
-  private String measId;
 
   /*
    * (non-Javadoc)
@@ -51,7 +49,6 @@ public class DepositoryMeasurementPutServerResource extends WattDepotServerResou
   protected void doInit() throws ResourceException {
     super.doInit();
     this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);
-    this.measId = getAttribute(Labels.MEASUREMENT_ID);
   }
 
   /*

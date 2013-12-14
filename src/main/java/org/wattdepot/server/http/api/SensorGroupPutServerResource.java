@@ -21,15 +21,11 @@ package org.wattdepot.server.http.api;
 import java.util.logging.Level;
 
 import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.domainmodel.UserGroup;
-import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.SensorGroupPutResource;
-import org.wattdepot.common.http.api.SensorGroupResource;
 
 /**
  * SensorGroupServerResource - Handles the SensorGroup HTTP API
@@ -41,20 +37,6 @@ import org.wattdepot.common.http.api.SensorGroupResource;
  */
 public class SensorGroupPutServerResource extends WattDepotServerResource implements
     SensorGroupPutResource {
-
-  /** The sensorgroup_id from the request. */
-  private String sensorGroupId;
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.restlet.resource.Resource#doInit()
-   */
-  @Override
-  protected void doInit() throws ResourceException {
-    super.doInit();
-    this.sensorGroupId = getAttribute(Labels.SENSOR_GROUP_ID);
-  }
 
   /*
    * (non-Javadoc)

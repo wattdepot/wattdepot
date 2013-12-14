@@ -21,15 +21,10 @@ package org.wattdepot.server.http.api;
 import java.util.logging.Level;
 
 import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.SensorLocation;
 import org.wattdepot.common.domainmodel.UserGroup;
-import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.SensorLocationPutResource;
-import org.wattdepot.common.http.api.SensorLocationResource;
 
 /**
  * LocationResource - WattDepot 3 Location Resource handles the Location HTTP
@@ -41,19 +36,6 @@ import org.wattdepot.common.http.api.SensorLocationResource;
  */
 public class SensorLocationPutServerResource extends WattDepotServerResource implements
     SensorLocationPutResource {
-
-  private String locationId;
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.restlet.resource.Resource#doInit()
-   */
-  @Override
-  protected void doInit() throws ResourceException {
-    super.doInit();
-    this.locationId = getAttribute(Labels.LOCATION_ID);
-  }
 
   /*
    * (non-Javadoc)

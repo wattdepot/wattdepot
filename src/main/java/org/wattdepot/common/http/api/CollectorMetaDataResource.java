@@ -52,7 +52,7 @@ public interface CollectorMetaDataResource {
   /**
    * Defines the POST /wattdepot/collector-metadata/{collector-metadata-id} API call.
    * 
-   * @param collector-metadata
+   * @param metadata
    *          The SensorProcess to store.
    */
   @Post

@@ -22,7 +22,7 @@ import org.restlet.resource.Put;
 import org.wattdepot.common.domainmodel.MeasurementType;
 
 /**
- * MeasurementTypePutResource
+ * MeasurementTypePutResource Defines the HTTP PUT API.
  *
  * @author Cam Moore
  *

@@ -25,7 +25,6 @@ import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.MeasurementTypeResource;
 
 /**
