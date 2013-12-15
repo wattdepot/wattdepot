@@ -10,6 +10,18 @@ All WattDepot URLs begin with the `keyword` */wattdepot/*. Path elements that ha
 them are variables.  The actual value will be an ID for the type. For example {group-id} should be 
 replaced with a valid UserGroup's id. The URIs below do not have the WattDepot server's address.
 
+WattDepot divides up the universe of instances by their owner.  UserGroups can own their own objects. When an instance is added to WattDepot, its owner is determined by the {group-id} used in the PUT request. Notice that MeasurementTypes and SensorModels are 'public' and can be seen by all UserGroups. Only the admin group may create, update or delete MeaurementTypes or SensorModels.
+
+Each domain model class has three URLs 
+
+  * **/wattdepot/{group-id}/{object-name}/** Used for storing new instances. Must use an HTTP PUT request.
+  * **/wattdepot/{group-id}/{object-name}/{object-id}** Used for manipulating defined instances. You can get the instance using an HTTP GET request. You can update the instance using an HTTP POST request and you can delete the instance using an HTTP DELETE request.
+  * **/wattdepot/{group-id}/{object-name-plural}/** Used for getting all the defined instances.
+
+Measurements are treated slightly differently.  Clients can add new measurements using an HTTP PUT request, but there are different URLs for getting measurement information back out of WattDepot. Client can get a list of Measurements for a range of time or they can ask for a MeasuredValue for a give time or over a time period. They can also delete a Measurement, but not update it.
+
+WattDepot also support Google Visualization using two additional URLs.
+
 ## GET
 
 */wattdepot/{group-id}/* URI for the group administration. (e.g. **http://server.wattdepot.org/wattdepot/uh/** 
@@ -83,7 +95,7 @@ This will bring up the Web interface for managing WattDepot for the given user g
 
 */wattdepot/{group-id}/user-group/* URI to store new UserGroup instances. 
 
-** POST
+## POST
 
 */wattdepot/{group-id}/collector-metadata/{collector-metadata-id}* URI for updating CollectorMetaData instances.
 
@@ -104,7 +116,7 @@ This will bring up the Web interface for managing WattDepot for the given user g
 */wattdepot/{group-id}/user-group/{user-group-id}* URI for updating SensorGroup instances.
 
 
-** DELETE
+## DELETE
 
 */wattdepot/{group-id}/collector-metadata/{collector-metadata-id}* URI for deleting CollectorMetaData instances.
 
