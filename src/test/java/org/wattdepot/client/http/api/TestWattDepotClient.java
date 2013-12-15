@@ -19,7 +19,6 @@
 package org.wattdepot.client.http.api;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -36,8 +35,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.wattdepot.client.ClientProperties;
-import org.wattdepot.client.http.api.WattDepotAdminClient;
-import org.wattdepot.client.http.api.WattDepotClient;
 import org.wattdepot.common.domainmodel.CollectorMetaData;
 import org.wattdepot.common.domainmodel.CollectorMetaDataList;
 import org.wattdepot.common.domainmodel.Depository;
