@@ -98,6 +98,9 @@ new wattdepot-*version number*.jar file.
 7. Drag the wattdepot-<version>.jar file from your `target` directory to the "Attach binaries for
 this release by dropping them here." box.
 
-8. Click the "This is a pre-release" checkbox if it is.
+8. Drag the wattdepot-client.properties and wattdepot-server.properties files from `target/classes` 
+directory to the "Attach binaries for this release by dropping them here." box.
 
-9. Click the "Publish release" button.
+9. Click the "This is a pre-release" checkbox if it is.
+
+10. Click the "Publish release" button.
