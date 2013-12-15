@@ -22,10 +22,11 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
-import org.wattdepot.common.httpapi.UserPasswordResource;
+import org.wattdepot.common.http.api.UserPasswordResource;
 
 /**
  * UserPasswordServerResource - Handles the UserPassword HTTP API
@@ -46,7 +47,7 @@ public class UserPasswordServerResource extends WattDepotServerResource implemen
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.userId = getAttribute("user_id");
+    this.userId = getAttribute(Labels.USER_PASSWORD_ID);
   }
 
   /*

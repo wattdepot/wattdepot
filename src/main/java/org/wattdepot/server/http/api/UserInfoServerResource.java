@@ -24,12 +24,13 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.restlet.security.MemoryRealm;
 import org.restlet.security.User;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.UserGroup;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
-import org.wattdepot.common.httpapi.UserInfoResource;
+import org.wattdepot.common.http.api.UserInfoResource;
 
 /**
  * UserInfoServerResource - Handles the UserInfo HTTP API
@@ -49,7 +50,7 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.userId = getAttribute("user_id");
+    this.userId = getAttribute(Labels.USER_ID);
   }
 
   /*

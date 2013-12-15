@@ -22,12 +22,12 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.domainmodel.UserGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
-import org.wattdepot.common.exception.UniqueIdException;
-import org.wattdepot.common.httpapi.SensorGroupResource;
+import org.wattdepot.common.http.api.SensorGroupResource;
 
 /**
  * SensorGroupServerResource - Handles the SensorGroup HTTP API
@@ -51,7 +51,7 @@ public class SensorGroupServerResource extends WattDepotServerResource implement
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.sensorGroupId = getAttribute("sensorgroup_id");
+    this.sensorGroupId = getAttribute(Labels.SENSOR_GROUP_ID);
   }
 
   /*
@@ -61,7 +61,8 @@ public class SensorGroupServerResource extends WattDepotServerResource implement
    */
   @Override
   public SensorGroup retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/sensorgroup/{" + sensorGroupId + "}");
+    getLogger().log(Level.INFO,
+        "GET /wattdepot/{" + groupId + "}/sensorgroup/{" + sensorGroupId + "}");
     SensorGroup group = null;
     try {
       group = depot.getSensorGroup(sensorGroupId, groupId);
@@ -84,23 +85,17 @@ public class SensorGroupServerResource extends WattDepotServerResource implement
    * .datamodel.SensorGroup)
    */
   @Override
-  public void store(SensorGroup sensorgroup) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/{" + groupId + "}/sensorgroup/ with " + sensorgroup);
+  public void update(SensorGroup sensorgroup) {
+    getLogger()
+        .log(Level.INFO, "PUT /wattdepot/{" + groupId + "}/sensorgroup/ with " + sensorgroup);
     UserGroup owner = depot.getUserGroup(groupId);
     if (owner != null) {
-      if (!depot.getSensorGroupIds(groupId).contains(sensorgroup.getId())) {
-        try {
-          depot.defineSensorGroup(sensorgroup.getName(), sensorgroup.getSensors(), owner);
-        }
-        catch (UniqueIdException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-        }
-        catch (MissMatchedOwnerException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-        }
+      if (depot.getSensorGroupIds(groupId).contains(sensorgroup.getId())) {
+        depot.updateSensorGroup(sensorgroup);
       }
       else {
-        depot.updateSensorGroup(sensorgroup);
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Can't update undefined SensorGroup "
+            + sensorgroup.getName());
       }
     }
     else {
@@ -115,7 +110,8 @@ public class SensorGroupServerResource extends WattDepotServerResource implement
    */
   @Override
   public void remove() {
-    getLogger().log(Level.INFO, "DEL /wattdepot/{" + groupId + "}/sensorgroup/{" + sensorGroupId + "}");
+    getLogger().log(Level.INFO,
+        "DEL /wattdepot/{" + groupId + "}/sensorgroup/{" + sensorGroupId + "}");
     try {
       depot.deleteSensorGroup(sensorGroupId, groupId);
     }

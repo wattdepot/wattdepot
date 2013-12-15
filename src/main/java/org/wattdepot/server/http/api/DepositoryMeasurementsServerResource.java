@@ -18,21 +18,9 @@
  */
 package org.wattdepot.server.http.api;
 
-import java.text.ParseException;
-import java.util.Date;
-import java.util.logging.Level;
-
-import javax.xml.datatype.DatatypeConfigurationException;
-
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementList;
-import org.wattdepot.common.domainmodel.Sensor;
-import org.wattdepot.common.exception.MissMatchedOwnerException;
-import org.wattdepot.common.httpapi.DepositoryMeasurementsResource;
-import org.wattdepot.common.util.DateConvert;
+import org.wattdepot.common.http.api.DepositoryMeasurementsResource;
+
 
 /**
  * DepositoryMeasurementsServerResource - Handles the Depository measurements
@@ -41,26 +29,8 @@ import org.wattdepot.common.util.DateConvert;
  * @author Cam Moore
  * 
  */
-public class DepositoryMeasurementsServerResource extends WattDepotServerResource implements
+public class DepositoryMeasurementsServerResource extends DepositoryMeasurementsServer implements
     DepositoryMeasurementsResource {
-  private String depositoryId;
-  private String sensorId;
-  private String start;
-  private String end;
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.restlet.resource.Resource#doInit()
-   */
-  @Override
-  protected void doInit() throws ResourceException {
-    super.doInit();
-    this.sensorId = getQuery().getValues("sensor");
-    this.start = getQuery().getValues("start");
-    this.end = getQuery().getValues("end");
-    this.depositoryId = getAttribute("depository_id");
-  }
 
   /*
    * (non-Javadoc)
@@ -69,50 +39,7 @@ public class DepositoryMeasurementsServerResource extends WattDepotServerResourc
    */
   @Override
   public MeasurementList retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/depository/{" + depositoryId
-        + "}/measurements/?sensor={" + sensorId + "}&start={" + start + "}&end={" + end + "}");
-    if (start != null && end != null) {
-      MeasurementList ret = new MeasurementList();
-      try {
-        Depository depository = depot.getWattDeposiory(depositoryId, groupId);
-        if (depository != null) {
-          Sensor sensor = depot.getSensor(sensorId, groupId);
-          if (sensor != null) {
-            Date startDate = DateConvert.parseCalStringToDate(start);
-            Date endDate = DateConvert.parseCalStringToDate(end);
-            if (startDate != null && endDate != null) {
-              for (Measurement meas : depository.getMeasurements(sensor, startDate, endDate)) {
-                ret.getMeasurements().add(meas);
-              }
-            }
-            else {
-              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Start date and/or end date missing.");
-            }
-          }
-          else {
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensorId + " is not defined");
-          }
-        }
-        else {
-          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " is not defined.");
-        }
-      }
-      catch (MissMatchedOwnerException e) {
-        setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
-      }
-      catch (ParseException e) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-      }
-      catch (DatatypeConfigurationException e) {
-        setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-      }
-      getLogger().info(ret.toString());
-      return ret;
-    }
-    else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Missing start and/or end times.");
-      return null;
-    }
+    return doRetrieve();
   }
 
 }

@@ -22,7 +22,7 @@ import java.util.logging.Level;
 
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorList;
-import org.wattdepot.common.httpapi.SensorsResource;
+import org.wattdepot.common.http.api.SensorsResource;
 
 /**
  * SensorsServerResource - Handles the Sensors HTTP API

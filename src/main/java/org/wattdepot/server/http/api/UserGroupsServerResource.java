@@ -25,7 +25,7 @@ import java.util.logging.Level;
 import org.wattdepot.common.domainmodel.Property;
 import org.wattdepot.common.domainmodel.UserGroup;
 import org.wattdepot.common.domainmodel.UserInfo;
-import org.wattdepot.common.httpapi.UserGroupsResource;
+import org.wattdepot.common.http.api.UserGroupsResource;
 
 /**
  * UserGroupsServerResource - Handles the UserGroup HTTP API

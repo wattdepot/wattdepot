@@ -22,15 +22,15 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.exception.UniqueIdException;
-import org.wattdepot.common.httpapi.MeasurementTypeResource;
+import org.wattdepot.common.http.api.MeasurementTypeResource;
 
 /**
  * MeasurementTypeServerResource - Handles the MeasurementType HTTP API
- * ("/wattdepot/measurementtype/" and
- * "/wattdepot/measurementtype/{measurementtype_id}").
+ * ("/wattdepot/measurement-type/" and
+ * "/wattdepot/measurement-type/{measurementtype-id}").
  * 
  * @author Cam Moore
  * 
@@ -48,7 +48,7 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.typeSlug = getAttribute("measurementtype_id");
+    this.typeSlug = getAttribute(Labels.MEASUREMENT_TYPE_ID);
   }
 
   /*
@@ -58,7 +58,7 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
    */
   @Override
   public MeasurementType retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/measurementtype/{" + typeSlug + "}");
+    getLogger().log(Level.INFO, "GET /wattdepot/measurement-type/{" + typeSlug + "}");
     MeasurementType mt = null;
     mt = depot.getMeasurementType(typeSlug);
     if (mt == null) {
@@ -76,19 +76,21 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
    * .MeasurementType)
    */
   @Override
-  public void store(MeasurementType measurementType) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/measurementtype/ with " + measurementType);
-    MeasurementType mt = depot.getMeasurementType(measurementType.getId());
-    if (mt == null) {
-      try {
-        depot.defineMeasurementType(measurementType.getName(), measurementType.getUnits());
+  public void update(MeasurementType measurementType) {
+    getLogger().log(Level.INFO,
+        "POST /wattdepot/measurement-type/{" + typeSlug + "} with " + measurementType);
+    if (isInRole("admin")) {
+      MeasurementType mt = depot.getMeasurementType(measurementType.getId());
+      if (mt != null) {
+        depot.updateMeasurementType(measurementType);
       }
-      catch (UniqueIdException e) {
-        setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+      else {
+        setStatus(Status.CLIENT_ERROR_CONFLICT,
+            "No such Measurement type defined. Cannot update undefined MeasurementType.");
       }
     }
     else {
-      depot.updateMeasurementType(measurementType);
+      setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Only admin may update MeasurementTypes.");
     }
   }
 
@@ -99,12 +101,17 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
    */
   @Override
   public void remove() {
-    getLogger().log(Level.INFO, "DEL /wattdepot/measurementtype/{" + typeSlug + "}");
-    try {
-      depot.deleteMeasurementType(typeSlug);
+    getLogger().log(Level.INFO, "DEL /wattdepot/measurement-type/{" + typeSlug + "}");
+    if (isInRole("admin")) {
+      try {
+        depot.deleteMeasurementType(typeSlug);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      }
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+    else {
+      setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Only admin may remove MeasurementTypes.");
     }
   }
 

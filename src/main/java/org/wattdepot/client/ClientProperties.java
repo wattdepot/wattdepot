@@ -161,7 +161,7 @@ public class ClientProperties {
       clientHome = wattDepot3Home + clientSubdir;
     }
     String propFileName = clientHome + "/wattdepot-client.properties";
-    String defaultUserName = "admin";
+    String defaultUserName = "root";
     String defaultUserPassword = "admin";
     String defaultServerHost = "localhost";
     String defaultPort = "8192";

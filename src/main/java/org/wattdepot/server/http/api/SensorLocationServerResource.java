@@ -22,12 +22,12 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.SensorLocation;
 import org.wattdepot.common.domainmodel.UserGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
-import org.wattdepot.common.exception.UniqueIdException;
-import org.wattdepot.common.httpapi.SensorLocationResource;
+import org.wattdepot.common.http.api.SensorLocationResource;
 
 /**
  * LocationResource - WattDepot 3 Location Resource handles the Location HTTP
@@ -37,7 +37,8 @@ import org.wattdepot.common.httpapi.SensorLocationResource;
  * @author Cam Moore
  * 
  */
-public class SensorLocationServerResource extends WattDepotServerResource implements SensorLocationResource {
+public class SensorLocationServerResource extends WattDepotServerResource implements
+    SensorLocationResource {
 
   private String locationId;
 
@@ -49,7 +50,7 @@ public class SensorLocationServerResource extends WattDepotServerResource implem
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.locationId = getAttribute("location_id");
+    this.locationId = getAttribute(Labels.LOCATION_ID);
   }
 
   /*
@@ -81,21 +82,16 @@ public class SensorLocationServerResource extends WattDepotServerResource implem
    * .Location)
    */
   @Override
-  public void store(SensorLocation sensorLocation) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/{" + groupId + "}/location/ with " + sensorLocation);
+  public void update(SensorLocation sensorLocation) {
+    getLogger().log(Level.INFO,
+        "POST /wattdepot/{" + groupId + "}/location/ with " + sensorLocation);
     UserGroup owner = depot.getUserGroup(groupId);
     if (owner != null) {
-      if (!depot.getLocationIds(groupId).contains(sensorLocation.getId())) {
-        try {
-          depot.defineLocation(sensorLocation.getName(), sensorLocation.getLatitude(), sensorLocation.getLongitude(),
-              sensorLocation.getAltitude(), sensorLocation.getDescription(), owner);
-        }
-        catch (UniqueIdException e) {
-          setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
-        }
+      if (depot.getLocationIds(groupId).contains(sensorLocation.getId())) {
+        depot.updateLocation(sensorLocation);
       }
       else {
-        depot.updateLocation(sensorLocation);
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensorLocation.getName() + " is not defined.");
       }
     }
     else {

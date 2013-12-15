@@ -20,15 +20,15 @@ package org.wattdepot.client.http.api;
 
 import org.restlet.resource.ClientResource;
 import org.wattdepot.client.WattDepotAdminInterface;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.UserGroup;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.httpapi.API;
-import org.wattdepot.common.httpapi.UserGroupResource;
-import org.wattdepot.common.httpapi.UserInfoResource;
-import org.wattdepot.common.httpapi.UserPasswordResource;
+import org.wattdepot.common.http.api.UserGroupResource;
+import org.wattdepot.common.http.api.UserInfoResource;
+import org.wattdepot.common.http.api.UserPasswordResource;
 
 /**
  * WattDepotAdminClient - Admin level client.
@@ -69,7 +69,7 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    */
   @Override
   public void deleteUser(String id) throws IdNotFoundException {
-    ClientResource client = makeClient(getGroupId() + "/" + API.USER_URI + id);
+    ClientResource client = makeClient(getGroupId() + "/" + Labels.USER + "/" + id);
     UserInfoResource resource = client.wrap(UserInfoResource.class);
     resource.remove();
     client.release();
@@ -78,27 +78,38 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * org.wattdepot.client.WattDepotAdminInterface#deleteUserGroup(java.lang
+   * @see org.wattdepot.client.WattDepotAdminInterface#deleteUserGroup(java.lang
    * .String)
    */
   @Override
   public void deleteUserGroup(String id) throws IdNotFoundException {
-    ClientResource client = makeClient(getGroupId() + "/" + API.USER_GROUP_URI + id);
+    ClientResource client = makeClient(getGroupId() + "/" + Labels.USER_GROUP + "/" + id);
     UserGroupResource resource = client.wrap(UserGroupResource.class);
-    resource.remove();
-    client.release();
+    try {
+      resource.remove();
+    }
+    finally {
+      client.release();
+    }
   }
 
-  /* (non-Javadoc)
-   * @see org.wattdepot.client.WattDepotAdminInterface#deleteUserPassword(java.lang.String)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.client.WattDepotAdminInterface#deleteUserPassword(java.lang
+   * .String)
    */
   @Override
   public void deleteUserPassword(String id) throws IdNotFoundException {
-    ClientResource client = makeClient(getGroupId() + "/" + API.USER_PASSWORD_URI + id);
+    ClientResource client = makeClient(getGroupId() + "/" + Labels.USER_PASSWORD + "/" + id);
     UserPasswordResource resource = client.wrap(UserPasswordResource.class);
-    resource.remove();
-    client.release();
+    try {
+      resource.remove();
+    }
+    finally {
+      client.release();
+    }
   }
 
   /*
@@ -110,7 +121,7 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    */
   @Override
   public void putUser(UserInfo user) {
-    ClientResource client = makeClient(getGroupId() + "/" + API.USER_URI + user.getId());
+    ClientResource client = makeClient(getGroupId() + "/" + Labels.USER + "/" + user.getId());
     UserInfoResource resource = client.wrap(UserInfoResource.class);
     resource.store(user);
     client.release();
@@ -125,7 +136,7 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    */
   @Override
   public void putUserGroup(UserGroup group) {
-    ClientResource client = makeClient(getGroupId() + "/" + API.USER_GROUP_URI + group.getId());
+    ClientResource client = makeClient(getGroupId() + "/" + Labels.USER_GROUP + "/" + group.getId());
     UserGroupResource resource = client.wrap(UserGroupResource.class);
     resource.store(group);
     client.release();
@@ -140,7 +151,8 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    */
   @Override
   public void putUserPassword(UserPassword password) {
-    ClientResource client = makeClient(getGroupId() + "/" + API.USER_PASSWORD_URI + password.getId());
+    ClientResource client = makeClient(getGroupId() + "/" + Labels.USER_PASSWORD + "/"
+        + password.getId());
     UserPasswordResource resource = client.wrap(UserPasswordResource.class);
     resource.store(password);
     client.release();

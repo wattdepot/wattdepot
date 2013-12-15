@@ -22,7 +22,7 @@ import java.util.logging.Level;
 
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.DepositoryList;
-import org.wattdepot.common.httpapi.DepositoriesResource;
+import org.wattdepot.common.http.api.DepositoriesResource;
 
 /**
  * DepositorysServerResource - ServerResource that handles Depositories.

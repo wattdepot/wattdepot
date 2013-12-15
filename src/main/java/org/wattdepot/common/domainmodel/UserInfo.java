@@ -32,7 +32,7 @@ public class UserInfo {
   public static final String ADMIN_USER_NAME = "wattdepot-server.admin.name";
   
   /** The admin user. */
-  public static final UserInfo ADMIN = new UserInfo("admin", "admin", null, null, true,
+  public static final UserInfo ROOT = new UserInfo("root", "root", null, null, true,
       new HashSet<Property>());
 
   /** A unique id for the User. */
@@ -51,7 +51,7 @@ public class UserInfo {
   static {
     String adminName = System.getenv(ADMIN_USER_NAME);
     if (adminName != null) {
-      ADMIN.setId(adminName);
+      ROOT.setId(adminName);
     }
   }
 

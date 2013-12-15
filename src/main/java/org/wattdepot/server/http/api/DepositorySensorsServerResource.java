@@ -24,9 +24,10 @@ import java.util.logging.Level;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
-import org.wattdepot.common.httpapi.DepositorySensorsResource;
+import org.wattdepot.common.http.api.DepositorySensorsResource;
 
 /**
  * DepositorySensorsServerResource - Handles the Depository sensors HTTP API
@@ -47,7 +48,7 @@ public class DepositorySensorsServerResource extends WattDepotServerResource imp
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.depositoryId = getAttribute("depository_id");
+    this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);
   }
 
   /*
