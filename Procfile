@@ -1,1 +1,1 @@
-web: java -cp target/wattdepot-3.0.0-M4.jar org.wattdepot.server.WattDepotServer
+web: java -cp target/wattdepot-3.0.0-M5.jar org.wattdepot.server.WattDepotServer
