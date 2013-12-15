@@ -76,38 +76,6 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * org.wattdepot.restlet.SensorResource#store(org.wattdepot.datamodel.Sensor )
-   */
-  @Override
-  public void store(Sensor sensor) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/{" + groupId + "}/sensor/ with " + sensor);
-    UserGroup owner = depot.getUserGroup(groupId);
-    if (owner != null) {
-      if (!depot.getSensorIds(groupId).contains(sensor.getId())) {
-        try {
-          depot.defineSensor(sensor.getName(), sensor.getUri(), sensor.getSensorLocation(),
-              sensor.getModel(), owner);
-        }
-        catch (UniqueIdException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-        }
-        catch (MissMatchedOwnerException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-        }
-      }
-      else {
-        depot.updateSensor(sensor);
-      }
-    }
-    else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, groupId + " does not exist.");
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see org.wattdepot.restlet.SensorResource#remove()
    */
   @Override

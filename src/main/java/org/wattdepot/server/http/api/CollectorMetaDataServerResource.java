@@ -81,40 +81,6 @@ public class CollectorMetaDataServerResource extends WattDepotServerResource imp
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.restlet.CollectorMetaDataResource#store(org.wattdepot
-   * .datamodel.CollectorMetaData)
-   */
-  @Override
-  public void store(CollectorMetaData metadata) {
-    getLogger().log(Level.INFO,
-        "PUT /wattdepot/{" + groupId + "}/collector-metadata/ with " + metadata);
-    UserGroup owner = depot.getUserGroup(groupId);
-    if (owner != null) {
-      if (!depot.getCollectorMetaDataIds(groupId).contains(metadata.getId())) {
-        try {
-          depot.defineCollectorMetaData(metadata.getName(), metadata.getSensor(),
-              metadata.getPollingInterval(), metadata.getDepositoryId(), owner);
-        }
-        catch (UniqueIdException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-        }
-        catch (MissMatchedOwnerException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-        }
-      }
-      else {
-        setStatus(Status.CLIENT_ERROR_CONFLICT, "CollectorMeta " + metadata.getName()
-            + " is already defined.");
-      }
-    }
-    else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, groupId + " does not exist.");
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see org.wattdepot.restlet.CollectorMetaDataResource#remove()
    */
   @Override

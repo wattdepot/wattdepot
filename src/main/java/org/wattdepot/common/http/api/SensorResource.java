@@ -41,15 +41,6 @@ public interface SensorResource {
   public Sensor retrieve();
 
   /**
-   * Defines the PUT /wattdepot/sensor/ API call.
-   * 
-   * @param sensor
-   *          The Sensor to store.
-   */
-  @Put
-  public void store(Sensor sensor);
-
-  /**
    * Defines the POST /wattdepot/sensor/{sensor-id} API call.
    * 
    * @param sensor

@@ -18,9 +18,7 @@
  */
 package org.wattdepot.common.http.api;
 
-import org.restlet.resource.Delete;
-import org.restlet.resource.Get;
-import org.restlet.resource.Post;
+import org.restlet.resource.Put;
 import org.wattdepot.common.domainmodel.CollectorMetaData;
 
 /**
@@ -29,29 +27,15 @@ import org.wattdepot.common.domainmodel.CollectorMetaData;
  * @author Cam Moore
  * 
  */
-public interface CollectorMetaDataResource {
+public interface CollectorMetaDataPutResource {
 
   /**
-   * Defines GET /wattdepot/collector-metadata/{collector-metadata-id} API call.
-   * 
-   * @return The SensorProcess with the given id. The id is sent in the request.
-   */
-  @Get("json") // Use JSON as transport encoding.
-  public CollectorMetaData retrieve();
-
-  /**
-   * Defines the POST /wattdepot/collector-metadata/{collector-metadata-id} API call.
+   * Defines the PUT /wattdepot/collector-metadata/ API call.
    * 
    * @param metadata
-   *          The SensorProcess to store.
+   *          The CollectorMetaData to store.
    */
-  @Post
-  public void update(CollectorMetaData metadata);
-  /**
-   * Defined the DEL /wattdepot/collector-metadata/{collector-metadata-id} API call. The
-   * id is sent in the request.
-   */
-  @Delete
-  public void remove();
+  @Put
+  public void store(CollectorMetaData metadata);
 
 }

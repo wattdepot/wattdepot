@@ -1,5 +1,5 @@
 /**
- * CollectorMetaDataResource.java This file is part of WattDepot.
+ * SensorResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -21,37 +21,24 @@ package org.wattdepot.common.http.api;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
-import org.wattdepot.common.domainmodel.CollectorMetaData;
+import org.restlet.resource.Put;
+import org.wattdepot.common.domainmodel.Sensor;
 
 /**
- * CollectorMetaDataResource - HTTP Interface for CollectorMetaData.
+ * SensorResource - HTTP Interface for data model Sensor.
  * 
  * @author Cam Moore
  * 
  */
-public interface CollectorMetaDataResource {
+public interface SensorPutResource {
 
   /**
-   * Defines GET /wattdepot/collector-metadata/{collector-metadata-id} API call.
+   * Defines the PUT /wattdepot/sensor/ API call.
    * 
-   * @return The SensorProcess with the given id. The id is sent in the request.
+   * @param sensor
+   *          The Sensor to store.
    */
-  @Get("json") // Use JSON as transport encoding.
-  public CollectorMetaData retrieve();
-
-  /**
-   * Defines the POST /wattdepot/collector-metadata/{collector-metadata-id} API call.
-   * 
-   * @param metadata
-   *          The SensorProcess to store.
-   */
-  @Post
-  public void update(CollectorMetaData metadata);
-  /**
-   * Defined the DEL /wattdepot/collector-metadata/{collector-metadata-id} API call. The
-   * id is sent in the request.
-   */
-  @Delete
-  public void remove();
+  @Put
+  public void store(Sensor sensor);
 
 }

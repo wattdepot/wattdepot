@@ -163,36 +163,44 @@ public class WattDepotApplication extends Application {
 
     // router.attach("/wattdepot/", LoginPageServerResource.class);
     // router.attach("/wattdepot/login/", LoginServerResource.class);
-    router.attach(API.MEASUREMENT_TYPE_PUT_URI, MeasurementTypePutServerResource.class);
-    router.attach(API.MEASUREMENT_TYPE_URI, MeasurementTypeServerResource.class);
-    router.attach(API.MEASUREMENT_TYPES_URI, MeasurementTypesServerResource.class);
-    router.attach(API.SENSOR_MODEL_PUT_URI, SensorModelPutServerResource.class);
-    router.attach(API.SENSOR_MODEL_URI, SensorModelServerResource.class);
-    router.attach(API.SENSOR_MODELS_URI, SensorModelsServerResource.class);
+    // Group administration UI.
     router.attach(API.ADMIN_URI, AdminServerResource.class);
+    // CollectorMetaData
+    router.attach(API.COLLECTOR_META_DATA_PUT_URI, CollectorMetaDataPutServerResource.class);
+    router.attach(API.COLLECTOR_META_DATA_URI, CollectorMetaDataServerResource.class);
+    router.attach(API.COLLECTOR_META_DATAS_URI, CollectorMetaDatasServerResource.class);
+    // Depositories and Measurements
     router.attach(API.DEPOSITORY_PUT_URI, DepositoryPutServerResource.class);
     router.attach(API.DEPOSITORY_URI, DepositoryServerResource.class);
+    router.attach(API.DEPOSITORIES_URI, DepositoriesServerResource.class);
+    router.attach(API.DEPOSITORY_SENSORS_URI, DepositorySensorsServerResource.class);
     router.attach(API.MEASUREMENT_PUT_URI, DepositoryMeasurementPutServerResource.class);
     router.attach(API.MEASUREMENT_URI, DepositoryMeasurementServerResource.class);
     router.attach(API.MEASUREMENTS_URI, DepositoryMeasurementsServerResource.class);
-    router.attach(API.DEPOSITORY_SENSORS_URI, DepositorySensorsServerResource.class);
     router.attach(API.MEASUREMENTS_GVIZ_URI, GvizDepositoryMeasurementsServerResource.class);
     router.attach(API.VALUE_URI, DepositoryValueServerResource.class);
-    router.attach(API.DEPOSITORIES_URI, DepositoriesServerResource.class);
     router.attach(API.VALUE_GVIZ_URI, GvizDepositoryValueServerResource.class);
-    router.attach(API.SENSOR_LOCATION_PUT_URI, SensorLocationPutServerResource.class);
-    router.attach(API.SENSOR_LOCATION_URI, SensorLocationServerResource.class);
-    router.attach(API.SENSOR_LOCATIONS_URI, SensorLocationsServerResource.class);
+    // MeasurementTypes
+    router.attach(API.MEASUREMENT_TYPE_PUT_URI, MeasurementTypePutServerResource.class);
+    router.attach(API.MEASUREMENT_TYPE_URI, MeasurementTypeServerResource.class);
+    router.attach(API.MEASUREMENT_TYPES_URI, MeasurementTypesServerResource.class);
+    // Sensors
+    router.attach(API.SENSOR_PUT_URI, SensorPutServerResource.class);
+    router.attach(API.SENSOR_URI, SensorServerResource.class);
+    router.attach(API.SENSORS_URI, SensorsServerResource.class);
+    // SensorGroups
     router.attach(API.SENSOR_GROUP_PUT_URI, SensorGroupPutServerResource.class);
     router.attach(API.SENSOR_GROUP_URI, SensorGroupServerResource.class);
     router.attach(API.SENSOR_GROUPS_URI, SensorGroupsServerResource.class);
-    router.attach(API.DEPOSITORIES_URI, DepositoriesServerResource.class);
-    router.attach(API.COLLECTOR_META_DATA_PUT_URI, CollectorMetaDataServerResource.class);
-    router.attach(API.COLLECTOR_META_DATA_URI, CollectorMetaDataServerResource.class);
-    router.attach(API.COLLECTOR_META_DATAS_URI, CollectorMetaDatasServerResource.class);
-    router.attach(API.SENSOR_PUT_URI, SensorServerResource.class);
-    router.attach(API.SENSOR_URI, SensorServerResource.class);
-    router.attach(API.SENSORS_URI, SensorsServerResource.class);
+    // SensorLocations
+    router.attach(API.SENSOR_LOCATION_PUT_URI, SensorLocationPutServerResource.class);
+    router.attach(API.SENSOR_LOCATION_URI, SensorLocationServerResource.class);
+    router.attach(API.SENSOR_LOCATIONS_URI, SensorLocationsServerResource.class);
+    // SensorModels
+    router.attach(API.SENSOR_MODEL_PUT_URI, SensorModelPutServerResource.class);
+    router.attach(API.SENSOR_MODEL_URI, SensorModelServerResource.class);
+    router.attach(API.SENSOR_MODELS_URI, SensorModelsServerResource.class);
+    // Users, UserGroups, and UserPasswords
     router.attach(API.USER_URI, UserInfoServerResource.class);
     router.attach(API.USER_PASSWORD_URI, UserPasswordServerResource.class);
     router.attach(API.USER_GROUP_PUT_URI, UserGroupServerResource.class);
