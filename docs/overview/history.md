@@ -2,7 +2,7 @@
 
 ## WattDepot 1.x: Fall 2009 - Spring 2012
 
-WattDepot development began in October 2009 by Robert Brewer and Philip Johnson.  At that time, the software was viewed as a relatively simple "plumbing" that would enable us to build a game-based environment for energy behavior change (which became the [Kukui Cup project](http://kukuicup.org).  We needed software to support energy collection, storage, and analysis at the "enterprise" level, something above the household but below the utility grid in terms of complexity and scalability.
+WattDepot development began in October 2009 by Robert Brewer and Philip Johnson.  At that time, the software was viewed as a relatively simple "plumbing" that would enable us to build a game-based environment for energy behavior change (which became the [Kukui Cup project](http://kukuicup.org)).  We needed software to support energy collection, storage, and analysis at the "enterprise" level, something above the household but below the utility grid in terms of complexity and scalability.
 
 The code was developed as open source and hosted using [Google Project Hosting](https://code.google.com/p/wattdepot).
 
