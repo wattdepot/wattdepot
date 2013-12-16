@@ -8,7 +8,7 @@ conceptual entities.
 Sensors represent the device that measures the physical universe. Sensors have:
 * URIs - A Internet address where collector processes can access their measurements. 
 * Locations - The location on the earth of the sensor (e.g. Latitude, Longitude, Altitude, Description).
-* Models A description of the type of sensor, the protocol and version it is using.
+* Models - A description of the type of sensor, the protocol and version it is using.
 * Properties - A potentially empty list of properties that describe the individual sensor.
 
 ## Sensor Groups
