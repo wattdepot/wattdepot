@@ -1,7 +1,6 @@
 # Downloading sources
 
-The WattDepot code is managed with [Git] (http://help.github.com/set-up-git-redirect). To clone a
-local copy use:
+The WattDepot source code and documentation hosted on [GitHub](https://github.com/), and is managed using [Git](http://git-scm.com/), which you should have installed as part of the [Prerequisites](/wattdepot/installationguide/prerequisites). To clone a local copy use:
 
 ## Command line
 
