@@ -3,13 +3,12 @@
 WattDepot provides a language-independent interface to its server using HTTP. To understand this interface,
 it helps to be familiar with the [WattDepot Domain Model](http://wattdepot.viewdocs.io/wattdepot/overview/domainmodel).
 
-All WattDepot URLs are prefixed with */wattdepot/*.
-
 Path elements that have '{}' surrounding them are variables.  They are generally substituted with an ID for the type. For example {group-id} should be replaced with a valid UserGroup's id. The URIs below do not have the WattDepot server's address.
 
 All entities in WattDepot are "owned" by a group, which serves as a namespace for entities. WattDepot creates a namespace for objects using their group members.  UserGroups own their own objects. When an instance is added to WattDepot, its owner is determined by the {group-id} used in the PUT request.
 
 
+---------------
 ## Administrator
 
 See the [Administrator domain model description](overview/domainmodel#administrator) for details about this concept.
@@ -20,6 +19,7 @@ The following operations all require administrator credentials.
 
 Retrieve the web interface for managing a group associated with a WattDepot server.
 
+-----------
 ## Collector
 
 See the [Collector domain model description](overview/domainmodel#collector) for details about this concept.
@@ -32,6 +32,7 @@ Retrieve the representation of this Collector metadata instance.
 
 Retrieve a list of representations of all Collector metadata instances associated with this group.
 
+-------------
 ## Depository
 
 See the [Depository domain model description](overview/domainmodel#depository) for details about this concept.
