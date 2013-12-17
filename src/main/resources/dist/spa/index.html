@@ -174,7 +174,7 @@
                             sensorDivName = new Array();
                         }
                         setSensorSourceDivFirst(name, formid);
-                        wdClient.getSourceSummary(
+                        wdClient.getSourceLatestSensorData(
                         name,
                         printFirstSensor,
                         function(){
@@ -184,11 +184,12 @@
                     //call back function passed to wattdepot.
                     //when it gets the data it parses and then edits the div id associated with that source.
                     function printFirstSensor(data){
-                        var firstsensordata = data['SourceSummary']['FirstSensorData'];  
-                        var tempnametest = data['SourceSummary']['Href'];
-                        var senDate = wdClient.convertTimestampToDate(firstsensordata);
-                        $(getSensorSourceDivFirst(wdClient.getSourceNameFromLink(tempnametest))).empty();
-                        $(getSensorSourceDivFirst(wdClient.getSourceNameFromLink(tempnametest))).append('<div>' + padWithZero(senDate.getHours()) + ':' + padWithZero(senDate.getMinutes()) + '--' + padWithZero((senDate.getMonth() + 1)) + '/'+ padWithZero(senDate.getDate()) + '/'+ senDate.getFullYear() + '</div>');
+                        var data = JSON.parse(data);
+                        var firstsensordata =  data['value']; 
+                        var name = data['sensorId'];
+                        var senDate = data['date'];;
+                        $(getSensorSourceDivFirst(name)).empty();
+                        $(getSensorSourceDivFirst(name)).append('<div>' + senDate + '</div>');
                         return firstsensordata;
                     }
           
@@ -200,7 +201,7 @@
                             sensorDivNameLast = new Array();
                         }
                         setSensorSourceDivLast(name, formid);
-                        wdClient.getSourceSummary(
+                        wdClient.getSourceLatestSensorData(
                         name,
                         printLastSensor,
                         function(){
@@ -210,11 +211,12 @@
                     //call back function passed to wattdepot.
                     //when it gets the data it parses and then edits the div id associated with that source.s
                     function printLastSensor(data){
-                        var lastsensordata =  data['SourceSummary']['LastSensorData']; 
-                        var tempnametest = data['SourceSummary']['Href'];
-                        var senDate = wdClient.convertTimestampToDate(lastsensordata);
-                        $(getSensorSourceDivLast(wdClient.getSourceNameFromLink(tempnametest))).empty();
-                        $(getSensorSourceDivLast(wdClient.getSourceNameFromLink(tempnametest))).append('<div>' + padWithZero(senDate.getHours()) + ':' + padWithZero(senDate.getMinutes()) + '--' + padWithZero((senDate.getMonth() + 1)) + '/'+ padWithZero(senDate.getDate()) + '/'+ senDate.getFullYear() + '</div>');
+                        var data = JSON.parse(data);
+                        var lastsensordata =  data['value']; 
+                        var name = data['sensorId'];
+                        var senDate = data['date'];;
+                        $(getSensorSourceDivLast(name)).empty();
+                        $(getSensorSourceDivLast(name)).append('<div>' + senDate + '</div>');
                         return lastsensordata;
                     }
           

@@ -48,6 +48,8 @@ public class DepositoryValueServer extends WattDepotServerResource {
   private String start;
   private String end;
   private String timestamp;
+  private String latest;
+  private String earliest;
   private String gapSeconds;
 
   /*
@@ -62,6 +64,8 @@ public class DepositoryValueServer extends WattDepotServerResource {
     this.start = getQuery().getValues(Labels.START);
     this.end = getQuery().getValues(Labels.END);
     this.timestamp = getQuery().getValues(Labels.TIMESTAMP);
+    this.latest = getQuery().getValues(Labels.LATEST);
+    this.earliest = getQuery().getValues(Labels.EARLIEST);
     this.groupId = getAttribute(Labels.GROUP_ID);
     this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);
     this.gapSeconds = getQuery().getValues(Labels.GAP);
@@ -75,7 +79,7 @@ public class DepositoryValueServer extends WattDepotServerResource {
   public MeasuredValue doRetrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/depository/{" + depositoryId
         + "}/value/?sensor={" + sensorId + "}&start={" + start + "}&end={" + end + "}&timestamp={"
-        + timestamp + "}&gap={" + gapSeconds + "}");
+        + timestamp + "}&latest={" + latest + "}&earliest={" + earliest + "}&gap={" + gapSeconds + "}");
     try {
       DepositoryImpl deposit = (DepositoryImpl) depot.getWattDeposiory(depositoryId, groupId);
       if (deposit != null) {
@@ -104,6 +108,13 @@ public class DepositoryValueServer extends WattDepotServerResource {
               value = deposit.getValue(sensor, time);
             }
           }
+          else if (latest != null) {
+            return deposit.getLatestMeasuredValue(sensor);
+          }
+          else if (earliest != null) {
+            return deposit.getEarliestMeasuredValue(sensor);
+          }
+          
           MeasuredValue val = new MeasuredValue(sensorId, value, deposit.getMeasurementType());
           if (end != null) {
             val.setDate(endDate);
