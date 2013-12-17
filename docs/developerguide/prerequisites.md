@@ -1,6 +1,8 @@
 # Prerequisites
 
-WattDepot requires [Java Platform Standard Edition] (http://www.oracle.com/us/technologies/java/standard-edition/overview/index.html) version 1.7 or above. If do not have Java installed you can get it from the previous link. To check the version of Java installed on your computer type `java -version` from the command line.
+The core development team has developed and run WattDepot on OS X, Windows 7, and Linux, so any of those platforms should be fine for development.
+
+WattDepot requires [Java Platform Standard Edition] (http://www.oracle.com/us/technologies/java/standard-edition/overview/index.html) version 1.7 or above. If do not have Java installed you can get it from the previous link. Note that you will want the JDK (Java Development Kit) rather than the JRE (Java Runtime Environment) since you will be developing. To check the version of Java installed on your computer type `java -version` from the command line.
 
     $ java -version
     java version "1.7.0_40"
@@ -31,4 +33,4 @@ WattDepot uses Git and GitHub for our version control. You can install Git from 
     $ git --version
     git version 1.8.3.4 (Apple Git-47)
 
-We've developed and run WattDepot on Mac OS X, Windows 7, and Linux machines.
+If you prefer a graphical interface to Git, GitHub has nice Git clients for [OS X](http://mac.github.com/) and [Windows](http://windows.github.com/) that can make your life easier. Since WattDepot is hosted at GitHub, the graphical GitHub client makes it very easy to work with Git and is highly recommended.
