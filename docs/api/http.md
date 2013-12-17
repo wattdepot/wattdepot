@@ -46,18 +46,33 @@ Retrieve a representation of this depository.
 Retrieve a list of representations of all depositories associated with this group.
 
 
+--------------
+## Measurement
+
+### GET /wattdepot/{group-id}/depository/{depository-id}/measurement/{measurement-id}
+
+Retrieve a representation of a single measurement in the depository. 
+
+*(Question: shouldn't measurement-id be a timestamp?)*
+
+### GET /wattdepot/{group-id}/depository/{depository-id}/measurements/
+
+Retrieve a representation of all the measurements in the depository. 
+
+*(Isn't this expensive? Add parameters?)*
+
+### GET /wattdepot/{group-id}/depository/{depository-id}/measurements/gviz/
+
+Retrieves a representation (in Google Visualization format) for all the measurements in the depository.
+
+*(Isn't this expensive? Add parameters? Provide link to gviz format?)*
+
+
 # OLD STUFF
 
-## GET
 
 
-**/wattdepot/{group-id}/depositories/** URI for getting all defined Depositories.
 
-**/wattdepot/{group-id}/depository/{depository-id}/measurement/{measurement-id}** URI for manipulating a measurement in the depsository. Supports GET and DELETE requests.
-
-**/wattdepot/{group-id}/depository/{depository-id}/measurements/** URI to get all the measurements in the depsository. **Add parameters.**
-
-**/wattdepot/{group-id}/depository/{depository-id}/measurements/gviz/** URI to get all the measurements in the depsository. **Add parameters.**
 
 **/wattdepot/{group-id}/depository/{depository-id}/sensors/** URI for getting all the sensors that have stored measurements in the depository.
 
