@@ -174,11 +174,11 @@
                             sensorDivName = new Array();
                         }
                         setSensorSourceDivFirst(name, formid);
-                        wdClient.getSourceLatestSensorData(
+                        wdClient.getSourceEarliestSensorData(
                         name,
                         printFirstSensor,
                         function(){
-                            $(getSensorSourceDivFirst(wdClient.getSourceNameFromLink(name))).append('<div>Could not retrieve</div>');
+                            $(getSensorSourceDivFirst(name)).append('<div>Could not retrieve</div>');
                         });
                     }
                     //call back function passed to wattdepot.
