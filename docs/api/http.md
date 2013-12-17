@@ -10,15 +10,22 @@ Path elements that have '{}' surrounding them are variables.  They are generally
 All entities in WattDepot are "owned" by a group, which serves as a namespace for entities. WattDepot creates a namespace for objects using their group members.  UserGroups own their own objects. When an instance is added to WattDepot, its owner is determined by the {group-id} used in the PUT request.
 
 
-## Administor
+## Administrator
 
-See the [Administrator domain model description](
+See the [Administrator domain model description](overview/domainmodel#administrator) for details about this concept.
+
+The following operations all require administrator credentials.
+
+### GET /wattdepot/{group-id}/
+
+Retrieves the web interface for managing a group associated with a WattDepot server.
+
+
+
+
+# OLD STUFF
 
 ## GET
-
-**/wattdepot/{group-id}/** URI for the group administration. (e.g. **http://server.wattdepot.org/wattdepot/uh/** 
-brings up the user group uh's administration page). 
-This will bring up the Web interface for managing WattDepot for the given user group.
 
 **/wattdepot/{group-id}/collector-metadata/{collector-metadata-id}** URI for getting CollectorMetaData instances.
 
