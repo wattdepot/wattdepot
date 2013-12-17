@@ -28,7 +28,7 @@ Sensors represent a device that measures (or predicts) a physical phenomena. Sen
 
 ## Sensor Group
 
-Clients often find it convenient to request aggregations of sensor data. For example, a client might wish to know the energy consumed by a building, which might involve aggregating the energy measurements associated with sensors located on each floor of the building.
+Clients often find it convenient to request aggregations of sensor data. For example, a client might wish to know the energy consumed by a building, which might involve aggregating the energy measurements associated with Sensors located on each floor of the building.
 
 By defining a Sensor Group and associating individual Sensors with it, clients can obtain aggregate measurements.
 
