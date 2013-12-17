@@ -24,7 +24,7 @@ type `mvn -version` from the command line.
     OS name: "mac os x", version: "10.9", arch: "x86_64", family: "mac"
 
 We strongly recommend you use the Eclipse IDE for WattDepot development. You can install it from [www.eclipse.org]
-(http://www.eclipse.org/). You should get the Eclipse IDE for Java EE Developers since is has
+(http://www.eclipse.org/). You should get the Eclipse IDE for Java EE Developers since it has
 support for JPA and Web applications. You could also use the Eclipse Standard Edition.
 
 Currently, WattDepot is using Hibernate for the persistence layer and the [PostgreSQL]
@@ -32,7 +32,7 @@ Currently, WattDepot is using Hibernate for the persistence layer and the [Postg
 configure Hibernate to use other database backends, but that is not recommended. To check the
 version of PostgreSQL type `psql -version` at the command line.
 
-    $ psql -version
+    $ psql --version
     psql (9.2.4)
 
 This actually checks the version of the PostgreSQL client.
