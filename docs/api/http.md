@@ -5,9 +5,6 @@ it helps to be familiar with the [WattDepot Domain Model](http://wattdepot.viewd
 
 Path elements that have '{}' surrounding them are variables.  They are generally substituted with an ID for the type. For example {group-id} should be replaced with a valid UserGroup's id. The URIs below do not have the WattDepot server's address.
 
-All entities in WattDepot are "owned" by a group, which serves as a namespace for entities. WattDepot creates a namespace for objects using their group members.  UserGroups own their own objects. When an instance is added to WattDepot, its owner is determined by the {group-id} used in the PUT request.
-
-
 ---------------
 ## Administrator
 
@@ -49,6 +46,8 @@ Retrieve a list of representations of all depositories associated with this grou
 --------------
 ## Measurement
 
+See the [Measurement domain model description](overview/domainmodel#measurement) for details about this concept.
+
 ### GET /wattdepot/{group-id}/depository/{depository-id}/measurement/{measurement-id}
 
 Retrieve a representation of a single measurement in the depository. 
@@ -63,30 +62,62 @@ Retrieve a representation of all the measurements in the depository.
 
 ### GET /wattdepot/{group-id}/depository/{depository-id}/measurements/gviz/
 
-Retrieves a representation (in Google Visualization format) for all the measurements in the depository.
+Retrieve a representation (in Google Visualization format) for all the measurements in the depository.
 
 *(Isn't this expensive? Add parameters? Provide link to gviz format?)*
+
+### GET /wattdepot/{group-id}/depository/{depository-id}/sensors/
+
+Retrieve a representation of all the sensors that have stored measurements in this depository.
+
+---------
+## Sensor
+
+See the [Sensor domain model description](overview/domainmodel#sensor) for details about this concept.
+
+### GET /wattdepot/{group-id}/sensor/{sensor-id}
+
+Retrieve a representation of this sensor.
+
+### GET /wattdepot/{group-id}/sensors/
+
+Retrieve a representation of all sensors associated with this group.
+
+----------
+## Measured Value
+
+See the [Measured Value domain model description](overview/domainmodel#measured-value) for details about this concept.
+
+### GET /wattdepot/{group-id}/depository/{depository-id}/value/
+
+Retrieve the measured value.
+
+*(Obviously there are some required parameters to be documented.)*
+
+### GET /wattdepot/{group-id}/depository/{depository-id}/value/gviz
+
+Retrieve the measured value in Google Visualization format.
+
+*(Obviously there are some required parameters to be documented.)*
+
+---------------
+## Measurement Type
+
+See the [Measurement Type domain model description](overview/domainmodel#measurement-type) for details about this concept.
+
+### GET /wattdepot/public/measurement-type/{measurement-type-id}
+
+Retrieve a representation of this measurement type.
+
+### GET /wattdepot/public/measurement-types/
+
+Retrieve a representation of all defined measurement types.
+
 
 
 # OLD STUFF
 
 
-
-
-
-**/wattdepot/{group-id}/depository/{depository-id}/sensors/** URI for getting all the sensors that have stored measurements in the depository.
-
-**/wattdepot/{group-id}/depository/{depository-id}/value/** URI to get all the measured value at the given time. **Add parameters.**
-
-**/wattdepot/{group-id}/depository/{depository-id}/value/gviz/** URI to get all the measured value. **Add parameters.**
-
-**/wattdepot/public/measurement-type/{measurement-type-id}** URI for getting MeasurmentType instances.
-
-**/wattdepot/public/measurement-types/** URI for getting all defined MeasurmentTypes.
-
-**/wattdepot/{group-id}/sensor/{sensor-id}** URI for getting Sensor instances. 
-
-**/wattdepot/{group-id}/sensors/** URI to get all defined Sensors.
 
 **/wattdepot/{group-id}/sensor-group/{sensor-group-id}** URI for getting SensorGroup instances.
 
