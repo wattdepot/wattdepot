@@ -1,14 +1,19 @@
-# HTTP API Guide
+# HTTP API
 
-WattDepot provides a language-independent interface through an HTTP API. To understand the structure API, it will help to be familiar with the [WattDepot Domain Model](http://wattdepot.viewdocs.io/wattdepot/overview/domainmodel).
+WattDepot provides a language-independent interface to its server using HTTP. To understand this interface,
+it helps to be familiar with the [WattDepot Domain Model](http://wattdepot.viewdocs.io/wattdepot/overview/domainmodel), which consists of Sensors, Sensor Groups, Collectors, Depositories, Measurements, and Measurement Values. 
 
-## Overview
+## Basic concepts
 
-All WattDepot URLs have the prefix */wattdepot/*. Path elements that have '{}' surrounding 
-them are variables.  The actual value is an ID for the type. For example {group-id} should be 
-replaced with a valid UserGroup's id. The URIs below do not have the WattDepot server's address.
+All WattDepot URLs are prefixed with */wattdepot/*.
 
-WattDepot creates a namespace for objects using their group members.  UserGroups own their own objects. When an instance is added to WattDepot, its owner is determined by the {group-id} used in the PUT request. Notice that MeasurementTypes and SensorModels are 'public' and can be seen by all UserGroups. Only the admin group may create, update or delete MeaurementTypes or SensorModels.
+WattDepot implements users and groups. Most HTTP access must be by an authenticated user.   All users are assigned to a specific group. 
+
+Path elements that have '{}' surrounding them are variables.  They are generally substituted with an ID for the type. For example {group-id} should be replaced with a valid UserGroup's id. The URIs below do not have the WattDepot server's address.
+
+All entities in WattDepot are "owned" by a group, which serves as a namespace for entities. WattDepot creates a namespace for objects using their group members.  UserGroups own their own objects. When an instance is added to WattDepot, its owner is determined by the {group-id} used in the PUT request.
+
+Normally, users can only manipulate entities owned by the group with which There is a special group, called "public" Notice that MeasurementTypes and SensorModels are 'public' and can be seen by all UserGroups. Only the admin group may create, update or delete MeaurementTypes or SensorModels.
 
 Each domain model class has three URLs: 
 
