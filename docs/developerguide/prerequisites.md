@@ -44,4 +44,4 @@ from the command line.
     $ git --version
     git version 1.8.3.4 (Apple Git-47)
 
-We've developed and ran WattDepot on Mac OS X, Windows 7, and Linux machines.
+We've developed and run WattDepot on Mac OS X, Windows 7, and Linux machines.
