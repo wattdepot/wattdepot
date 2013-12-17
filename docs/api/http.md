@@ -1,18 +1,16 @@
 # HTTP API Guide
 
-WattDepot's primary interface is the HTTP API. Clients use the HTTP API for Creating, Reading, 
-Updating and Deleting instances of the [WattDepot Domain Model]
-(http://wattdepot.viewdocs.io/wattdepot/overview/domainmodel) classes.
+WattDepot provides a language-independent interface through an HTTP API. To understand the structure API, it will help to be familiar with the [WattDepot Domain Model](http://wattdepot.viewdocs.io/wattdepot/overview/domainmodel).
 
-## Understanding the API
+## Overview
 
-All WattDepot URLs begin with the `keyword` */wattdepot/*. Path elements that have '{}' surrounding 
-them are variables.  The actual value will be an ID for the type. For example {group-id} should be 
+All WattDepot URLs have the prefix */wattdepot/*. Path elements that have '{}' surrounding 
+them are variables.  The actual value is an ID for the type. For example {group-id} should be 
 replaced with a valid UserGroup's id. The URIs below do not have the WattDepot server's address.
 
-WattDepot divides up the universe of instances by their owner.  UserGroups can own their own objects. When an instance is added to WattDepot, its owner is determined by the {group-id} used in the PUT request. Notice that MeasurementTypes and SensorModels are 'public' and can be seen by all UserGroups. Only the admin group may create, update or delete MeaurementTypes or SensorModels.
+WattDepot creates a namespace for objects using their group members.  UserGroups own their own objects. When an instance is added to WattDepot, its owner is determined by the {group-id} used in the PUT request. Notice that MeasurementTypes and SensorModels are 'public' and can be seen by all UserGroups. Only the admin group may create, update or delete MeaurementTypes or SensorModels.
 
-Each domain model class has three URLs 
+Each domain model class has three URLs: 
 
   * **/wattdepot/{group-id}/{object-name}/** Used for storing new instances. Must use an HTTP PUT request.
   * **/wattdepot/{group-id}/{object-name}/{object-id}** Used for manipulating defined instances. You can get the instance using an HTTP GET request. You can update the instance using an HTTP POST request and you can delete the instance using an HTTP DELETE request.
