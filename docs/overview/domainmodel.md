@@ -15,7 +15,7 @@ Groups provide a "namespace" for WattDepot entities, and are typically associate
 When a user defines a sensor, sensor group, collector, depository, and measurement, those entities will
 be associated with the user's group. This enables, for example, two organizations (uhm and hpu) to each create their own depository called "energy" without conflicting with each other.
 
-It also supports privacy. Users can normally see only the entities defined within their own group.  There is one exception: WattDepot provides a predefined group called "public" which owns certain entities such as measurement types.  All groups can access entities in the public group.
+Groups also support privacy. Users can normally see only the entities defined within their own Group. Thus, a User in the "uhm" Group cannot see any of the data created by a User in the "hpu" Group. There is one exception: WattDepot provides a predefined Group called "public" which owns certain entities such as Measurement Types.  Any User can access entities associated with the "public" Group.
 
 ## Sensor
 
