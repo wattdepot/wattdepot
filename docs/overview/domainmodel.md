@@ -45,7 +45,7 @@ Depositories can store measurements made by different Sensors and different Coll
 
 ## Measurement Type
 
-WattDepot implements all the units of measurement provided by the [JScience API](http://www.unitsofmeasurement.org/). Supported units include both [SI Units](http://jscience.org/api/javax/measure/unit/SI.html), [Non-SI Units](http://jscience.org/api/javax/measure/unit/NonSI.html), 
+WattDepot implements all the units of measurement provided by the [JScience API](http://www.unitsofmeasurement.org/). Supported units include both [SI Units](http://jscience.org/api/javax/measure/unit/SI.html) and [Non-SI Units](http://jscience.org/api/javax/measure/unit/NonSI.html).
 
 In addition, it is possible to define new measurement types. Adding a new measurement type requires changes to the source code and rebuilding of the system.
 
