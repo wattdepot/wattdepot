@@ -9,6 +9,8 @@ Every WattDepot server instance requires the definition of an administrator user
 * add and delete normal users
 * add and delete administrator users
 * add and delete groups
+* add and delete measurement types
+* add and delete sensor models
 * login to the server as any user
 
 ## User
@@ -37,7 +39,7 @@ Sensors represent a device that measures (or predicts) a physical phenomena. Sen
 
 * URL: If available for this meter, the URL represents an IP address where a collector can programmatically access measurement(s) made by this sensor. 
 * Location: The coordinates (latitude, longitude, altitude) associated with the measurements made by this sensor.
-* Model: A description of the sensor. This can potentially include its protocol, version, etc.
+* Sensor Model: A description of the sensor. This can potentially include its protocol, version, etc.
 * Properties: A potentially empty list of key-value pairs that provide additional information about this sensor.
 
 ## Sensor Group

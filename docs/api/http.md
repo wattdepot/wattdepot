@@ -1,29 +1,18 @@
 # HTTP API
 
 WattDepot provides a language-independent interface to its server using HTTP. To understand this interface,
-it helps to be familiar with the [WattDepot Domain Model](http://wattdepot.viewdocs.io/wattdepot/overview/domainmodel), which consists of Sensors, Sensor Groups, Collectors, Depositories, Measurements, and Measurement Values. 
-
-## Basic concepts
+it helps to be familiar with the [WattDepot Domain Model](http://wattdepot.viewdocs.io/wattdepot/overview/domainmodel).
 
 All WattDepot URLs are prefixed with */wattdepot/*.
-
-WattDepot implements users and groups. Most HTTP access must be by an authenticated user.   All users are assigned to a specific group. 
 
 Path elements that have '{}' surrounding them are variables.  They are generally substituted with an ID for the type. For example {group-id} should be replaced with a valid UserGroup's id. The URIs below do not have the WattDepot server's address.
 
 All entities in WattDepot are "owned" by a group, which serves as a namespace for entities. WattDepot creates a namespace for objects using their group members.  UserGroups own their own objects. When an instance is added to WattDepot, its owner is determined by the {group-id} used in the PUT request.
 
-Normally, users can only manipulate entities owned by the group with which There is a special group, called "public" Notice that MeasurementTypes and SensorModels are 'public' and can be seen by all UserGroups. Only the admin group may create, update or delete MeaurementTypes or SensorModels.
 
-Each domain model class has three URLs: 
+## Administor
 
-  * **/wattdepot/{group-id}/{object-name}/** Used for storing new instances. Must use an HTTP PUT request.
-  * **/wattdepot/{group-id}/{object-name}/{object-id}** Used for manipulating defined instances. You can get the instance using an HTTP GET request. You can update the instance using an HTTP POST request and you can delete the instance using an HTTP DELETE request.
-  * **/wattdepot/{group-id}/{object-name-plural}/** Used for getting all the defined instances.
-
-Measurements are treated slightly differently.  Clients can add new measurements using an HTTP PUT request, but there are different URLs for getting measurement information back out of WattDepot. Client can get a list of Measurements for a range of time or they can ask for a MeasuredValue for a give time or over a time period. They can also delete a Measurement, but not update it.
-
-WattDepot also support Google Visualization using two additional URLs.
+See the [Administrator domain model description](
 
 ## GET
 
