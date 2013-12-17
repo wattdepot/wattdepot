@@ -2,11 +2,25 @@
 
 A WattDepot server implements its capabilities through the following domain model.
 
+## Administrator
+
+Every WattDepot server instance requires the definition of an administrator user (whose name by default is "root" but which can be changed by the installer) and associated password (with no default value, and which must be specified by the installer). This root user is automatically placed in the predefined group "admin", which grants that user special capabilities not available to normal users.  These capabilities include the ability to:
+
+* add and delete normal users
+* add and delete administrator users
+* add and delete groups
+* login to the server as any user
+
 ## User
 
-To manipulate a WattDepot server, such as adding or retrieving data, a client must provide a user name and a password. Every WattDepot server has an administrator account that can create new users and assign passwords to them.
+To use a WattDepot server, you must normally contact the Administrator associated with that server and request a username and password and the group membership. Once you have those credentials, you can:
 
-Users belong to one and only one group.
+* Add and delete depositories
+* Add and delete sensors (and their associated locations, models, and properties)
+* Add and delete sensor groups
+* Add and delete collector metadata
+* Add and delete measurements (if you are doing this manually).
+* Query the server for measurements and measured values in a variety of ways.
 
 ## Group
 
@@ -41,6 +55,8 @@ One implementation of a Collector might be a software program that uses the IP a
 An alternative implementation of a Collector is a person who reads a meter manually to obtain a measurement, then uses a GUI interface to a WattDepot server to store that value.
 
 In order for a Collector to do its job, it must be able to obtain information about the Sensor it is supposed to contact. It is also useful for the Collector to know how often it should collect data, what data to collect, and where to store it in the server. WattDepot represents this information with the "Collector Metadata" entity.
+
+In prior versions of WattDepot, the collector software programs hard-wired information about when, where, and how often to collect data into their source code. In this version, we expect Collector programs to first query the WattDepot server to obtain their metadata, and use that metadata to determine what to do.  By representing the task associated with a Collector in the server explicitly as metadata, the server can provide significant new capabilities to users. For example, a server can now understand how frequently to receive data from a Collector, and signal the user if data is not being received as expected.
 
 ## Depository
 
