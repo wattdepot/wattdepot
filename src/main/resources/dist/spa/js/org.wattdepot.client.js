@@ -476,7 +476,9 @@ org.WattDepot.Client = function(url) {
     getSourceSensorData : getSourceSensorData,
   
     getSourceLatestSensorData : getSourceLatestSensorData,
-	
+
+    getSourceEarliestSensorData : getSourceEarliestSensorData,
+
     getServerHealth : getServerHealth,
 	
     getSourceDetail : getSourceDetail,
