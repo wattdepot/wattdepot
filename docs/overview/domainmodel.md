@@ -3,7 +3,7 @@
 WattDepot models the domain of energy collection, storage, and analysis through the following
 conceptual entities.
 
-## <a name="sensors"></a> Sensors
+## Sensors
 
 Sensors represent the device that measures the physical universe. Sensors have:
 * URIs - A Internet address where collector processes can access their measurements. 
@@ -11,23 +11,23 @@ Sensors represent the device that measures the physical universe. Sensors have:
 * Models - A description of the type of sensor, the protocol and version it is using.
 * Properties - A potentially empty list of properties that describe the individual sensor.
 
-## <a name="sensorgroups"></a> Sensor Groups
+## Sensor Groups
 
 Sensor groups are, simply, groups of sensors. WattDepot uses these groups for aggregation. We can
 group all the energy sensors in a building into a single group.
 
-## <a name="collectors"></a> Collectors
+## Collectors
 
 Collectors are processes that contact a Sensor via its URI and produce measurements. Collector
 Metadata is a representation of how often to poll a Sensor and the Depository in which to store the
 measurements. Collectors should use the Collector Metadata to control their activities.
 
-## <a name="depositories"></a> Depositories
+## Depositories
 
 Depositories are responsible for storing the measurements made by the Sensors. They have an
 associated measurement type.
 
-## <a name="measurements"></a> Measurements
+## Measurements
 
 Measurements are made by Sensors and consist of the sensor that made the measurement, the time the
 measurement was made, the value of the measurement and the measurement type.
@@ -36,7 +36,7 @@ We can use measurements to represent forecast information, just create a forecas
 measurements for the sensor are forecasts. This way forecast information and actual sensor
 measurements will not be confused.
 
-## <a name="measuredvalues"></a> Measured Values
+## Measured Values
 
 Measured values are often interpolated from sensor measurements. There are two primary Measured
 Values, point values and difference values.
