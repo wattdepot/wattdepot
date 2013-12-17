@@ -18,20 +18,37 @@ The following operations all require administrator credentials.
 
 ### GET /wattdepot/{group-id}/
 
-Retrieves the web interface for managing a group associated with a WattDepot server.
+Retrieve the web interface for managing a group associated with a WattDepot server.
 
+## Collector
 
+See the [Collector domain model description](overview/domainmodel#collector) for details about this concept.
+
+### GET /wattdepot/{group-id}/collector-metadata/{collector-metadata-id}
+
+Retrieve the representation of this Collector metadata instance.
+
+### GET /wattdepot/{group-id}/collector-metadatas/
+
+Retrieve a list of representations of all Collector metadata instances associated with this group.
+
+## Depository
+
+See the [Depository domain model description](overview/domainmodel#depository) for details about this concept.
+
+### GET /wattdepot/{group-id}/depository/{depository-id}
+
+Retrieve a representation of this depository.
+
+### GET /wattdepot/{group-id}/depositories/
+
+Retrieve a list of representations of all depositories associated with this group.
 
 
 # OLD STUFF
 
 ## GET
 
-**/wattdepot/{group-id}/collector-metadata/{collector-metadata-id}** URI for getting CollectorMetaData instances.
-
-**/wattdepot/{group-id}/collector-metadatas/** URI for getting all the defined CollectorMetaData.
-
-**/wattdepot/{group-id}/depository/{depository-id}** URI for getting Depository instances. 
 
 **/wattdepot/{group-id}/depositories/** URI for getting all defined Depositories.
 
