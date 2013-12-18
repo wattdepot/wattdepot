@@ -3,9 +3,12 @@
 WattDepot provides a language-independent interface to its server using HTTP. To understand this interface,
 it helps to be familiar with the [WattDepot Domain Model](http://wattdepot.viewdocs.io/wattdepot/overview/domainmodel).
 
-Path elements that have '{}' surrounding them are variables.  They are generally substituted with an ID for the type. For example {group-id} should be replaced with a valid UserGroup's id. The URIs below do not have the WattDepot server's address.
+Path elements that have '{}' surrounding them are variables.  They are generally substituted with an ID for the type. For example {group-id} should be replaced with a valid Group slug. The URLs below do not include the WattDepot server's address.
 
-*(We need to figure out how to document the arguments and return values from these calls. One possibility is to provide more complete documentation in the JavaDocs, and then provide a (stable) link to the associated JavaDoc from this page.)*
+*(We need to figure out how to document the arguments and return values from these calls. One possibility is to provide more complete documentation in the JavaDocs, and then provide a (stable) link to the latest released JavaDoc on this page.)*
+
+*(Also, it might be useful to compare this API with the [WattDepot 2.0 API](https://code.google.com/p/wattdepot/wiki/RestApi), to ensure that we are not missing anything important, and that we are documenting the appropriate features. Some things I notice are missing from this page: (1) Access control info. (Admin vs. regular user); (2) health API call; (3) sample return values; (4) HTTP status codes.)*
+
 
 ---------------
 ## Administrator
