@@ -1,5 +1,5 @@
 /**
- * GvizServerResource.java This file is part of WattDepot.
+ * GvizDepositoryValuesServerResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Yongwen Xu
  *
@@ -18,20 +18,20 @@
  */
 package org.wattdepot.server.http.api;
 
-import org.wattdepot.common.domainmodel.MeasuredValue;
-import org.wattdepot.common.http.api.GvizDepositoryValueResource;
+import org.wattdepot.common.domainmodel.MeasuredValueList;
+import org.wattdepot.common.http.api.GvizDepositoryValuesResource;
 import org.wattdepot.common.util.GvizHelper;
 
-//
+
 /**
- * GvizDepositoryValueServerResource - Handles the Depository measurements
- * HTTP API ("/wattdepot/{group_id}/depository/{depository_id}/value/gviz").
+ * GvizDepositoryValuesServerResource - ServerResouce that handles the GET
+ * /wattdepot/{group_id}/depository/{depository_id}/values/gviz/ response.
  * 
  * @author Yongwen Xu
+ * 
  */
-
-public class GvizDepositoryValueServerResource extends DepositoryValueServer 
-  implements GvizDepositoryValueResource {
+public class GvizDepositoryValuesServerResource extends DepositoryValuesServer implements
+    GvizDepositoryValuesResource {
   /** The GViz tqx query string. */
   private String tqxString = null;
   
@@ -48,15 +48,15 @@ public class GvizDepositoryValueServerResource extends DepositoryValueServer
     this.tqxString = GvizHelper.getGvizQueryString(this, "tqx");
     this.tqString = GvizHelper.getGvizQueryString(this, "tq");
   }
-    
+  
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.common.httpapi.GvizDepositoryValueResource#retrieve()
+   * @see org.wattdepot.restlet.GvizDepositoryValuesResource#retrieve()
    */
   @Override
   public String retrieve() {
-    MeasuredValue mValue = doRetrieve();
-    return GvizHelper.getGvizResponse(mValue, tqxString, tqString);
+    MeasuredValueList mList = doRetrieve();
+    return GvizHelper.getGvizResponse(mList, tqxString, tqString);
   }
 }

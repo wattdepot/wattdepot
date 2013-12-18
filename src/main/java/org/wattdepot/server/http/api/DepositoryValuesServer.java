@@ -1,7 +1,7 @@
 /**
- * DepositoryMeasurementsServer.java This file is part of WattDepot.
+ * DepositoryValuesServer.java This file is part of WattDepot.
  *
- * Copyright (C) 2013  Cam Moore
+ * Copyright (C) 2013  Yongwen Xu
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,33 +20,37 @@ package org.wattdepot.server.http.api;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.Measurement;
-import org.wattdepot.common.domainmodel.MeasurementList;
+import org.wattdepot.common.domainmodel.MeasuredValue;
+import org.wattdepot.common.domainmodel.MeasuredValueList;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
+import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.DateConvert;
+import org.wattdepot.common.util.tstamp.Tstamp;
 
 /**
- * DepositoryMeasurementsServer - Base class for handling the Depository measurements
- * HTTP API ("/wattdepot/{group_id}/depository/{depository_id}/measurements/").
+ * DepositoryValuesServer - Base class for handling the Depository values
+ * HTTP API ("/wattdepot/{group_id}/depository/{depository_id}/values/").
  * 
- * @author Cam Moore
- *         Yongwen Xu
+ * @author Yongwen Xu
  * 
  */
-public class DepositoryMeasurementsServer extends WattDepotServerResource {
+public class DepositoryValuesServer extends WattDepotServerResource {
   private String depositoryId;
   private String sensorId;
   private String start;
   private String end;
+  private String interval;
 
   /*
    * (non-Javadoc)
@@ -60,6 +64,7 @@ public class DepositoryMeasurementsServer extends WattDepotServerResource {
     this.start = getQuery().getValues(Labels.START);
     this.end = getQuery().getValues(Labels.END);
     this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);
+    this.interval = getQuery().getValues(Labels.INTERVAL);
   }
 
   /**
@@ -67,26 +72,43 @@ public class DepositoryMeasurementsServer extends WattDepotServerResource {
    * 
    * @return measurement list. 
    */
-  public MeasurementList doRetrieve() {
+  public MeasuredValueList doRetrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/depository/{" + depositoryId
-        + "}/measurements/?sensor={" + sensorId + "}&start={" + start + "}&end={" + end + "}");
+        + "}/values/?sensor={" + sensorId + "}&start={" + start + "}&end={" + end
+        + "}&interval={" + interval + "}");
     
-    if (start != null && end != null) {
-      MeasurementList ret = new MeasurementList();
+    if (start != null && end != null && interval != null) {
+      MeasuredValueList ret = new MeasuredValueList();
       try {
         Depository depository = depot.getWattDeposiory(depositoryId, groupId);
         if (depository != null) {
           Sensor sensor = depot.getSensor(sensorId, groupId);
-          if (sensor != null) {            
-            Date startDate = DateConvert.parseCalStringToDate(start);
-            Date endDate = DateConvert.parseCalStringToDate(end);
-            if (startDate != null && endDate != null) {
-              for (Measurement meas : depository.getMeasurements(sensor, startDate, endDate)) {
-                ret.getMeasurements().add(meas);
-              }              
-            }
-            else {
-              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Start date and/or end date missing.");
+          if (sensor != null) {
+            
+            XMLGregorianCalendar startTime = DateConvert.parseCalString(start);
+            XMLGregorianCalendar endTime = DateConvert.parseCalString(end);
+
+            // interval is in minute
+            int intervalMinutes = Integer.parseInt(interval);
+            
+            // Build list of timestamps, starting with startTime, separated by intervalMilliseconds
+            List<XMLGregorianCalendar> timestampList =
+                Tstamp.getTimestampList(startTime, endTime, intervalMinutes);
+
+            for (int i = 0; i < timestampList.size(); i++) {
+              Date timestamp = DateConvert.convertXMLCal(timestampList.get(i));
+              Double value = depository.getValue(sensor, timestamp);
+              if (value == null) {
+                value = new Double(0);
+              }
+              MeasuredValue mValue = new MeasuredValue(
+                  sensor.getId(), 
+                  value, 
+                  depository.getMeasurementType());
+              
+              mValue.setDate(timestamp);
+
+              ret.getMeasuredValues().add(mValue);
             }
           }
           else {
@@ -105,12 +127,15 @@ public class DepositoryMeasurementsServer extends WattDepotServerResource {
       }
       catch (DatatypeConfigurationException e) {
         setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+      } 
+      catch (NoMeasurementException e) {
+        setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
       }
       getLogger().info(ret.toString());
       return ret;
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Missing start and/or end times.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Missing start and/or end times or interval.");
       return null;
     }
   }

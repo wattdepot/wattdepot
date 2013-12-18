@@ -272,4 +272,19 @@ public class API {
   public static final String VALUE_URI = "/" + Labels.WATTDEPOT + "/" + Labels.GROUP_ID_VAR + "/"
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUE + "/";
 
+  /**
+   * <b>/wattdepot/{group-id}/depository/{depository-id}/values/gviz/</b> URI to
+   * get all the measured value. Use GET requests.
+   */
+  public static final String VALUES_GVIZ_URI = "/" + Labels.WATTDEPOT + "/" + Labels.GROUP_ID_VAR
+      + "/" + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/"
+      + Labels.GVIZ + "/";
+
+  /**
+   * <b>/wattdepot/{group-id}/depository/{depository-id}/values/</b> URI to get
+   * all the measured value. Use GET requests.
+   */
+  public static final String VALUES_URI = "/" + Labels.WATTDEPOT + "/" + Labels.GROUP_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/";
+
 }

@@ -89,15 +89,12 @@ public class DepositoryValueServer extends WattDepotServerResource {
           Date startDate = null;
           Date endDate = null;
           Date time = null;
-          if (start != null && end != null) {
-            startDate = DateConvert.parseCalStringToDate(start);
-            endDate = DateConvert.parseCalStringToDate(end);
-            if (gapSeconds != null) {
-              value = deposit.getValue(sensor, startDate, endDate, Long.parseLong(gapSeconds));
-            }
-            else {
-              value = deposit.getValue(sensor, startDate, endDate);
-            }
+          
+          if (earliest != null) {
+            return deposit.getEarliestMeasuredValue(sensor);
+          }
+          else if (latest != null) {
+            return deposit.getLatestMeasuredValue(sensor);
           }
           else if (timestamp != null) {
             time = DateConvert.parseCalStringToDate(timestamp);
@@ -108,11 +105,15 @@ public class DepositoryValueServer extends WattDepotServerResource {
               value = deposit.getValue(sensor, time);
             }
           }
-          else if (latest != null) {
-            return deposit.getLatestMeasuredValue(sensor);
-          }
-          else if (earliest != null) {
-            return deposit.getEarliestMeasuredValue(sensor);
+          else if (start != null && end != null) {
+            startDate = DateConvert.parseCalStringToDate(start);
+            endDate = DateConvert.parseCalStringToDate(end);
+            if (gapSeconds != null) {
+              value = deposit.getValue(sensor, startDate, endDate, Long.parseLong(gapSeconds));
+            }
+            else {
+              value = deposit.getValue(sensor, startDate, endDate);
+            }
           }
           
           MeasuredValue val = new MeasuredValue(sensorId, value, deposit.getMeasurementType());

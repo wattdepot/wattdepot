@@ -1,5 +1,5 @@
 /**
- * GvizResource.java This file is part of WattDepot.
+ * DepositoryValuesResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Yongwen Xu
  *
@@ -21,20 +21,19 @@ package org.wattdepot.common.http.api;
 import org.restlet.resource.Get;
 
 /**
- * GvizDepositoryMeasurementsResource - HTTP Interface for getting the Google Visualization 
- * Data Source representation for Depository measurements.
- * (/wattdepot/{group_id}/depository/{depository_id}/measurements/gviz/)
+ * GvizDepositoryValuesResource - HTTP Interface for getting the MeasuredValueList. <br>
+ * (/wattdepot/{group_id}/depository/{depository_id}/values/gviz/)
  * 
  * @author Yongwen Xu
  * 
  */
-public interface GvizDepositoryMeasurementsResource {
+public interface GvizDepositoryValuesResource {
 
   /**
-   * Defines GET 
-   * /wattdepot/{group_id}/depository/{depository_id}/measurements/gviz/?
-   *    sensor={sensorId}&start={start}&end={end}.
-   *
+   * Defines GET <br/>
+   * /wattdepot/{group_id}/depository/{depository_id}/values/gviz/?
+   *   sensor={sensor_id}&start={start}&end={end}&interval={interval}.
+   * 
    * @return Google Visualization data source.
    */
   @Get("json")

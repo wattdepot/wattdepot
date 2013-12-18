@@ -190,7 +190,13 @@ public class Labels {
   /** The label for a 'measured' value. */
   public static final String VALUE = "value";
 
+  /** The label for 'measured' values. */
+  public static final String VALUES = "values";
+  
   /** The base label used for WattDepot. */
   public static final String WATTDEPOT = "wattdepot";
+
+  /** The label for sampling internal. */
+  public static final String INTERVAL = "interval";
 
 }
