@@ -1,6 +1,6 @@
 # Downloading sources
 
-The WattDepot source code and documentation are hosted on [GitHub](https://github.com/), and are managed using [Git](http://git-scm.com/), which you should have installed as part of the [Prerequisites](/wattdepot/installationguide/prerequisites). You can clone the repository to your local system using either the command line or a GUI tool:
+The WattDepot source code and documentation are hosted on [GitHub](https://github.com/), and are managed using [Git](http://git-scm.com/), which you should have installed as part of the [Prerequisites](/wattdepot/developerguide/prerequisites). You can clone the repository to your local system using either the command line or a GUI tool:
 
 ## Command line
 
@@ -9,7 +9,7 @@ The WattDepot source code and documentation are hosted on [GitHub](https://githu
 ## GUI and IDE
 
 WattDepot's Git repository may be accessed using many different [client programs and plug-ins]
-(http://git-scm.com/downloads). As mentioned in the [Prerequisites](/wattdepot/installationguide/prerequisites), we like the free clients provided by GitHub: [GitHub for OS X](http://mac.github.com/) and [GitHub for Windows](http://windows.github.com/). On the [WattDepot project page](https://github.com/wattdepot/wattdepot) there should be a button labeled "Clone in Desktop" that will automatically launch your GitHub client and start the clone operation.
+(http://git-scm.com/downloads). As mentioned in the [Prerequisites](/wattdepot/developerguide/prerequisites), we like the free clients provided by GitHub: [GitHub for OS X](http://mac.github.com/) and [GitHub for Windows](http://windows.github.com/). On the [WattDepot project page](https://github.com/wattdepot/wattdepot) there should be a button labeled "Clone in Desktop" that will automatically launch your GitHub client and start the clone operation.
 
 # Contributing to WattDepot
 
