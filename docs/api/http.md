@@ -19,7 +19,7 @@ The following operations all require administrator credentials.
 
 ### GET /wattdepot/{group-id}/
 
-Retrieve the web interface for managing a group associated with a WattDepot server.
+Retrieve the web interface for managing a user group associated with a WattDepot server.
 
 -----------
 ## Collector

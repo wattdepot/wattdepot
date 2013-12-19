@@ -15,7 +15,7 @@ Every WattDepot server instance requires the definition of an administrator user
 
 ## User
 
-To use a WattDepot server, you must normally contact the Administrator associated with that server and request a username and password and the group membership. Once you have those credentials, you can:
+To use a WattDepot server, you must normally contact the Administrator associated with that server and request a username and password and your user group membership. Once you have those credentials, you can:
 
 * Add and delete depositories
 * Add and delete sensors (and their associated locations, models, and properties)
@@ -24,9 +24,9 @@ To use a WattDepot server, you must normally contact the Administrator associate
 * Add and delete measurements (if you are doing this manually).
 * Query the server for measurements and measured values in a variety of ways.
 
-## Group
+## User Group
 
-Groups provide a "namespace" for WattDepot entities, and are typically associated with an organization. For example, "University of Hawaii at Manoa" could be a group, and "Hawaii Pacific University" could be another group. Groups are defined with a "slug", which is incorporated into the HTTP URL. For example, the slug associated with University of Hawaii at Manoa might be "uhm", and the slug associated with Hawaii Pacific University might be "hpu".
+User Groups provide a way to aggregate users associated with the same types of data, and also create a "namespace" for WattDepot entities, and are typically associated with an organization. For example, "University of Hawaii at Manoa" could be a group, and "Hawaii Pacific University" could be another group. Groups are defined with a "slug", which is incorporated into the HTTP URL. For example, the slug associated with University of Hawaii at Manoa might be "uhm", and the slug associated with Hawaii Pacific University might be "hpu".
 
 When a user defines a sensor, sensor group, collector, depository, and measurement, those entities will
 be associated with the user's group. This enables, for example, two organizations (uhm and hpu) to each create their own depository called "energy" without conflicting with each other.
@@ -50,7 +50,7 @@ By defining a Sensor Group and associating individual Sensors with it, clients c
 
 ## Collector
 
-Collectors are processes that contact a Sensor and obtain Measurements from it.
+Collectors are processes that contact a Sensor, obtain Measurements from it, then store this data in a WattDepot server.
 
 One implementation of a Collector might be a software program that uses the IP address of a Sensor to contact it and request a measurement value.  After obtaining that value, it then contacts a WattDepot server and uses the HTTP API to store that value in the server.
 
