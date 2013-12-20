@@ -15,10 +15,20 @@ WattDepot requires [Java Platform Standard Edition] (http://www.oracle.com/us/te
 
 ## PostgreSQL
 
-Currently, WattDepot is using Hibernate for the persistence layer and the [PostgreSQL] (http://www.postgresql.org/) database for storage. We recommend version 9.1 or higher. You can configure Hibernate to use other database backends, but we do not have experience with other backends at this time. To check the version of PostgreSQL type `psql -version` at the command line.
+Currently, WattDepot is using [Hibernate](http://hibernate.org/) for the persistence layer and the [PostgreSQL] (http://www.postgresql.org/) database for storage. You can configure Hibernate to use other database backends, but we do not have experience with other backends at this time.
+
+If you do not have PostgreSQL installed already, you will have to [download and install it](http://www.postgresql.org/download/) before running WattDepot. We recommend version 9.1 or higher.
+
+If you already have PostgreSQL, one way to check the version is using the command line client tool `psql`:
 
     $ psql --version
     psql (9.2.4)
 
-This actually checks the version of the PostgreSQL client.
+However, it is possible to have the `psql` client installed without the actual database server (such as on OS X Mountain Lion). In that case you might see an error like the following:
 
+    $ psql
+    psql: could not connect to server: No such file or directory
+	Is the server running locally and accepting
+	connections on Unix domain socket "/var/pgsql_socket/.s.PGSQL.5432"?
+
+In this case, you should [download PostgreSQL](http://www.postgresql.org/download/) to get the server as well.
