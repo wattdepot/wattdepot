@@ -39,13 +39,15 @@ All of these manipulations occur within your organization.
 
 ## Sensor
 
-Sensors represent a device that measures (or predicts) a physical phenomena. Sensors have the following properties:
+Sensors represent a device that measures (or predicts) a single type of physical phenomena. Sensors have the following properties:
 
 * Measurement Type:  Sensors can only collect data of a single Measurement Type.
 * URL: If available for this meter, the URL represents an IP address where a collector can programmatically access measurement(s) made by this sensor. 
 * Location: The coordinates (latitude, longitude, altitude) associated with the measurements made by this sensor.
 * Sensor Model: A description of the sensor. This can potentially include its protocol, version, etc.
 * Properties: A potentially empty list of key-value pairs that provide additional information about this sensor.
+
+Note that some physical devices can measure multiple phenomena (such as energy from multiple floors, or both energy and power, or energy and temperature).  In these cases, the physical device will be represented by multiple Sensors. 
 
 ## Sensor Group
 
