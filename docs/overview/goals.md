@@ -4,7 +4,7 @@ The design of WattDepot is motivated by the following primary goals for data col
 
 *WattDepot must be agnostic about the platform, programming language, and meters used to monitor the environment.*
 
-WattDepot will run on all major operating systems and will provide client libraries for popular languages including Java, Javascript, and Python.   We provide an HTTP protocol that can be used by any language.
+WattDepot will run on all major operating systems. We provide an HTTP API which can be used by any modern programming language or environment to communicate with WattDepot servers. To simply development, we provide client libraries for popular languages including Java, Javascript, and Python.  
 
 WattDepot can support any meter that implements an HTTP-based protocol for data transmission.
 
