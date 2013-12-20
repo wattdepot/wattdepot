@@ -41,7 +41,7 @@ All of these manipulations occur within your organization.
 
 Sensors represent a device that measures (or predicts) a single type of physical phenomena. Sensors have the following properties:
 
-* Measurement Type:  Sensors can only collect data of a single Measurement Type.
+* Measurement Type:  Sensors can only represent data of a single Measurement Type.
 * URL: If available for this meter, the URL represents an IP address where a collector can programmatically access measurement(s) made by this sensor. 
 * Location: The coordinates (latitude, longitude, altitude) associated with the measurements made by this sensor.
 * Sensor Model: A description of the sensor. This can potentially include its protocol, version, etc.
