@@ -17,6 +17,13 @@ body {
   color: #222; 
 }
 
+hr {
+  color: #222;
+  background-color: #222;
+  width: 90%;
+  height: 2px;
+}
+
 /* Allow wattdepot logo to use up all space in navbar. */
 .navbar-brand {
   padding-top: 0;
@@ -30,9 +37,8 @@ body {
 
 /* I feel the default h2 font size is too big, so adjust them all down. */
 h2, .h2 {font-size: 26px;}
-h3, .h3 {font-size: 22px;}
+h3, .h3 {font-size: 20px;}
 h4, .h4 {font-size: 18px;}
-
 </style>
 
 <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -59,7 +65,7 @@ h4, .h4 {font-size: 18px;}
  	  <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Overview <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li><a href="/wattdepot/overview/motivation">Motivation</a></li>
+              <li><a href="/wattdepot/overview/goals">Goals</a></li>
               <li><a href="/wattdepot/overview/domainmodel">Domain model</a></li>
               <li><a href="/wattdepot/overview/architecture">Architecture</a></li>
               <li><a href="/wattdepot/overview/publications">Publications</a></li>
@@ -83,7 +89,7 @@ h4, .h4 {font-size: 18px;}
  	  <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="visible-xs visible-sm">Users <b class="caret"></b></span><span class="visible-md visible-lg">User Guide <b class="caret"></b></span></a>
             <ul class="dropdown-menu">
-              <li><a href="/wattdepot/userguide/definitions">Defining entities</a></li>
+              <li><a href="/wattdepot/userguide/definitions">Define the domain model</a></li>
               <li><a href="/wattdepot/userguide/retrieval">Retrieving data</a></li>
             </ul>
           </li>
@@ -110,8 +116,9 @@ h4, .h4 {font-size: 18px;}
 	  <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="visible-xs visible-sm">APIs <b class="caret"></b></span><span class="visible-md visible-lg">API Guide <b class="caret"></b></span></a>
             <ul class="dropdown-menu">
-              <li><a href="/wattdepot/api/http">HTTP API</a></li>
-              <li><a href="/wattdepot/api/javadoc">JavaDocs</a></li>
+              <li><a href="/wattdepot/api/http">HTTP</a></li>
+              <li><a href="/wattdepot/api/java">Java</a></li>
+              <li><a href="/wattdepot/api/javascript">Javascript</a></li>
             </ul>
           </li>
 	  </ul>

@@ -14,7 +14,7 @@ WattDepot development began in 2009.  Its development has been led by members of
 ## Get involved
 
 Check out our [developer](https://groups.google.com/forum/#!forum/wattdepot-dev) or [user](https://groups.google.com/forum/#!forum/wattdepot-users) discussion groups.  Contact Professor Philip Johnson, johnson@hawaii.edu, if you have questions about organizational involvement. If you discover a problem or have an idea for improvement, 
-create an item in our [issues list](https://github.com/wattdepot/wattdepot/issues/milestones). 
+create an item in our [issues list](https://github.com/wattdepot/wattdepot/issues/). 
 
 ## Legacy versions
 

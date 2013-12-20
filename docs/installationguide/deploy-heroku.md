@@ -30,7 +30,7 @@ for the system.
 Once the wattdepot source is downloaded, you can create a Heroku app for wattdepot:
 
     $ cd wattdepot
-    $ heroku create <wattdepot app name>
+    $ heroku create <wattdepot_app_name>
 
 ## Setup environment variables
 
@@ -43,17 +43,21 @@ used by the instance on Heroku:
 ## Deploy to Heroku
 Here is the command to deploy to Heroku:
 
-    $ heroku push heroku
+    $ git push heroku
 
 This step will deploy the wattdepot system to Heroku and initialize the wattdepot system. After the initialization, you need to set the following Heroku environment variable to prevent the system
 to run initialization again (This step may be removed in the future release):
 
     $ heroku config:set WATTDEPOT_DB_UPDATE=update
         
-## Access the server
+## Access the server admin interface
 
-You can access the server by:
+You can access the server by using your browser to open the url of your Heroku app: 
 
-    $ heroku open
+    http://[wattdepot_app_name].herokuapp.com/wattdepot/admin
 
-or using your browser to open the url of your heroku app, which will be http://[your_app_name].herokuapp.com
+## Update the Heroku instance
+
+You can update the deployed Heroku instance by running the following command:
+
+    $ git push heroku

@@ -1,140 +1,303 @@
-# HTTP API Guide
+# HTTP API
 
-WattDepot's primary interface is the HTTP API. Clients use the HTTP API for Creating, Reading, 
-Updating and Deleting instances of the [WattDepot Domain Model]
-(http://wattdepot.viewdocs.io/wattdepot/overview/domainmodel) classes.
+WattDepot provides a language-independent interface to its server using HTTP. To understand this interface,
+it helps to be familiar with the [WattDepot Domain Model](http://wattdepot.viewdocs.io/wattdepot/overview/domainmodel).
 
-## Understanding the API
+Path elements that have '{}' surrounding them are variables.  They are generally substituted with an ID for the type. For example {org-id} should be replaced with a valid organization id. The URLs below do not include the WattDepot server's address.
 
-All WattDepot URLs begin with the `keyword` */wattdepot/*. Path elements that have '{}' surrounding 
-them are variables.  The actual value will be an ID for the type. For example {group-id} should be 
-replaced with a valid UserGroup's id. The URIs below do not have the WattDepot server's address.
+*(We need to figure out how to document the arguments and return values from these calls. One possibility is to provide more complete documentation in the JavaDocs, and then provide a (stable) link to the latest released JavaDoc on this page.)*
 
-WattDepot divides up the universe of instances by their owner.  UserGroups can own their own objects. When an instance is added to WattDepot, its owner is determined by the {group-id} used in the PUT request. Notice that MeasurementTypes and SensorModels are 'public' and can be seen by all UserGroups. Only the admin group may create, update or delete MeaurementTypes or SensorModels.
+*(Also, it might be useful to compare this API with the [WattDepot 2.0 API](https://code.google.com/p/wattdepot/wiki/RestApi), to ensure that we are not missing anything important, and that we are documenting the appropriate features. Some things I notice are missing from this page: (1) Access control info. (Admin vs. regular user); (2) health API call; (3) sample return values; (4) HTTP status codes.)*
 
-Each domain model class has three URLs 
 
-  * **/wattdepot/{group-id}/{object-name}/** Used for storing new instances. Must use an HTTP PUT request.
-  * **/wattdepot/{group-id}/{object-name}/{object-id}** Used for manipulating defined instances. You can get the instance using an HTTP GET request. You can update the instance using an HTTP POST request and you can delete the instance using an HTTP DELETE request.
-  * **/wattdepot/{group-id}/{object-name-plural}/** Used for getting all the defined instances.
+---------------
+## Organization
 
-Measurements are treated slightly differently.  Clients can add new measurements using an HTTP PUT request, but there are different URLs for getting measurement information back out of WattDepot. Client can get a list of Measurements for a range of time or they can ask for a MeasuredValue for a give time or over a time period. They can also delete a Measurement, but not update it.
+See the [Organization domain model description](overview/domainmodel#organization) for details about this concept.
 
-WattDepot also support Google Visualization using two additional URLs.
+Organization operations require administrator credentials.
 
-## GET
+### GET /wattdepot/{org-id}/
 
-**/wattdepot/{group-id}/** URI for the group administration. (e.g. **http://server.wattdepot.org/wattdepot/uh/** 
-brings up the user group uh's administration page). 
-This will bring up the Web interface for managing WattDepot for the given user group.
+Retrieve the web interface for managing an organization associated with a WattDepot server.
 
-**/wattdepot/{group-id}/collector-metadata/{collector-metadata-id}** URI for getting CollectorMetaData instances.
+*(There should be more organization operations, right?)* 
 
-**/wattdepot/{group-id}/collector-metadatas/** URI for getting all the defined CollectorMetaData.
+-------------
+## User
 
-**/wattdepot/{group-id}/depository/{depository-id}** URI for getting Depository instances. 
+See the [User domain model description](overview/domainmodel#user) for details about this concept.
 
-**/wattdepot/{group-id}/depositories/** URI for getting all defined Depositories.
+### GET /wattdepot/{org-id}/user/{user-id}
 
-**/wattdepot/{group-id}/depository/{depository-id}/measurement/{measurement-id}** URI for manipulating a measurement in the depsository. Supports GET and DELETE requests.
+Retrieve a representation of a user.
 
-**/wattdepot/{group-id}/depository/{depository-id}/measurements/** URI to get all the measurements in the depsository. **Add parameters.**
+*(Who can do this? Anyone in the group?)*
 
-**/wattdepot/{group-id}/depository/{depository-id}/measurements/gviz/** URI to get all the measurements in the depsository. **Add parameters.**
+### GET /wattdepot/{org-id}/users/
 
-**/wattdepot/{group-id}/depository/{depository-id}/sensors/** URI for getting all the sensors that have stored measurements in the depository.
+Retrieve a representation of all users associated with this group.
 
-**/wattdepot/{group-id}/depository/{depository-id}/value/** URI to get all the measured value at the given time. **Add parameters.**
+*(This was not in the API, but should be, right?)*
 
-**/wattdepot/{group-id}/depository/{depository-id}/value/gviz/** URI to get all the measured value. **Add parameters.**
+### PUT /wattdepot/{org-id}/user/
 
-**/wattdepot/public/measurement-type/{measurement-type-id}** URI for getting MeasurmentType instances.
+Create a new user.
 
-**/wattdepot/public/measurement-types/** URI for getting all defined MeasurmentTypes.
+*(Restricted to the admin, right?)*
 
-**/wattdepot/{group-id}/sensor/{sensor-id}** URI for getting Sensor instances. 
+### POST /wattdepot/{org-id}/user/{user-id}
 
-**/wattdepot/{group-id}/sensors/** URI to get all defined Sensors.
+Update this representation of a user.
 
-**/wattdepot/{group-id}/sensor-group/{sensor-group-id}** URI for getting SensorGroup instances.
+*(Who can do this? The user? The admin?)*
 
-**/wattdepot/{group-id}/sensor-groups/** URI to get all defined SensorGroups.
+### DELETE /wattdepot/{org-id}/user/{user-id}
 
-**/wattdepot/{group-id}/location/{location-id}** URI getting SensorLocation instances.
+Delete this representation of a user.
 
-**/wattdepot/{group-id}/locations/** URI to get all defined SensorLocations.
+*(Who can do this? The user? The admin? What happens to the data sent by this user? )*
 
-**/wattdepot/public/sensor-model/{sensor-model-id}** URI for getting SensorModel instances.
 
-**/wattdepot/public/sensor-models/** URI for getting all SensorModels.
+---------
+## Sensor
 
-**/wattdepot/{group-id}/user/{user-id}** URI for getting UserInfo instances.
+See the [Sensor domain model description](overview/domainmodel#sensor) for details about this concept.
 
-**/wattdepot/{group-id}/user-group/{user-group-id}** URI for getting SensorGroup instances.
+### GET /wattdepot/{org-id}/sensor/{sensor-id}
 
-**/wattdepot/{group-id}/user-groups/** URI to get all defined SensorGroups.
+Retrieve a representation of this sensor.
 
-## PUT
-**/wattdepot/{group-id}/collector-metadata/** URI for storing new CollectorMetaData instances.
+### GET /wattdepot/{org-id}/sensors/
 
-**/wattdepot/{group-id}/depository/** URI for storing new Depository instances.
+Retrieve a representation of all sensors associated with this group.
 
-**/wattdepot/{group-id}/depository/{depository-id}/measurement/** URI for putting a measurement into the depsository.
+### PUT /wattdepot/{org-id}/sensor/
 
-**/wattdepot/public/measurement-type/** URI for storing new MeasurmentType instances.
+Create a new sensor.
 
-**/wattdepot/{group-id}/sensor/** URI to store new Sensor instances.
+### POST /wattdepot/{org-id}/sensor/{sensor-id}
 
-**/wattdepot/{group-id}/sensor-group/** URI to store new SensorGroup instances. 
+Update this representation of a sensor.
 
-**/wattdepot/{group-id}/location/** URI to store new SensorLocation instances. 
+### DELETE /wattdepot/{org-id}/sensor/{sensor-id}
 
-**/wattdepot/public/sensor-model/** URI for storing new SensorModel instances.
+Delete this sensor.
 
-**/wattdepot/{group-id}/user/** URI to store new UserInfo instances.
+*(What happens to all the measurements associated with this sensor?)*
 
-**/wattdepot/{group-id}/user-group/** URI to store new UserGroup instances. 
 
-## POST
+----------
+## Sensor Group
 
-**/wattdepot/{group-id}/collector-metadata/{collector-metadata-id}** URI for updating CollectorMetaData instances.
+See the [Sensor Group domain model description](overview/domainmodel#sensor-group) for details about this concept.
 
-**/wattdepot/{group-id}/depository/{depository-id}** URI for updating Depository instances.
+### GET /wattdepot/{org-id}/sensor-group/{sensor-org-id}
 
-**/wattdepot/public/measurement-type/{measurement-type-id}** URI for updating MeasurmentType instances.
+Retrieve a representation of this sensor group.
 
-**/wattdepot/{group-id}/sensor/{sensor-id}** URI for updating Sensor instances.
+### PUT /wattdepot/{org-id}/sensor-group/
 
-**/wattdepot/{group-id}/sensor-group/{sensor-group-id}** URI for updating SensorGroup instances.
+Create a new sensor group.
 
-**/wattdepot/{group-id}/location/{location-id}** URI updating SensorLocation instances.
+### POST /wattdepot/{org-id}/sensor-group/{sensor-org-id}
 
-**/wattdepot/public/sensor-model/{sensor-model-id}** URI for updating SensorModel instances.
+Update the representation of this sensor group.
 
-**/wattdepot/{group-id}/user/{user-id}** URI for updating UserInfo instances.
+### DELETE /wattdepot/{org-id}/sensor-group/{sensor-org-id}
 
-**/wattdepot/{group-id}/user-group/{user-group-id}** URI for updating SensorGroup instances.
+Delete this sensor group.
 
+-----------
+## Sensor Model
 
-## DELETE
+See the [Sensor domain model description](overview/domainmodel#sensor) for details about sensor models, which are part of the Sensor description.
 
-**/wattdepot/{group-id}/collector-metadata/{collector-metadata-id}** URI for deleting CollectorMetaData instances.
+Note that Sensor Models are always defined in the *public* group.
 
-**/wattdepot/{group-id}/depository/{depository-id}** URI for deleting Depository instances.
+*(Are these calls restricted to the admin user?)*
 
-**/wattdepot/{group-id}/depository/{depository-id}/measurement/{measurement-id}** URI for deleting a measurement in the depsository.
+### GET /wattdepot/public/sensor-model/{sensor-model-id}
 
-**/wattdepot/public/measurement-type/{measurement-type-id}** URI for deleting MeasurmentType instances.
+Retrieve a representation of a sensor model.
 
-**/wattdepot/{group-id}/sensor/{sensor-id}** URI for deleting Sensor instances.
+### GET /wattdepot/public/sensor-models/
 
-**/wattdepot/{group-id}/sensor-group/{sensor-group-id}** URI for deleting SensorGroup instances.
+Retrieve a representation of all sensor models.
 
-**/wattdepot/{group-id}/location/{location-id}** URI deleting SensorLocation instances.
+### PUT /wattdepot/public/sensor-model/
 
-**/wattdepot/public/sensor-model/{sensor-model-id}** URI for deleting SensorModel instances.
+Create a new sensor model.
 
-**/wattdepot/{group-id}/user/{user-id}** URI for deleting UserInfo instances.
+### POST /wattdepot/public/sensor-model/{sensor-model-id}
 
-**/wattdepot/{group-id}/user-group/{user-group-id}** URI for deleting SensorGroup instances.
+Update this representation of a sensor model.
+
+### DELETE /wattdepot/public/sensor-model/{sensor-model-id}
+
+Delete this representation of a sensor model.
+
+
+-----------
+## Collector
+
+See the [Collector domain model description](overview/domainmodel#collector) for details about this concept.
+
+*(Do we want to call this "collector-metadata", or just "collector"? Which is less confusing?)*
+
+### GET /wattdepot/{org-id}/collector-metadata/{collector-metadata-id}
+
+Retrieve the representation of this Collector metadata instance.
+
+### GET /wattdepot/{org-id}/collector-metadatas/
+
+Retrieve a list of representations of all Collector metadata instances associated with this group.
+
+### PUT /wattdepot/{org-id}/collector-metadata/
+
+Create a new representation of a collector's metadata.
+
+### POST /wattdepot/{org-id}/collector-metadata/{collector-metadata-id}
+
+Update a pre-existing collector's metadata.
+
+### DELETE /wattdepot/{org-id}/collector-metadata/{collector-metadata-id}
+
+Delete this metadata representation.
+
+
+-------------
+## Depository
+
+See the [Depository domain model description](overview/domainmodel#depository) for details about this concept.
+
+### GET /wattdepot/{org-id}/depository/{depository-id}
+
+Retrieve a representation of this depository.
+
+### GET /wattdepot/{org-id}/depositories/
+
+Retrieve a list of representations of all depositories associated with this group.
+
+### PUT /wattdepot/{org-id}/depository/
+
+Create a new depository. 
+
+### POST /wattdepot/{org-id}/depository/{depository-id}
+
+Update a pre-existing depository's representation.
+
+### DELETE /wattdepot/{org-id}/depository/{depository-id}
+
+Delete this repository.
+
+*(All measurements in this repository will be lost?)*
+
+--------------
+## Measurement
+
+See the [Measurement domain model description](overview/domainmodel#measurement) for details about this concept.
+
+### GET /wattdepot/{org-id}/depository/{depository-id}/measurement/{measurement-id}
+
+Retrieve a representation of a single measurement in the depository. 
+
+*(Question: shouldn't measurement-id be a timestamp?)*
+
+### GET /wattdepot/{org-id}/depository/{depository-id}/measurements/
+
+Retrieve a representation of all the measurements in the depository. 
+
+*(Isn't this expensive? Add parameters?)*
+
+### GET /wattdepot/{org-id}/depository/{depository-id}/measurements/gviz/
+
+Retrieve a representation (in Google Visualization format) for all the measurements in the depository.
+
+*(Isn't this expensive? Add parameters? Provide link to gviz format?)*
+
+### GET /wattdepot/{org-id}/depository/{depository-id}/sensors/
+
+Retrieve a representation of all the sensors that have stored measurements in this depository.
+
+### PUT /wattdepot/{org-id}/depository/{depository-id}/measurement/
+
+Store a new measurement in this depository.
+
+### DELETE /wattdepot/{org-id}/depository/{depository-id}/measurement/{measurement-id}
+
+Delete this measurement.
+
+
+------------
+## Location
+
+See the [Sensor domain model description](overview/domainmodel#sensor) for details about locations, which are part of the Sensor description.
+
+*(Do we need to provide locations as an independent part of the API?  Why not just manipulate them directly as part of the Sensor representation? Wouldn't that be simpler and more easily understandable from the user side, given that locations have no meaning apart from the sensors they are associated with?)*
+
+### GET /wattdepot/{org-id}/location/{location-id}
+
+Retrieve a representation of a location.
+
+### GET /wattdepot/{org-id}/locations/
+
+Retrieve a representation of all locations associated with this group.
+
+### PUT /wattdepot/{org-id}/location/
+
+Create a new location.
+
+### POST /wattdepot/{org-id}/location/{location-id}
+
+Update this representation of a location.
+
+### DELETE /wattdepot/{org-id}/location/{location-id}
+
+Delete this location.
+
+
+----------
+## Measured Value
+
+See the [Measured Value domain model description](overview/domainmodel#measured-value) for details about this concept.
+
+### GET /wattdepot/{org-id}/depository/{depository-id}/value/
+
+Retrieve the measured value.
+
+*(Obviously there are some required parameters to be documented.)*
+
+### GET /wattdepot/{org-id}/depository/{depository-id}/value/gviz
+
+Retrieve the measured value in Google Visualization format.
+
+*(Obviously there are some required parameters to be documented.)*
+
+---------------
+## Measurement Type
+
+See the [Measurement Type domain model description](overview/domainmodel#measurement-type) for details about this concept.
+
+### GET /wattdepot/public/measurement-type/{measurement-type-id}
+
+Retrieve a representation of this measurement type.
+
+### GET /wattdepot/public/measurement-types/
+
+Retrieve a representation of all defined measurement types.
+
+### PUT /wattdepot/public/measurement-type/
+
+Store a new measurement type.
+
+*(Is this even possible? I thought measurement types were implemented in code?)*
+
+### POST /wattdepot/public/measurement-type/{measurement-type-id}
+
+*(Is this even possible? I thought measurement types were implemented in code?)*
+
+### DELETE /wattdepot/public/measurement-type/{measurement-type-id}
+
+*(Is this even possible? I thought measurement types were implemented in code?)*
 
