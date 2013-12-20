@@ -4,18 +4,28 @@ A WattDepot server implements its capabilities through the following domain mode
 
 ## Administrator
 
-Every WattDepot server instance requires the definition of an administrator user (whose name by default is "root" but which can be changed by the installer) and associated password (with no default value, and which must be specified by the installer). This root user is automatically placed in the predefined group "admin", which grants that user special capabilities not available to normal users.  These capabilities include the ability to:
+Every WattDepot server installation requires the definition of a single administrator (whose name by default is "root" but which can be changed by the installer) and associated password (with no default value, and which must be specified by the installer). This administrator is automatically placed in the predefined organization named "admin", which grants the administrator special capabilities not available to users.  These capabilities include the ability to:
 
-* add and delete normal users
-* add and delete administrator users
-* add and delete groups
-* add and delete measurement types
-* add and delete sensor models
-* login to the server as any user
+* add and delete organizations
+* add and delete users
+* add and delete entities in the "public" organization (measurement types, sensor models)
+* login as any user
+
+## Organization
+
+Users, sensors, sensor groups, collectors, depositories, and measurements all belong to a single "organization".  Organizations create a namespace for WattDepot entities. For example, a single WattDepot server might hold data from two organizations, "University of Hawaii" and "Hawaii Pacific University". Organizations are defined with an id, which is a short alphabetic abbreviation suitable for identifying the organization in URLs. The organization "University of Hawaii" might have the id "uh".
+
+The organization id is generally the first element of a WattDepot API call. For example, to retrieve information about the University of Hawaii repositories, you might invoke:
+
+```
+GET http://server.wattdepot.org/wattdepot/uh/depositories
+```
+
+In general, you can only manipulate entities created within your organization. There is one exception: the pre-defined organization with the id "public" which defines "global" entities such as measurement types and sensor models. 
 
 ## User
 
-To use a WattDepot server, you must normally contact the Administrator associated with that server and request a username and password and your user group membership. Once you have those credentials, you can:
+To use a WattDepot server, begin by requesting a user name and password from the server's administrator. You must also indicate if you are joining an existing organization or if you wish a new organization to be created on the server. Once you have obtained these credentials, you can:
 
 * Add and delete depositories
 * Add and delete sensors (and their associated locations, models, and properties)
@@ -24,19 +34,14 @@ To use a WattDepot server, you must normally contact the Administrator associate
 * Add and delete measurements (if you are doing this manually).
 * Query the server for measurements and measured values in a variety of ways.
 
-## User Group
+All of these manipulations occur within your organization.
 
-User Groups provide a way to aggregate users associated with the same types of data, and also create a "namespace" for WattDepot entities, and are typically associated with an organization. For example, "University of Hawaii at Manoa" could be a group, and "Hawaii Pacific University" could be another group. Groups are defined with a "slug", which is incorporated into the HTTP URL. For example, the slug associated with University of Hawaii at Manoa might be "uhm", and the slug associated with Hawaii Pacific University might be "hpu".
-
-When a user defines a sensor, sensor group, collector, depository, and measurement, those entities will
-be associated with the user's group. This enables, for example, two organizations (uhm and hpu) to each create their own depository called "energy" without conflicting with each other.
-
-Groups also support privacy. Users can normally see only the entities defined within their own Group. Thus, a User in the "uhm" Group cannot see any of the data created by a User in the "hpu" Group. There is one exception: WattDepot provides a predefined Group called "public" which owns certain entities such as Measurement Types.  Any User can access entities associated with the "public" Group.
 
 ## Sensor
 
-Sensors represent a device that measures (or predicts) a physical phenomena. Sensors can have the following properties:
+Sensors represent a device that measures (or predicts) a physical phenomena. Sensors have the following properties:
 
+* Measurement Type:  Sensors can only collect data of a single Measurement Type.
 * URL: If available for this meter, the URL represents an IP address where a collector can programmatically access measurement(s) made by this sensor. 
 * Location: The coordinates (latitude, longitude, altitude) associated with the measurements made by this sensor.
 * Sensor Model: A description of the sensor. This can potentially include its protocol, version, etc.
@@ -47,6 +52,8 @@ Sensors represent a device that measures (or predicts) a physical phenomena. Sen
 Clients often find it convenient to request aggregations of sensor data. For example, a client might wish to know the energy consumed by a building, which might involve aggregating the energy measurements associated with Sensors located on each floor of the building.
 
 By defining a Sensor Group and associating individual Sensors with it, clients can obtain aggregate measurements.
+
+All Sensors in a Sensor Group must collect data of the same Measurement Type.
 
 ## Collector
 
@@ -71,6 +78,8 @@ Depositories can store Measurements made by different Sensors and different Coll
 WattDepot provides all the units of measurement provided by the [JScience API](http://www.unitsofmeasurement.org/). Supported units include both [SI Units](http://jscience.org/api/javax/measure/unit/SI.html) and [Non-SI Units](http://jscience.org/api/javax/measure/unit/NonSI.html).
 
 In addition, it is possible in WattDepot to define new Measurement Types. Adding a new Measurement Type requires changes to the source code and rebuilding of the system.
+
+Measurement Types are members of the "public" organization, which makes them visible to all users of a server.
 
 ## Measurement
 
