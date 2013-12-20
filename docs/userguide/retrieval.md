@@ -21,6 +21,7 @@ Figure 1. Shows an example of the visualization of Power consumed by two differe
 <img width="600" src="https://raw.github.com/wattdepot/wattdepot/master/docs/userguide/wattdepot-spa-home-1.png" alt="Figure 1.">
 </a>
 
+You can open the WattDepot SPA by navigating to &lt;host&gt;/spa/.
 
 ## Logs / Information / Summary tab
 
