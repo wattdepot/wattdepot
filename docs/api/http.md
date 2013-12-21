@@ -84,7 +84,7 @@ Update this representation of a sensor.
 
 Delete this sensor.
 
-*(What happens to all the measurements associated with this sensor?)*
+*(What happens to all the measurements associated with this sensor?) Currently, they are deleted also due to constraint in the database.*
 
 
 ----------
@@ -191,7 +191,7 @@ Update a pre-existing depository's representation.
 
 Delete this repository.
 
-*(All measurements in this repository will be lost?)*
+*(All measurements in this repository will be lost?) Yes due to constraints in the database.*
 
 --------------
 ## Measurement
@@ -204,17 +204,15 @@ Retrieve a representation of a single measurement in the depository.
 
 *(Question: shouldn't measurement-id be a timestamp?)*
 
-### GET /wattdepot/{org-id}/depository/{depository-id}/measurements/
+### GET /wattdepot/{org-id}/depository/{depository-id}/measurements/?sensor={sensor-id}&start={start-timestamp}&end={end-timestamp}
 
-Retrieve a representation of all the measurements in the depository. 
+Retrieve a representation of the measurements in the depository for the given sensor from start to end. Can return an empty list. 
 
-*(Isn't this expensive? Add parameters?)*
+### GET /wattdepot/{org-id}/depository/{depository-id}/measurements/gviz/?sensor={sensor-id}&start={start-timestamp}&end={end-timestamp}
 
-### GET /wattdepot/{org-id}/depository/{depository-id}/measurements/gviz/
+Retrieve a representation (in Google Visualization format) for the measurements in the depository between start and end with the given sensor.
 
-Retrieve a representation (in Google Visualization format) for all the measurements in the depository.
-
-*(Isn't this expensive? Add parameters? Provide link to gviz format?)*
+*(Provide link to gviz format?)*
 
 ### GET /wattdepot/{org-id}/depository/{depository-id}/sensors/
 
@@ -262,17 +260,21 @@ Delete this location.
 
 See the [Measured Value domain model description](overview/domainmodel#measured-value) for details about this concept.
 
-### GET /wattdepot/{org-id}/depository/{depository-id}/value/
+### GET /wattdepot/{org-id}/depository/{depository-id}/value/?sensor={sensor-id}&start={start-timestamp}&end={end-timestamp}&timestamp={timestamp}&gap={gapSeconds}
 
-Retrieve the measured value.
+Calculate and return the measured value for the given sensor. This is a complicated call there are several different valid calls.
 
-*(Obviously there are some required parameters to be documented.)*
+* If timestamp is supplied then returns the interpolated value at the given time.
+* If start and end are supplied then returns the difference between the interpolated value at end and the interpolated value at start.
+* If gap is supplied, then the call checks to see that the measurements used to interpolate the value(s) are less than gap seconds apart. If they are not then an HTTP Status of 417 Client Error is return with the text explaining what the problem is.
 
-### GET /wattdepot/{org-id}/depository/{depository-id}/value/gviz
+### GET /wattdepot/{org-id}/depository/{depository-id}/value/gviz/?sensor={sensor-id}&start={start-timestamp}&end={end-timestamp}&timestamp={timestamp}&gap={gapSeconds}
 
-Retrieve the measured value in Google Visualization format.
+Retrieve the measured value in Google Visualization format. This is a complicated call there are several different valid calls.
 
-*(Obviously there are some required parameters to be documented.)*
+* If timestamp is supplied then returns the interpolated value at the given time.
+* If start and end are supplied then returns the difference between the interpolated value at end and the interpolated value at start.
+* If gap is supplied, then the call checks to see that the measurements used to interpolate the value(s) are less than gap seconds apart. If they are not then an HTTP Status of 417 Client Error is return with the text explaining what the problem is.
 
 ---------------
 ## Measurement Type
