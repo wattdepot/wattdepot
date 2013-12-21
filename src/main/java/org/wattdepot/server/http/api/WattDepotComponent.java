@@ -18,19 +18,11 @@
  */
 package org.wattdepot.server.http.api;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.logging.LogManager;
-import java.util.logging.Logger;
-
+import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
-import org.codehaus.jackson.map.DeserializationConfig;
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.Server;
-import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;

@@ -18,7 +18,6 @@
  */
 package org.wattdepot.server.http.api;
 
-import java.util.List;
 import java.util.logging.Level;
 
 import org.restlet.data.Status;

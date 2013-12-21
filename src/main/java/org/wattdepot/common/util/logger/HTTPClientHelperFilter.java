@@ -7,7 +7,7 @@ import java.util.logging.Filter;
 import java.util.logging.LogRecord;
 
 /**
- * HTTPClientHelperFilter -
+ * HTTPClientHelperFilter - Filters out the org.restlet.ext.httpclient start and stop log messages.
  * 
  * @author Cam Moore
  * 
