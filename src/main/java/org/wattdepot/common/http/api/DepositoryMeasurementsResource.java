@@ -24,7 +24,7 @@ import org.wattdepot.common.domainmodel.MeasurementList;
 /**
  * DepositorySensorsResource - HTTP Interface for getting the Measurements in
  * the Depository. <br/>
- * (/wattdepot/{group_id}/depository/{depository_id}/measurements/)
+ * (/wattdepot/{org-id}/depository/{depository-id}/measurements/)
  * 
  * @author Cam Moore
  * 
@@ -33,7 +33,7 @@ public interface DepositoryMeasurementsResource {
 
   /**
    * Defines GET <br/>
-   * /wattdepot/{group_id}/depository/{depository_id}/measurements/?
+   * /wattdepot/{org-id}/depository/{depository-id}/measurements/?
    *    sensor={sensorId}&start={start}&end={end}.
    * 
    * @return An ArrayList of the Measurements that have sent measurements to the

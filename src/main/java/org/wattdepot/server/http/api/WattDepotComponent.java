@@ -18,25 +18,34 @@
  */
 package org.wattdepot.server.http.api;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Server;
+import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.security.MemoryRealm;
 import org.restlet.security.Role;
 import org.restlet.security.User;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.server.WattDepotPersistence;
 import org.wattdepot.server.depository.impl.hibernate.MeasurementImpl;
 
 /**
- * WattDepotComponent - Main class to start the WattDepot Http API component of the WattDepotServer.
+ * WattDepotComponent - Main class to start the WattDepot Http API component of
+ * the WattDepotServer.
  * 
  * @author Cam Moore
  * 
@@ -73,8 +82,10 @@ public class WattDepotComponent extends Component {
     Representation rep = app.getConverterService().toRepresentation(source);
     @SuppressWarnings("rawtypes")
     ObjectMapper mapper = ((JacksonRepresentation) rep).getObjectMapper();
-    mapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
-    mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    mapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS,
+        false);
+    mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,
+        false);
     getDefaultHost().attachDefault(app);
     app.setComponent(this);
 
@@ -82,12 +93,12 @@ public class WattDepotComponent extends Component {
     MemoryRealm realm = new MemoryRealm();
     realm.setName("WattDepot Security");
     getRealms().add(realm);
-    for (UserGroup group : app.getDepot().getUserGroups()) {
+    for (Organization group : app.getDepot().getOrganizations()) {
       app.getRoles().add(new Role(group.getId()));
       for (UserInfo info : group.getUsers()) {
         UserPassword up = app.getDepot().getUserPassword(info.getId());
-        User user = new User(info.getId(), up.getPlainText(), info.getFirstName(),
-            info.getLastName(), info.getEmail());
+        User user = new User(info.getId(), up.getPlainText(),
+            info.getFirstName(), info.getLastName(), info.getEmail());
         realm.getUsers().add(user);
         realm.map(user, app.getRole(group.getId()));
       }
@@ -97,9 +108,35 @@ public class WattDepotComponent extends Component {
     app.getContext().setDefaultEnroler(realm.getEnroler());
     app.getContext().setDefaultVerifier(realm.getVerifier());
 
-//    // Configure the log service
-//    getLogService().setLoggerName("WattDepot3.AccessLog");
-//    getLogService().setLogPropertiesRef("clap://system/org/wattdepot3/server/log.properties");
+//    Properties props = new Properties();
+//    InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("log.properties");
+//    if (inputStream != null) {
+//      try {
+//        props.load(inputStream);
+//      }
+//      catch (IOException e) {
+//        // TODO Auto-generated catch block
+//        e.printStackTrace();
+//      }
+//    }
+//    // // Configure the log service
+//    getLogService().setLoggerName("WattDepot.AccessLog");
+//    try {
+//      LogManager.getLogManager().readConfiguration(
+//          inputStream);
+//    }
+//    catch (SecurityException e) {
+//      // TODO Auto-generated catch block
+//      e.printStackTrace();
+//    }
+//    catch (IOException e) {
+//      // TODO Auto-generated catch block
+//      e.printStackTrace();
+//    }
+//    
+//    getLogService().setLogPropertiesRef(
+//        "log.properties");
+
   }
 
 }

@@ -24,7 +24,7 @@ import org.wattdepot.common.http.api.DepositoryMeasurementsResource;
 
 /**
  * DepositoryMeasurementsServerResource - Handles the Depository measurements
- * HTTP API ("/wattdepot/{group_id}/depository/{depository_id}/measurements/").
+ * HTTP API ("/wattdepot/{org-id}/depository/{depository-id}/measurements/").
  * 
  * @author Cam Moore
  *         Yongwen Xu

@@ -24,7 +24,7 @@ import org.wattdepot.common.util.GvizHelper;
 
 /**
  * GvizDepositoryMeasurementsServerResource - Handles the Depository measurements
- * HTTP API ("/wattdepot/{group_id}/depository/{depository_id}/measurements/gviz").
+ * HTTP API ("/wattdepot/{org-id}/depository/{depository-id}/measurements/gviz").
  * 
  * @author Yongwen Xu
  * 

@@ -37,7 +37,7 @@ public class SensorGroup {
   /** The List of sensors the compose this group. */
   protected Set<Sensor> sensors;
   /** The owner of this sensor model. */
-  private UserGroup owner;
+  private Organization owner;
 
   /**
    * Hide the default constructor.
@@ -56,7 +56,7 @@ public class SensorGroup {
    * @param owner
    *          the owner of the location.
    */
-  public SensorGroup(String name, Set<Sensor> sensors, UserGroup owner) {
+  public SensorGroup(String name, Set<Sensor> sensors, Organization owner) {
     this.id = Slug.slugify(name);
     this.name = name;
     this.sensors = sensors;
@@ -144,7 +144,7 @@ public class SensorGroup {
   /**
    * @return the owner
    */
-  public UserGroup getOwner() {
+  public Organization getOwner() {
     return owner;
   }
 
@@ -178,8 +178,8 @@ public class SensorGroup {
    * @return True if the group owns the Location or the group is the
    *         ADMIN_GROUP.
    */
-  public boolean isOwner(UserGroup group) {
-    if (owner != null && (owner.equals(group) || group.equals(UserGroup.ADMIN_GROUP))) {
+  public boolean isOwner(Organization group) {
+    if (owner != null && (owner.equals(group) || group.equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;
@@ -218,7 +218,7 @@ public class SensorGroup {
    * @param owner
    *          the owner to set
    */
-  public void setOwner(UserGroup owner) {
+  public void setOwner(Organization owner) {
     this.owner = owner;
   }
 

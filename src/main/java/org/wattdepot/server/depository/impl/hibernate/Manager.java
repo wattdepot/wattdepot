@@ -54,7 +54,7 @@ public class Manager {
           .addClass(org.wattdepot.common.domainmodel.SensorGroup.class)
           .addClass(org.wattdepot.common.domainmodel.SensorLocation.class)
           .addClass(org.wattdepot.common.domainmodel.SensorModel.class)
-          .addClass(org.wattdepot.common.domainmodel.UserGroup.class)
+          .addClass(org.wattdepot.common.domainmodel.Organization.class)
           .addClass(org.wattdepot.common.domainmodel.UserInfo.class)
           .addClass(org.wattdepot.common.domainmodel.UserPassword.class)
           .setProperty("hibernate.connection.driver_class",

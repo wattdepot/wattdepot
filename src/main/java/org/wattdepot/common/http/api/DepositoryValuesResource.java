@@ -23,7 +23,7 @@ import org.wattdepot.common.domainmodel.MeasuredValueList;
 
 /**
  * DepositoryValuesResource - HTTP Interface for getting the MeasuredValueList. <br>
- * (/wattdepot/{group_id}/depository/{depository_id}/values/)
+ * (/wattdepot/{org-id}/depository/{depository-id}/values/)
  * 
  * @author Yongwen Xu
  * 
@@ -32,7 +32,7 @@ public interface DepositoryValuesResource {
 
   /**
    * Defines GET <br/>
-   * /wattdepot/{group_id}/depository/{depository_id}/values/?
+   * /wattdepot/{org-id}/depository/{depository-id}/values/?
    *   sensor={sensor_id}&start={start}&end={end}&interval={interval}.
    * 
    * @return The MeasuredValueList.

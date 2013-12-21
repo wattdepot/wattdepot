@@ -22,7 +22,7 @@ import org.restlet.resource.Get;
 
 /**
  * GvizDepositoryValuesResource - HTTP Interface for getting the MeasuredValueList. <br>
- * (/wattdepot/{group_id}/depository/{depository_id}/values/gviz/)
+ * (/wattdepot/{org-id}/depository/{depository-id}/values/gviz/)
  * 
  * @author Yongwen Xu
  * 
@@ -31,7 +31,7 @@ public interface GvizDepositoryValuesResource {
 
   /**
    * Defines GET <br/>
-   * /wattdepot/{group_id}/depository/{depository_id}/values/gviz/?
+   * /wattdepot/{org-id}/depository/{depository-id}/values/gviz/?
    *   sensor={sensor_id}&start={start}&end={end}&interval={interval}.
    * 
    * @return Google Visualization data source.

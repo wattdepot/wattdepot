@@ -25,7 +25,7 @@ import org.wattdepot.common.util.GvizHelper;
 
 /**
  * GvizDepositoryValuesServerResource - ServerResouce that handles the GET
- * /wattdepot/{group_id}/depository/{depository_id}/values/gviz/ response.
+ * /wattdepot/{org-id}/depository/{depository-id}/values/gviz/ response.
  * 
  * @author Yongwen Xu
  * 

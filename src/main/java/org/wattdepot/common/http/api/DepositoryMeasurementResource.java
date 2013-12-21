@@ -33,8 +33,8 @@ import org.wattdepot.common.domainmodel.Measurement;
 public interface DepositoryMeasurementResource {
 
   /**
-   * Defines POST
-   * /wattdepot/{group_id}/depository/{depository_id}/measurement/{measurement
+   * Defines GET
+   * /wattdepot/{org-id}/depository/{depository-id}/measurement/{measurement
    * -id} API call.
    * 
    * @return The Measurement with the id {measurement-id}.
@@ -44,7 +44,7 @@ public interface DepositoryMeasurementResource {
 
   /**
    * Defines POST
-   * /wattdepot/{group_id}/depository/{depository_id}/measurement/{measurement
+   * /wattdepot/{org-id}/depository/{depository-id}/measurement/{measurement
    * -id} API call.
    * 
    * @param meas
@@ -55,7 +55,7 @@ public interface DepositoryMeasurementResource {
 
   /**
    * Defined the DEL
-   * /wattdepot/{group_id}/depository/{depository_id}/measurement
+   * /wattdepot/{org-id}/depository/{depository-id}/measurement
    * /{measurement-id} API call.
    * 
    */

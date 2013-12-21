@@ -42,7 +42,8 @@ public final class RestletLoggerUtil {
           && (logManager.getLogger(logName) != null)) {
         // First, get rid of current Handlers
         Logger logger = logManager.getLogger(logName);
-//        System.out.println("logger is: " + logger);
+        logger.setFilter(new HTTPClientHelperFilter());
+//        System.out.println("logger is: " + logger + " name = " + logName);
         logger = logger.getParent();
 //        System.out.println("parent logger is: " + logger);
         Handler[] handlers = logger.getHandlers();

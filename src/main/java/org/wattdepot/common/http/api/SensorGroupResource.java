@@ -32,7 +32,7 @@ import org.wattdepot.common.domainmodel.SensorGroup;
 public interface SensorGroupResource {
 
   /**
-   * Defines GET /wattdepot/sensorgroup/{sensorgroup_id} API call.
+   * Defines GET /wattdepot/sensor-group/{sensor-group-id} API call.
    * 
    * @return The SensorGroup with the given id. The id is sent in the request.
    */
@@ -40,7 +40,7 @@ public interface SensorGroupResource {
   public SensorGroup retrieve();
 
   /**
-   * Defines the PUT /wattdepot/sensorgroup/ API call.
+   * Defines the PUT /wattdepot/sensor-group/ API call.
    * 
    * @param sensorgroup
    *          The SensorGroup to store.
@@ -49,7 +49,7 @@ public interface SensorGroupResource {
   public void update(SensorGroup sensorgroup);
 
   /**
-   * Defined the DEL /wattdepot/sensorgroup/{sensorgroup_id} API call. The id is
+   * Defined the DEL /wattdepot/sensor-group/{sensor-group-id} API call. The id is
    * sent in the request.
    */
   @Delete

@@ -22,13 +22,13 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.DepositoryPutResource;
 
 /**
  * DepositoryPutServerResource - Handles Depository HTTP API
- * ("/wattdepot/{group_id}/depository/").
+ * ("/wattdepot/{org-id}/depository/").
  * 
  * @author Cam Moore
  * 
@@ -44,8 +44,8 @@ public class DepositoryPutServerResource extends WattDepotServerResource impleme
    */
   @Override
   public void store(Depository depository) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/{" + groupId + "}/depository/ with " + depository);
-    UserGroup owner = depot.getUserGroup(groupId);
+    getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/depository/ with " + depository);
+    Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
       try {
         depot.defineWattDepository(depository.getName(), depository.getMeasurementType(), owner);
@@ -55,7 +55,7 @@ public class DepositoryPutServerResource extends WattDepotServerResource impleme
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, groupId + " does not exist.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
   }
 }

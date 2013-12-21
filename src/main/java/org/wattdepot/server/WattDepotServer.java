@@ -29,6 +29,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.wattdepot.common.util.logger.HTTPClientHelperFilter;
 import org.wattdepot.common.util.logger.RestletLoggerUtil;
 import org.wattdepot.common.util.logger.WattDepotLogger;
 import org.wattdepot.server.http.api.WattDepotComponent;
@@ -99,12 +100,12 @@ public class WattDepotServer {
     WattDepotServer server = new WattDepotServer();
     boolean enableLogging = Boolean.parseBoolean(properties
         .get(ServerProperties.ENABLE_LOGGING_KEY));
+    server.logger = WattDepotLogger.getLogger("org.wattdepot.server",
+        properties.get(ServerProperties.SERVER_HOME_DIR));
     if (enableLogging) {
       RestletLoggerUtil.removeRestletLoggers();
     }
     server.serverProperties = properties;
-    server.logger = WattDepotLogger.getLogger("org.wattdepot.server",
-        properties.get(ServerProperties.SERVER_HOME_DIR));
     server.hostName = server.serverProperties.getFullHost();
 
     String depotClass = properties.get(ServerProperties.WATT_DEPOT_IMPL_KEY);
@@ -123,6 +124,8 @@ public class WattDepotServer {
     }
     server.depot.setServerProperties(properties);
     server.restletServer = new WattDepotComponent(server.depot, port);
+    server.logger = server.restletServer.getLogger();
+    server.logger.setFilter(new HTTPClientHelperFilter());
 
     // Set up logging.
     if (enableLogging) {

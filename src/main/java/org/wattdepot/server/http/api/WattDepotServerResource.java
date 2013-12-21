@@ -33,8 +33,8 @@ import org.wattdepot.server.WattDepotPersistence;
 public class WattDepotServerResource extends ServerResource {
   /** The WattDepot instance. */
   protected WattDepotPersistence depot;
-  /** The groupId in the request. */
-  protected String groupId;
+  /** The orgId in the request. */
+  protected String orgId;
   
 
   /*
@@ -46,6 +46,6 @@ public class WattDepotServerResource extends ServerResource {
   protected void doInit() throws ResourceException {
     WattDepotApplication app = (WattDepotApplication) getApplication();
     this.depot = app.getDepot();
-    this.groupId = getAttribute(Labels.GROUP_ID);
+    this.orgId = getAttribute(Labels.ORGANIZATION_ID);
   }
 }

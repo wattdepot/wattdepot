@@ -30,7 +30,7 @@ import org.wattdepot.common.domainmodel.SensorLocationList;
 public interface SensorLocationsResource {
 
   /**
-   * Defines the GET /wattdepot/{group_id}/locations/ API call.
+   * Defines the GET /wattdepot/{org-id}/locations/ API call.
    * 
    * @return a List of the defined Locations.
    */

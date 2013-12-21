@@ -61,12 +61,6 @@ public class Labels {
   /** The label for gap. */
   public static final String GAP = "gap";
   
-  /** Label for the group id. */
-  public static final String GROUP_ID = "group-id";
-
-  /** Label for the group id. */
-  public static final String GROUP_ID_VAR = "{" + GROUP_ID + "}";
-
   /** The label for google visualization. */
   public static final String GVIZ = "gviz";
   
@@ -157,17 +151,23 @@ public class Labels {
   /** The URI for manipulating a given UserInfo. */
   public static final String USER = "user";
 
-  /** The URI for manipulating a given UserGroup. */
-  public static final String USER_GROUP = "user-group";
+  /** The URI for manipulating a given Organization. */
+  public static final String ORGANIZATION = "organization";
 
-  /** Label for the user group id. */
-  public static final String USER_GROUP_ID = "user-group-id";
+  /** Label for the organization id. */
+  public static final String ORGANIZATION_ID = "org-id";
 
-  /** Label for the user group id. */
-  public static final String USER_GROUP_ID_VAR = "{" + USER_GROUP_ID + "}";
+  /** Label for the organization id. */
+  public static final String ORGANIZATION_ID_VAR = "{" + ORGANIZATION_ID + "}";
 
-  /** The URI for manipulating a given UserGroup. */
-  public static final String USER_GROUPS = "user-groups";
+  /** Label for the organization id. */
+  public static final String ORGANIZATION_ID2 = "org-id2";
+
+  /** Label for the organization id. */
+  public static final String ORGANIZATION_ID2_VAR = "{" + ORGANIZATION_ID2 + "}";
+
+  /** URI component for manipulating all Organizations. */
+  public static final String ORGANIZATIONS = "organizations";
 
   /** Label for the user id. */
   public static final String USER_ID = "user-id";

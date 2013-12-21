@@ -23,7 +23,7 @@ import org.restlet.resource.Get;
 /**
  * GvizDepositoryValueResource - HTTP Interface for getting the Google Visualization 
  * Data Source representation for Depository value.
- * (/wattdepot/{group_id}/depository/{depository_id}/value/gviz/) * 
+ * (/wattdepot/{org-id}/depository/{depository-id}/value/gviz/) * 
  * @author Yongwen Xu
  * 
  */
@@ -31,16 +31,16 @@ public interface GvizDepositoryValueResource {
 
   /**
    * Defines GET
-   * /wattdepot/{group_id}/depository/{depository_id}/value/gviz/?
+   * /wattdepot/{org-id}/depository/{depository-id}/value/gviz/?
    *    sensor={sensorId}&start={start}&end={end}&gap={gapSeconds}
    * <br/> or GET
-   * /wattdepot/{group_id}/depository/{depository_id}/value/gviz/?
+   * /wattdepot/{org-id}/depository/{depository-id}/value/gviz/?
    *    sensor={sensorId}&timestamp={timestamp}&gap={gapSeconds}
    * <br/> or GET
-   * /wattdepot/{group_id}/depository/{depository_id}/value/gviz/?
+   * /wattdepot/{org-id}/depository/{depository-id}/value/gviz/?
    *    sensor={sensorId}&latest=true
    * <br/> or GET
-   * /wattdepot/{group_id}/depository/{depository_id}/value/gviz/?
+   * /wattdepot/{org-id}/depository/{depository-id}/value/gviz/?
    *    sensor={sensorId}&earliest=true
    *    
    * @return Google Visualization data source.

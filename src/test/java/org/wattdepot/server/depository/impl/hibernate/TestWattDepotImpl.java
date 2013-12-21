@@ -53,7 +53,7 @@ public class TestWattDepotImpl {
 
   /**
    * Test method for
-   * {@link org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl#getUserGroups()}
+   * {@link org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl#getOrganizations()}
    * .
    */
   @Test

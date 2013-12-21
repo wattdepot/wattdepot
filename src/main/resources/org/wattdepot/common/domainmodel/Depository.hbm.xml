@@ -15,7 +15,7 @@
             <column name="MEASUREMENTTYPE" />
         </many-to-one>
         <many-to-one name="owner"
-    class="org.wattdepot.common.domainmodel.UserGroup" fetch="join">
+    class="org.wattdepot.common.domainmodel.Organization" fetch="join">
             <column name="OWNER" />
         </many-to-one>
     </class>

@@ -29,7 +29,7 @@ import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.Property;
 import org.wattdepot.common.domainmodel.Sensor;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.MeasurementGapException;
 import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.NoMeasurementException;
@@ -111,7 +111,7 @@ public class DepositoryImpl extends Depository {
    *          The owner.
    */
   public DepositoryImpl(String name, MeasurementType measurementType,
-      UserGroup owner) {
+      Organization owner) {
     super(name, measurementType, owner);
   }
 

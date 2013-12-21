@@ -18,23 +18,20 @@
  */
 package org.wattdepot.server.http.api;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.logging.Level;
 
-import org.wattdepot.common.domainmodel.Property;
-import org.wattdepot.common.domainmodel.UserGroup;
-import org.wattdepot.common.domainmodel.UserInfo;
-import org.wattdepot.common.http.api.UserGroupsResource;
+import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.domainmodel.OrganizationList;
+import org.wattdepot.common.http.api.OrganizationsResource;
 
 /**
  * UserGroupsServerResource - Handles the UserGroup HTTP API
- * ("/wattdepot/{group_id}/groups").
+ * ("/wattdepot/{org-id}/organizations/").
  * 
  * @author Cam Moore
  * 
  */
-public class UserGroupsServerResource extends WattDepotServerResource implements UserGroupsResource {
+public class OrganizationsServerResource extends WattDepotServerResource implements OrganizationsResource {
 
   /*
    * (non-Javadoc)
@@ -42,14 +39,12 @@ public class UserGroupsServerResource extends WattDepotServerResource implements
    * @see org.wattdepot.restlet.UserGroupsResource#retrieve()
    */
   @Override
-  public ArrayList<UserGroup> retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/usergroups/");
-    ArrayList<UserGroup> ret = new ArrayList<UserGroup>();
-    UserGroup g1 = new UserGroup("UH");
-    UserInfo i1 = new UserInfo("cmoore", "Cam", "Moore", "cmoore@hawaii.edu", false,
-        new HashSet<Property>());
-    g1.add(i1);
-    ret.add(g1);
+  public OrganizationList retrieve() {
+    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/organizations/");
+    OrganizationList ret = new OrganizationList();
+    for (Organization o : depot.getOrganizations()) {
+      ret.getOrganizations().add(o);
+    }
     return ret;
   }
 

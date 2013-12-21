@@ -26,12 +26,13 @@ import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorList;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.http.api.DepositorySensorsResource;
 
 /**
  * DepositorySensorsServerResource - Handles the Depository sensors HTTP API
- * ("/wattdepot/{group_id}/depository/{depository_id}/sensors/").
+ * ("/wattdepot/{org-id}/depository/{depository-id}/sensors/").
  * 
  * @author Cam Moore
  * 
@@ -57,14 +58,18 @@ public class DepositorySensorsServerResource extends WattDepotServerResource imp
    * @see org.wattdepot.restlet.DepositorySensorsResource#retrieve()
    */
   @Override
-  public List<Sensor> retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/depository/{" + depositoryId
+  public SensorList retrieve() {
+    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId
         + "}/sensors/");
     Depository depository;
+    SensorList ret = null;
     try {
-      depository = depot.getWattDeposiory(depositoryId, groupId);
+      depository = depot.getWattDeposiory(depositoryId, orgId);
       if (depository != null) {
-        return depository.listSensors();
+        ret = new SensorList();
+        for (Sensor s : depository.listSensors()) {
+          ret.getSensors().add(s);
+        }
       }
       else {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " not defined.");
@@ -73,7 +78,7 @@ public class DepositorySensorsServerResource extends WattDepotServerResource imp
     catch (MissMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
     }
-    return null;
+    return ret;
   }
 
 }

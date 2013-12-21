@@ -18,10 +18,8 @@
  */
 package org.wattdepot.common.http.api;
 
-import java.util.List;
-
 import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorList;
 
 /**
  * DepositorySensorsResource - HTTP Interface for getting the Sensors that have
@@ -33,11 +31,11 @@ import org.wattdepot.common.domainmodel.Sensor;
 public interface DepositorySensorsResource {
 
   /**
-   * Defines GET /wattdepot/{group_id}/depository/{depository_id}/sensors/ API call.
+   * Defines GET /wattdepot/{org-id}/depository/{depository-id}/sensors/ API call.
    * 
    * @return An ArrayList of the Sensors that have sent measurements to the depository.
    */
   @Get("json")
   // Use JSON ast transport encoding.
-  public List<Sensor> retrieve();
+  public SensorList retrieve();
 }

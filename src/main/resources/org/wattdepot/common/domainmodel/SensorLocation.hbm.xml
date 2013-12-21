@@ -23,7 +23,7 @@
         <property name="description" type="java.lang.String">
             <column name="DESCRIPTION" />
         </property>
-        <many-to-one name="owner" class="org.wattdepot.common.domainmodel.UserGroup" fetch="join">
+        <many-to-one name="owner" class="org.wattdepot.common.domainmodel.Organization" fetch="join">
             <column name="OWNER" />
         </many-to-one>
     </class>

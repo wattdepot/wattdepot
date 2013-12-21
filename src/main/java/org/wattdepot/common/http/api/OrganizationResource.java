@@ -1,5 +1,5 @@
 /**
- * UserGroupsResource.java This file is part of WattDepot.
+ * OrganizationResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -18,25 +18,41 @@
  */
 package org.wattdepot.common.http.api;
 
-import java.util.ArrayList;
-
+import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.restlet.resource.Put;
+import org.wattdepot.common.domainmodel.Organization;
 
 /**
- * UserGroupsResource - The HTTP API for UserGroups.
+ * OrganizationResource - HTTP Interface for data model organization.
  * 
  * @author Cam Moore
  * 
  */
-public interface UserGroupsResource {
+public interface OrganizationResource {
 
   /**
-   * Defines the GET /wattdepot/usergroups/ API call.
+   * Defines GET /wattdepot/{org-id}/organization/{org-id} API call.
    * 
-   * @return a List of the defined UserGroups.
+   * @return The organization with the given id. The id is sent in the request.
    */
   @Get("json") // Use JSON as transport encoding.
-  public ArrayList<UserGroup> retrieve();
+  public Organization retrieve();
+
+  /**
+   * Defines the PUT /wattdepot/{org-id}/organization/ API call.
+   * 
+   * @param organization
+   *          The organization to store.
+   */
+  @Put
+  public void store(Organization organization);
+
+  /**
+   * Defined the DEL /wattdepot/{org-id}/organization/{org-id} API call. The id is sent in the
+   * request.
+   */
+  @Delete
+  public void remove();
 
 }

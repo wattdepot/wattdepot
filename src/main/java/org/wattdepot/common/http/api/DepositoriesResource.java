@@ -30,7 +30,7 @@ import org.wattdepot.common.domainmodel.DepositoryList;
 public interface DepositoriesResource {
 
   /**
-   * Defines the GET /wattdepot/{group_id}/depositories/ API call.
+   * Defines the GET /wattdepot/{org-id}/depositories/ API call.
    * 
    * @return a List of the defined Locations.
    */

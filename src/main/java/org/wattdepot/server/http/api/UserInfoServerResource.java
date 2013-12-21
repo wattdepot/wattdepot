@@ -25,7 +25,7 @@ import org.restlet.resource.ResourceException;
 import org.restlet.security.MemoryRealm;
 import org.restlet.security.User;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -34,7 +34,7 @@ import org.wattdepot.common.http.api.UserInfoResource;
 
 /**
  * UserInfoServerResource - Handles the UserInfo HTTP API
- * ("/wattdepot/{group_id}/user/{user_id}").
+ * ("/wattdepot/{org-id}/user/{user-id}").
  * 
  * @author Cam Moore
  * 
@@ -60,7 +60,7 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
    */
   @Override
   public UserInfo retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/user/{" + userId + "}");
+    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/user/{" + userId + "}");
     UserInfo user = depot.getUser(userId);
     if (user == null) {
       setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "User " + userId + " is not defined.");
@@ -76,7 +76,7 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
    */
   @Override
   public void store(UserInfo user) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/{" + groupId + "}/user/ with " + user);
+    getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/user/ with " + user);
     if (!depot.getUsers().contains(user)) {
       try {
         UserInfo defined = depot.defineUserInfo(user.getId(), user.getFirstName(),
@@ -90,8 +90,8 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
           realm.getUsers().add(newUser);
           realm.map(newUser, app.getRole("User"));
           if (user.getAdmin()) {
-            UserGroup.ADMIN_GROUP.add(defined);
-            depot.updateUserGroup(UserGroup.ADMIN_GROUP);
+            Organization.ADMIN_GROUP.add(defined);
+            depot.updateOrganization(Organization.ADMIN_GROUP);
           }
         }
         else {
@@ -111,7 +111,7 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
    */
   @Override
   public void remove() {
-    getLogger().log(Level.INFO, "DEL /wattdepot/{" + groupId + "}/user/{" + userId + "}");
+    getLogger().log(Level.INFO, "DEL /wattdepot/{" + orgId + "}/user/{" + userId + "}");
     try {
       depot.deleteUser(userId);
     }

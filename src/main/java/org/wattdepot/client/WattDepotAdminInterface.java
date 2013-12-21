@@ -18,7 +18,7 @@
  */
 package org.wattdepot.client;
 
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -73,7 +73,7 @@ public interface WattDepotAdminInterface extends WattDepotInterface {
    * @param group
    *          the UserGroup to store.
    */
-  public void putUserGroup(UserGroup group);
+  public void putUserGroup(Organization group);
 
   /**
    * Stores the given UserPassword in the WattDepot Server.

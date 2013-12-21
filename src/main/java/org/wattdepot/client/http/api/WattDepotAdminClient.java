@@ -21,12 +21,12 @@ package org.wattdepot.client.http.api;
 import org.restlet.resource.ClientResource;
 import org.wattdepot.client.WattDepotAdminInterface;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.http.api.UserGroupResource;
+import org.wattdepot.common.http.api.OrganizationResource;
 import org.wattdepot.common.http.api.UserInfoResource;
 import org.wattdepot.common.http.api.UserPasswordResource;
 
@@ -36,7 +36,8 @@ import org.wattdepot.common.http.api.UserPasswordResource;
  * @author Cam Moore
  * 
  */
-public class WattDepotAdminClient extends WattDepotClient implements WattDepotAdminInterface {
+public class WattDepotAdminClient extends WattDepotClient implements
+    WattDepotAdminInterface {
 
   /**
    * Creates a new WattDepotAdminClient.
@@ -69,7 +70,8 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    */
   @Override
   public void deleteUser(String id) throws IdNotFoundException {
-    ClientResource client = makeClient(getGroupId() + "/" + Labels.USER + "/" + id);
+    ClientResource client = makeClient(getGroupId() + "/" + Labels.USER + "/"
+        + id);
     UserInfoResource resource = client.wrap(UserInfoResource.class);
     resource.remove();
     client.release();
@@ -83,8 +85,9 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    */
   @Override
   public void deleteUserGroup(String id) throws IdNotFoundException {
-    ClientResource client = makeClient(getGroupId() + "/" + Labels.USER_GROUP + "/" + id);
-    UserGroupResource resource = client.wrap(UserGroupResource.class);
+    ClientResource client = makeClient(getGroupId() + "/" + Labels.ORGANIZATION
+        + "/" + id);
+    OrganizationResource resource = client.wrap(OrganizationResource.class);
     try {
       resource.remove();
     }
@@ -102,7 +105,8 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    */
   @Override
   public void deleteUserPassword(String id) throws IdNotFoundException {
-    ClientResource client = makeClient(getGroupId() + "/" + Labels.USER_PASSWORD + "/" + id);
+    ClientResource client = makeClient(getGroupId() + "/"
+        + Labels.USER_PASSWORD + "/" + id);
     UserPasswordResource resource = client.wrap(UserPasswordResource.class);
     try {
       resource.remove();
@@ -121,10 +125,15 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    */
   @Override
   public void putUser(UserInfo user) {
-    ClientResource client = makeClient(getGroupId() + "/" + Labels.USER + "/" + user.getId());
+    ClientResource client = makeClient(getGroupId() + "/" + Labels.USER + "/"
+        + user.getId());
     UserInfoResource resource = client.wrap(UserInfoResource.class);
-    resource.store(user);
-    client.release();
+    try {
+      resource.store(user);
+    }
+    finally {
+      client.release();
+    }
   }
 
   /*
@@ -135,11 +144,16 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    * .datamodel.UserGroup)
    */
   @Override
-  public void putUserGroup(UserGroup group) {
-    ClientResource client = makeClient(getGroupId() + "/" + Labels.USER_GROUP + "/" + group.getId());
-    UserGroupResource resource = client.wrap(UserGroupResource.class);
-    resource.store(group);
-    client.release();
+  public void putUserGroup(Organization group) {
+    ClientResource client = makeClient(getGroupId() + "/" + Labels.ORGANIZATION
+        + "/" + group.getId());
+    OrganizationResource resource = client.wrap(OrganizationResource.class);
+    try {
+      resource.store(group);
+    }
+    finally {
+      client.release();
+    }
   }
 
   /*
@@ -151,8 +165,8 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    */
   @Override
   public void putUserPassword(UserPassword password) {
-    ClientResource client = makeClient(getGroupId() + "/" + Labels.USER_PASSWORD + "/"
-        + password.getId());
+    ClientResource client = makeClient(getGroupId() + "/"
+        + Labels.USER_PASSWORD + "/" + password.getId());
     UserPasswordResource resource = client.wrap(UserPasswordResource.class);
     resource.store(password);
     client.release();

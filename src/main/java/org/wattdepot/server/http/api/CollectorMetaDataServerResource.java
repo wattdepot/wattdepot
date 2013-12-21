@@ -24,15 +24,15 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.CollectorMetaData;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.http.api.CollectorMetaDataResource;
 
 /**
  * CollectorMetaDataServerResource - Handles the CollectorMetaData HTTP API
- * (("/wattdepot/{group-id}/collector-metadata/",
- * "/wattdepot/{group-id}/collector-metadata/{collector-metadata-id}").
+ * (("/wattdepot/{org-id}/collector-metadata/",
+ * "/wattdepot/{org-id}/collector-metadata/{collector-metadata-id}").
  * 
  * @author Cam Moore
  * 
@@ -62,10 +62,10 @@ public class CollectorMetaDataServerResource extends WattDepotServerResource imp
   @Override
   public CollectorMetaData retrieve() {
     getLogger().log(Level.INFO,
-        "GET /wattdepot/{" + groupId + "}/collectormetadata/{" + metaDataId + "}");
+        "GET /wattdepot/{" + orgId + "}/collectormetadata/{" + metaDataId + "}");
     CollectorMetaData process = null;
     try {
-      process = depot.getCollectorMetaData(metaDataId, groupId);
+      process = depot.getCollectorMetaData(metaDataId, orgId);
     }
     catch (MissMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
@@ -85,9 +85,9 @@ public class CollectorMetaDataServerResource extends WattDepotServerResource imp
   @Override
   public void remove() {
     getLogger().log(Level.INFO,
-        "DEL /wattdepot/{" + groupId + "}/collector-metadata/{" + metaDataId + "}");
+        "DEL /wattdepot/{" + orgId + "}/collector-metadata/{" + metaDataId + "}");
     try {
-      depot.deleteCollectorMetaData(metaDataId, groupId);
+      depot.deleteCollectorMetaData(metaDataId, orgId);
     }
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
@@ -108,12 +108,12 @@ public class CollectorMetaDataServerResource extends WattDepotServerResource imp
   public void update(CollectorMetaData metadata) {
     getLogger().log(
         Level.INFO,
-        "POST /wattdepot/{" + groupId + "}/collector-metadata/{" + metaDataId + "} with "
+        "POST /wattdepot/{" + orgId + "}/collector-metadata/{" + metaDataId + "} with "
             + metadata);
-    UserGroup owner = depot.getUserGroup(groupId);
+    Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
       if (metadata.getId().equals(metaDataId)) {
-        if (depot.getCollectorMetaDataIds(groupId).contains(metadata.getId())) {
+        if (depot.getCollectorMetaDataIds(orgId).contains(metadata.getId())) {
           depot.updateCollectorMetaData(metadata);
         }
       }
@@ -122,7 +122,7 @@ public class CollectorMetaDataServerResource extends WattDepotServerResource imp
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, groupId + " does not exist.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
   }
 

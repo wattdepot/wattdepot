@@ -23,7 +23,7 @@ import org.restlet.resource.Get;
 /**
  * GvizDepositoryMeasurementsResource - HTTP Interface for getting the Google Visualization 
  * Data Source representation for Depository measurements.
- * (/wattdepot/{group_id}/depository/{depository_id}/measurements/gviz/)
+ * (/wattdepot/{org-id}/depository/{depository-id}/measurements/gviz/)
  * 
  * @author Yongwen Xu
  * 
@@ -32,7 +32,7 @@ public interface GvizDepositoryMeasurementsResource {
 
   /**
    * Defines GET 
-   * /wattdepot/{group_id}/depository/{depository_id}/measurements/gviz/?
+   * /wattdepot/{org-id}/depository/{depository-id}/measurements/gviz/?
    *    sensor={sensorId}&start={start}&end={end}.
    *
    * @return Google Visualization data source.
