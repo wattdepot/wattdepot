@@ -70,30 +70,11 @@ public class WattDepotAdminClient extends WattDepotClient implements
    */
   @Override
   public void deleteUser(String id) throws IdNotFoundException {
-    ClientResource client = makeClient(getGroupId() + "/" + Labels.USER + "/"
+    ClientResource client = makeClient("admin/" + Labels.USER + "/"
         + id);
     UserInfoResource resource = client.wrap(UserInfoResource.class);
     resource.remove();
     client.release();
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.client.WattDepotAdminInterface#deleteUserGroup(java.lang
-   * .String)
-   */
-  @Override
-  public void deleteUserGroup(String id) throws IdNotFoundException {
-    ClientResource client = makeClient(getGroupId() + "/" + Labels.ORGANIZATION
-        + "/" + id);
-    OrganizationResource resource = client.wrap(OrganizationResource.class);
-    try {
-      resource.remove();
-    }
-    finally {
-      client.release();
-    }
   }
 
   /*
@@ -105,7 +86,7 @@ public class WattDepotAdminClient extends WattDepotClient implements
    */
   @Override
   public void deleteUserPassword(String id) throws IdNotFoundException {
-    ClientResource client = makeClient(getGroupId() + "/"
+    ClientResource client = makeClient("admin/"
         + Labels.USER_PASSWORD + "/" + id);
     UserPasswordResource resource = client.wrap(UserPasswordResource.class);
     try {
@@ -125,31 +106,11 @@ public class WattDepotAdminClient extends WattDepotClient implements
    */
   @Override
   public void putUser(UserInfo user) {
-    ClientResource client = makeClient(getGroupId() + "/" + Labels.USER + "/"
+    ClientResource client = makeClient("admin/" + Labels.USER + "/"
         + user.getId());
     UserInfoResource resource = client.wrap(UserInfoResource.class);
     try {
       resource.store(user);
-    }
-    finally {
-      client.release();
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotAdminInterface#putUserGroup(org.wattdepot
-   * .datamodel.UserGroup)
-   */
-  @Override
-  public void putUserGroup(Organization group) {
-    ClientResource client = makeClient(getGroupId() + "/" + Labels.ORGANIZATION
-        + "/" + group.getId());
-    OrganizationResource resource = client.wrap(OrganizationResource.class);
-    try {
-      resource.store(group);
     }
     finally {
       client.release();
@@ -165,11 +126,59 @@ public class WattDepotAdminClient extends WattDepotClient implements
    */
   @Override
   public void putUserPassword(UserPassword password) {
-    ClientResource client = makeClient(getGroupId() + "/"
+    ClientResource client = makeClient("admin/"
         + Labels.USER_PASSWORD + "/" + password.getId());
     UserPasswordResource resource = client.wrap(UserPasswordResource.class);
     resource.store(password);
     client.release();
+  }
+
+  /* (non-Javadoc)
+   * @see org.wattdepot.client.WattDepotAdminInterface#deleteOrganization(java.lang.String)
+   */
+  @Override
+  public void deleteOrganization(String id) throws IdNotFoundException {
+    ClientResource client = makeClient("admin/" + Labels.ORGANIZATION
+        + "/" + id);
+    OrganizationResource resource = client.wrap(OrganizationResource.class);
+    try {
+      resource.remove();
+    }
+    finally {
+      client.release();
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see org.wattdepot.client.WattDepotAdminInterface#putOrganization(org.wattdepot.common.domainmodel.Organization)
+   */
+  @Override
+  public void putOrganization(Organization org) {
+    ClientResource client = makeClient("admin/" + Labels.ORGANIZATION
+        + "/");
+    OrganizationResource resource = client.wrap(OrganizationResource.class);
+    try {
+      resource.store(org);
+    }
+    finally {
+      client.release();
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see org.wattdepot.client.WattDepotAdminInterface#updateOrganization(org.wattdepot.common.domainmodel.Organization)
+   */
+  @Override
+  public void updateOrganization(Organization org) {
+    ClientResource client = makeClient("admin/" + Labels.ORGANIZATION
+        + "/" + org.getId());
+    OrganizationResource resource = client.wrap(OrganizationResource.class);
+    try {
+      resource.update(org);
+    }
+    finally {
+      client.release();
+    }
   }
 
 }

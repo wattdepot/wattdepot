@@ -80,7 +80,7 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
     if (!depot.getUsers().contains(user)) {
       try {
         UserInfo defined = depot.defineUserInfo(user.getId(), user.getFirstName(),
-            user.getLastName(), user.getEmail(), user.getAdmin(), user.getProperties());
+            user.getLastName(), user.getEmail(), user.getOrganizationId(), user.getProperties());
         WattDepotApplication app = (WattDepotApplication) getApplication();
         UserPassword up = app.getDepot().getUserPassword(user.getId());
         if (up != null) {
@@ -89,10 +89,6 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
               user.getLastName(), user.getEmail());
           realm.getUsers().add(newUser);
           realm.map(newUser, app.getRole("User"));
-          if (user.getAdmin()) {
-            Organization.ADMIN_GROUP.add(defined);
-            depot.updateOrganization(Organization.ADMIN_GROUP);
-          }
         }
         else {
           setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No password information for " + user.getId());

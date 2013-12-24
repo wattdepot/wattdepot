@@ -133,30 +133,32 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
         throw new RuntimeException("opens and closed mismatched.");
       }
     }
-    UserInfo adminUser = getUser(UserInfo.ROOT.getId());
-    if (getSessionClose() != getSessionOpen()) {
-      throw new RuntimeException("opens and closed mismatched.");
-    }
-    if (adminUser == null) {
-      try {
-        defineUserInfo(UserInfo.ROOT.getId(), UserInfo.ROOT.getFirstName(),
-            UserInfo.ROOT.getLastName(), UserInfo.ROOT.getEmail(), UserInfo.ROOT.getAdmin(),
-            UserInfo.ROOT.getProperties());
-        if (getSessionClose() != getSessionOpen()) {
-          throw new RuntimeException("opens and closed mismatched.");
-        }
-      }
-      catch (UniqueIdException e) {
-        // what do we do here?
-        e.printStackTrace();
-      }
-    }
-    else {
-      updateUserInfo(UserInfo.ROOT);
-      if (getSessionClose() != getSessionOpen()) {
-        throw new RuntimeException("opens and closed mismatched.");
-      }
-    }
+//    UserInfo adminUser = getUser(UserInfo.ROOT.getId());
+//    if (getSessionClose() != getSessionOpen()) {
+//      throw new RuntimeException("opens and closed mismatched.");
+//    }
+// TODO: check on this we don't want to have the root user defined in the database, but we need
+    // them in the Restlet Application/Component.
+//    if (adminUser == null) {
+//      try {
+//        defineUserInfo(UserInfo.ROOT.getId(), UserInfo.ROOT.getFirstName(),
+//            UserInfo.ROOT.getLastName(), UserInfo.ROOT.getEmail(),
+//            UserInfo.ROOT.getProperties());
+//        if (getSessionClose() != getSessionOpen()) {
+//          throw new RuntimeException("opens and closed mismatched.");
+//        }
+//      }
+//      catch (UniqueIdException e) {
+//        // what do we do here?
+//        e.printStackTrace();
+//      }
+//    }
+//    else {
+//      updateUserInfo(UserInfo.ROOT);
+//      if (getSessionClose() != getSessionOpen()) {
+//        throw new RuntimeException("opens and closed mismatched.");
+//      }
+//    }
   }
 
   /*
@@ -375,8 +377,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * java.lang.Boolean, java.util.Set)
    */
   @Override
-  public UserInfo defineUserInfo(String id, String firstName, String lastName, String email,
-      Boolean admin, Set<Property> properties) throws UniqueIdException {
+  public UserInfo defineUserInfo(String id, String firstName, String lastName, String email, String orgId,
+      Set<Property> properties) throws UniqueIdException {
     UserInfo u = getUser(id);
     if (u != null) {
       throw new UniqueIdException(id + " is already a UserInfo id.");
@@ -384,7 +386,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    u = new UserInfo(id, firstName, lastName, email, admin, properties);
+    u = new UserInfo(id, firstName, lastName, email, orgId, properties);
     session.saveOrUpdate(u);
     for (Property p : properties) {
       session.saveOrUpdate(p);

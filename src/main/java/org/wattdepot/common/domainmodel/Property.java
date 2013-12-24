@@ -24,8 +24,6 @@ package org.wattdepot.common.domainmodel;
  * @author Cam Moore
  */
 public class Property {
-  /** Unique database id. If necessary. */
-  private Long id;
   /** The key. */
   private String key;
   /** The value. */
@@ -89,13 +87,6 @@ public class Property {
   }
 
   /**
-   * @return the id
-   */
-  public Long getId() {
-    return id;
-  }
-
-  /**
    * @return the key
    */
   public String getKey() {
@@ -121,13 +112,6 @@ public class Property {
     result = prime * result + ((key == null) ? 0 : key.hashCode());
     result = prime * result + ((value == null) ? 0 : value.hashCode());
     return result;
-  }
-
-  /**
-   * @param id the dbId to set
-   */
-  public void setId(Long id) {
-    this.id = id;
   }
 
   /**

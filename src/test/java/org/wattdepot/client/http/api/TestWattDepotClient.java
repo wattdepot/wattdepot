@@ -139,7 +139,7 @@ public class TestWattDepotClient {
       }
       admin.putUserPassword(testPassword);
       admin.putUser(testUser);
-      admin.putUserGroup(testGroup);
+      admin.putOrganization(testGroup);
       try {
         admin.putMeasurementType(InstanceFactory.getMeasurementType());
       }
@@ -166,7 +166,7 @@ public class TestWattDepotClient {
   public void tearDown() throws Exception {
     logger.finest("tearDown()");
     admin.deleteUser(testPassword.getId());
-    admin.deleteUserGroup(testGroup.getId());
+    admin.deleteOrganization(testGroup.getId());
     admin.deleteUserPassword(testUser.getId());
     logger.finest("Done tearDown()");
   }

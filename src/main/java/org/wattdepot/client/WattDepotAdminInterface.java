@@ -24,13 +24,13 @@ import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;
 
 /**
- * WattDepotAdminInterface - Provides all the functionality of the
- * WattDepotInterface adding UserInfo and UserGroup functionality.
+ * WattDepotAdminInterface - Provides the functionality for the admin. Supports
+ * manipulation of UserInfos and Organizations.
  * 
  * @author Cam Moore
  * 
  */
-public interface WattDepotAdminInterface extends WattDepotInterface {
+public interface WattDepotAdminInterface {
   /**
    * Deletes the given User.
    * 
@@ -42,14 +42,14 @@ public interface WattDepotAdminInterface extends WattDepotInterface {
   public void deleteUser(String id) throws IdNotFoundException;
 
   /**
-   * Deletes the given UserGroup.
+   * Deletes the given Organization.
    * 
    * @param id
-   *          the unique id of the UserGroup.
+   *          the unique id of the Organization.
    * @throws IdNotFoundException
-   *           if the UserGroup's id is not found.
+   *           if the Organization's id is not found.
    */
-  public void deleteUserGroup(String id) throws IdNotFoundException;
+  public void deleteOrganization(String id) throws IdNotFoundException;
 
   /**
    * @param id
@@ -68,12 +68,12 @@ public interface WattDepotAdminInterface extends WattDepotInterface {
   public void putUser(UserInfo user);
 
   /**
-   * Stores the given UserGroup in the WattDepot Server.
+   * Stores the given Organization in the WattDepot Server.
    * 
-   * @param group
-   *          the UserGroup to store.
+   * @param org
+   *          the Organization to store.
    */
-  public void putUserGroup(Organization group);
+  public void putOrganization(Organization org);
 
   /**
    * Stores the given UserPassword in the WattDepot Server.
@@ -82,4 +82,11 @@ public interface WattDepotAdminInterface extends WattDepotInterface {
    *          The UserPassword to store.
    */
   public void putUserPassword(UserPassword password);
+  
+  /**
+   * Updates the Organization in the WattDepot Server.
+   * 
+   * @param org the Organization to update.
+   */
+  public void updateOrganization(Organization org);
 }

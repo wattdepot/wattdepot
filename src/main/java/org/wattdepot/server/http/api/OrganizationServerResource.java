@@ -155,4 +155,21 @@ public class OrganizationServerResource extends WattDepotServerResource implemen
     }
     return null;
   }
+
+  /* (non-Javadoc)
+   * @see org.wattdepot.common.http.api.OrganizationResource#update(org.wattdepot.common.domainmodel.Organization)
+   */
+  @Override
+  public void update(Organization organization) {
+    depot.updateOrganization(organization);
+    // update the Realm
+    WattDepotApplication app = (WattDepotApplication) getApplication();
+    // create the new Role for the group
+    String roleName = organization.getId();
+    Role role = app.getRole(roleName);
+    MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
+    for (UserInfo info : organization.getUsers()) {
+      realm.map(getUser(info), role);
+    }
+  }
 }
