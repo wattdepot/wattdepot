@@ -30,7 +30,7 @@ import org.wattdepot.common.http.api.DepositoryMeasurementResource;
 
 /**
  * DepositoryMeasurementServerResource - Handles the Measurement HTTP API
- * ("/wattdepot/{group_id}/depository/{depository_id}/measurement/").
+ * ("/wattdepot/{org-id}/depository/{depository_id}/measurement/").
  * 
  * @author Cam Moore
  * 
@@ -61,11 +61,11 @@ public class DepositoryMeasurementServerResource extends WattDepotServerResource
   public Measurement retrieve() {
     getLogger().log(
         Level.INFO,
-        "GET /wattdepot/{" + groupId + "}/depository/{" + depositoryId + "}/measurement/{" + measId
+        "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/measurement/{" + measId
             + "}");
     Measurement ret = null;
     try {
-      Depository depository = depot.getWattDeposiory(depositoryId, groupId);
+      Depository depository = depot.getWattDeposiory(depositoryId, orgId);
       if (depository != null) {
         ret = depository.getMeasurement(measId);
       }
@@ -90,7 +90,7 @@ public class DepositoryMeasurementServerResource extends WattDepotServerResource
   public void update(Measurement meas) {
     getLogger().log(
         Level.INFO,
-        "POST /wattdepot/{" + groupId + "}/depository/{" + depositoryId + "}/measurement/{"
+        "POST /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/measurement/{"
             + measId + "} with " + meas);
     setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Cannot update Measurements.");
   }
@@ -106,10 +106,10 @@ public class DepositoryMeasurementServerResource extends WattDepotServerResource
   public void remove() {
     getLogger().log(
         Level.INFO,
-        "DEL /wattdepot/{" + groupId + "}/depository/{" + depositoryId + "}/measurement/{" + measId
+        "DEL /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/measurement/{" + measId
             + "}");
     try {
-      Depository depository = depot.getWattDeposiory(depositoryId, groupId);
+      Depository depository = depot.getWattDeposiory(depositoryId, orgId);
       if (depository != null) {
         Measurement meas = depository.getMeasurement(measId);
         depository.deleteMeasurement(meas);

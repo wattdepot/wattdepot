@@ -145,7 +145,7 @@ function putNewUser() {
     }
     setSelectedTab('users');
     $.ajax({
-       url : '/wattdepot/admin/userpassword/temp',
+       url : '/wattdepot/admin/user-password/temp',
        type : 'PUT',
        contentType : 'application/json',
        data : JSON.stringify(usrPass),
@@ -220,7 +220,7 @@ function putNewUserGroup() {
         "users" : selected_users
     };
     $.ajax({
-        url : '/wattdepot/admin/usergroup/temp',
+        url : '/wattdepot/admin/user-group/temp',
         type : 'PUT',
         contentType : 'application/json',
         data : JSON.stringify(grp),
@@ -264,7 +264,7 @@ function deleteUserGroup() {
     var id = $('#del_usergroup_id').html();
     setSelectedTab('users');
     $.ajax({
-        url : '/wattdepot/admin/usergroup/' + id,
+        url : '/wattdepot/admin/user-group/' + id,
         type : 'DELETE',
         contentType : 'application/json',
         success : function() {
@@ -286,7 +286,7 @@ function putNewDepository() {
     };
     setSelectedTab('depositories');
     $.ajax({
-        url : '/wattdepot/' + GROUPID + '/depository/temp',
+        url : '/wattdepot/' + GROUPID + '/depository/',
         type : 'PUT',
         contentType : 'application/json',
         data : JSON.stringify(depo),
@@ -353,7 +353,7 @@ function putNewLocation() {
     };
     setSelectedTab('sensors');
     $.ajax({
-        url : '/wattdepot/' + GROUPID + '/location/temp',
+        url : '/wattdepot/' + GROUPID + '/location/',
         type : 'PUT',
         contentType : 'application/json',
         data : JSON.stringify(loc),
@@ -380,7 +380,7 @@ function putNewInlineLocation() {
     };
     setSelectedTab('sensors');
     $.ajax({
-        url : '/wattdepot/' + GROUPID + '/location/temp',
+        url : '/wattdepot/' + GROUPID + '/location/',
         type : 'PUT',
         contentType : 'application/json',
         data : JSON.stringify(loc),
@@ -450,7 +450,7 @@ function putNewSensor() {
     };
     setSelectedTab('sensors');
     $.ajax({
-        url : '/wattdepot/' + GROUPID + '/sensor/temp',
+        url : '/wattdepot/' + GROUPID + '/sensor/',
         type : 'PUT',
         contentType : 'application/json',
         data : JSON.stringify(sensor),
@@ -483,7 +483,7 @@ function putNewInlineSensorProperty() {
     };
     setSelectedTab('sensors');
     $.ajax({
-        url : '/wattdepot/' + GROUPID + '/sensor/temp',
+        url : '/wattdepot/' + GROUPID + '/sensor/',
         type : 'PUT',
         contentType : 'application/json',
         data : JSON.stringify(sensor),
@@ -564,7 +564,7 @@ function putNewSensorGroup() {
         "owner" : owner
     };
     $.ajax({
-        url : '/wattdepot/admin/sensorgroup/temp',
+        url : '/wattdepot/' + GROUPID + '/sensor-group/',
         type : 'PUT',
         contentType : 'application/json',
         data : JSON.stringify(grp),
@@ -608,7 +608,7 @@ function deleteSensorGroup() {
     var id = $('#del_sensorgroup_id').html();
     setSelectedTab('sensorgroups');
     $.ajax({
-        url : '/wattdepot/admin/sensorgroup/' + id,
+        url : '/wattdepot/' + GROUPID + '/sensor-group/' + id,
         type : 'DELETE',
         contentType : 'application/json',
         success : function() {
@@ -631,7 +631,7 @@ function putNewModel() {
     };
     setSelectedTab('sensors');
     $.ajax({
-        url : '/wattdepot/' + GROUPID + '/sensormodel/temp',
+        url : '/wattdepot/' + GROUPID + '/sensor-model/',
         type : 'PUT',
         contentType : 'application/json',
         data : JSON.stringify(model),
@@ -654,7 +654,7 @@ function putNewInlineModel() {
     };
     setSelectedTab('sensors');
     $.ajax({
-        url : '/wattdepot/' + GROUPID + '/sensormodel/temp',
+        url : '/wattdepot/' + GROUPID + '/sensor-model/',
         type : 'PUT',
         contentType : 'application/json',
         data : JSON.stringify(model),
@@ -696,7 +696,7 @@ function deleteModel() {
     var id = $('#del_model_id').html();
     setSelectedTab('sensormodels');
     $.ajax({
-        url : '/wattdepot/' + GROUPID + '/sensormodel/' + id,
+        url : '/wattdepot/' + GROUPID + '/sensor-model/' + id,
         type : 'DELETE',
         contentType : 'application/json',
         success : function() {
@@ -723,7 +723,7 @@ function putNewProcess() {
     };
     setSelectedTab('sensorprocesses');
     $.ajax({
-        url : '/wattdepot/' + GROUPID + '/collectormetadata/temp',
+        url : '/wattdepot/' + GROUPID + '/collector-metadata/',
         type : 'PUT',
         contentType : 'application/json',
         data : JSON.stringify(process),
@@ -757,7 +757,7 @@ function putNewInlineMetaProperty() {
     };
     setSelectedTab('sensorprocesses');
     $.ajax({
-        url : '/wattdepot/' + GROUPID + '/collectormetadata/temp',
+        url : '/wattdepot/' + GROUPID + '/collector-metadata/',
         type : 'PUT',
         contentType : 'application/json',
         data : JSON.stringify(collector),
@@ -812,7 +812,7 @@ function deleteSensorProcess() {
     var id = $('#del_sensorprocess_id').html();
     setSelectedTab('sensorprocesses');
     $.ajax({
-        url : '/wattdepot/' + GROUPID + '/collectormetadata/' + id,
+        url : '/wattdepot/' + GROUPID + '/collector-metadata/' + id,
         type : 'DELETE',
         contentType : 'application/json',
         success : function() {

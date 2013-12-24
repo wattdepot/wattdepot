@@ -180,6 +180,8 @@ public class WattDepotApplication extends Application {
     router.attach(API.MEASUREMENTS_GVIZ_URI, GvizDepositoryMeasurementsServerResource.class);
     router.attach(API.VALUE_URI, DepositoryValueServerResource.class);
     router.attach(API.VALUE_GVIZ_URI, GvizDepositoryValueServerResource.class);
+    router.attach(API.VALUES_URI, DepositoryValuesServerResource.class);
+    router.attach(API.VALUES_GVIZ_URI, GvizDepositoryValuesServerResource.class);
     // MeasurementTypes
     router.attach(API.MEASUREMENT_TYPE_PUT_URI, MeasurementTypePutServerResource.class);
     router.attach(API.MEASUREMENT_TYPE_URI, MeasurementTypeServerResource.class);
@@ -203,9 +205,9 @@ public class WattDepotApplication extends Application {
     // Users, UserGroups, and UserPasswords
     router.attach(API.USER_URI, UserInfoServerResource.class);
     router.attach(API.USER_PASSWORD_URI, UserPasswordServerResource.class);
-    router.attach(API.USER_GROUP_PUT_URI, UserGroupServerResource.class);
-    router.attach(API.USER_GROUP_URI, UserGroupServerResource.class);
-    router.attach(API.USER_GROUPS_URI, UserGroupsServerResource.class);
+    router.attach(API.ORGANIZATION_PUT_URI, OrganizationServerResource.class);
+    router.attach(API.ORGANIZATION_URI, OrganizationServerResource.class);
+    router.attach(API.ORGANIZATIONS_URI, OrganizationsServerResource.class);
 
     ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(),
         ChallengeScheme.HTTP_BASIC, "WattDepot Realm");

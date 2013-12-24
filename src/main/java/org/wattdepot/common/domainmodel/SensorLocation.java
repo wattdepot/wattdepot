@@ -40,7 +40,7 @@ public class SensorLocation {
   /** The Location's description. */
   private String description;
   /** The owner of this location. */
-  private UserGroup owner;
+  private Organization owner;
 
   /**
    * Default constructor.
@@ -64,7 +64,7 @@ public class SensorLocation {
    *          the owner of the location.
    */
   public SensorLocation(String name, Double latitude, Double longitude, Double altitude,
-      String description, UserGroup owner) {
+      String description, Organization owner) {
     this.name = name;
     this.id = Slug.slugify(this.name);
     this.latitude = latitude;
@@ -179,7 +179,7 @@ public class SensorLocation {
   /**
    * @return the owner
    */
-  public UserGroup getOwner() {
+  public Organization getOwner() {
     return owner;
   }
 
@@ -208,8 +208,8 @@ public class SensorLocation {
    * @return True if the group owns the Location or the group is the
    *         ADMIN_GROUP.
    */
-  public boolean isOwner(UserGroup group) {
-    if (owner != null && (owner.equals(group) || group.equals(UserGroup.ADMIN_GROUP))) {
+  public boolean isOwner(Organization group) {
+    if (owner != null && (owner.equals(group) || group.equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;
@@ -270,7 +270,7 @@ public class SensorLocation {
    * @param owner
    *          the owner to set
    */
-  public void setOwner(UserGroup owner) {
+  public void setOwner(Organization owner) {
     this.owner = owner;
   }
 

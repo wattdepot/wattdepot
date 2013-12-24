@@ -40,9 +40,9 @@ public class DepositoriesServerResource extends WattDepotServerResource implemen
    */
   @Override
   public DepositoryList retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/depositories/");
+    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/depositories/");
     DepositoryList list = new DepositoryList();
-    for (Depository d : depot.getWattDepositories(groupId)) {
+    for (Depository d : depot.getWattDepositories(orgId)) {
       list.getDepositories().add(d);
     }
     return list;

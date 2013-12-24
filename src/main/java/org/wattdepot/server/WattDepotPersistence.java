@@ -29,7 +29,7 @@ import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.domainmodel.SensorLocation;
 import org.wattdepot.common.domainmodel.SensorModel;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -77,7 +77,7 @@ public abstract class WattDepotPersistence {
    *           Depository.
    */
   public abstract CollectorMetaData defineCollectorMetaData(String id, Sensor sensor,
-      Long pollingInterval, String depositoryId, UserGroup owner) throws UniqueIdException,
+      Long pollingInterval, String depositoryId, Organization owner) throws UniqueIdException,
       MissMatchedOwnerException;
 
   /**
@@ -100,7 +100,7 @@ public abstract class WattDepotPersistence {
    *           if the id is already used for another Location.
    */
   public abstract SensorLocation defineLocation(String id, Double latitude, Double longitude,
-      Double altitude, String description, UserGroup owner) throws UniqueIdException;
+      Double altitude, String description, Organization owner) throws UniqueIdException;
 
   /**
    * Defines a new MeasurementType in WattDepot.
@@ -115,6 +115,18 @@ public abstract class WattDepotPersistence {
    *           if the slug derived from name is already defined.
    */
   public abstract MeasurementType defineMeasurementType(String name, String units)
+      throws UniqueIdException;
+
+  /**
+   * @param id
+   *          The unique id.
+   * @param users
+   *          The members of the group.
+   * @return The defined Organization.
+   * @throws UniqueIdException
+   *           If the id is already used for another Organization.
+   */
+  public abstract Organization defineOrganization(String id, Set<UserInfo> users)
       throws UniqueIdException;
 
   /**
@@ -136,7 +148,7 @@ public abstract class WattDepotPersistence {
    *           SensorModel.
    */
   public abstract Sensor defineSensor(String id, String uri, SensorLocation l, SensorModel sm,
-      UserGroup owner) throws UniqueIdException, MissMatchedOwnerException;
+      Organization owner) throws UniqueIdException, MissMatchedOwnerException;
 
   /**
    * @param id
@@ -151,7 +163,7 @@ public abstract class WattDepotPersistence {
    * @throws MissMatchedOwnerException
    *           if the given owner doesn't match the owners of the Sensors.
    */
-  public abstract SensorGroup defineSensorGroup(String id, Set<Sensor> sensors, UserGroup owner)
+  public abstract SensorGroup defineSensorGroup(String id, Set<Sensor> sensors, Organization owner)
       throws UniqueIdException, MissMatchedOwnerException;
 
   /**
@@ -171,18 +183,6 @@ public abstract class WattDepotPersistence {
    */
   public abstract SensorModel defineSensorModel(String id, String protocol, String type,
       String version) throws UniqueIdException;
-
-  /**
-   * @param id
-   *          The unique id.
-   * @param users
-   *          The members of the group.
-   * @return The defined UserGroup.
-   * @throws UniqueIdException
-   *           If the id is already used for another UserGroup.
-   */
-  public abstract UserGroup defineUserGroup(String id, Set<UserInfo> users)
-      throws UniqueIdException;
 
   /**
    * Defines a new UserInfo with the given information.
@@ -232,7 +232,7 @@ public abstract class WattDepotPersistence {
    *           if the id is already used for another WattDepository.
    */
   public abstract Depository defineWattDepository(String name, MeasurementType measurementType,
-      UserGroup owner) throws UniqueIdException;
+      Organization owner) throws UniqueIdException;
 
   /**
    * Deletes the given CollectorMetaData.
@@ -273,6 +273,14 @@ public abstract class WattDepotPersistence {
    *           if the slug is not a known MeasurementType.
    */
   public abstract void deleteMeasurementType(String slug) throws IdNotFoundException;
+
+  /**
+   * @param id
+   *          The unique id of the Organization.
+   * @throws IdNotFoundException
+   *           If the id is not known or defined.
+   */
+  public abstract void deleteOrganization(String id) throws IdNotFoundException;
 
   /**
    * Deletes the given Sensor.
@@ -323,14 +331,6 @@ public abstract class WattDepotPersistence {
   public abstract void deleteUser(String id) throws IdNotFoundException;
 
   /**
-   * @param id
-   *          The unique id of the UserGroup.
-   * @throws IdNotFoundException
-   *           If the id is not known or defined.
-   */
-  public abstract void deleteUserGroup(String id) throws IdNotFoundException;
-
-  /**
    * @param userId
    *          The id of the UserPassword to delete.
    * @throws IdNotFoundException
@@ -367,7 +367,7 @@ public abstract class WattDepotPersistence {
 
   /**
    * @param groupId
-   *          the id of the owner UserGroup.
+   *          the id of the owner Organization.
    * @return A list of the defined CollectorMetaData Ids.
    */
   public abstract List<String> getCollectorMetaDataIds(String groupId);
@@ -393,7 +393,7 @@ public abstract class WattDepotPersistence {
 
   /**
    * @param groupId
-   *          the id of the owner UserGroup.
+   *          the id of the owner Organization.
    * @return A list of the defined Location Ids.
    */
   public abstract List<String> getLocationIds(String groupId);
@@ -418,11 +418,21 @@ public abstract class WattDepotPersistence {
   public abstract List<MeasurementType> getMeasurementTypes();
 
   /**
-   * @return the properties
+   * @param id
+   *          the unique id for the Organization.
+   * @return The UserGroup with the given id.
    */
-  public ServerProperties getServerProperties() {
-    return properties;
-  }
+  public abstract Organization getOrganization(String id);
+
+  /**
+   * @return A list of the defined organization Ids.
+   */
+  public abstract List<String> getOrganizationIds();
+
+  /**
+   * @return The known/defined Organizations.
+   */
+  public abstract List<Organization> getOrganizations();
 
   /**
    * @param id
@@ -493,6 +503,13 @@ public abstract class WattDepotPersistence {
   public abstract List<Sensor> getSensors(String groupId);
 
   /**
+   * @return the properties
+   */
+  public ServerProperties getServerProperties() {
+    return properties;
+  }
+
+  /**
    * @return the sessionClose
    */
   public int getSessionClose() {
@@ -512,23 +529,6 @@ public abstract class WattDepotPersistence {
    * @return The UserInfo with the given id.
    */
   public abstract UserInfo getUser(String id);
-
-  /**
-   * @param id
-   *          the unique id for the UserGroup.
-   * @return The UserGroup with the given id.
-   */
-  public abstract UserGroup getUserGroup(String id);
-
-  /**
-   * @return A list of the defined user group Ids.
-   */
-  public abstract List<String> getUserGroupIds();
-
-  /**
-   * @return The known/defined UserGroups.
-   */
-  public abstract List<UserGroup> getUserGroups();
 
   /**
    * @return A list of the defined user Ids.
@@ -552,7 +552,7 @@ public abstract class WattDepotPersistence {
    *          The user.
    * @return The UserGroup that the user is in.
    */
-  public abstract UserGroup getUsersGroup(UserInfo user);
+  public abstract Organization getUsersGroup(UserInfo user);
 
   /**
    * @param id
@@ -652,6 +652,13 @@ public abstract class WattDepotPersistence {
   public abstract MeasurementType updateMeasurementType(MeasurementType type);
 
   /**
+   * @param org
+   *          The updated Organization.
+   * @return The updated organization from persistence.
+   */
+  public abstract Organization updateOrganization(Organization org);
+
+  /**
    * Updates the given sensor in the persistent store.
    * 
    * @param sensor
@@ -677,13 +684,6 @@ public abstract class WattDepotPersistence {
    * @return The updated model from persistence.
    */
   public abstract SensorModel updateSensorModel(SensorModel model);
-
-  /**
-   * @param group
-   *          The updated Usergroup.
-   * @return The updated group from persistence.
-   */
-  public abstract UserGroup updateUserGroup(UserGroup group);
 
   /**
    * @param user

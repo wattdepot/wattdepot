@@ -304,7 +304,9 @@ public class ServerProperties {
       String sysPropName = (String) entry.getKey();
       if (sysPropName.startsWith("wattdepot-server.")) {
         String sysPropValue = (String) entry.getValue();
-        properties.setProperty(sysPropName, sysPropValue);
+        if (sysPropValue != null && ! sysPropValue.isEmpty()) {
+          properties.setProperty(sysPropName, sysPropValue);
+        }
       }
     }
   }

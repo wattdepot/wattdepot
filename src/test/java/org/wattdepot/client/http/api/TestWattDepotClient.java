@@ -52,7 +52,7 @@ import org.wattdepot.common.domainmodel.SensorLocation;
 import org.wattdepot.common.domainmodel.SensorLocationList;
 import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.domainmodel.SensorModelList;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.BadCredentialException;
@@ -77,7 +77,7 @@ public class TestWattDepotClient {
   private static WattDepotClient test;
   private static UserInfo testUser = InstanceFactory.getUserInfo();
   private static UserPassword testPassword = InstanceFactory.getUserPassword();
-  private static UserGroup testGroup = InstanceFactory.getUserGroup();
+  private static Organization testGroup = InstanceFactory.getUserGroup();
 
   /** The logger. */
   private Logger logger = null;
@@ -111,26 +111,51 @@ public class TestWattDepotClient {
    *           if there is a problem.
    */
   @Before
-  public void setUp() throws Exception {
-    ClientProperties properties = new ClientProperties();
-    this.logger = WattDepotLogger.getLogger("org.wattdepot.client",
-        properties.get(ClientProperties.CLIENT_HOME_DIR));
-    WattDepotLogger.setLoggingLevel(logger, properties.get(ClientProperties.LOGGING_LEVEL_KEY));
-    logger.finest("setUp()");
-    ClientProperties props = new ClientProperties();
-    props.setTestProperties();
-    this.serverURL = "http://" + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
-        + props.get(ClientProperties.PORT_KEY) + "/";
-    logger.finest(serverURL);
-    admin = new WattDepotAdminClient(serverURL, props.get(ClientProperties.USER_NAME),
-        props.get(ClientProperties.USER_PASSWORD));
-    admin.putUserPassword(testPassword);
-    admin.putUser(testUser);
-    admin.putUserGroup(testGroup);
-    admin.putMeasurementType(InstanceFactory.getMeasurementType());
-    test = new WattDepotClient(serverURL, testPassword.getId(), testPassword.getPlainText());
-    test.isHealthy();
-    test.getWattDepotUri();
+  public void setUp() {
+    try {
+      ClientProperties properties = new ClientProperties();
+      this.logger = WattDepotLogger.getLogger("org.wattdepot.client",
+          properties.get(ClientProperties.CLIENT_HOME_DIR));
+      WattDepotLogger.setLoggingLevel(logger,
+          properties.get(ClientProperties.LOGGING_LEVEL_KEY));
+      logger.finest("setUp()");
+      ClientProperties props = new ClientProperties();
+      props.setTestProperties();
+      this.serverURL = "http://"
+          + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
+          + props.get(ClientProperties.PORT_KEY) + "/";
+      logger.finest(serverURL);
+      if (admin == null) {
+        try {
+          admin = new WattDepotAdminClient(serverURL,
+              props.get(ClientProperties.USER_NAME),
+              props.get(ClientProperties.USER_PASSWORD));
+        }
+        catch (Exception e) {
+          System.out.println("Failed with "
+              + props.get(ClientProperties.USER_NAME) + " and "
+              + props.get(ClientProperties.USER_PASSWORD));
+        }
+      }
+      admin.putUserPassword(testPassword);
+      admin.putUser(testUser);
+      admin.putUserGroup(testGroup);
+      try {
+        admin.putMeasurementType(InstanceFactory.getMeasurementType());
+      }
+      catch (Exception e) {
+        e.printStackTrace();
+      }
+      if (test == null) {
+        test = new WattDepotClient(serverURL, testPassword.getId(),
+            testPassword.getPlainText());
+      }
+      test.isHealthy();
+      test.getWattDepotUri();
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -141,9 +166,9 @@ public class TestWattDepotClient {
   public void tearDown() throws Exception {
     logger.finest("tearDown()");
     admin.deleteUser(testPassword.getId());
-    String groupid = testGroup.getId();
     admin.deleteUserGroup(testGroup.getId());
     admin.deleteUserPassword(testUser.getId());
+    logger.finest("Done tearDown()");
   }
 
   /**
@@ -167,8 +192,8 @@ public class TestWattDepotClient {
       fail("We used good credentials");
     }
     try {
-      WattDepotClient bad = new WattDepotClient("http://localhost", testPassword.getId(),
-          testPassword.getPlainText());
+      WattDepotClient bad = new WattDepotClient("http://localhost",
+          testPassword.getId(), testPassword.getPlainText());
       fail(bad + " should not exist.");
     }
     catch (IllegalArgumentException e) {
@@ -178,8 +203,8 @@ public class TestWattDepotClient {
       fail("We used good credentials");
     }
     try {
-      WattDepotClient bad = new WattDepotClient(serverURL, testPassword.getId(),
-          testPassword.getEncryptedPassword());
+      WattDepotClient bad = new WattDepotClient(serverURL,
+          testPassword.getId(), testPassword.getEncryptedPassword());
       fail(bad + " should not exist.");
     }
     catch (BadCredentialException e) {
@@ -233,7 +258,8 @@ public class TestWattDepotClient {
     }
 
     // error conditions
-    Depository bogus = new Depository("bogus", depo.getMeasurementType(), depo.getOwner());
+    Depository bogus = new Depository("bogus", depo.getMeasurementType(),
+        depo.getOwner());
     try {
       test.deleteDepository(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -285,8 +311,9 @@ public class TestWattDepotClient {
       fail("Should have " + loc);
     }
     // error conditions
-    SensorLocation bogus = new SensorLocation("bogus", loc.getLatitude(), loc.getLongitude(),
-        loc.getAltitude(), loc.getDescription(), loc.getOwner());
+    SensorLocation bogus = new SensorLocation("bogus", loc.getLatitude(),
+        loc.getLongitude(), loc.getAltitude(), loc.getDescription(),
+        loc.getOwner());
     try {
       test.deleteLocation(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -331,8 +358,9 @@ public class TestWattDepotClient {
       }
       list = test.getMeasurementTypes();
       assertNotNull(list);
-      assertTrue("Expecting " + numTypes + " got " + list.getMeasurementTypes().size(), list
-          .getMeasurementTypes().size() == numTypes);
+      assertTrue("Expecting " + numTypes + " got "
+          + list.getMeasurementTypes().size(), list.getMeasurementTypes()
+          .size() == numTypes);
       // delete instance (DELETE)
       try {
         test.deleteMeasurementType(ret);
@@ -356,7 +384,8 @@ public class TestWattDepotClient {
     }
 
     // error conditions
-    MeasurementType bogus = new MeasurementType("bogus_meas_type", Unit.valueOf("dyn"));
+    MeasurementType bogus = new MeasurementType("bogus_meas_type",
+        Unit.valueOf("dyn"));
     try {
       test.deleteMeasurementType(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -405,8 +434,8 @@ public class TestWattDepotClient {
       fail("Should have " + sensor);
     }
     // error conditions
-    Sensor bogus = new Sensor("bogus", sensor.getUri(), sensor.getSensorLocation(),
-        sensor.getModel(), sensor.getOwner());
+    Sensor bogus = new Sensor("bogus", sensor.getUri(),
+        sensor.getSensorLocation(), sensor.getModel(), sensor.getOwner());
     try {
       test.deleteSensor(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -454,7 +483,8 @@ public class TestWattDepotClient {
       fail("Should have " + group);
     }
     // error conditions
-    SensorGroup bogus = new SensorGroup("bogus", group.getSensors(), group.getOwner());
+    SensorGroup bogus = new SensorGroup("bogus", group.getSensors(),
+        group.getOwner());
     try {
       test.deleteSensorGroup(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -503,8 +533,8 @@ public class TestWattDepotClient {
       fail("Should have " + model);
     }
     // error conditions
-    SensorModel bogus = new SensorModel("bogus", model.getProtocol(), model.getType(),
-        model.getVersion());
+    SensorModel bogus = new SensorModel("bogus", model.getProtocol(),
+        model.getType(), model.getVersion());
     try {
       test.deleteSensorModel(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -576,25 +606,29 @@ public class TestWattDepotClient {
       test.putMeasurement(depo, m1);
       test.putMeasurement(depo, m3);
       Double val = test.getValue(depo, m1.getSensor(), m1.getDate());
-      assertTrue("Got " + val + " was expecting " + m1.getValue(), m1.getValue().equals(val));
+      assertTrue("Got " + val + " was expecting " + m1.getValue(), m1
+          .getValue().equals(val));
       val = test.getValue(depo, m2.getSensor(), m2.getDate());
-      assertTrue("Got " + val + " was expecting " + m1.getValue(), m1.getValue().equals(val));
+      assertTrue("Got " + val + " was expecting " + m1.getValue(), m1
+          .getValue().equals(val));
       // Get list
-      MeasurementList list = test.getMeasurements(depo, m1.getSensor(), m1.getDate(), m3.getDate());
+      MeasurementList list = test.getMeasurements(depo, m1.getSensor(),
+          m1.getDate(), m3.getDate());
       assertNotNull(list);
 
-      assertTrue("expecting " + 2 + " got " + list.getMeasurements().size(), list.getMeasurements()
-          .size() == 2);
+      assertTrue("expecting " + 2 + " got " + list.getMeasurements().size(),
+          list.getMeasurements().size() == 2);
       assertTrue(list.getMeasurements().contains(m1));
       assertTrue(list.getMeasurements().contains(m3));
       test.putMeasurement(depo, m2);
       try {
         test.deleteMeasurement(depo, m1);
-        list = test.getMeasurements(depo, m1.getSensor(), m1.getDate(), m3.getDate());
+        list = test.getMeasurements(depo, m1.getSensor(), m1.getDate(),
+            m3.getDate());
         assertNotNull(list);
 
-        assertTrue("expecting " + 2 + " got " + list.getMeasurements().size(), list
-            .getMeasurements().size() == 2);
+        assertTrue("expecting " + 2 + " got " + list.getMeasurements().size(),
+            list.getMeasurements().size() == 2);
       }
       catch (IdNotFoundException e) {
         fail(m1 + " does exist in the depo");
@@ -619,7 +653,8 @@ public class TestWattDepotClient {
     catch (MeasurementTypeException e) {
       // this is what we expect.
     }
-    bogus = new Measurement(m1.getSensor(), new Date(), new Double(1.0), Unit.valueOf("dyn"));
+    bogus = new Measurement(m1.getSensor(), new Date(), new Double(1.0),
+        Unit.valueOf("dyn"));
     try {
       test.deleteMeasurement(depo, bogus);
       fail(bogus + " isn't in the depot");

@@ -26,7 +26,7 @@ import org.wattdepot.common.http.api.SensorGroupsResource;
 
 /**
  * SensorGroupsServerResource - Handles the SensorGroups HTTP API
- * ("/wattdepot/{group_id}/sensorgroups/").
+ * ("/wattdepot/{org-id}/sensor-groups/").
  * 
  * @author Cam Moore
  * 
@@ -41,9 +41,9 @@ public class SensorGroupsServerResource extends WattDepotServerResource implemen
    */
   @Override
   public SensorGroupList retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/sensorgroups/");
+    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/sensor-groups/");
     SensorGroupList ret = new SensorGroupList();
-    for (SensorGroup sg : depot.getSensorGroups(groupId)) {
+    for (SensorGroup sg : depot.getSensorGroups(orgId)) {
       ret.getGroups().add(sg);
     }
     return ret;

@@ -31,7 +31,7 @@ import org.wattdepot.common.domainmodel.Depository;
  */
 public interface DepositoryResource {
   /**
-   * Defines GET /wattdepot/{group-id}/depository/{depository-id} API call.
+   * Defines GET /wattdepot/{org-id}/depository/{depository-id} API call.
    * 
    * @return The Depository with the given id.
    */
@@ -40,7 +40,7 @@ public interface DepositoryResource {
   public Depository retrieve();
 
   /**
-   * Defines the POST /wattdepot/{group-id}/depository/{depository-id} API call.
+   * Defines the POST /wattdepot/{org-id}/depository/{depository-id} API call.
    * 
    * @param depository
    *          The Depository to store.
@@ -49,7 +49,7 @@ public interface DepositoryResource {
   public void update(Depository depository);
 
   /**
-   * Defined the DEL /wattdepot/{group-id}/depository/{depository-id} API call.
+   * Defined the DEL /wattdepot/{org-id}/depository/{depository-id} API call.
    */
   @Delete
   public void remove();

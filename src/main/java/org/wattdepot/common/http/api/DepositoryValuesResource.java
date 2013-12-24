@@ -1,7 +1,7 @@
 /**
- * SensorLocationsResource.java This file is part of WattDepot.
+ * DepositoryValuesResource.java This file is part of WattDepot.
  *
- * Copyright (C) 2013  Cam Moore
+ * Copyright (C) 2013  Yongwen Xu
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,22 +19,25 @@
 package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.SensorLocationList;
+import org.wattdepot.common.domainmodel.MeasuredValueList;
 
 /**
- * LocationsResource - The HTTP API for Locations.
+ * DepositoryValuesResource - HTTP Interface for getting the MeasuredValueList. <br>
+ * (/wattdepot/{org-id}/depository/{depository-id}/values/)
  * 
- * @author Cam Moore
+ * @author Yongwen Xu
  * 
  */
-public interface SensorLocationsResource {
+public interface DepositoryValuesResource {
 
   /**
-   * Defines the GET /wattdepot/{org-id}/locations/ API call.
+   * Defines GET <br/>
+   * /wattdepot/{org-id}/depository/{depository-id}/values/?
+   *   sensor={sensor_id}&start={start}&end={end}&interval={interval}.
    * 
-   * @return a List of the defined Locations.
+   * @return The MeasuredValueList.
    */
-  @Get("json")  // Use JSON as transport encoding.
-  public SensorLocationList retrieve();
-
+  @Get("json")
+  // Use JSON as transport encoding.
+  public MeasuredValueList retrieve();
 }

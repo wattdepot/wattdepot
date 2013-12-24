@@ -24,15 +24,14 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Sensor;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.http.api.SensorResource;
 
 /**
  * SensorServerResource - Handles the Sensor HTTP API
- * ("/wattdepot/{group_id}/sensor/",
- * "/wattdepot/{group_id}/sensor/{sensor_id}").
+ * ("/wattdepot/{org-id}/sensor/{sensor-id}").
  * 
  * @author Cam Moore
  * 
@@ -54,14 +53,33 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
   /*
    * (non-Javadoc)
    * 
+   * @see org.wattdepot.restlet.SensorResource#remove()
+   */
+  @Override
+  public void remove() {
+    getLogger().log(Level.INFO, "DEL /wattdepot/{" + orgId + "}/sensor/{" + sensorId + "}");
+    try {
+      depot.deleteSensor(sensorId, orgId);
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+    }
+    catch (MissMatchedOwnerException e) {
+      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.wattdepot.restlet.SensorResource#retrieve()
    */
   @Override
   public Sensor retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/sensor/{" + sensorId + "}");
+    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/sensor/{" + sensorId + "}");
     Sensor sensor = null;
     try {
-      sensor = depot.getSensor(sensorId, groupId);
+      sensor = depot.getSensor(sensorId, orgId);
     }
     catch (MissMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
@@ -75,25 +93,6 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.restlet.SensorResource#remove()
-   */
-  @Override
-  public void remove() {
-    getLogger().log(Level.INFO, "DEL /wattdepot/{" + groupId + "}/sensor/{" + sensorId + "}");
-    try {
-      depot.deleteSensor(sensorId, groupId);
-    }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-    }
-    catch (MissMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see
    * org.wattdepot.common.http.api.SensorResource#update(org.wattdepot.common
    * .domainmodel.Sensor)
@@ -101,11 +100,11 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
   @Override
   public void update(Sensor sensor) {
     getLogger().log(Level.INFO,
-        "POST /wattdepot/{" + groupId + "}/sensor/{" + sensorId + "} with " + sensor);
-    UserGroup owner = depot.getUserGroup(groupId);
+        "POST /wattdepot/{" + orgId + "}/sensor/{" + sensorId + "} with " + sensor);
+    Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
       if (sensorId.equals(sensor.getId())) {
-        if (depot.getSensorIds(groupId).contains(sensor.getId())) {
+        if (depot.getSensorIds(orgId).contains(sensor.getId())) {
           depot.updateSensor(sensor);
         }
         else {
@@ -117,7 +116,7 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, groupId + " does not exist.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
   }
 

@@ -21,7 +21,9 @@ package org.wattdepot.common.http.api;
 import org.restlet.resource.Get;
 
 /**
- * GvizResource - HTTP Interface for getting the Google Visualization Data Source.
+ * GvizDepositoryMeasurementsResource - HTTP Interface for getting the Google Visualization 
+ * Data Source representation for Depository measurements.
+ * (/wattdepot/{org-id}/depository/{depository-id}/measurements/gviz/)
  * 
  * @author Yongwen Xu
  * 
@@ -29,8 +31,10 @@ import org.restlet.resource.Get;
 public interface GvizDepositoryMeasurementsResource {
 
   /**
-   * Defines GET /wattdepot/{group_id}/gviz/ API call.
-   * 
+   * Defines GET 
+   * /wattdepot/{org-id}/depository/{depository-id}/measurements/gviz/?
+   *    sensor={sensorId}&start={start}&end={end}.
+   *
    * @return Google Visualization data source.
    */
   @Get("json")

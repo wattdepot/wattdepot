@@ -1,5 +1,5 @@
 /**
- * UserGroup.java This file is part of WattDepot.
+ * Organization.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -24,19 +24,23 @@ import java.util.Set;
 import org.wattdepot.common.util.Slug;
 
 /**
- * UserGroup - A group of users.
+ * Organization - A group of users used to create a namespace for WattDepot
+ * entities. Users, sensors, sensor groups, collectors, depositories, and
+ * measurements all belong to a single "organization".
  * 
  * @author Cam Moore
  * 
  */
-public class UserGroup {
+public class Organization {
   /** The name of the admin group. */
   public static final String ADMIN_GROUP_NAME = "admin";
   /** The admin user group. */
-  public static final UserGroup ADMIN_GROUP = new UserGroup(ADMIN_GROUP_NAME);
-  
+  public static final Organization ADMIN_GROUP = new Organization(
+      ADMIN_GROUP_NAME);
+
   /** The public user group. All groups can see publicly owned objects. */
-  public static final UserGroup PUBLIC_GROUP = new UserGroup(Labels.PUBLIC);
+  public static final Organization PUBLIC_GROUP = new Organization(
+      Labels.PUBLIC);
 
   /** A unique id. */
   protected String id;
@@ -52,7 +56,7 @@ public class UserGroup {
   /**
    * The default constructor.
    */
-  public UserGroup() {
+  public Organization() {
     users = new HashSet<UserInfo>();
   }
 
@@ -60,7 +64,7 @@ public class UserGroup {
    * @param name
    *          The name of the UserGroup.
    */
-  public UserGroup(String name) {
+  public Organization(String name) {
     this.id = Slug.slugify(name);
     this.name = name;
     this.users = new HashSet<UserInfo>();
@@ -72,7 +76,7 @@ public class UserGroup {
    * @param users
    *          The Users in the group.
    */
-  public UserGroup(String name, Set<UserInfo> users) {
+  public Organization(String name, Set<UserInfo> users) {
     this.id = Slug.slugify(name);
     this.name = name;
     this.users = users;
@@ -114,7 +118,7 @@ public class UserGroup {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    UserGroup other = (UserGroup) obj;
+    Organization other = (Organization) obj;
     if (id == null) {
       if (other.id != null) {
         return false;
@@ -188,7 +192,8 @@ public class UserGroup {
   }
 
   /**
-   * @param name the name to set
+   * @param name
+   *          the name to set
    */
   public void setName(String name) {
     this.name = name;

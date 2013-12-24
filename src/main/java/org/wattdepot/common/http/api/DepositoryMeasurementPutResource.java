@@ -31,7 +31,7 @@ import org.wattdepot.common.domainmodel.Measurement;
 public interface DepositoryMeasurementPutResource {
 
   /**
-   * Defines PUT /wattdepot/{group_id}/depository/{depository_id}/measurement/
+   * Defines PUT /wattdepot/{org-id}/depository/{depository_id}/measurement/
    * API call.
    * 
    * @param meas

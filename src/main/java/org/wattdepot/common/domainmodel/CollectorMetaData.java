@@ -44,7 +44,7 @@ public class CollectorMetaData {
   /** Additional properties for the SensorProcess. */
   protected Set<Property> properties;
   /** The owner of this sensor process. */
-  private UserGroup owner;
+  private Organization owner;
 
   /**
    * Hide the default constructor.
@@ -66,7 +66,7 @@ public class CollectorMetaData {
    *          the owner of the sensor process.
    */
   public CollectorMetaData(String name, Sensor sensor, Long poll, String depositoryId,
-      UserGroup owner) {
+      Organization owner) {
     this.id = Slug.slugify(name);
     this.name = name;
     this.sensor = sensor;
@@ -178,7 +178,7 @@ public class CollectorMetaData {
   /**
    * @return the owner
    */
-  public UserGroup getOwner() {
+  public Organization getOwner() {
     return owner;
   }
 
@@ -243,8 +243,8 @@ public class CollectorMetaData {
    * @return True if the group owns the Location or the group is the
    *         ADMIN_GROUP.
    */
-  public boolean isOwner(UserGroup group) {
-    if (owner != null && (owner.equals(group) || group.equals(UserGroup.ADMIN_GROUP))) {
+  public boolean isOwner(Organization group) {
+    if (owner != null && (owner.equals(group) || group.equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;
@@ -291,7 +291,7 @@ public class CollectorMetaData {
    * @param owner
    *          the owner to set
    */
-  public void setOwner(UserGroup owner) {
+  public void setOwner(Organization owner) {
     this.owner = owner;
   }
 

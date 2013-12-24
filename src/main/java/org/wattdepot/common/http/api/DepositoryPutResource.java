@@ -29,7 +29,7 @@ import org.wattdepot.common.domainmodel.Depository;
  */
 public interface DepositoryPutResource {
   /**
-   * Defines the PUT /wattdepot/{group-id}/depository/ API call.
+   * Defines the PUT /wattdepot/{org-id}/depository/ API call.
    * 
    * @param depository
    *          The Depository to store.

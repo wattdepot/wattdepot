@@ -49,7 +49,7 @@ public class UserInfo {
   private Set<Property> properties;
 
   static {
-    String adminName = System.getenv(ADMIN_USER_NAME);
+    String adminName = System.getProperty(ADMIN_USER_NAME);
     if (adminName != null) {
       ROOT.setId(adminName);
     }

@@ -24,11 +24,12 @@ import java.util.List;
 
 import org.hibernate.Session;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.MeasuredValue;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.Property;
 import org.wattdepot.common.domainmodel.Sensor;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.MeasurementGapException;
 import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.NoMeasurementException;
@@ -110,7 +111,7 @@ public class DepositoryImpl extends Depository {
    *          The owner.
    */
   public DepositoryImpl(String name, MeasurementType measurementType,
-      UserGroup owner) {
+      Organization owner) {
     super(name, measurementType, owner);
   }
 
@@ -231,6 +232,70 @@ public class DepositoryImpl extends Depository {
     return serverProperties;
   }
 
+  /**
+   * @param sensor
+   *          The Sensor making the measurements.
+   * @return The latest measurement Value
+   * @throws NoMeasurementException
+   *           If there aren't any measurements around the time.
+   */
+  public MeasuredValue getLatestMeasuredValue(Sensor sensor)
+      throws NoMeasurementException {
+    MeasuredValue value = null;
+    Session session = Manager.getFactory(serverProperties).openSession();
+    MeasurementType type = getMeasurementType();
+    
+    @SuppressWarnings("unchecked")
+    List<MeasurementImpl> result = (List<MeasurementImpl>) session
+      .createQuery(
+        "FROM MeasurementImpl WHERE depository = :name AND sensor = :sensor "
+        + "AND date IN (SELECT max(date) FROM MeasurementImpl WHERE "
+          + "depository = :name AND sensor = :sensor)")
+      .setParameter("name", this)
+      .setParameter("sensor",  sensor)
+      .list();
+    if (result.size() > 0) {
+      MeasurementImpl meas = result.get(0);
+      value = new MeasuredValue(sensor.getId(), meas.getValue(), type);
+      value.setDate(meas.getDate());
+    }
+    
+    session.close();
+    return value;
+  }
+  
+  /**
+   * @param sensor
+   *          The Sensor making the measurements.
+   * @return The earliest measurement Value
+   * @throws NoMeasurementException
+   *           If there aren't any measurements around the time.
+   */
+  public MeasuredValue getEarliestMeasuredValue(Sensor sensor)
+      throws NoMeasurementException {
+    MeasuredValue value = null;
+    Session session = Manager.getFactory(serverProperties).openSession();
+    MeasurementType type = getMeasurementType();
+    
+    @SuppressWarnings("unchecked")
+    List<MeasurementImpl> result = (List<MeasurementImpl>) session
+      .createQuery(
+        "FROM MeasurementImpl WHERE depository = :name AND sensor = :sensor "
+        + "AND date IN (SELECT min(date) FROM MeasurementImpl WHERE "
+          + "depository = :name AND sensor = :sensor)")
+      .setParameter("name", this)
+      .setParameter("sensor",  sensor)
+      .list();
+    if (result.size() > 0) {
+      MeasurementImpl meas = result.get(0);
+      value = new MeasuredValue(sensor.getId(), meas.getValue(), type);
+      value.setDate(meas.getDate());
+    }
+    
+    session.close();
+    return value;
+  }
+  
   /**
    * @param sensor
    *          The Sensor making the measurements.

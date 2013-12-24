@@ -27,6 +27,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.restlet.resource.ServerResource;
 import org.wattdepot.common.domainmodel.MeasuredValue;
+import org.wattdepot.common.domainmodel.MeasuredValueList;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementList;
 import org.wattdepot.common.domainmodel.MeasurementType;
@@ -42,8 +43,13 @@ import com.google.visualization.datasource.datatable.value.ValueType;
 import com.google.visualization.datasource.render.JsonRenderer;
 
 /**
- * GvizHelper - Utility class that handles Google Visualization.
+ * GvizHelper - Utility class that handles Google Visualization using the Google Visualization
+ * Datasource library. 
  *
+ * * @see <a
+ * href="http://code.google.com/apis/chart/interactive/docs/dev/implementing_data_source.html">Google
+ * Visualization Datasource API</a>
+ * 
  * @author Yongwen Xu
  *
  */
@@ -72,45 +78,28 @@ public class GvizHelper {
   }
   
   /**
-   * @param mValue
-   *          measured value
+   * @param resource
+   *          server resource object
    * @param tqxString
    *          gviz tqx query string, i.e., request id
    * @param tqString
    *          gviz tq query string, selectable fields
    * @return gviz response 
    */
-  public static String getGvizResponse(MeasuredValue mValue, String tqxString, String tqString) {
-    DataTable table;
+  public static String getGvizResponse(Object resource, String tqxString, String tqString) {
+    DataTable table = null;
     try {
-      table = getDataTable(mValue);
+      if (resource instanceof MeasuredValue) {
+        table = getDataTable((MeasuredValue)resource);
+      }
+      if (resource instanceof MeasurementList) {
+        table = getDataTable((MeasurementList)resource);
+      }
+      if (resource instanceof MeasuredValueList) {
+        table = getDataTable((MeasuredValueList)resource);
+      }
     } 
     catch (DataSourceException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-      return getGvizDataErrorResponse(e);
-    }
-
-    return getGvizResponseFromDataTable(table, tqxString, tqString);
-  }
-  
-  /**
-   * @param mList
-   *          measurement list
-   * @param tqxString
-   *          gviz tqx query string, i.e., request id
-   * @param tqString
-   *          gviz tq query string, selectable fields
-   * @return gviz response 
-   */
-  public static String getGvizResponse(MeasurementList mList, String tqxString, String tqString) {
-    DataTable table;
-    try {
-      table = getDataTable(mList);
-    } 
-    catch (DataSourceException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
       return getGvizDataErrorResponse(e);
     }
 
@@ -162,32 +151,71 @@ public class GvizHelper {
 
     // Sets up the columns requested by any SELECT in the datasource query
     ArrayList<Measurement> measurements = mList.getMeasurements();
-    String type = measurements.get(0).getMeasurementType();
-    try {
-      data.addColumn(
-          new ColumnDescription("Timestamp", ValueType.DATETIME, "Date & Time"));
-      data.addColumn(
-          new ColumnDescription(type, ValueType.NUMBER, type));
-      
-      for (Measurement measurement : measurements) {
-        TableRow row = new TableRow();
-        XMLGregorianCalendar xgcal = DateConvert.convertDate(measurement.getDate());
-        row.addCell(new DateTimeValue(convertTimestamp(xgcal)));
-        row.addCell(measurement.getValue());
-        data.addRow(row);
+    if (! measurements.isEmpty()) {
+      String type = measurements.get(0).getMeasurementType();
+      try {
+        data.addColumn(
+            new ColumnDescription("Timestamp", ValueType.DATETIME, "Date & Time"));
+        data.addColumn(
+            new ColumnDescription(type, ValueType.NUMBER, type));
+        
+        for (Measurement measurement : measurements) {
+          TableRow row = new TableRow();
+          XMLGregorianCalendar xgcal = DateConvert.convertDate(measurement.getDate());
+          row.addCell(new DateTimeValue(convertTimestamp(xgcal)));
+          row.addCell(measurement.getValue());
+          data.addRow(row);
+        }
       }
+      catch (NumberFormatException e) {
+        // String value in database couldn't be converted to a number.
+        throw new DataSourceException(ReasonType.INTERNAL_ERROR, "Found bad number in database"); // NOPMD
+      }
+      catch (TypeMismatchException | DatatypeConfigurationException e) {
+          throw new DataSourceException(ReasonType.INTERNAL_ERROR, "Problem adding data to table"); // NOPMD
+      } 
     }
-    catch (NumberFormatException e) {
-      // String value in database couldn't be converted to a number.
-      throw new DataSourceException(ReasonType.INTERNAL_ERROR, "Found bad number in database"); // NOPMD
-    }
-    catch (TypeMismatchException | DatatypeConfigurationException e) {
-        throw new DataSourceException(ReasonType.INTERNAL_ERROR, "Problem adding data to table"); // NOPMD
-    } 
-    
     return data;
   }
 
+  /**
+   * @param mList
+   *          measured value list
+   * @return gviz data table
+   * @throws DataSourceException
+   *          data source exception
+   */
+  private static DataTable getDataTable(MeasuredValueList mList) throws DataSourceException {
+    DataTable data = new DataTable();
+
+    // Sets up the columns requested by any SELECT in the datasource query
+    ArrayList<MeasuredValue> values = mList.getMeasuredValues();
+    if (! values.isEmpty()) {
+      String type = values.get(0).getMeasurementType().getUnits();
+      try {
+        data.addColumn(
+            new ColumnDescription("Timestamp", ValueType.DATETIME, "Date & Time"));
+        data.addColumn(
+            new ColumnDescription(type, ValueType.NUMBER, type));
+        
+        for (MeasuredValue value : values) {
+          TableRow row = new TableRow();
+          XMLGregorianCalendar xgcal = DateConvert.convertDate(value.getDate());
+          row.addCell(new DateTimeValue(convertTimestamp(xgcal)));
+          row.addCell(value.getValue());
+          data.addRow(row);
+        }
+      }
+      catch (NumberFormatException e) {
+        // String value in database couldn't be converted to a number.
+        throw new DataSourceException(ReasonType.INTERNAL_ERROR, "Found bad number in database"); // NOPMD
+      }
+      catch (TypeMismatchException | DatatypeConfigurationException e) {
+          throw new DataSourceException(ReasonType.INTERNAL_ERROR, "Problem adding data to table"); // NOPMD
+      } 
+    }
+    return data;
+  }
   
   /**
    * @param e

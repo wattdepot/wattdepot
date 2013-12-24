@@ -1,7 +1,7 @@
 /**
- * DepositoryValueServerResource.java This file is part of WattDepot.
+ * DepositoryValuesServerResource.java This file is part of WattDepot.
  *
- * Copyright (C) 2013  Cam Moore
+ * Copyright (C) 2013  Yongwen Xu
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,26 +18,26 @@
  */
 package org.wattdepot.server.http.api;
 
-import org.wattdepot.common.domainmodel.MeasuredValue;
-import org.wattdepot.common.http.api.DepositoryValueResource;
+import org.wattdepot.common.domainmodel.MeasuredValueList;
+import org.wattdepot.common.http.api.DepositoryValuesResource;
 
 
 /**
- * DepositoryValueServerResource - ServerResouce that handles the GET
- * /wattdepot/{org-id}/depository/{depository-id}/value/ response.
+ * DepositoryValuesServerResource - ServerResouce that handles the GET
+ * /wattdepot/{org-id}/depository/{depository-id}/values/ response.
  * 
- * @author Cam Moore
+ * @author Yongwen Xu
  * 
  */
-public class DepositoryValueServerResource extends DepositoryValueServer implements
-    DepositoryValueResource {
+public class DepositoryValuesServerResource extends DepositoryValuesServer implements
+    DepositoryValuesResource {
   /*
    * (non-Javadoc)
    * 
    * @see org.wattdepot.restlet.DepositoryValueResource#retrieve()
    */
   @Override
-  public MeasuredValue retrieve() {
+  public MeasuredValueList retrieve() {
     return doRetrieve();
   }
 }

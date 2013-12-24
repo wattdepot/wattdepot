@@ -32,7 +32,7 @@ import org.wattdepot.common.domainmodel.SensorLocation;
 public interface SensorLocationResource {
 
   /**
-   * Defines GET /wattdepot/{group_id}/location/{location_id} API call.
+   * Defines GET /wattdepot/{org-id}/location/{location-id} API call.
    * 
    * @return The Location with the given id. The id is sent in the request.
    */
@@ -40,7 +40,7 @@ public interface SensorLocationResource {
   public SensorLocation retrieve();
 
   /**
-   * Defines the PUT /wattdepot/{group_id}/location/ API call.
+   * Defines the POST /wattdepot/{org-id}/location/{location-id} API call.
    * 
    * @param sensorLocation
    *          The Location to store.
@@ -49,7 +49,7 @@ public interface SensorLocationResource {
   public void update(SensorLocation sensorLocation);
 
   /**
-   * Defined the DEL /wattdepot/{group_id}/location/{location_id} API call. The id is sent
+   * Defined the DEL /wattdepot/{org-id}/location/{location_id} API call. The id is sent
    * in the request.
    */
   @Delete

@@ -26,21 +26,21 @@ import org.restlet.security.MemoryRealm;
 import org.restlet.security.Role;
 import org.restlet.security.User;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
-import org.wattdepot.common.http.api.UserGroupResource;
+import org.wattdepot.common.http.api.OrganizationResource;
 
 /**
  * UserGroupServerResource - Handles the HTTP API
- * ("/wattdepot/{group_id}/usergroup/",
- * "/wattdepot/{group_id}/usergroup/{usergroup_id}").
+ * ("/wattdepot/{org-id}/organization/",
+ * "/wattdepot/{org-id}/organization/{org-id}").
  * 
  * @author Cam Moore
  * 
  */
-public class UserGroupServerResource extends WattDepotServerResource implements UserGroupResource {
+public class OrganizationServerResource extends WattDepotServerResource implements OrganizationResource {
 
   private String userGroupId;
 
@@ -52,7 +52,7 @@ public class UserGroupServerResource extends WattDepotServerResource implements 
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.userGroupId = getAttribute(Labels.USER_GROUP_ID);
+    this.userGroupId = getAttribute(Labels.ORGANIZATION_ID2);
   }
 
   /*
@@ -61,10 +61,10 @@ public class UserGroupServerResource extends WattDepotServerResource implements 
    * @see org.wattdepot.restlet.UserGroupResource#retrieve()
    */
   @Override
-  public UserGroup retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/usergroup/{" + userGroupId + "}");
-    UserGroup group = null;
-    group = depot.getUserGroup(userGroupId);
+  public Organization retrieve() {
+    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/organization/{" + userGroupId + "}");
+    Organization group = null;
+    group = depot.getOrganization(userGroupId);
     return group;
   }
 
@@ -76,11 +76,11 @@ public class UserGroupServerResource extends WattDepotServerResource implements 
    * .UserGroup)
    */
   @Override
-  public void store(UserGroup usergroup) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/{" + groupId + "}/usergroup/ with " + usergroup);
-    if (!depot.getUserGroupIds().contains(usergroup.getId())) {
+  public void store(Organization usergroup) {
+    getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/organization/ with " + usergroup);
+    if (!depot.getOrganizationIds().contains(usergroup.getId())) {
       try {
-        UserGroup defined = depot.defineUserGroup(usergroup.getName(), usergroup.getUsers());
+        Organization defined = depot.defineOrganization(usergroup.getName(), usergroup.getUsers());
         WattDepotApplication app = (WattDepotApplication) getApplication();
         // create the new Role for the group
         String roleName = defined.getId();
@@ -102,7 +102,7 @@ public class UserGroupServerResource extends WattDepotServerResource implements 
       }
     }
     else {
-      depot.updateUserGroup(usergroup);
+      depot.updateOrganization(usergroup);
       // update the Realm
       WattDepotApplication app = (WattDepotApplication) getApplication();
       // create the new Role for the group
@@ -122,9 +122,9 @@ public class UserGroupServerResource extends WattDepotServerResource implements 
    */
   @Override
   public void remove() {
-    getLogger().log(Level.INFO, "DEL /wattdepot/{" + groupId + "}/usergroup/{" + userGroupId + "}");
+    getLogger().log(Level.INFO, "DEL /wattdepot/{" + orgId + "}/organization/{" + userGroupId + "}");
     try {
-      depot.deleteUserGroup(userGroupId);
+      depot.deleteOrganization(userGroupId);
       WattDepotApplication app = (WattDepotApplication) getApplication();
       // create the new Role for the group
       String roleName = userGroupId;

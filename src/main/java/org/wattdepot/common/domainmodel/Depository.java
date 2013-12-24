@@ -44,7 +44,7 @@ public class Depository {
   /** Type of measurements stored in the Depository. */
   protected MeasurementType measurementType;
   /** The owner of this depository. */
-  protected UserGroup owner;
+  protected Organization owner;
 
   /**
    * The default constructor.
@@ -63,7 +63,7 @@ public class Depository {
    * @param owner
    *          the owner of the location.
    */
-  public Depository(String name, MeasurementType measurementType, UserGroup owner) {
+  public Depository(String name, MeasurementType measurementType, Organization owner) {
     this.id = Slug.slugify(name);
     this.name = name;
     this.slug = Slug.slugify(name);
@@ -181,7 +181,7 @@ public class Depository {
   /**
    * @return the owner
    */
-  public UserGroup getOwner() {
+  public Organization getOwner() {
     return owner;
   }
 
@@ -286,8 +286,8 @@ public class Depository {
    * @return True if the group owns the Location or the group is the
    *         ADMIN_GROUP.
    */
-  public boolean isOwner(UserGroup group) {
-    if (owner != null && (owner.equals(group) || group.equals(UserGroup.ADMIN_GROUP))) {
+  public boolean isOwner(Organization group) {
+    if (owner != null && (owner.equals(group) || group.equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;
@@ -351,7 +351,7 @@ public class Depository {
    * @param owner
    *          the owner to set
    */
-  public void setOwner(UserGroup owner) {
+  public void setOwner(Organization owner) {
     this.owner = owner;
   }
 

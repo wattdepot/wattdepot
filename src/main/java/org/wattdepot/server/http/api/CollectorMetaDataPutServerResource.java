@@ -22,15 +22,15 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.CollectorMetaData;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.CollectorMetaDataPutResource;
 
 /**
  * CollectorMetaDataServerResource - Handles the CollectorMetaData HTTP API
- * (("/wattdepot/{group-id}/collector-metadata/",
- * "/wattdepot/{group-id}/collector-metadata/{collector-metadata-id}").
+ * (("/wattdepot/{org-id}/collector-metadata/",
+ * "/wattdepot/{org-id}/collector-metadata/{collector-metadata-id}").
  * 
  * @author Cam Moore
  * 
@@ -46,10 +46,10 @@ public class CollectorMetaDataPutServerResource extends WattDepotServerResource 
   @Override
   public void store(CollectorMetaData metadata) {
     getLogger().log(Level.INFO,
-        "PUT /wattdepot/{" + groupId + "}/collector-metadata/ with " + metadata);
-    UserGroup owner = depot.getUserGroup(groupId);
+        "PUT /wattdepot/{" + orgId + "}/collector-metadata/ with " + metadata);
+    Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
-      if (!depot.getCollectorMetaDataIds(groupId).contains(metadata.getId())) {
+      if (!depot.getCollectorMetaDataIds(orgId).contains(metadata.getId())) {
         try {
           depot.defineCollectorMetaData(metadata.getName(), metadata.getSensor(),
               metadata.getPollingInterval(), metadata.getDepositoryId(), owner);
@@ -67,7 +67,7 @@ public class CollectorMetaDataPutServerResource extends WattDepotServerResource 
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, groupId + " does not exist.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
   }
 }

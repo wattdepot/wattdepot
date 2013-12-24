@@ -26,7 +26,7 @@ import org.wattdepot.common.http.api.CollectorMetaDatasResource;
 
 /**
  * SensorProcessesServerResource - Handles the SensorProcesses HTTP API
- * ("/wattdepot/{group_id}/sensorprocesses/").
+ * ("/wattdepot/{org-id}/collector-metadatas/").
  * 
  * @author Cam Moore
  * 
@@ -41,9 +41,9 @@ public class CollectorMetaDatasServerResource extends WattDepotServerResource im
    */
   @Override
   public CollectorMetaDataList retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/sensorprocesses/");
+    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/collector-metadatas/");
     CollectorMetaDataList ret = new CollectorMetaDataList();
-    for (CollectorMetaData sp : depot.getCollectorMetaDatas(groupId)) {
+    for (CollectorMetaData sp : depot.getCollectorMetaDatas(orgId)) {
       ret.getDatas().add(sp);
     }
     return ret;
