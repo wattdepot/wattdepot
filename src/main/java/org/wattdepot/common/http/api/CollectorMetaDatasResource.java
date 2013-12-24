@@ -19,7 +19,7 @@
 package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.CollectorMetaDataList;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
 
 /**
  * SensorProcessesResouce - HTTP Interface for SensorProcesses.
@@ -34,6 +34,6 @@ public interface CollectorMetaDatasResource {
    * @return a List of the defined SensorProcesses.
    */
   @Get("json") // Use JSON as transport encoding.
-  public CollectorMetaDataList retrieve();
+  public CollectorProcessDefinitionList retrieve();
 
 }

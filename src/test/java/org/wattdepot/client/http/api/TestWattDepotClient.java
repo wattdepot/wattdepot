@@ -35,8 +35,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.wattdepot.client.ClientProperties;
-import org.wattdepot.common.domainmodel.CollectorMetaData;
-import org.wattdepot.common.domainmodel.CollectorMetaDataList;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.DepositoryList;
 import org.wattdepot.common.domainmodel.InstanceFactory;
@@ -166,7 +166,7 @@ public class TestWattDepotClient {
   public void tearDown() throws Exception {
     logger.finest("tearDown()");
     admin.deleteUser(testPassword.getId());
-    admin.deleteOrganization(testGroup.getId());
+    admin.deleteOrganization(testGroup.getSlug());
     admin.deleteUserPassword(testUser.getId());
     logger.finest("Done tearDown()");
   }
@@ -230,7 +230,7 @@ public class TestWattDepotClient {
     assertTrue(list.getDepositories().size() == 1);
     try {
       // get instance (READ)
-      Depository ret = test.getDepository(depo.getId());
+      Depository ret = test.getDepository(depo.getSlug());
       assertEquals(depo, ret);
       ret.setSlug("new_slug");
       // update instance (UPDATE)
@@ -259,7 +259,7 @@ public class TestWattDepotClient {
 
     // error conditions
     Depository bogus = new Depository("bogus", depo.getMeasurementType(),
-        depo.getOwner());
+        depo.getOwnerId());
     try {
       test.deleteDepository(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -344,7 +344,7 @@ public class TestWattDepotClient {
     assertTrue(list.getMeasurementTypes().contains(type));
     try {
       // get instance (READ)
-      MeasurementType ret = test.getMeasurementType(type.getId());
+      MeasurementType ret = test.getMeasurementType(type.getSlug());
       assertEquals(type, ret);
       ret.setUnits("W");
       // update instance (UPDATE)
@@ -371,7 +371,7 @@ public class TestWattDepotClient {
         admin.deleteMeasurementType(ret);
       }
       try {
-        ret = test.getMeasurementType(type.getId());
+        ret = test.getMeasurementType(type.getSlug());
         assertNull(ret);
         fail("Shouldn't get anything.");
       }
@@ -412,7 +412,7 @@ public class TestWattDepotClient {
     assertTrue(list.getSensors().contains(sensor));
     try {
       // get instance (READ)
-      Sensor ret = test.getSensor(sensor.getId());
+      Sensor ret = test.getSensor(sensor.getSlug());
       assertEquals(sensor, ret);
       ret.setUri("bogus_uri");
       // update instance (UPDATE)
@@ -423,7 +423,7 @@ public class TestWattDepotClient {
       // delete instance (DELETE)
       test.deleteSensor(ret);
       try {
-        ret = test.getSensor(sensor.getId());
+        ret = test.getSensor(sensor.getSlug());
         assertNull(ret);
       }
       catch (IdNotFoundException e) {
@@ -435,7 +435,7 @@ public class TestWattDepotClient {
     }
     // error conditions
     Sensor bogus = new Sensor("bogus", sensor.getUri(),
-        sensor.getSensorLocation(), sensor.getModel(), sensor.getOwner());
+        sensor.getSensorLocationId(), sensor.getModelId(), sensor.getOwnerId());
     try {
       test.deleteSensor(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -461,7 +461,7 @@ public class TestWattDepotClient {
     assertTrue(list.getGroups().contains(group));
     try {
       // get instance (READ)
-      SensorGroup ret = test.getSensorGroup(group.getId());
+      SensorGroup ret = test.getSensorGroup(group.getSlug());
       assertEquals(group, ret);
       ret.setName("changed_name");
       test.updateSensorGroup(group);
@@ -472,7 +472,7 @@ public class TestWattDepotClient {
       // delete instance (DELETE)
       test.deleteSensorGroup(ret);
       try {
-        ret = test.getSensorGroup(group.getId());
+        ret = test.getSensorGroup(group.getSlug());
         assertNull(ret);
       }
       catch (IdNotFoundException e) {
@@ -484,7 +484,7 @@ public class TestWattDepotClient {
     }
     // error conditions
     SensorGroup bogus = new SensorGroup("bogus", group.getSensors(),
-        group.getOwner());
+        group.getOwnerId());
     try {
       test.deleteSensorGroup(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -549,9 +549,9 @@ public class TestWattDepotClient {
    */
   @Test
   public void testCollectorMetaData() {
-    CollectorMetaData data = InstanceFactory.getCollectorMetaData();
+    CollectorProcessDefinition data = InstanceFactory.getCollectorMetaData();
     // Get list
-    CollectorMetaDataList list = test.getCollectorMetaDatas();
+    CollectorProcessDefinitionList list = test.getCollectorMetaDatas();
     assertNotNull(list);
     assertTrue(list.getDatas().size() == 0);
     // Put new instance (CREATE)
@@ -560,7 +560,7 @@ public class TestWattDepotClient {
     assertTrue(list.getDatas().contains(data));
     try {
       // get instance (READ)
-      CollectorMetaData ret = test.getCollectorMetaData(data.getId());
+      CollectorProcessDefinition ret = test.getCollectorMetaData(data.getSlug());
       assertEquals(data, ret);
       ret.setDepositoryId("new depotistory_id");
       test.updateCollectorMetaData(ret);
@@ -570,7 +570,7 @@ public class TestWattDepotClient {
       // delete instance (DELETE)
       test.deleteCollectorMetaData(data);
       try {
-        ret = test.getCollectorMetaData(data.getId());
+        ret = test.getCollectorMetaData(data.getSlug());
         assertNull(ret);
       }
       catch (IdNotFoundException e) {
@@ -581,8 +581,8 @@ public class TestWattDepotClient {
       fail("Should have " + data);
     }
     // error conditions
-    CollectorMetaData bogus = new CollectorMetaData("bogus", data.getSensor(),
-        data.getPollingInterval(), data.getDepositoryId(), data.getOwner());
+    CollectorProcessDefinition bogus = new CollectorProcessDefinition("bogus", data.getSensor(),
+        data.getPollingInterval(), data.getDepositoryId(), data.getOwnerId());
     try {
       test.deleteCollectorMetaData(bogus);
       fail("Shouldn't be able to delete " + bogus);

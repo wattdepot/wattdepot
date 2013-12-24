@@ -21,7 +21,7 @@ package org.wattdepot.server.http.api;
 import java.util.logging.Level;
 
 import org.restlet.data.Status;
-import org.wattdepot.common.domainmodel.CollectorMetaData;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
@@ -44,12 +44,12 @@ public class CollectorMetaDataPutServerResource extends WattDepotServerResource 
    * .datamodel.CollectorMetaData)
    */
   @Override
-  public void store(CollectorMetaData metadata) {
+  public void store(CollectorProcessDefinition metadata) {
     getLogger().log(Level.INFO,
         "PUT /wattdepot/{" + orgId + "}/collector-metadata/ with " + metadata);
     Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
-      if (!depot.getCollectorMetaDataIds(orgId).contains(metadata.getId())) {
+      if (!depot.getCollectorMetaDataIds(orgId).contains(metadata.getSlug())) {
         try {
           depot.defineCollectorMetaData(metadata.getName(), metadata.getSensor(),
               metadata.getPollingInterval(), metadata.getDepositoryId(), owner);

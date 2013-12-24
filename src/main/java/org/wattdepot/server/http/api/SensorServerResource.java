@@ -103,8 +103,8 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
         "POST /wattdepot/{" + orgId + "}/sensor/{" + sensorId + "} with " + sensor);
     Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
-      if (sensorId.equals(sensor.getId())) {
-        if (depot.getSensorIds(orgId).contains(sensor.getId())) {
+      if (sensorId.equals(sensor.getSlug())) {
+        if (depot.getSensorIds(orgId).contains(sensor.getSlug())) {
           depot.updateSensor(sensor);
         }
         else {

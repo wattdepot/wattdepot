@@ -26,18 +26,6 @@ import java.util.Set;
 import javax.measure.unit.Unit;
 import javax.xml.datatype.DatatypeConfigurationException;
 
-import org.wattdepot.common.domainmodel.CollectorMetaData;
-import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.Measurement;
-import org.wattdepot.common.domainmodel.MeasurementType;
-import org.wattdepot.common.domainmodel.Property;
-import org.wattdepot.common.domainmodel.Sensor;
-import org.wattdepot.common.domainmodel.SensorGroup;
-import org.wattdepot.common.domainmodel.SensorLocation;
-import org.wattdepot.common.domainmodel.SensorModel;
-import org.wattdepot.common.domainmodel.Organization;
-import org.wattdepot.common.domainmodel.UserInfo;
-import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.util.DateConvert;
 import org.wattdepot.common.util.UnitsHelper;
 
@@ -55,7 +43,7 @@ public class InstanceFactory {
    */
   public static Depository getDepository() {
     return new Depository("Test Depository", getMeasurementType(),
-        getUserGroup());
+        getOrganization().getSlug());
   }
 
   /**
@@ -64,7 +52,7 @@ public class InstanceFactory {
   public static SensorLocation getLocation() {
     return new SensorLocation("Test Location Ilima 6th", new Double(21.294642),
         new Double(-157.812727), new Double(30),
-        "Hale Aloha Ilima residence hall 6th floor", getUserGroup());
+        "Hale Aloha Ilima residence hall 6th floor", getOrganization());
   }
 
   /**
@@ -75,7 +63,7 @@ public class InstanceFactory {
       Date measTime = DateConvert
           .parseCalStringToDate("2013-11-20T14:35:27.925-1000");
       Double value = 100.0;
-      return new Measurement(getSensor(), measTime, value, getMeasurementType()
+      return new Measurement(getSensor().getSlug(), measTime, value, getMeasurementType()
           .unit());
     }
     catch (ParseException e) {
@@ -97,7 +85,7 @@ public class InstanceFactory {
       Date measTime = DateConvert
           .parseCalStringToDate("2013-11-20T14:45:37.925-1000");
       Double value = 100.0;
-      return new Measurement(getSensor(), measTime, value, getMeasurementType()
+      return new Measurement(getSensor().getSlug(), measTime, value, getMeasurementType()
           .unit());
     }
     catch (ParseException e) {
@@ -119,7 +107,7 @@ public class InstanceFactory {
       Date measTime = DateConvert
           .parseCalStringToDate("2013-11-20T14:35:37.925-1000");
       Double value = 100.0;
-      return new Measurement(getSensor(), measTime, value, getMeasurementType()
+      return new Measurement(getSensor().getSlug(), measTime, value, getMeasurementType()
           .unit());
     }
     catch (ParseException e) {
@@ -152,8 +140,8 @@ public class InstanceFactory {
    * @return A Sensor instance for testing.
    */
   public static Sensor getSensor() {
-    return new Sensor("Test Sensor", "test_sensor_uri", getLocation(),
-        getSensorModel(), getUserGroup());
+    return new Sensor("Test Sensor", "test_sensor_uri", getLocation().getId(),
+        getSensorModel().getId(), getOrganization().getSlug());
   }
 
   /**
@@ -162,7 +150,7 @@ public class InstanceFactory {
   public static SensorGroup getSensorGroup() {
     Set<Sensor> sensors = new HashSet<Sensor>();
     sensors.add(getSensor());
-    return new SensorGroup("Test Sensor Group", sensors, getUserGroup());
+    return new SensorGroup("Test Sensor Group", sensors, getOrganization().getSlug());
   }
 
   /**
@@ -176,17 +164,17 @@ public class InstanceFactory {
   /**
    * @return A CollectorMetaData instance for testing.
    */
-  public static CollectorMetaData getCollectorMetaData() {
-    return new CollectorMetaData("Test Collector Metadata", getSensor(), 10L,
-        "test_depository", getUserGroup());
+  public static CollectorProcessDefinition getCollectorMetaData() {
+    return new CollectorProcessDefinition("Test Collector Metadata", getSensor().getSlug(), 10L,
+        "test_depository", getOrganization().getSlug());
   }
 
   /**
-   * @return A UserGroup instance for testing.
+   * @return A Organization instance for testing.
    */
-  public static Organization getUserGroup() {
-    Set<UserInfo> users = new HashSet<UserInfo>();
-    users.add(getUserInfo());
+  public static Organization getOrganization() {
+    Set<String> users = new HashSet<String>();
+    users.add(getUserInfo().getId());
     return new Organization("Test User Group", users);
   }
 

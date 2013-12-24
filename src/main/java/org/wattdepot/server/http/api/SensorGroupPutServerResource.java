@@ -49,7 +49,7 @@ public class SensorGroupPutServerResource extends WattDepotServerResource implem
         .log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/sensor-group/ with " + sensorgroup);
     Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
-      if (!depot.getSensorGroupIds(orgId).contains(sensorgroup.getId())) {
+      if (!depot.getSensorGroupIds(orgId).contains(sensorgroup.getSlug())) {
         try {
           depot.defineSensorGroup(sensorgroup.getName(), sensorgroup.getSensors(), owner);
         }

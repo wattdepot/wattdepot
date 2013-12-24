@@ -476,7 +476,7 @@ public class SharkCollector extends MultiThreadedCollector {
    * @return true if the depository stores power measurements.
    */
   private boolean isPower() {
-    return measType.getId().startsWith("power");
+    return measType.getSlug().startsWith("power");
   }
 
   /**

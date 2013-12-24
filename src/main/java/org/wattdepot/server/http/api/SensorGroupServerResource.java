@@ -89,7 +89,7 @@ public class SensorGroupServerResource extends WattDepotServerResource implement
         .log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/sensor-group/ with " + sensorgroup);
     Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
-      if (depot.getSensorGroupIds(orgId).contains(sensorgroup.getId())) {
+      if (depot.getSensorGroupIds(orgId).contains(sensorgroup.getSlug())) {
         depot.updateSensorGroup(sensorgroup);
       }
       else {

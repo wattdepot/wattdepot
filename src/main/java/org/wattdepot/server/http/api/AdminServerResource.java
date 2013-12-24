@@ -31,7 +31,7 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Get;
 import org.restlet.security.User;
-import org.wattdepot.common.domainmodel.CollectorMetaData;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.Sensor;
@@ -62,7 +62,7 @@ public class AdminServerResource extends WattDepotServerResource {
       UserInfo info = depot.getUser(user.getIdentifier());
       Organization group = depot.getUsersGroup(info);
       if (group != null) {
-        redirectPermanent("/wattdepot/" + group.getId() + "/");
+        redirectPermanent("/wattdepot/" + group.getSlug() + "/");
       }
       else {
         setStatus(Status.CLIENT_ERROR_FORBIDDEN);
@@ -77,7 +77,7 @@ public class AdminServerResource extends WattDepotServerResource {
     List<Sensor> sensors = depot.getSensors(orgId);
     List<SensorModel> sensorModels = depot.getSensorModels();
     List<SensorGroup> sensorGroups = depot.getSensorGroups(orgId);
-    List<CollectorMetaData> sensorProcesses = depot.getCollectorMetaDatas(orgId);
+    List<CollectorProcessDefinition> sensorProcesses = depot.getCollectorMetaDatas(orgId);
     List<MeasurementType> measurementTypes = depot.getMeasurementTypes();
     dataModel.put("users", users);
     dataModel.put("groups", groups);

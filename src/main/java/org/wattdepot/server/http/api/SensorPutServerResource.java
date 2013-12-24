@@ -46,10 +46,10 @@ public class SensorPutServerResource extends WattDepotServerResource implements 
     getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/sensor/ with " + sensor);
     Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
-      if (!depot.getSensorIds(orgId).contains(sensor.getId())) {
+      if (!depot.getSensorIds(orgId).contains(sensor.getSlug())) {
         try {
-          depot.defineSensor(sensor.getName(), sensor.getUri(), sensor.getSensorLocation(),
-              sensor.getModel(), owner);
+          depot.defineSensor(sensor.getName(), sensor.getUri(), sensor.getSensorLocationId(),
+              sensor.getModelId(), owner);
         }
         catch (UniqueIdException e) {
           setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());

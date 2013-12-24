@@ -86,13 +86,13 @@ public class WattDepotComponent extends Component {
     realm.setName("WattDepot Security");
     getRealms().add(realm);
     for (Organization group : app.getDepot().getOrganizations()) {
-      app.getRoles().add(new Role(group.getId()));
+      app.getRoles().add(new Role(group.getSlug()));
       for (UserInfo info : group.getUsers()) {
         UserPassword up = app.getDepot().getUserPassword(info.getId());
         User user = new User(info.getId(), up.getPlainText(),
             info.getFirstName(), info.getLastName(), info.getEmail());
         realm.getUsers().add(user);
-        realm.map(user, app.getRole(group.getId()));
+        realm.map(user, app.getRole(group.getSlug()));
       }
     }
 

@@ -43,7 +43,7 @@ public class Manager {
   public static SessionFactory getFactory(ServerProperties properties) {
     if (sessionFactory == null) {
       Configuration cfg = new Configuration()
-          .addClass(org.wattdepot.common.domainmodel.CollectorMetaData.class)
+          .addClass(org.wattdepot.common.domainmodel.CollectorProcessDefinition.class)
           .addClass(org.wattdepot.common.domainmodel.Depository.class)
           .addClass(org.wattdepot.server.depository.impl.hibernate.DepositoryImpl.class)
           .addClass(org.wattdepot.common.domainmodel.Measurement.class)

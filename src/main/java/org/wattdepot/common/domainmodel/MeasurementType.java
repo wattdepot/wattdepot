@@ -20,6 +20,7 @@ package org.wattdepot.common.domainmodel;
 
 import javax.measure.unit.Unit;
 
+import org.wattdepot.common.exception.BadSlugException;
 import org.wattdepot.common.util.Slug;
 
 /**
@@ -32,8 +33,8 @@ import org.wattdepot.common.util.Slug;
 public class MeasurementType {
   /** The name of the MeasurementType. */
   private String name;
-  /** The unique id for the MeasurementType. */
-  private String id;
+  /** The unique slug for the MeasurementType. */
+  private String slug;
   /** The Units for the measurement type. */
   private Unit<?> unit;
   /** String property stored in persistence. */
@@ -56,7 +57,7 @@ public class MeasurementType {
    */
   public MeasurementType(String name, Unit<?> unit) {
     this.name = name;
-    this.id = Slug.slugify(name);
+    this.slug = Slug.slugify(name);
     this.unit = unit;
     this.units = this.unit.toString();
   }
@@ -86,12 +87,12 @@ public class MeasurementType {
     else if (!name.equals(other.name)) {
       return false;
     }
-    if (id == null) {
-      if (other.id != null) {
+    if (slug == null) {
+      if (other.slug != null) {
         return false;
       }
     }
-    else if (!id.equals(other.id)) {
+    else if (!slug.equals(other.slug)) {
       return false;
     }
     if (units == null) {
@@ -106,10 +107,10 @@ public class MeasurementType {
   }
 
   /**
-   * @return the id
+   * @return the slug
    */
-  public String getId() {
-    return id;
+  public String getSlug() {
+    return slug;
   }
 
   /**
@@ -136,16 +137,24 @@ public class MeasurementType {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((name == null) ? 0 : name.hashCode());
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((slug == null) ? 0 : slug.hashCode());
     result = prime * result + ((units == null) ? 0 : units.hashCode());
     return result;
   }
 
   /**
-   * @param id the id to set
+   * @param slug
+   *          the slug to set
+   * @exception BadSlugException
+   *              if the slug is not valid.
    */
-  public void setId(String id) {
-    this.id = id;
+  public void setSlug(String slug) throws BadSlugException {
+    if (Slug.validateSlug(slug)) {
+      this.slug = slug;
+    }
+    else {
+      throw new BadSlugException(slug + " is not a valid slug.");
+    }
   }
 
   /**
@@ -154,8 +163,8 @@ public class MeasurementType {
    */
   public void setName(String name) {
     this.name = name;
-    if (this.id == null) {
-      this.id = Slug.slugify(name);
+    if (this.slug == null) {
+      this.slug = Slug.slugify(name);
     }
   }
 
@@ -168,7 +177,9 @@ public class MeasurementType {
     this.unit = Unit.valueOf(units);
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.Object#toString()
    */
   @Override

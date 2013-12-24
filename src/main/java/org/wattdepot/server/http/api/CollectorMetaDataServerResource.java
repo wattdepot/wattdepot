@@ -22,7 +22,7 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import org.wattdepot.common.domainmodel.CollectorMetaData;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -60,10 +60,10 @@ public class CollectorMetaDataServerResource extends WattDepotServerResource imp
    * @see org.wattdepot.restlet.CollectorMetaDataResource#retrieve()
    */
   @Override
-  public CollectorMetaData retrieve() {
+  public CollectorProcessDefinition retrieve() {
     getLogger().log(Level.INFO,
         "GET /wattdepot/{" + orgId + "}/collectormetadata/{" + metaDataId + "}");
-    CollectorMetaData process = null;
+    CollectorProcessDefinition process = null;
     try {
       process = depot.getCollectorMetaData(metaDataId, orgId);
     }
@@ -105,15 +105,15 @@ public class CollectorMetaDataServerResource extends WattDepotServerResource imp
    * .common.domainmodel.CollectorMetaData)
    */
   @Override
-  public void update(CollectorMetaData metadata) {
+  public void update(CollectorProcessDefinition metadata) {
     getLogger().log(
         Level.INFO,
         "POST /wattdepot/{" + orgId + "}/collector-metadata/{" + metaDataId + "} with "
             + metadata);
     Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
-      if (metadata.getId().equals(metaDataId)) {
-        if (depot.getCollectorMetaDataIds(orgId).contains(metadata.getId())) {
+      if (metadata.getSlug().equals(metaDataId)) {
+        if (depot.getCollectorMetaDataIds(orgId).contains(metadata.getSlug())) {
           depot.updateCollectorMetaData(metadata);
         }
       }

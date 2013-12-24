@@ -19,7 +19,7 @@
 package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Put;
-import org.wattdepot.common.domainmodel.CollectorMetaData;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 
 /**
  * CollectorMetaDataResource - HTTP Interface for CollectorMetaData.
@@ -36,6 +36,6 @@ public interface CollectorMetaDataPutResource {
    *          The CollectorMetaData to store.
    */
   @Put
-  public void store(CollectorMetaData metadata);
+  public void store(CollectorProcessDefinition metadata);
 
 }

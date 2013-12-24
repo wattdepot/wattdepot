@@ -99,7 +99,7 @@ public class DepositoryImpl extends Depository {
    *          The Depository to clone.
    */
   public DepositoryImpl(Depository clone) {
-    super(clone.getName(), clone.getMeasurementType(), clone.getOwner());
+    super(clone.getName(), clone.getMeasurementType(), clone.getOwnerId());
   }
 
   /**
@@ -145,7 +145,7 @@ public class DepositoryImpl extends Depository {
     List<MeasurementImpl> measurements = (List<MeasurementImpl>) session
         .createQuery("FROM MeasurementImpl").list();
     for (MeasurementImpl meas : measurements) {
-      if (meas.getId().equals(measId)) {
+      if (meas.getSlug().equals(measId)) {
         ret = meas;
       }
     }
@@ -256,7 +256,7 @@ public class DepositoryImpl extends Depository {
       .list();
     if (result.size() > 0) {
       MeasurementImpl meas = result.get(0);
-      value = new MeasuredValue(sensor.getId(), meas.getValue(), type);
+      value = new MeasuredValue(sensor.getSlug(), meas.getValue(), type);
       value.setDate(meas.getDate());
     }
     
@@ -288,7 +288,7 @@ public class DepositoryImpl extends Depository {
       .list();
     if (result.size() > 0) {
       MeasurementImpl meas = result.get(0);
-      value = new MeasuredValue(sensor.getId(), meas.getValue(), type);
+      value = new MeasuredValue(sensor.getSlug(), meas.getValue(), type);
       value.setDate(meas.getDate());
     }
     
@@ -628,15 +628,15 @@ public class DepositoryImpl extends Depository {
     // check the sensor
     boolean haveSensor = false;
     for (Sensor s : (List<Sensor>) session.createQuery("from Sensor").list()) {
-      if (s.getId().equals(meas.getSensor().getId())) {
+      if (s.getSlug().equals(meas.getSensor().getSlug())) {
         haveSensor = true;
       }
     }
     if (!haveSensor) {
       // ensure the sensor has an owner
       Sensor measSensor = meas.getSensor();
-      if (measSensor.getOwner() == null) {
-        measSensor.setOwner(getOwner());
+      if (measSensor.getOwnerId() == null) {
+        measSensor.setOwnerId(getOwnerId());
       }
       saveSensor(session, measSensor);
     }
@@ -659,8 +659,8 @@ public class DepositoryImpl extends Depository {
     for (Property p : sensor.getProperties()) {
       session.saveOrUpdate(p);
     }
-    session.saveOrUpdate(sensor.getSensorLocation());
-    session.saveOrUpdate(sensor.getModel());
+    session.saveOrUpdate(sensor.getSensorLocationId());
+    session.saveOrUpdate(sensor.getModelId());
     session.saveOrUpdate(sensor);
   }
 

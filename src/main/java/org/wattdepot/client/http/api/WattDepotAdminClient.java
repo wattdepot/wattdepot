@@ -171,7 +171,7 @@ public class WattDepotAdminClient extends WattDepotClient implements
   @Override
   public void updateOrganization(Organization org) {
     ClientResource client = makeClient("admin/" + Labels.ORGANIZATION
-        + "/" + org.getId());
+        + "/" + org.getSlug());
     OrganizationResource resource = client.wrap(OrganizationResource.class);
     try {
       resource.update(org);

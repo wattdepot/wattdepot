@@ -22,7 +22,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.wattdepot.server.ServerProperties;
-import org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl;
 
 /**
  * TestWattDepotImpl - Test cases for the WattDepotImpl.

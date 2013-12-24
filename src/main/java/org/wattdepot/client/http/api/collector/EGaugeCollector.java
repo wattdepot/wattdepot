@@ -170,14 +170,14 @@ public class EGaugeCollector extends MultiThreadedCollector {
     boolean ret = super.isValid();
     if (ret) {
       // check the type of the Sensor
-      String type = this.metaData.getSensor().getModel().getType();
+      String type = this.metaData.getSensor().getModelId().getType();
       ret &= type.equals(SensorModelHelper.EGAUGE);
     }
     if ((this.registerName == null) || (this.registerName.length() == 0)) {
       return false;
     }
     // validate that measType is power or energy.
-    if (!measType.getId().startsWith("power") && !measType.getId().startsWith("energy")) {
+    if (!measType.getSlug().startsWith("power") && !measType.getSlug().startsWith("energy")) {
       return false;
     }
 
@@ -279,7 +279,7 @@ public class EGaugeCollector extends MultiThreadedCollector {
    * @return true if the depository stores power measurements.
    */
   private boolean isPower() {
-    return measType.getId().startsWith("power");
+    return measType.getSlug().startsWith("power");
   }
 
   /**

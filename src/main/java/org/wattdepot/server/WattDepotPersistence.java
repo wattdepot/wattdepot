@@ -21,7 +21,7 @@ package org.wattdepot.server;
 import java.util.List;
 import java.util.Set;
 
-import org.wattdepot.common.domainmodel.CollectorMetaData;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.Property;
@@ -76,7 +76,7 @@ public abstract class WattDepotPersistence {
    *           if the given owner doesn't match the owners of the Sensor or
    *           Depository.
    */
-  public abstract CollectorMetaData defineCollectorMetaData(String id,
+  public abstract CollectorProcessDefinition defineCollectorMetaData(String id,
       Sensor sensor, Long pollingInterval, String depositoryId,
       Organization owner) throws UniqueIdException, MissMatchedOwnerException;
 
@@ -368,7 +368,7 @@ public abstract class WattDepotPersistence {
    * @throws MissMatchedOwnerException
    *           if the groupId doesn't match the owner of the sensor process.
    */
-  public abstract CollectorMetaData getCollectorMetaData(String id,
+  public abstract CollectorProcessDefinition getCollectorMetaData(String id,
       String groupId) throws MissMatchedOwnerException;
 
   /**
@@ -383,7 +383,7 @@ public abstract class WattDepotPersistence {
    *          the group id of the user making the request.
    * @return The known/defined CollectorMetaDataes owned by the given group id.
    */
-  public abstract List<CollectorMetaData> getCollectorMetaDatas(String groupId);
+  public abstract List<CollectorProcessDefinition> getCollectorMetaDatas(String groupId);
 
   /**
    * @param id
@@ -639,8 +639,8 @@ public abstract class WattDepotPersistence {
    *          The updated CollectorMetaData.
    * @return The updated process from persistence.
    */
-  public abstract CollectorMetaData updateCollectorMetaData(
-      CollectorMetaData process);
+  public abstract CollectorProcessDefinition updateCollectorMetaData(
+      CollectorProcessDefinition process);
 
   /**
    * Updates the given location in the persistent store.

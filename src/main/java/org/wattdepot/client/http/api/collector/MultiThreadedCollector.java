@@ -23,7 +23,7 @@ import java.util.TimerTask;
 
 import org.apache.commons.validator.routines.UrlValidator;
 import org.wattdepot.client.http.api.WattDepotClient;
-import org.wattdepot.common.domainmodel.CollectorMetaData;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorModel;
@@ -46,7 +46,7 @@ public abstract class MultiThreadedCollector extends TimerTask {
   /** Flag for debugging messages. */
   protected boolean debug;
   /** The metadata about the collector. */
-  protected CollectorMetaData metaData;
+  protected CollectorProcessDefinition metaData;
 
   /** The client used to communicate with the WattDepot server. */
   protected WattDepotClient client;
@@ -108,7 +108,7 @@ public abstract class MultiThreadedCollector extends TimerTask {
       BadSensorUriException {
     this.client = new WattDepotClient(serverUri, username, password);
     this.debug = debug;
-    this.metaData = new CollectorMetaData(Slug.slugify(sensor.getId() + " " + pollingInterval + " "
+    this.metaData = new CollectorProcessDefinition(Slug.slugify(sensor.getSlug() + " " + pollingInterval + " "
         + depository.getName()), sensor, pollingInterval, depository.getName(), null);
     client.putCollectorMetaData(metaData);
     this.depository = depository;
@@ -171,7 +171,7 @@ public abstract class MultiThreadedCollector extends TimerTask {
       return false;
     }
     // Get the collector metadata
-    CollectorMetaData metaData = null;
+    CollectorProcessDefinition metaData = null;
     try {
       metaData = staticClient.getCollectorMetaData(collectorId);
       staticClient.getDepository(metaData.getDepositoryId());
@@ -181,7 +181,7 @@ public abstract class MultiThreadedCollector extends TimerTask {
       return false;
     }
     // Get SensorModel to determine what type of collector to start.
-    SensorModel model = metaData.getSensor().getModel();
+    SensorModel model = metaData.getSensor().getModelId();
     if (model.getName().equals(SensorModelHelper.EGAUGE) && model.getVersion().equals("1.0")) {
       Timer t = new Timer();
       try {

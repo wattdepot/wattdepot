@@ -27,7 +27,7 @@ import javax.measure.unit.Unit;
 
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
-import org.wattdepot.common.domainmodel.CollectorMetaData;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementType;
@@ -89,13 +89,13 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
         throw new RuntimeException("opens and closed mismatched.");
       }
     }
-    Organization pub = getOrganization(Organization.PUBLIC_GROUP.getId());
+    Organization pub = getOrganization(Organization.PUBLIC_GROUP.getSlug());
     if (getSessionClose() != getSessionOpen()) {
       throw new RuntimeException("opens and closed mismatched.");
     }
     if (pub == null) {
       try {
-        defineOrganization(Organization.PUBLIC_GROUP.getId(), new HashSet<UserInfo>());
+        defineOrganization(Organization.PUBLIC_GROUP.getSlug(), new HashSet<UserInfo>());
         if (getSessionClose() != getSessionOpen()) {
           throw new RuntimeException("opens and closed mismatched.");
         }
@@ -111,13 +111,13 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
         throw new RuntimeException("opens and closed mismatched.");
       }
     }
-    Organization admin = getOrganization(Organization.ADMIN_GROUP.getId());
+    Organization admin = getOrganization(Organization.ADMIN_GROUP.getSlug());
     if (getSessionClose() != getSessionOpen()) {
       throw new RuntimeException("opens and closed mismatched.");
     }
     if (admin == null) {
       try {
-        defineOrganization(Organization.ADMIN_GROUP.getId(), Organization.ADMIN_GROUP.getUsers());
+        defineOrganization(Organization.ADMIN_GROUP.getSlug(), Organization.ADMIN_GROUP.getUsers());
         if (getSessionClose() != getSessionOpen()) {
           throw new RuntimeException("opens and closed mismatched.");
         }
@@ -231,7 +231,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   public Sensor defineSensor(String id, String uri, SensorLocation l, SensorModel sm,
       Organization owner) throws UniqueIdException, MissMatchedOwnerException {
     if (!owner.equals(l.getOwner())) {
-      throw new MissMatchedOwnerException(owner.getId() + " does not match location's.");
+      throw new MissMatchedOwnerException(owner.getSlug() + " does not match location's.");
     }
     Sensor s = null;
     s = getSensor(id, Organization.ADMIN_GROUP_NAME);
@@ -259,8 +259,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   public SensorGroup defineSensorGroup(String id, Set<Sensor> sensors, Organization owner)
       throws UniqueIdException, MissMatchedOwnerException {
     for (Sensor s : sensors) {
-      if (!owner.equals(s.getOwner())) {
-        throw new MissMatchedOwnerException(owner.getId() + " is not the owner of all the sensors.");
+      if (!owner.equals(s.getOwnerId())) {
+        throw new MissMatchedOwnerException(owner.getSlug() + " is not the owner of all the sensors.");
       }
     }
     SensorGroup sg = null;
@@ -317,13 +317,13 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * org.wattdepot.datamodel.Organization)
    */
   @Override
-  public CollectorMetaData defineCollectorMetaData(String id, Sensor sensor, Long pollingInterval,
+  public CollectorProcessDefinition defineCollectorMetaData(String id, Sensor sensor, Long pollingInterval,
       String depositoryId, Organization owner) throws UniqueIdException, MissMatchedOwnerException {
-    if (!owner.equals(sensor.getOwner())) {
-      throw new MissMatchedOwnerException(owner.getId() + " does not own the sensor "
-          + sensor.getId());
+    if (!owner.equals(sensor.getOwnerId())) {
+      throw new MissMatchedOwnerException(owner.getSlug() + " does not own the sensor "
+          + sensor.getSlug());
     }
-    CollectorMetaData sp = null;
+    CollectorProcessDefinition sp = null;
     sp = getCollectorMetaData(id, Organization.ADMIN_GROUP_NAME);
     if (sp != null) {
       throw new UniqueIdException(id + " is already a SensorModel id.");
@@ -331,7 +331,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    sp = new CollectorMetaData(id, sensor, pollingInterval, depositoryId, owner);
+    sp = new CollectorProcessDefinition(id, sensor, pollingInterval, depositoryId, owner);
     saveSensor(session, sensor);
     session.save(sp);
     session.getTransaction().commit();
@@ -427,7 +427,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       Organization owner) throws UniqueIdException {
     Depository d = null;
     try {
-      d = getWattDeposiory(name, owner.getId());
+      d = getWattDeposiory(name, owner.getSlug());
     }
     catch (MissMatchedOwnerException e) {
       throw new UniqueIdException(name + " is used by another owner.");
@@ -574,7 +574,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public void deleteCollectorMetaData(String id, String groupId) throws IdNotFoundException,
       MissMatchedOwnerException {
-    CollectorMetaData s = getCollectorMetaData(id, groupId);
+    CollectorProcessDefinition s = getCollectorMetaData(id, groupId);
     if (s != null) {
       Session session = Manager.getFactory(getServerProperties()).openSession();
       sessionOpen++;
@@ -659,7 +659,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    for (CollectorMetaData sp : getCollectorMetaDatas(session, id)) {
+    for (CollectorProcessDefinition sp : getCollectorMetaDatas(session, id)) {
       session.delete(sp);
     }
     session.getTransaction().commit();
@@ -788,7 +788,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     // search through all the known locations
     for (SensorLocation l : getLocations(Organization.ADMIN_GROUP_NAME)) {
       if (l.getId().equals(id)) {
-        if (l.getOwner().getId().equals(groupId) || groupId.equals(Organization.ADMIN_GROUP_NAME)) {
+        if (l.getOwner().getSlug().equals(groupId) || groupId.equals(Organization.ADMIN_GROUP_NAME)) {
           return l;
         }
         else {
@@ -826,7 +826,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     List result = session.createQuery("from SensorLocation").list();
     ArrayList<SensorLocation> ret = new ArrayList<SensorLocation>();
     for (SensorLocation d : (List<SensorLocation>) result) {
-      if (groupId.equals(Organization.ADMIN_GROUP_NAME) || groupId.equals(d.getOwner().getId())) {
+      if (groupId.equals(Organization.ADMIN_GROUP_NAME) || groupId.equals(d.getOwner().getSlug())) {
         ret.add(d);
       }
     }
@@ -858,7 +858,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public MeasurementType getMeasurementType(String slug) {
     for (MeasurementType mt : getMeasurementTypes()) {
-      if (mt.getId().equals(slug)) {
+      if (mt.getSlug().equals(slug)) {
         return mt;
       }
     }
@@ -897,10 +897,10 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public Sensor getSensor(String id, String groupId) throws MissMatchedOwnerException {
     for (Sensor s : getSensors(Organization.ADMIN_GROUP_NAME)) {
-      if (s.getId().equals(id)) {
-        if (s.getOwner().getId().equals(groupId) || groupId.contains(Organization.ADMIN_GROUP_NAME)) {
-          Hibernate.initialize(s.getSensorLocation());
-          Hibernate.initialize(s.getModel());
+      if (s.getSlug().equals(id)) {
+        if (s.getOwnerId().getSlug().equals(groupId) || groupId.contains(Organization.ADMIN_GROUP_NAME)) {
+          Hibernate.initialize(s.getSensorLocationId());
+          Hibernate.initialize(s.getModelId());
           return s;
         }
         else {
@@ -920,12 +920,12 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public SensorGroup getSensorGroup(String id, String groupId) throws MissMatchedOwnerException {
     for (SensorGroup s : getSensorGroups(Organization.ADMIN_GROUP_NAME)) {
-      if (s.getId().equals(id)) {
-        if (s.getOwner().getId().equals(groupId) || groupId.contains(Organization.ADMIN_GROUP_NAME)) {
+      if (s.getSlug().equals(id)) {
+        if (s.getOwnerId().getSlug().equals(groupId) || groupId.contains(Organization.ADMIN_GROUP_NAME)) {
           for (Sensor sens : s.getSensors()) {
             Hibernate.initialize(sens);
-            Hibernate.initialize(sens.getSensorLocation());
-            Hibernate.initialize(sens.getModel());
+            Hibernate.initialize(sens.getSensorLocationId());
+            Hibernate.initialize(sens.getModelId());
           }
           return s;
         }
@@ -946,7 +946,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   public List<String> getSensorGroupIds(String groupId) {
     ArrayList<String> ret = new ArrayList<String>();
     for (SensorGroup s : getSensorGroups(groupId)) {
-      ret.add(s.getId());
+      ret.add(s.getSlug());
     }
     return ret;
   }
@@ -964,7 +964,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     List result = session.createQuery("from SensorGroup").list();
     ArrayList<SensorGroup> ret = new ArrayList<SensorGroup>();
     for (SensorGroup d : (List<SensorGroup>) result) {
-      if (groupId.equals(Organization.ADMIN_GROUP_NAME) || groupId.equals(d.getOwner().getId())) {
+      if (groupId.equals(Organization.ADMIN_GROUP_NAME) || groupId.equals(d.getOwnerId().getSlug())) {
         // for (Sensor sens : d.getSensors()) {
         // Hibernate.initialize(sens);
         // Hibernate.initialize(sens.getLocation());
@@ -1002,7 +1002,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   public List<String> getSensorIds(String groupId) {
     ArrayList<String> ret = new ArrayList<String>();
     for (Sensor s : getSensors(groupId)) {
-      ret.add(s.getId());
+      ret.add(s.getSlug());
     }
     return ret;
   }
@@ -1077,11 +1077,11 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * java.lang.String)
    */
   @Override
-  public CollectorMetaData getCollectorMetaData(String id, String groupId)
+  public CollectorProcessDefinition getCollectorMetaData(String id, String groupId)
       throws MissMatchedOwnerException {
-    for (CollectorMetaData s : getCollectorMetaDatas(Organization.ADMIN_GROUP_NAME)) {
-      if (s.getId().equals(id)) {
-        if (s.getOwner().getId().equals(groupId) || groupId.contains(Organization.ADMIN_GROUP_NAME)) {
+    for (CollectorProcessDefinition s : getCollectorMetaDatas(Organization.ADMIN_GROUP_NAME)) {
+      if (s.getSlug().equals(id)) {
+        if (s.getOwnerId().getSlug().equals(groupId) || groupId.contains(Organization.ADMIN_GROUP_NAME)) {
           return s;
         }
         else {
@@ -1100,12 +1100,12 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * @return a List of CollectorMetaDatas owned by groupId.
    */
   @SuppressWarnings("unchecked")
-  private List<CollectorMetaData> getCollectorMetaDatas(Session session, String groupId) {
+  private List<CollectorProcessDefinition> getCollectorMetaDatas(Session session, String groupId) {
     @SuppressWarnings("rawtypes")
     List result = session.createQuery("from CollectorMetaData").list();
-    ArrayList<CollectorMetaData> ret = new ArrayList<CollectorMetaData>();
-    for (CollectorMetaData d : (List<CollectorMetaData>) result) {
-      if (groupId.equals(Organization.ADMIN_GROUP_NAME) || groupId.equals(d.getOwner().getId())) {
+    ArrayList<CollectorProcessDefinition> ret = new ArrayList<CollectorProcessDefinition>();
+    for (CollectorProcessDefinition d : (List<CollectorProcessDefinition>) result) {
+      if (groupId.equals(Organization.ADMIN_GROUP_NAME) || groupId.equals(d.getOwnerId().getSlug())) {
         ret.add(d);
       }
     }
@@ -1119,11 +1119,11 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * org.wattdepot.server.WattDepot#getCollectorMetaDatas(java.lang.String)
    */
   @Override
-  public List<CollectorMetaData> getCollectorMetaDatas(String groupId) {
+  public List<CollectorProcessDefinition> getCollectorMetaDatas(String groupId) {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    List<CollectorMetaData> ret = getCollectorMetaDatas(session, groupId);
+    List<CollectorProcessDefinition> ret = getCollectorMetaDatas(session, groupId);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
@@ -1138,8 +1138,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public List<String> getCollectorMetaDataIds(String groupId) {
     ArrayList<String> ret = new ArrayList<String>();
-    for (CollectorMetaData s : getCollectorMetaDatas(groupId)) {
-      ret.add(s.getId());
+    for (CollectorProcessDefinition s : getCollectorMetaDatas(groupId)) {
+      ret.add(s.getSlug());
     }
     return ret;
   }
@@ -1157,7 +1157,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     List result = session.createQuery("from Sensor").list();
     ArrayList<Sensor> ret = new ArrayList<Sensor>();
     for (Sensor d : (List<Sensor>) result) {
-      if (groupId.equals(Organization.ADMIN_GROUP_NAME) || groupId.equals(d.getOwner().getId())) {
+      if (groupId.equals(Organization.ADMIN_GROUP_NAME) || groupId.equals(d.getOwnerId().getSlug())) {
         ret.add(d);
       }
     }
@@ -1238,7 +1238,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.close();
     sessionClose++;
     for (Organization g : (List<Organization>) result) {
-      if (id.equals(g.getId())) {
+      if (id.equals(g.getSlug())) {
         ret = g;
       }
     }
@@ -1254,7 +1254,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   public List<String> getOrganizationIds() {
     ArrayList<String> ret = new ArrayList<String>();
     for (Organization u : getOrganizations()) {
-      ret.add(u.getId());
+      ret.add(u.getSlug());
     }
     return ret;
   }
@@ -1364,7 +1364,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     List<Depository> all = getWattDepositories(groupId);
     Depository ret = null;
     for (Depository d : all) {
-      if (d.getId().equals(id)) {
+      if (d.getSlug().equals(id)) {
         ret = new DepositoryImpl(d);
       }
     }
@@ -1384,7 +1384,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     List result = session.createQuery("from DepositoryImpl").list();
     ArrayList<Depository> ret = new ArrayList<Depository>();
     for (Depository d : (List<Depository>) result) {
-      if (groupId.equals(Organization.ADMIN_GROUP_NAME) || groupId.equals(d.getOwner().getId())) {
+      if (groupId.equals(Organization.ADMIN_GROUP_NAME) || groupId.equals(d.getOwnerId().getSlug())) {
         ret.add(new DepositoryImpl(d));
       }
     }
@@ -1434,8 +1434,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     for (Property p : sensor.getProperties()) {
       session.saveOrUpdate(p);
     }
-    session.saveOrUpdate(sensor.getSensorLocation());
-    session.saveOrUpdate(sensor.getModel());
+    session.saveOrUpdate(sensor.getSensorLocationId());
+    session.saveOrUpdate(sensor.getModelId());
     session.saveOrUpdate(sensor);
   }
 
@@ -1550,7 +1550,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * datamodel .CollectorMetaData)
    */
   @Override
-  public CollectorMetaData updateCollectorMetaData(CollectorMetaData process) {
+  public CollectorProcessDefinition updateCollectorMetaData(CollectorProcessDefinition process) {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();

@@ -20,8 +20,8 @@ package org.wattdepot.client;
 
 import java.util.Date;
 
-import org.wattdepot.common.domainmodel.CollectorMetaData;
-import org.wattdepot.common.domainmodel.CollectorMetaDataList;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.DepositoryList;
 import org.wattdepot.common.domainmodel.Measurement;
@@ -134,7 +134,7 @@ public interface WattDepotInterface {
    * @throws IdNotFoundException
    *           if the CollectorMetaData is not found in the server.
    */
-  public void deleteCollectorMetaData(CollectorMetaData process)
+  public void deleteCollectorMetaData(CollectorProcessDefinition process)
       throws IdNotFoundException;
 
   /**
@@ -252,13 +252,13 @@ public interface WattDepotInterface {
    * @exception IdNotFoundException
    *              if the given id is not a CollectorMetaData's id.
    */
-  public CollectorMetaData getCollectorMetaData(String id)
+  public CollectorProcessDefinition getCollectorMetaData(String id)
       throws IdNotFoundException;
 
   /**
    * @return The defined CollectorMetaDatas.
    */
-  public CollectorMetaDataList getCollectorMetaDatas();
+  public CollectorProcessDefinitionList getCollectorMetaDatas();
 
   /**
    * @return The defined Sensors.
@@ -414,7 +414,7 @@ public interface WattDepotInterface {
    * @param process
    *          the CollectorMetaData.
    */
-  public void putCollectorMetaData(CollectorMetaData process);
+  public void putCollectorMetaData(CollectorProcessDefinition process);
 
   /**
    * Updates the given Depository in the WattDepot Server.
@@ -470,5 +470,5 @@ public interface WattDepotInterface {
    * @param process
    *          The CollectorMetaData to update.
    */
-  public void updateCollectorMetaData(CollectorMetaData process);
+  public void updateCollectorMetaData(CollectorProcessDefinition process);
 }

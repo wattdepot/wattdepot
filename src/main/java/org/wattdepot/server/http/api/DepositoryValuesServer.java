@@ -102,7 +102,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
                 value = new Double(0);
               }
               MeasuredValue mValue = new MeasuredValue(
-                  sensor.getId(), 
+                  sensor.getSlug(), 
                   value, 
                   depository.getMeasurementType());
               

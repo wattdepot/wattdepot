@@ -1,5 +1,5 @@
 /**
- * SensorProcessList.java This file is part of WattDepot.
+ * TestMeasuredValue.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -18,36 +18,30 @@
  */
 package org.wattdepot.common.domainmodel;
 
-import java.util.ArrayList;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
 
 /**
- * SensorProcessList - Attempt at getting a list across the wire.
- *
+ * Tests MeasuredValue class.
+ * 
  * @author Cam Moore
- *
+ * 
  */
-public class CollectorMetaDataList {
-  private ArrayList<CollectorMetaData> processes;
-  
-  /**
-   * Default Constructor.
-   */
-  public CollectorMetaDataList() {
-    processes = new ArrayList<CollectorMetaData>();
-  }
+public class TestMeasuredValue {
 
   /**
-   * @return the models
+   * Test method for
+   * {@link org.wattdepot.common.domainmodel.MeasuredValue#MeasuredValue()}.
    */
-  public ArrayList<CollectorMetaData> getDatas() {
-    return processes;
-  }
-
-  /**
-   * @param models the models to set
-   */
-  public void setDatas(ArrayList<CollectorMetaData> models) {
-    this.processes = models;
+  @Test
+  public void testMeasuredValue() {
+    MeasuredValue val = new MeasuredValue("sensorId", 10.1, InstanceFactory.getMeasurementType());
+    assertNotNull(val);
+    assertTrue("sensorId".equals(val.getSensorId()));
+    assertTrue(10.1 == val.getValue());
+    assertTrue(InstanceFactory.getMeasurementType().equals(val.getMeasurementType()));
   }
 
 }

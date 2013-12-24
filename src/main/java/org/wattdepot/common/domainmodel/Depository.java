@@ -34,17 +34,15 @@ import org.wattdepot.common.util.Slug;
  * @author Cam Moore
  * 
  */
-public class Depository {
-  /** The unique id for the Depository. */
-  private String id;
+public class Depository implements IDomainModel {
   /** Name of the Depository. */
   protected String name;
   /** The slug used in URIs. */
   protected String slug;
   /** Type of measurements stored in the Depository. */
   protected MeasurementType measurementType;
-  /** The owner of this depository. */
-  protected Organization owner;
+  /** The id of the owner of this depository. */
+  protected String ownerId;
 
   /**
    * The default constructor.
@@ -60,15 +58,14 @@ public class Depository {
    *          The name of the Depository.
    * @param measurementType
    *          The type of the measurements this Depository accepts.
-   * @param owner
-   *          the owner of the location.
+   * @param ownerId
+   *          the id of the owner of the location.
    */
-  public Depository(String name, MeasurementType measurementType, Organization owner) {
-    this.id = Slug.slugify(name);
+  public Depository(String name, MeasurementType measurementType, String ownerId) {
     this.name = name;
     this.slug = Slug.slugify(name);
     this.measurementType = measurementType;
-    this.owner = owner;
+    this.ownerId = ownerId;
   }
 
   /**
@@ -113,13 +110,6 @@ public class Depository {
       return false;
     }
     return true;
-  }
-
-  /**
-   * @return the id
-   */
-  public String getId() {
-    return id;
   }
 
   /**
@@ -179,10 +169,10 @@ public class Depository {
   }
 
   /**
-   * @return the owner
+   * @return the id of the owner.
    */
-  public Organization getOwner() {
-    return owner;
+  public String getOwnerId() {
+    return ownerId;
   }
 
   /**
@@ -202,7 +192,8 @@ public class Depository {
    * @throws NoMeasurementException
    *           If there aren't any measurements around the time.
    */
-  public Double getValue(Sensor sensor, Date timestamp) throws NoMeasurementException {
+  public Double getValue(Sensor sensor, Date timestamp)
+      throws NoMeasurementException {
     throw new RuntimeException("Not implemented.");
   }
 
@@ -218,7 +209,8 @@ public class Depository {
    * @throws NoMeasurementException
    *           if there are no measurements around the start or end time.
    */
-  public Double getValue(Sensor sensor, Date start, Date end) throws NoMeasurementException {
+  public Double getValue(Sensor sensor, Date start, Date end)
+      throws NoMeasurementException {
     throw new RuntimeException("Not implemented.");
   }
 
@@ -273,7 +265,8 @@ public class Depository {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((measurementType == null) ? 0 : measurementType.hashCode());
+    result = prime * result
+        + ((measurementType == null) ? 0 : measurementType.hashCode());
     result = prime * result + ((name == null) ? 0 : name.hashCode());
     return result;
   }
@@ -287,7 +280,9 @@ public class Depository {
    *         ADMIN_GROUP.
    */
   public boolean isOwner(Organization group) {
-    if (owner != null && (owner.equals(group) || group.equals(Organization.ADMIN_GROUP))) {
+    if (ownerId != null
+        && (ownerId.equals(group.getSlug()) || group
+            .equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;
@@ -321,14 +316,6 @@ public class Depository {
   }
 
   /**
-   * @param id
-   *          the id to set
-   */
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  /**
    * @param measurementType
    *          the measurementType to set
    */
@@ -342,17 +329,17 @@ public class Depository {
    */
   public void setName(String name) {
     this.name = name;
-    if (this.id == null) {
-      this.id = Slug.slugify(name);
+    if (this.slug == null) {
+      this.slug = Slug.slugify(name);
     }
   }
 
   /**
-   * @param owner
-   *          the owner to set
+   * @param ownerId
+   *          the id of the owner.
    */
-  public void setOwner(Organization owner) {
-    this.owner = owner;
+  public void setOwnerId(String ownerId) {
+    this.ownerId = ownerId;
   }
 
   /**
@@ -370,7 +357,8 @@ public class Depository {
    */
   @Override
   public String toString() {
-    return "Depository [name=" + name + ", measurementType=" + measurementType + "]";
+    return "Depository [name=" + name + ", slug=" + slug + ", measurementType="
+        + measurementType + "]";
   }
 
 }
