@@ -60,6 +60,8 @@ new wattdepot-*version number*.jar file.
     $ mkdir 3.0.1
         
 4. Move the contents of the saved `apidocs` directory into the new directory.
+
+4. Move the contents of the saved `apidocs` directory into the `javadoc/latest` directory.
     
 5. Edit the `index.html` file to add the new directory to the list of Release Javadocs.
     
