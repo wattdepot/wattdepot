@@ -22,7 +22,7 @@ import java.util.logging.Level;
 
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
-import org.wattdepot.common.http.api.CollectorMetaDatasResource;
+import org.wattdepot.common.http.api.CollectorProcessDefinitionsResource;
 
 /**
  * SensorProcessesServerResource - Handles the SensorProcesses HTTP API
@@ -31,8 +31,8 @@ import org.wattdepot.common.http.api.CollectorMetaDatasResource;
  * @author Cam Moore
  * 
  */
-public class CollectorMetaDatasServerResource extends WattDepotServerResource implements
-    CollectorMetaDatasResource {
+public class CollectorProcessDefinitionsServerResource extends WattDepotServerResource implements
+    CollectorProcessDefinitionsResource {
 
   /*
    * (non-Javadoc)
@@ -43,7 +43,7 @@ public class CollectorMetaDatasServerResource extends WattDepotServerResource im
   public CollectorProcessDefinitionList retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/collector-metadatas/");
     CollectorProcessDefinitionList ret = new CollectorProcessDefinitionList();
-    for (CollectorProcessDefinition sp : depot.getCollectorMetaDatas(orgId)) {
+    for (CollectorProcessDefinition sp : depot.getCollectorProcessDefinitions(orgId)) {
       ret.getDatas().add(sp);
     }
     return ret;

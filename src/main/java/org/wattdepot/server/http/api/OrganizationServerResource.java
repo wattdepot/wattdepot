@@ -27,7 +27,6 @@ import org.restlet.security.Role;
 import org.restlet.security.User;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Organization;
-import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.OrganizationResource;
@@ -89,8 +88,8 @@ public class OrganizationServerResource extends WattDepotServerResource implemen
         MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
         for (User user : realm.getUsers()) { // loop through all the Restlet
                                              // users
-          for (UserInfo info : defined.getUsers()) {
-            if (user.getIdentifier().equals(info.getId())) {
+          for (String userId : defined.getUsers()) {
+            if (user.getIdentifier().equals(userId)) {
               // assign the user to the role.
               realm.map(user, role);
             }
@@ -109,8 +108,8 @@ public class OrganizationServerResource extends WattDepotServerResource implemen
       String roleName = usergroup.getSlug();
       Role role = app.getRole(roleName);
       MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
-      for (UserInfo info : usergroup.getUsers()) {
-        realm.map(getUser(info), role);
+      for (String userId : usergroup.getUsers()) {
+        realm.map(getUser(userId), role);
       }
     }
   }
@@ -141,15 +140,15 @@ public class OrganizationServerResource extends WattDepotServerResource implemen
   }
 
   /**
-   * @param info
-   *          The UserInfo instance.
+   * @param userId
+   *          The id of the UserInfo instance.
    * @return The Restlet User that corresponds to the given UserInfo.
    */
-  private User getUser(UserInfo info) {
+  private User getUser(String userId) {
     WattDepotApplication app = (WattDepotApplication) getApplication();
     MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
     for (User user : realm.getUsers()) { // loop through all the Restlet users
-      if (user.getIdentifier().equals(info.getId())) {
+      if (user.getIdentifier().equals(userId)) {
         return user;
       }
     }
@@ -168,8 +167,8 @@ public class OrganizationServerResource extends WattDepotServerResource implemen
     String roleName = organization.getSlug();
     Role role = app.getRole(roleName);
     MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
-    for (UserInfo info : organization.getUsers()) {
-      realm.map(getUser(info), role);
+    for (String userId : organization.getUsers()) {
+      realm.map(getUser(userId), role);
     }
   }
 }

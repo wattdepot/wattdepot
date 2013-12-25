@@ -48,11 +48,11 @@ public class SensorLocationPutServerResource extends WattDepotServerResource imp
         .log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/location/ with " + sensorLocation);
     Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
-      if (!depot.getLocationIds(orgId).contains(sensorLocation.getId())) {
+      if (!depot.getLocationIds(orgId).contains(sensorLocation.getSlug())) {
         try {
           depot.defineLocation(sensorLocation.getName(), sensorLocation.getLatitude(),
               sensorLocation.getLongitude(), sensorLocation.getAltitude(),
-              sensorLocation.getDescription(), owner);
+              sensorLocation.getDescription(), orgId);
         }
         catch (UniqueIdException e) {
           setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());

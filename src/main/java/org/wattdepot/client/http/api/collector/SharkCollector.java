@@ -46,6 +46,7 @@ import org.apache.commons.cli.PosixParser;
 import org.jscience.physics.amount.Amount;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementType;
+import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.BadSensorUriException;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -84,6 +85,8 @@ public class SharkCollector extends MultiThreadedCollector {
   private static final int POWER_LENGTH = 2;
   /** InetAddress of the meter to be polled. */
   private InetAddress meterAddress;
+  /** The Shark sensor. */
+  private Sensor sensor;
   /**
    * Stores the energy multiplier configured on the meter, which really means
    * whether the energy value returned is in Wh, kWh, or MWh.
@@ -133,20 +136,21 @@ public class SharkCollector extends MultiThreadedCollector {
     super(serverUri, username, password, collectorId, debug);
     this.measType = depository.getMeasurementType();
     this.measUnit = Unit.valueOf(measType.getUnits());
-    this.sensorName = metaData.getSensor().getName();
+    this.sensor = client.getSensor(metaData.getSensorId());
+    this.sensorName = sensor.getName();
 
     URL sensorURL;
     try {
-      sensorURL = new URL(metaData.getSensor().getUri());
+      sensorURL = new URL(sensor.getUri());
       String sensorHostName = sensorURL.getHost();
       this.meterAddress = InetAddress.getByName(sensorHostName);
     }
     catch (MalformedURLException e) {
-      throw new BadSensorUriException(metaData.getSensor().getUri() + " is not a valid URI.");
+      throw new BadSensorUriException(sensor.getUri() + " is not a valid URI.");
     }
     catch (UnknownHostException e) {
       throw new BadSensorUriException("Unable to resolve sensor at "
-          + metaData.getSensor().getUri());
+          + sensor.getUri());
     }
   }
 
@@ -576,7 +580,7 @@ public class SharkCollector extends MultiThreadedCollector {
     else {
       value = energy.to(measUnit).getEstimatedValue();
     }
-    meas = new Measurement(metaData.getSensor(), timestamp, value, measUnit);
+    meas = new Measurement(sensor.getSlug(), timestamp, value, measUnit);
     return meas;
   }
 

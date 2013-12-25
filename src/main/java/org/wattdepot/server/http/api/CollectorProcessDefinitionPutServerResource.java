@@ -1,5 +1,5 @@
 /**
- * CollectorMetaDataServerResource.java This file is part of WattDepot.
+ * CollectorProcessDefinitionServerResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -23,25 +23,26 @@ import java.util.logging.Level;
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
-import org.wattdepot.common.http.api.CollectorMetaDataPutResource;
+import org.wattdepot.common.http.api.CollectorProcessDefinitionPutResource;
 
 /**
- * CollectorMetaDataServerResource - Handles the CollectorMetaData HTTP API
+ * CollectorProcessDefinitionServerResource - Handles the CollectorProcessDefinition HTTP API
  * (("/wattdepot/{org-id}/collector-metadata/",
  * "/wattdepot/{org-id}/collector-metadata/{collector-metadata-id}").
  * 
  * @author Cam Moore
  * 
  */
-public class CollectorMetaDataPutServerResource extends WattDepotServerResource implements
-    CollectorMetaDataPutResource {
+public class CollectorProcessDefinitionPutServerResource extends WattDepotServerResource implements
+    CollectorProcessDefinitionPutResource {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.restlet.CollectorMetaDataResource#store(org.wattdepot
-   * .datamodel.CollectorMetaData)
+   * @see org.wattdepot.restlet.CollectorProcessDefinitionResource#store(org.wattdepot
+   * .datamodel.CollectorProcessDefinition)
    */
   @Override
   public void store(CollectorProcessDefinition metadata) {
@@ -49,10 +50,11 @@ public class CollectorMetaDataPutServerResource extends WattDepotServerResource 
         "PUT /wattdepot/{" + orgId + "}/collector-metadata/ with " + metadata);
     Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
-      if (!depot.getCollectorMetaDataIds(orgId).contains(metadata.getSlug())) {
+      if (!depot.getCollectorProcessDefinitionIds(orgId).contains(metadata.getSlug())) {
         try {
-          depot.defineCollectorMetaData(metadata.getName(), metadata.getSensor(),
-              metadata.getPollingInterval(), metadata.getDepositoryId(), owner);
+          Sensor s = depot.getSensor(metadata.getSensorId(), orgId);
+          depot.defineCollectorProcessDefinition(metadata.getName(), s.getSlug(),
+              metadata.getPollingInterval(), metadata.getDepositoryId(), owner.getSlug());
         }
         catch (UniqueIdException e) {
           setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());

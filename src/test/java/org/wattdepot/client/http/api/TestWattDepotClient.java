@@ -77,7 +77,7 @@ public class TestWattDepotClient {
   private static WattDepotClient test;
   private static UserInfo testUser = InstanceFactory.getUserInfo();
   private static UserPassword testPassword = InstanceFactory.getUserPassword();
-  private static Organization testGroup = InstanceFactory.getUserGroup();
+  private static Organization testGroup = InstanceFactory.getOrganization();
 
   /** The logger. */
   private Logger logger = null;
@@ -107,8 +107,7 @@ public class TestWattDepotClient {
   }
 
   /**
-   * @throws java.lang.Exception
-   *           if there is a problem.
+   *
    */
   @Before
   public void setUp() {
@@ -286,7 +285,7 @@ public class TestWattDepotClient {
     assertTrue(list.getLocations().size() == 1);
     try {
       // get instance (READ)
-      SensorLocation ret = test.getLocation(loc.getId());
+      SensorLocation ret = test.getLocation(loc.getSlug());
       assertEquals(loc, ret);
       ret.setDescription("new description");
       // update instance (UPDATE)
@@ -300,7 +299,7 @@ public class TestWattDepotClient {
       assertNotNull(list);
       assertTrue(list.getLocations().size() == 0);
       try {
-        ret = test.getLocation(loc.getId());
+        ret = test.getLocation(loc.getSlug());
         assertNull(ret);
       }
       catch (IdNotFoundException e) {
@@ -313,7 +312,7 @@ public class TestWattDepotClient {
     // error conditions
     SensorLocation bogus = new SensorLocation("bogus", loc.getLatitude(),
         loc.getLongitude(), loc.getAltitude(), loc.getDescription(),
-        loc.getOwner());
+        loc.getOwnerId());
     try {
       test.deleteLocation(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -512,7 +511,7 @@ public class TestWattDepotClient {
     assertTrue(list.getModels().contains(model));
     try {
       // get instance (READ)
-      SensorModel ret = test.getSensorModel(model.getId());
+      SensorModel ret = test.getSensorModel(model.getSlug());
       assertEquals(model, ret);
       ret.setProtocol("new protocol");
       test.updateSensorModel(ret);
@@ -522,7 +521,7 @@ public class TestWattDepotClient {
       // delete instance (DELETE)
       test.deleteSensorModel(model);
       try {
-        ret = test.getSensorModel(model.getId());
+        ret = test.getSensorModel(model.getSlug());
         assertNull(ret);
       }
       catch (IdNotFoundException e) {
@@ -560,7 +559,8 @@ public class TestWattDepotClient {
     assertTrue(list.getDatas().contains(data));
     try {
       // get instance (READ)
-      CollectorProcessDefinition ret = test.getCollectorMetaData(data.getSlug());
+      CollectorProcessDefinition ret = test
+          .getCollectorMetaData(data.getSlug());
       assertEquals(data, ret);
       ret.setDepositoryId("new depotistory_id");
       test.updateCollectorMetaData(ret);
@@ -581,8 +581,9 @@ public class TestWattDepotClient {
       fail("Should have " + data);
     }
     // error conditions
-    CollectorProcessDefinition bogus = new CollectorProcessDefinition("bogus", data.getSensor(),
-        data.getPollingInterval(), data.getDepositoryId(), data.getOwnerId());
+    CollectorProcessDefinition bogus = new CollectorProcessDefinition("bogus",
+        data.getSensorId(), data.getPollingInterval(), data.getDepositoryId(),
+        data.getOwnerId());
     try {
       test.deleteCollectorMetaData(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -605,15 +606,17 @@ public class TestWattDepotClient {
     try {
       test.putMeasurement(depo, m1);
       test.putMeasurement(depo, m3);
-      Double val = test.getValue(depo, m1.getSensor(), m1.getDate());
+      Sensor s1 = test.getSensor(m1.getSensorId());
+      Double val = test.getValue(depo, s1, m1.getDate());
       assertTrue("Got " + val + " was expecting " + m1.getValue(), m1
           .getValue().equals(val));
-      val = test.getValue(depo, m2.getSensor(), m2.getDate());
+      Sensor s2 = test.getSensor(m2.getSensorId());
+      val = test.getValue(depo, s2, m2.getDate());
       assertTrue("Got " + val + " was expecting " + m1.getValue(), m1
           .getValue().equals(val));
       // Get list
-      MeasurementList list = test.getMeasurements(depo, m1.getSensor(),
-          m1.getDate(), m3.getDate());
+      MeasurementList list = test.getMeasurements(depo, s1, m1.getDate(),
+          m3.getDate());
       assertNotNull(list);
 
       assertTrue("expecting " + 2 + " got " + list.getMeasurements().size(),
@@ -623,7 +626,7 @@ public class TestWattDepotClient {
       test.putMeasurement(depo, m2);
       try {
         test.deleteMeasurement(depo, m1);
-        list = test.getMeasurements(depo, m1.getSensor(), m1.getDate(),
+        list = test.getMeasurements(depo, s1, m1.getDate(),
             m3.getDate());
         assertNotNull(list);
 
@@ -641,6 +644,9 @@ public class TestWattDepotClient {
     catch (NoMeasurementException e) {
       fail(e.getMessage());
     }
+    catch (IdNotFoundException e1) {
+      fail(e1.getMessage());
+    }
 
     // error conditions
     Measurement bogus = InstanceFactory.getMeasurementTwo();
@@ -653,7 +659,7 @@ public class TestWattDepotClient {
     catch (MeasurementTypeException e) {
       // this is what we expect.
     }
-    bogus = new Measurement(m1.getSensor(), new Date(), new Double(1.0),
+    bogus = new Measurement(m1.getSensorId(), new Date(), new Double(1.0),
         Unit.valueOf("dyn"));
     try {
       test.deleteMeasurement(depo, bogus);

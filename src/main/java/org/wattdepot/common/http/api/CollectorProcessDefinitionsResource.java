@@ -27,7 +27,7 @@ import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
  * @author Cam Moore
  * 
  */
-public interface CollectorMetaDatasResource {
+public interface CollectorProcessDefinitionsResource {
   /**
    * Defines the GET /wattdepot/sensorprocesses/ API call.
    * 

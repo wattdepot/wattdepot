@@ -25,7 +25,6 @@ import org.restlet.resource.ResourceException;
 import org.restlet.security.MemoryRealm;
 import org.restlet.security.User;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;

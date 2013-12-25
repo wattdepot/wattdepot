@@ -86,7 +86,7 @@ public class SensorLocationServerResource extends WattDepotServerResource implem
         "POST /wattdepot/{" + orgId + "}/location/ with " + sensorLocation);
     Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
-      if (depot.getLocationIds(orgId).contains(sensorLocation.getId())) {
+      if (depot.getLocationIds(orgId).contains(sensorLocation.getSlug())) {
         depot.updateLocation(sensorLocation);
       }
       else {

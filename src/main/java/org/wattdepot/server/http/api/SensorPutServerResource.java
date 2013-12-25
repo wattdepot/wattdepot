@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.SensorPutResource;
@@ -49,12 +50,15 @@ public class SensorPutServerResource extends WattDepotServerResource implements 
       if (!depot.getSensorIds(orgId).contains(sensor.getSlug())) {
         try {
           depot.defineSensor(sensor.getName(), sensor.getUri(), sensor.getSensorLocationId(),
-              sensor.getModelId(), owner);
+              sensor.getModelId(), orgId);
         }
         catch (UniqueIdException e) {
           setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
         }
         catch (MissMatchedOwnerException e) {
+          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+        }
+        catch (IdNotFoundException e) {
           setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
         }
       }

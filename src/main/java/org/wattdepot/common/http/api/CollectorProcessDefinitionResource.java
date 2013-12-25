@@ -29,7 +29,7 @@ import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
  * @author Cam Moore
  * 
  */
-public interface CollectorMetaDataResource {
+public interface CollectorProcessDefinitionResource {
 
   /**
    * Defines GET /wattdepot/collector-metadata/{collector-metadata-id} API call.

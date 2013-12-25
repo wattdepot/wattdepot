@@ -48,7 +48,7 @@ public class DepositoryPutServerResource extends WattDepotServerResource impleme
     Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
       try {
-        depot.defineWattDepository(depository.getName(), depository.getMeasurementType(), owner);
+        depot.defineWattDepository(depository.getName(), depository.getMeasurementType(), owner.getSlug());
       }
       catch (UniqueIdException e) {
         setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());

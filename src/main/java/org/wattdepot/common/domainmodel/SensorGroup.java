@@ -36,7 +36,7 @@ public class SensorGroup implements IDomainModel {
   /** The name of the group. */
   private String name;
   /** The List of sensors the compose this group. */
-  protected Set<Sensor> sensors;
+  protected Set<String> sensors;
   /** The owner of this sensor model. */
   private String ownerId;
 
@@ -57,7 +57,7 @@ public class SensorGroup implements IDomainModel {
    * @param ownerId
    *          the id of the owner of the SensorGroup.
    */
-  public SensorGroup(String name, Set<Sensor> sensors, String ownerId) {
+  public SensorGroup(String name, Set<String> sensors, String ownerId) {
     this.slug = Slug.slugify(name);
     this.name = name;
     this.sensors = sensors;
@@ -65,13 +65,13 @@ public class SensorGroup implements IDomainModel {
   }
 
   /**
-   * @param e
-   *          The sensor to add.
+   * @param sensorId
+   *          The id of the sensor to add.
    * @return true if successful.
    * @see java.util.List#add(java.lang.Object)
    */
-  public boolean add(Sensor e) {
-    return sensors.add(e);
+  public boolean add(String sensorId) {
+    return sensors.add(sensorId);
   }
 
   /**
@@ -152,7 +152,7 @@ public class SensorGroup implements IDomainModel {
   /**
    * @return the sensors
    */
-  public Set<Sensor> getSensors() {
+  public Set<String> getSensors() {
     return sensors;
   }
 
@@ -235,7 +235,7 @@ public class SensorGroup implements IDomainModel {
    * @param sensors
    *          the sensors to set
    */
-  public void setSensors(Set<Sensor> sensors) {
+  public void setSensors(Set<String> sensors) {
     this.sensors = sensors;
   }
 
@@ -246,7 +246,7 @@ public class SensorGroup implements IDomainModel {
    */
   @Override
   public String toString() {
-    return "SensorGroup [id=" + slug + ", sensors=" + sensors + ", owner="
+    return "SensorGroup [id=" + slug + ", sensors=" + sensors + ", ownerId="
         + ownerId + "]";
   }
 

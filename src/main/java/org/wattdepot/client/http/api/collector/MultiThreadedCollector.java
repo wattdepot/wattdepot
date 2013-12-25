@@ -90,8 +90,8 @@ public abstract class MultiThreadedCollector extends TimerTask {
    *          The name of a user defined in the WattDepot server.
    * @param password
    *          The password for the user.
-   * @param sensor
-   *          The Sensor to poll.
+   * @param sensorId
+   *          The id of the Sensor to poll.
    * @param pollingInterval
    *          The polling interval in seconds.
    * @param depository
@@ -102,14 +102,15 @@ public abstract class MultiThreadedCollector extends TimerTask {
    *           if the user or password don't match the credentials in WattDepot.
    * @throws BadSensorUriException
    *           if the Sensor's URI isn't valid.
+   * @throws IdNotFoundException if there is a problem with the sensorId.
    */
-  public MultiThreadedCollector(String serverUri, String username, String password, Sensor sensor,
+  public MultiThreadedCollector(String serverUri, String username, String password, String sensorId,
       Long pollingInterval, Depository depository, boolean debug) throws BadCredentialException,
-      BadSensorUriException {
+      BadSensorUriException, IdNotFoundException {
     this.client = new WattDepotClient(serverUri, username, password);
     this.debug = debug;
-    this.metaData = new CollectorProcessDefinition(Slug.slugify(sensor.getSlug() + " " + pollingInterval + " "
-        + depository.getName()), sensor, pollingInterval, depository.getName(), null);
+    this.metaData = new CollectorProcessDefinition(Slug.slugify(sensorId + " " + pollingInterval + " "
+        + depository.getName()), sensorId, pollingInterval, depository.getName(), null);
     client.putCollectorMetaData(metaData);
     this.depository = depository;
     client.putDepository(depository);
@@ -172,63 +173,67 @@ public abstract class MultiThreadedCollector extends TimerTask {
     }
     // Get the collector metadata
     CollectorProcessDefinition metaData = null;
+    Sensor sensor = null;
+    SensorModel model = null;
+    
     try {
       metaData = staticClient.getCollectorMetaData(collectorId);
       staticClient.getDepository(metaData.getDepositoryId());
+      sensor = staticClient.getSensor(metaData.getSensorId());
+      model = staticClient.getSensorModel(sensor.getModelId());
+      // Get SensorModel to determine what type of collector to start.
+      if (model.getName().equals(SensorModelHelper.EGAUGE) && model.getVersion().equals("1.0")) {
+        Timer t = new Timer();
+        try {
+          EGaugeCollector collector = new EGaugeCollector(serverUri, username, password, collectorId,
+              debug);
+          if (collector.isValid()) {
+            System.out.format("Started polling %s sensor at %s%n", sensor.getName(),
+                Tstamp.makeTimestamp());
+            t.schedule(collector, 0, metaData.getPollingInterval() * 1000);
+          }
+          else {
+            System.err.format("Cannot poll %s sensor%n", sensor.getName());
+            return false;
+          }
+        }
+        catch (BadSensorUriException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        catch (IdNotFoundException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+      else if (model.getName().equals(SensorModelHelper.SHARK) && model.getVersion().equals("1.03")) {
+        Timer t = new Timer();
+        try {
+          SharkCollector collector = new SharkCollector(serverUri, username, password, collectorId,
+              debug);
+          if (collector.isValid()) {
+            System.out.format("Started polling %s sensor at %s%n", sensor.getName(),
+                Tstamp.makeTimestamp());
+            t.schedule(collector, 0, metaData.getPollingInterval() * 1000);
+          }
+          else {
+            System.err.format("Cannot poll %s sensor%n", sensor.getName());
+            return false;
+          }
+        }
+        catch (IdNotFoundException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        catch (BadSensorUriException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
     }
     catch (IdNotFoundException e) {
       System.err.println(e.getMessage());
       return false;
-    }
-    // Get SensorModel to determine what type of collector to start.
-    SensorModel model = metaData.getSensor().getModelId();
-    if (model.getName().equals(SensorModelHelper.EGAUGE) && model.getVersion().equals("1.0")) {
-      Timer t = new Timer();
-      try {
-        EGaugeCollector collector = new EGaugeCollector(serverUri, username, password, collectorId,
-            debug);
-        if (collector.isValid()) {
-          System.out.format("Started polling %s sensor at %s%n", metaData.getSensor().getName(),
-              Tstamp.makeTimestamp());
-          t.schedule(collector, 0, metaData.getPollingInterval() * 1000);
-        }
-        else {
-          System.err.format("Cannot poll %s sensor%n", metaData.getSensor().getName());
-          return false;
-        }
-      }
-      catch (BadSensorUriException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-      catch (IdNotFoundException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-    }
-    else if (model.getName().equals(SensorModelHelper.SHARK) && model.getVersion().equals("1.03")) {
-      Timer t = new Timer();
-      try {
-        SharkCollector collector = new SharkCollector(serverUri, username, password, collectorId,
-            debug);
-        if (collector.isValid()) {
-          System.out.format("Started polling %s sensor at %s%n", metaData.getSensor().getName(),
-              Tstamp.makeTimestamp());
-          t.schedule(collector, 0, metaData.getPollingInterval() * 1000);
-        }
-        else {
-          System.err.format("Cannot poll %s sensor%n", metaData.getSensor().getName());
-          return false;
-        }
-      }
-      catch (IdNotFoundException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-      catch (BadSensorUriException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
     }
     return true;
   }
@@ -236,9 +241,10 @@ public abstract class MultiThreadedCollector extends TimerTask {
   /**
    * @throws BadSensorUriException
    *           if the Sensor's URI isn't valid.
+   * @throws IdNotFoundException 
    */
-  private void validate() throws BadSensorUriException {
-    Sensor s = metaData.getSensor();
+  private void validate() throws BadSensorUriException, IdNotFoundException {
+    Sensor s = client.getSensor(metaData.getSensorId());
     String[] schemes = { "http", "https" };
     UrlValidator urlValidator = new UrlValidator(schemes);
     if (!urlValidator.isValid(s.getUri())) {

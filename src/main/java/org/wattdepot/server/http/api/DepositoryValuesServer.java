@@ -97,7 +97,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
 
             for (int i = 0; i < timestampList.size(); i++) {
               Date timestamp = DateConvert.convertXMLCal(timestampList.get(i));
-              Double value = depository.getValue(sensor, timestamp);
+              Double value = depository.getValue(sensor.getSlug(), timestamp);
               if (value == null) {
                 value = new Double(0);
               }

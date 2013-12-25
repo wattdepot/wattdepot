@@ -87,8 +87,9 @@ public class WattDepotComponent extends Component {
     getRealms().add(realm);
     for (Organization group : app.getDepot().getOrganizations()) {
       app.getRoles().add(new Role(group.getSlug()));
-      for (UserInfo info : group.getUsers()) {
-        UserPassword up = app.getDepot().getUserPassword(info.getId());
+      for (String userId : group.getUsers()) {
+        UserInfo info = app.getDepot().getUser(userId);
+        UserPassword up = app.getDepot().getUserPassword(userId);
         User user = new User(info.getId(), up.getPlainText(),
             info.getFirstName(), info.getLastName(), info.getEmail());
         realm.getUsers().add(user);
