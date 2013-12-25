@@ -49,7 +49,7 @@
         <mapping resource="org/wattdepot/common/domainmodel/SensorGroup.hbm.xml" />
         <mapping resource="org/wattdepot/common/domainmodel/SensorLocation.hbm.xml" />
         <mapping resource="org/wattdepot/common/domainmodel/SensorModel.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/CollectorMetaData.hbm.xml" />
+        <mapping resource="org/wattdepot/common/domainmodel/CollectorProcessDefinition.hbm.xml" />
         <mapping resource="org/wattdepot/common/domainmodel/Organization.hbm.xml" />
         <mapping resource="org/wattdepot/common/domainmodel/UserInfo.hbm.xml" />
         <mapping resource="org/wattdepot/common/domainmodel/UserPassword.hbm.xml" />

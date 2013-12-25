@@ -88,10 +88,19 @@ public class WattDepotComponent extends Component {
     for (Organization group : app.getDepot().getOrganizations()) {
       app.getRoles().add(new Role(group.getSlug()));
       for (String userId : group.getUsers()) {
-        UserInfo info = app.getDepot().getUser(userId);
         UserPassword up = app.getDepot().getUserPassword(userId);
-        User user = new User(info.getId(), up.getPlainText(),
-            info.getFirstName(), info.getLastName(), info.getEmail());
+        User user = null;
+        if (userId.equals(UserInfo.ROOT.getId())) {
+          // There isn't a UserInfo stored in persistence for ROOT.
+          user = new User(UserInfo.ROOT.getId(), up.getPlainText(),
+              UserInfo.ROOT.getFirstName(), UserInfo.ROOT.getLastName(),
+              UserInfo.ROOT.getEmail());
+        }
+        else {
+          UserInfo info = app.getDepot().getUser(userId);
+          user = new User(info.getId(), up.getPlainText(),
+              info.getFirstName(), info.getLastName(), info.getEmail());
+        }
         realm.getUsers().add(user);
         realm.map(user, app.getRole(group.getSlug()));
       }
@@ -101,34 +110,35 @@ public class WattDepotComponent extends Component {
     app.getContext().setDefaultEnroler(realm.getEnroler());
     app.getContext().setDefaultVerifier(realm.getVerifier());
 
-//    Properties props = new Properties();
-//    InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream("log.properties");
-//    if (inputStream != null) {
-//      try {
-//        props.load(inputStream);
-//      }
-//      catch (IOException e) {
-//        // TODO Auto-generated catch block
-//        e.printStackTrace();
-//      }
-//    }
-//    // // Configure the log service
-//    getLogService().setLoggerName("WattDepot.AccessLog");
-//    try {
-//      LogManager.getLogManager().readConfiguration(
-//          inputStream);
-//    }
-//    catch (SecurityException e) {
-//      // TODO Auto-generated catch block
-//      e.printStackTrace();
-//    }
-//    catch (IOException e) {
-//      // TODO Auto-generated catch block
-//      e.printStackTrace();
-//    }
-//    
-//    getLogService().setLogPropertiesRef(
-//        "log.properties");
+    // Properties props = new Properties();
+    // InputStream inputStream =
+    // this.getClass().getClassLoader().getResourceAsStream("log.properties");
+    // if (inputStream != null) {
+    // try {
+    // props.load(inputStream);
+    // }
+    // catch (IOException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    // }
+    // // // Configure the log service
+    // getLogService().setLoggerName("WattDepot.AccessLog");
+    // try {
+    // LogManager.getLogManager().readConfiguration(
+    // inputStream);
+    // }
+    // catch (SecurityException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    // catch (IOException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    //
+    // getLogService().setLogPropertiesRef(
+    // "log.properties");
 
   }
 

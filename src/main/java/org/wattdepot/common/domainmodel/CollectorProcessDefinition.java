@@ -313,7 +313,7 @@ public class CollectorProcessDefinition implements IDomainModel {
    * @param sensorId
    *          the id of the sensor to set
    */
-  public void setSensor(String sensorId) {
+  public void setSensorId(String sensorId) {
     this.sensorId = sensorId;
   }
 

@@ -24,6 +24,8 @@ package org.wattdepot.common.domainmodel;
  * @author Cam Moore
  */
 public class Property {
+  /** persistence id. */
+  private Long id;
   /** The key. */
   private String key;
   /** The value. */
@@ -138,6 +140,20 @@ public class Property {
   @Override
   public String toString() {
     return "Property [key=" + key + ", value=" + value + "]";
+  }
+
+  /**
+   * @return the id
+   */
+  public Long getId() {
+    return id;
+  }
+
+  /**
+   * @param id the id to set
+   */
+  public void setId(Long id) {
+    this.id = id;
   }
   
 }

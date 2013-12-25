@@ -17,9 +17,6 @@
         <property name="email" type="java.lang.String">
             <column name="EMAIL" />
         </property>
-        <property name="admin" type="java.lang.Boolean">
-            <column name="ADMIN" />
-        </property>
         <set name="properties" table="PROPERTY" inverse="false" lazy="false">
             <key>
                 <column name="USER_ID" />
