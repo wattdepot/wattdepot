@@ -185,7 +185,7 @@ public class InstanceFactory {
     Set<Property> properties = new HashSet<Property>();
     properties.add(getProperty());
     return new UserInfo("test_user_id", "test_first_name", "test_last_name",
-        "test_email@test.com", "test_org_id", properties);
+        "test_email@test.com", "test-user-group", properties);
   }
 
   /**

@@ -91,9 +91,15 @@ public class AdminServerResource extends WattDepotServerResource {
     dataModel.put("measurementtypes", measurementTypes);
     dataModel.put("opens", ((WattDepotPersistenceImpl) depot).getSessionOpen());
     dataModel.put("closes", ((WattDepotPersistenceImpl) depot).getSessionClose());
+    try {
     Representation rep = new ClientResource(LocalReference.createClapReference(getClass()
         .getPackage()) + "/Admin.ftl").get();
-
-    return new TemplateRepresentation(rep, dataModel, MediaType.TEXT_HTML);
+    TemplateRepresentation template = new TemplateRepresentation(rep, dataModel, MediaType.TEXT_HTML);
+    return template;
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 }
