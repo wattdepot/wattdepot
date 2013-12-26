@@ -31,7 +31,7 @@ import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementList;
 import org.wattdepot.common.domainmodel.Sensor;
-import org.wattdepot.common.exception.MissMatchedOwnerException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.util.DateConvert;
 
 /**
@@ -104,7 +104,7 @@ public class DepositoryMeasurementsServer extends WattDepotServerResource {
               + " is not defined.");
         }
       }
-      catch (MissMatchedOwnerException e) {
+      catch (MisMatchedOwnerException e) {
         setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
       }
       catch (ParseException e) {

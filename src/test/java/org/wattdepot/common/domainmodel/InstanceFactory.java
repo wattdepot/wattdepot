@@ -164,7 +164,7 @@ public class InstanceFactory {
   /**
    * @return A CollectorMetaData instance for testing.
    */
-  public static CollectorProcessDefinition getCollectorMetaData() {
+  public static CollectorProcessDefinition getCollectorProcessDefinition() {
     return new CollectorProcessDefinition("Test Collector Metadata", getSensor().getSlug(), 10L,
         "test_depository", getOrganization().getSlug());
   }

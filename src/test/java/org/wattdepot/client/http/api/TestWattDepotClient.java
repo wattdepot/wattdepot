@@ -548,7 +548,7 @@ public class TestWattDepotClient {
    */
   @Test
   public void testCollectorMetaData() {
-    CollectorProcessDefinition data = InstanceFactory.getCollectorMetaData();
+    CollectorProcessDefinition data = InstanceFactory.getCollectorProcessDefinition();
     // Get list
     CollectorProcessDefinitionList list = test.getCollectorMetaDatas();
     assertNotNull(list);

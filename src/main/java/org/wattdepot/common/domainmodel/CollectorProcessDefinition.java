@@ -152,6 +152,14 @@ public class CollectorProcessDefinition implements IDomainModel {
     else if (!sensorId.equals(other.sensorId)) {
       return false;
     }
+    if (name == null) {
+      if (other.name != null) {
+        return false;
+      }
+    }
+    else if (!name.equals(other.name)) {
+      return false;
+    }
     return true;
   }
 
@@ -236,6 +244,7 @@ public class CollectorProcessDefinition implements IDomainModel {
     result = prime * result
         + ((properties == null) ? 0 : properties.hashCode());
     result = prime * result + ((sensorId == null) ? 0 : sensorId.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
     return result;
   }
 

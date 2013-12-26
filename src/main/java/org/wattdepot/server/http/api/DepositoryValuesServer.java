@@ -33,7 +33,7 @@ import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.MeasuredValue;
 import org.wattdepot.common.domainmodel.MeasuredValueList;
 import org.wattdepot.common.domainmodel.Sensor;
-import org.wattdepot.common.exception.MissMatchedOwnerException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.DateConvert;
 import org.wattdepot.common.util.tstamp.Tstamp;
@@ -119,7 +119,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
           setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " is not defined.");
         }
       }
-      catch (MissMatchedOwnerException e) {
+      catch (MisMatchedOwnerException e) {
         setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
       }
       catch (ParseException e) {

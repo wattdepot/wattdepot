@@ -88,7 +88,9 @@ public class Depository implements IDomainModel {
     if (obj == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if (!getClass().isAssignableFrom(obj.getClass())
+        && !obj.getClass().isAssignableFrom(getClass())
+        && getClass() != obj.getClass()) {
       return false;
     }
     Depository other = (Depository) obj;
@@ -277,7 +279,8 @@ public class Depository implements IDomainModel {
   }
 
   /**
-   * @return A list of the Sensor ids contributing Measurements to this depository.
+   * @return A list of the Sensor ids contributing Measurements to this
+   *         depository.
    */
   public List<String> listSensors() {
     throw new RuntimeException("Not implemented.");

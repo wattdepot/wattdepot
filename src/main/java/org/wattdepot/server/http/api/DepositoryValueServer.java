@@ -30,7 +30,7 @@ import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.MeasuredValue;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.exception.MeasurementGapException;
-import org.wattdepot.common.exception.MissMatchedOwnerException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.DateConvert;
 import org.wattdepot.server.depository.impl.hibernate.DepositoryImpl;
@@ -142,7 +142,7 @@ public class DepositoryValueServer extends WattDepotServerResource {
             + depositoryId);
       }
     }
-    catch (MissMatchedOwnerException e) {
+    catch (MisMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
     }
     catch (NoMeasurementException e1) {

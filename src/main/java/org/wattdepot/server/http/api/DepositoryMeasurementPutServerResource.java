@@ -26,7 +26,7 @@ import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.exception.MeasurementTypeException;
-import org.wattdepot.common.exception.MissMatchedOwnerException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.DepositoryMeasurementPutResource;
 
 /**
@@ -71,7 +71,7 @@ public class DepositoryMeasurementPutServerResource extends WattDepotServerResou
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " does not exist.");
       }
     }
-    catch (MissMatchedOwnerException e) {
+    catch (MisMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
     }
     catch (MeasurementTypeException e) {

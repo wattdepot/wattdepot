@@ -26,7 +26,7 @@ import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorList;
-import org.wattdepot.common.exception.MissMatchedOwnerException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.DepositorySensorsResource;
 
 /**
@@ -75,7 +75,7 @@ public class DepositorySensorsServerResource extends WattDepotServerResource imp
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " not defined.");
       }
     }
-    catch (MissMatchedOwnerException e) {
+    catch (MisMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
     }
     return ret;

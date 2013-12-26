@@ -63,6 +63,9 @@ public class DepositoryImpl extends Depository {
     if (this == obj) {
       return true;
     }
+    if (obj.getClass().equals(Depository.class)) {
+      return super.equals(obj);
+    }
     if (!super.equals(obj)) {
       return false;
     }
