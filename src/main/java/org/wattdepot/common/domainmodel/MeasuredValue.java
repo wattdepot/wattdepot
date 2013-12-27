@@ -208,6 +208,7 @@ public class MeasuredValue {
     }
     catch (DatatypeConfigurationException e) {
       // shouldn't happen
+      e.printStackTrace();
     }
     return "MeasuredValue [sensorId=" + sensorId + ", value=" + value
         + ", measurementType=" + measurementType + ", date=" + date + "]";

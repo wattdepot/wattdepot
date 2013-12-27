@@ -181,7 +181,7 @@ public class SensorGroup implements IDomainModel {
    */
   public boolean isOwner(Organization group) {
     if (ownerId != null
-        && (ownerId.equals(group) || group.equals(Organization.ADMIN_GROUP))) {
+        && (ownerId.equals(group.getSlug()) || group.equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;

@@ -68,16 +68,16 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     super();
     setServerProperties(properties);
     UserPassword adminPassword = getUserPassword(UserInfo.ROOT.getId());
-    if (getSessionClose() != getSessionOpen()) {
-      throw new RuntimeException("opens and closed mismatched.");
-    }
+//    if (getSessionClose() != getSessionOpen()) {
+//      throw new RuntimeException("opens and closed mismatched.");
+//    }
     if (adminPassword == null) {
       try {
         defineUserPassword(UserPassword.ADMIN.getId(),
             UserPassword.ADMIN.getPlainText());
-        if (getSessionClose() != getSessionOpen()) {
-          throw new RuntimeException("opens and closed mismatched.");
-        }
+//        if (getSessionClose() != getSessionOpen()) {
+//          throw new RuntimeException("opens and closed mismatched.");
+//        }
       }
       catch (UniqueIdException e1) {
         // what do we do here?
@@ -86,21 +86,21 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     }
     else {
       updateUserPassword(adminPassword);
-      if (getSessionClose() != getSessionOpen()) {
-        throw new RuntimeException("opens and closed mismatched.");
-      }
+//      if (getSessionClose() != getSessionOpen()) {
+//        throw new RuntimeException("opens and closed mismatched.");
+//      }
     }
     Organization pub = getOrganization(Organization.PUBLIC_GROUP.getSlug());
-    if (getSessionClose() != getSessionOpen()) {
-      throw new RuntimeException("opens and closed mismatched.");
-    }
+//    if (getSessionClose() != getSessionOpen()) {
+//      throw new RuntimeException("opens and closed mismatched.");
+//    }
     if (pub == null) {
       try {
         defineOrganization(Organization.PUBLIC_GROUP.getSlug(),
             new HashSet<String>());
-        if (getSessionClose() != getSessionOpen()) {
-          throw new RuntimeException("opens and closed mismatched.");
-        }
+//        if (getSessionClose() != getSessionOpen()) {
+//          throw new RuntimeException("opens and closed mismatched.");
+//        }
       }
       catch (UniqueIdException e) {
         // what do we do here?
@@ -109,21 +109,21 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     }
     else {
       updateOrganization(pub);
-      if (getSessionClose() != getSessionOpen()) {
-        throw new RuntimeException("opens and closed mismatched.");
-      }
+//      if (getSessionClose() != getSessionOpen()) {
+//        throw new RuntimeException("opens and closed mismatched.");
+//      }
     }
     Organization admin = getOrganization(Organization.ADMIN_GROUP.getSlug());
-    if (getSessionClose() != getSessionOpen()) {
-      throw new RuntimeException("opens and closed mismatched.");
-    }
+//    if (getSessionClose() != getSessionOpen()) {
+//      throw new RuntimeException("opens and closed mismatched.");
+//    }
     if (admin == null) {
       try {
         defineOrganization(Organization.ADMIN_GROUP.getSlug(),
             Organization.ADMIN_GROUP.getUsers());
-        if (getSessionClose() != getSessionOpen()) {
-          throw new RuntimeException("opens and closed mismatched.");
-        }
+//        if (getSessionClose() != getSessionOpen()) {
+//          throw new RuntimeException("opens and closed mismatched.");
+//        }
       }
       catch (UniqueIdException e) {
         // what do we do here?
@@ -132,9 +132,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     }
     else {
       updateOrganization(admin);
-      if (getSessionClose() != getSessionOpen()) {
-        throw new RuntimeException("opens and closed mismatched.");
-      }
+//      if (getSessionClose() != getSessionOpen()) {
+//        throw new RuntimeException("opens and closed mismatched.");
+//      }
     }
     // UserInfo adminUser = getUser(UserInfo.ROOT.getId());
     // if (getSessionClose() != getSessionOpen()) {
@@ -190,7 +190,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     String id = Slug.slugify(name);
     cpd = getCollectorProcessDefinition(id, Organization.ADMIN_GROUP_NAME);
     if (cpd != null) {
-      throw new UniqueIdException(id + " is already a SensorModel id.");
+      throw new UniqueIdException(id + " is already a CollectorProcessDefinition id.");
     }
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
@@ -212,15 +212,17 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * java.lang.String)
    */
   @Override
-  public SensorLocation defineLocation(String id, Double latitude,
+  public SensorLocation defineLocation(String name, Double latitude,
       Double longitude, Double altitude, String description, String ownerId)
       throws UniqueIdException {
+    String id = Slug.slugify(name);
     SensorLocation l = null;
     try {
       l = getLocation(id, ownerId);
     }
     catch (MisMatchedOwnerException e) {
       // ok as long as this owner doesn't own the location.
+      e.printStackTrace();
     }
     if (l != null) {
       throw new UniqueIdException(id + " is already a Location id.");
@@ -228,7 +230,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    l = new SensorLocation(id, latitude, longitude, altitude, description,
+    l = new SensorLocation(name, latitude, longitude, altitude, description,
         ownerId);
     session.save(l);
     session.getTransaction().commit();
@@ -1390,7 +1392,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public Organization getUsersGroup(UserInfo user) {
     for (Organization group : getOrganizations()) {
-      if (group.getUsers().contains(user)) {
+      if (group.getUsers().contains(user.getId())) {
         return group;
       }
     }

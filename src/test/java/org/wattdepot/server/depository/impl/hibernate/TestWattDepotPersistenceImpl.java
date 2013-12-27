@@ -88,9 +88,8 @@ public class TestWattDepotPersistenceImpl {
     }
     UserInfo testU = impl.getUser(testUser.getId());
     if (testU == null) {
-      impl.defineUserInfo(testUser.getId(), testUser.getFirstName(),
-          testUser.getLastName(), testUser.getEmail(),
-          testUser.getOrganizationId(), testUser.getProperties());
+      impl.defineUserInfo(testUser.getId(), testUser.getFirstName(), testUser.getLastName(),
+          testUser.getEmail(), testUser.getOrganizationId(), testUser.getProperties());
     }
     UserPassword testP = impl.getUserPassword(testPassword.getId());
     if (testP == null) {
@@ -127,13 +126,11 @@ public class TestWattDepotPersistenceImpl {
   @Test
   public void testCollectorProcessDefinitions() {
     // get the list of CollectorProcessDefinitions
-    List<CollectorProcessDefinition> list = impl
-        .getCollectorProcessDefinitions(testOrg.getSlug());
+    List<CollectorProcessDefinition> list = impl.getCollectorProcessDefinitions(testOrg.getSlug());
     int numCollector = list.size();
     assertTrue(numCollector >= 0);
     // Create a new instance
-    CollectorProcessDefinition cpd = InstanceFactory
-        .getCollectorProcessDefinition();
+    CollectorProcessDefinition cpd = InstanceFactory.getCollectorProcessDefinition();
     try {
       impl.defineCollectorProcessDefinition(cpd.getName(), cpd.getSensorId(),
           cpd.getPollingInterval(), cpd.getDepositoryId(), cpd.getOwnerId());
@@ -181,16 +178,16 @@ public class TestWattDepotPersistenceImpl {
     list = impl.getCollectorProcessDefinitions(testOrg.getSlug());
     assertTrue(numCollector + 1 == list.size());
     try {
-      CollectorProcessDefinition defined = impl.getCollectorProcessDefinition(
-          cpd.getSlug(), cpd.getOwnerId());
+      CollectorProcessDefinition defined = impl.getCollectorProcessDefinition(cpd.getSlug(),
+          cpd.getOwnerId());
       assertNotNull(defined);
       assertTrue(defined.equals(cpd));
       assertTrue(defined.toString().equals(cpd.toString()));
       defined.setName("New Name");
       // Update the instance
       impl.updateCollectorProcessDefinition(defined);
-      CollectorProcessDefinition updated = impl.getCollectorProcessDefinition(
-          cpd.getSlug(), cpd.getOwnerId());
+      CollectorProcessDefinition updated = impl.getCollectorProcessDefinition(cpd.getSlug(),
+          cpd.getOwnerId());
       assertNotNull(updated);
       assertTrue(defined.equals(updated));
       assertFalse(updated.equals(cpd));
@@ -202,6 +199,17 @@ public class TestWattDepotPersistenceImpl {
       fail("should not happen");
     }
     // Delete the instance
+    try {
+      impl.deleteCollectorProcessDefinition("bogus-collector-3921", cpd.getOwnerId());
+      fail("should be able to delete bogus CollectorProcessDefinition.");
+    }
+    catch (IdNotFoundException e1) {
+      // expected.
+    }
+    catch (MisMatchedOwnerException e1) {
+      e1.printStackTrace();
+      fail("should not happen");
+    }
     try {
       impl.deleteCollectorProcessDefinition(cpd.getSlug(), cpd.getOwnerId());
       list = impl.getCollectorProcessDefinitions(testOrg.getSlug());
@@ -257,14 +265,23 @@ public class TestWattDepotPersistenceImpl {
     try {
       Depository defined = impl.getWattDeposiory(dep.getSlug(), dep.getOwnerId());
       assertNotNull(defined);
-      System.out.println(dep);
-      System.out.println(defined);      
       assertTrue(defined.equals(dep));
       assertTrue(defined.toString().equals(dep.toString()));
       assertTrue(defined.hashCode() == dep.hashCode());
     }
     catch (MisMatchedOwnerException e) {
       e.printStackTrace();
+      fail("should not happen");
+    }
+    try {
+      impl.deleteWattDepository("bogus-depository-3258", dep.getOwnerId());
+      fail("Shouldn't be able to delete bogus-depository-3258");
+    }
+    catch (IdNotFoundException e1) {
+      // this is expected
+    }
+    catch (MisMatchedOwnerException e1) {
+      e1.printStackTrace();
       fail("should not happen");
     }
     try {
@@ -287,6 +304,61 @@ public class TestWattDepotPersistenceImpl {
    */
   @Test
   public void testSensorLocations() {
+    // get the list of locations.
+    List<SensorLocation> list = impl.getLocations(testOrg.getSlug());
+    int numLocations = list.size();
+    assertTrue(numLocations >= 0);
+    // create a new SensorLocation.
+    SensorLocation loc = InstanceFactory.getLocation();
+    try {
+      impl.defineLocation(loc.getName(), loc.getLatitude(), loc.getLongitude(), loc.getAltitude(),
+          loc.getDescription(), loc.getOwnerId());
+      list = impl.getLocations(testOrg.getSlug());
+      assertTrue(numLocations + 1 == list.size());
+    }
+    catch (UniqueIdException e) {
+      e.printStackTrace();
+      fail("should not happen.");
+    }
+    try {
+      SensorLocation defined = impl.getLocation(loc.getSlug(), loc.getOwnerId());
+      assertTrue(defined.equals(loc));
+      assertTrue(loc.equals(defined));
+      assertTrue(defined.toString().equals(loc.toString()));
+      assertTrue(defined.hashCode() == loc.hashCode());
+      defined.setName("New Name");
+      impl.updateLocation(defined);
+      SensorLocation updated = impl.getLocation(loc.getSlug(), loc.getOwnerId());
+      assertFalse(loc.equals(updated));
+    }
+    catch (MisMatchedOwnerException e) {
+      e.printStackTrace();
+      fail("should not happen");
+    }
+    // delete
+    try {
+      impl.deleteLocation("bogus-location-5432", loc.getOwnerId());
+    }
+    catch (IdNotFoundException e1) {
+      // expected result.
+    }
+    catch (MisMatchedOwnerException e1) {
+      e1.printStackTrace();
+      fail("should not happen");
+    }
+    try {
+      impl.deleteLocation(loc.getSlug(), loc.getOwnerId());
+      list = impl.getLocations(testOrg.getSlug());
+      assertTrue(numLocations == list.size());
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+      fail("should not happen");
+    }
+    catch (MisMatchedOwnerException e) {
+      e.printStackTrace();
+      fail("should not happen");
+    }
   }
 
   /**
@@ -294,6 +366,47 @@ public class TestWattDepotPersistenceImpl {
    */
   @Test
   public void testMeasurementTypes() {
+    List<MeasurementType> list = impl.getMeasurementTypes();
+    int numMeasurementTypes = list.size();
+    assertTrue(numMeasurementTypes >= 0);
+    MeasurementType type = InstanceFactory.getMeasurementType();
+    // create a MeasurementType
+    try {
+      impl.defineMeasurementType(type.getName(), type.getUnits());
+      list = impl.getMeasurementTypes();
+      assertTrue(numMeasurementTypes + 1 == list.size());
+    }
+    catch (UniqueIdException e) {
+      e.printStackTrace();
+      fail("should not happen");
+    }
+    MeasurementType defined = impl.getMeasurementType(type.getSlug());
+    assertNotNull(defined);
+    assertTrue(type.equals(defined));
+    assertTrue(defined.equals(type));
+    assertTrue(defined.toString().equals(type.toString()));
+    assertTrue(defined.hashCode() == type.hashCode());
+    defined.setName("New Name");
+    impl.updateMeasurementType(defined);
+    MeasurementType update = impl.getMeasurementType(type.getSlug());
+    assertFalse(type.equals(update));
+    // delete
+    try {
+      impl.deleteMeasurementType("bogus-measurementtype-9520");
+      fail("shouldn't be able to delete bogus MeasurementType");
+    }
+    catch (IdNotFoundException e) {
+      // expected result
+    }
+    try {
+      impl.deleteMeasurementType(type.getSlug());
+      list = impl.getMeasurementTypes();
+      assertTrue(numMeasurementTypes == list.size());
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+      fail("should not happen");
+    }
   }
 
   /**
@@ -344,13 +457,12 @@ public class TestWattDepotPersistenceImpl {
    * @throws UniqueIdException
    *           if the Location is already defined.
    */
-  private void addSensorLocation() throws MisMatchedOwnerException,
-      UniqueIdException {
+  private void addSensorLocation() throws MisMatchedOwnerException, UniqueIdException {
     SensorLocation loc = InstanceFactory.getLocation();
     SensorLocation defined = impl.getLocation(loc.getSlug(), loc.getOwnerId());
     if (defined == null) {
-      impl.defineLocation(loc.getSlug(), loc.getLatitude(), loc.getLongitude(),
-          loc.getAltitude(), loc.getDescription(), loc.getOwnerId());
+      impl.defineLocation(loc.getSlug(), loc.getLatitude(), loc.getLongitude(), loc.getAltitude(),
+          loc.getDescription(), loc.getOwnerId());
     }
   }
 
@@ -362,8 +474,8 @@ public class TestWattDepotPersistenceImpl {
     SensorModel model = InstanceFactory.getSensorModel();
     SensorModel defined = impl.getSensorModel(model.getSlug());
     if (defined == null) {
-      impl.defineSensorModel(model.getSlug(), model.getProtocol(),
-          model.getType(), model.getVersion());
+      impl.defineSensorModel(model.getSlug(), model.getProtocol(), model.getType(),
+          model.getVersion());
     }
   }
 
@@ -375,21 +487,20 @@ public class TestWattDepotPersistenceImpl {
    * @throws IdNotFoundException
    *           if the SensorLocation or SensorModel aren't defined.
    */
-  private void addSensor() throws MisMatchedOwnerException, UniqueIdException,
-      IdNotFoundException {
+  private void addSensor() throws MisMatchedOwnerException, UniqueIdException, IdNotFoundException {
     addSensorLocation();
     addSensorModel();
     Sensor sensor = InstanceFactory.getSensor();
     Sensor defined = impl.getSensor(sensor.getSlug(), sensor.getOwnerId());
     if (defined == null) {
-      impl.defineSensor(sensor.getName(), sensor.getUri(),
-          sensor.getSensorLocationId(), sensor.getModelId(),
-          sensor.getOwnerId());
+      impl.defineSensor(sensor.getName(), sensor.getUri(), sensor.getSensorLocationId(),
+          sensor.getModelId(), sensor.getOwnerId());
     }
   }
-  
+
   /**
-   * @throws UniqueIdException if the MeasurementType is already defined.
+   * @throws UniqueIdException
+   *           if the MeasurementType is already defined.
    */
   private void addMeasurementType() throws UniqueIdException {
     MeasurementType type = InstanceFactory.getMeasurementType();
