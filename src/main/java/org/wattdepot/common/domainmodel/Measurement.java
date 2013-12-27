@@ -83,7 +83,9 @@ public class Measurement {
     if (obj == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if (!getClass().isAssignableFrom(obj.getClass())
+        && !obj.getClass().isAssignableFrom(getClass())
+        && getClass() != obj.getClass()) {
       return false;
     }
     Measurement other = (Measurement) obj;

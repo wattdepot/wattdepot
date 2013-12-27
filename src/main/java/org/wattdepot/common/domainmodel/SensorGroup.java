@@ -109,6 +109,14 @@ public class SensorGroup implements IDomainModel {
     else if (!slug.equals(other.slug)) {
       return false;
     }
+    if (name == null) {
+      if (other.name != null) {
+        return false;
+      }
+    }
+    else if (!name.equals(other.name)) {
+      return false;
+    }
     if (ownerId == null) {
       if (other.ownerId != null) {
         return false;
@@ -166,6 +174,7 @@ public class SensorGroup implements IDomainModel {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((slug == null) ? 0 : slug.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
     result = prime * result + ((ownerId == null) ? 0 : ownerId.hashCode());
     result = prime * result + ((sensors == null) ? 0 : sensors.hashCode());
     return result;
@@ -246,7 +255,7 @@ public class SensorGroup implements IDomainModel {
    */
   @Override
   public String toString() {
-    return "SensorGroup [id=" + slug + ", sensors=" + sensors + ", ownerId="
+    return "SensorGroup [id=" + slug + ", name=" + name + ", sensors=" + sensors + ", ownerId="
         + ownerId + "]";
   }
 

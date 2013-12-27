@@ -127,6 +127,14 @@ public class Organization {
     else if (!slug.equals(other.slug)) {
       return false;
     }
+    if (name == null) {
+      if (other.name != null) {
+        return false;
+      }
+    }
+    else if (!name.equals(other.name)) {
+      return false;
+    }
     if (users == null) {
       if (other.users != null) {
         return false;
@@ -169,6 +177,7 @@ public class Organization {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((slug == null) ? 0 : slug.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
     result = prime * result + ((users == null) ? 0 : users.hashCode());
     return result;
   }
@@ -217,7 +226,7 @@ public class Organization {
    */
   @Override
   public String toString() {
-    return "Organization [id=" + slug + ", users=" + users + "]";
+    return "Organization [id=" + slug + ", name=" + name + ", users=" + users + "]";
   }
 
 }

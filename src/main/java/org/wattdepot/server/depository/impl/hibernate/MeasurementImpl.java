@@ -102,8 +102,14 @@ public class MeasurementImpl extends Measurement {
    */
   @Override
   public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
     if (this == obj) {
       return true;
+    }
+    if (obj.getClass().equals(Measurement.class)) {
+      return super.equals(obj);
     }
     if (!super.equals(obj)) {
       return false;

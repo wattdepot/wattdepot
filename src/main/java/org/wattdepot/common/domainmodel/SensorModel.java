@@ -89,6 +89,14 @@ public class SensorModel {
     else if (!slug.equals(other.slug)) {
       return false;
     }
+    if (name == null) {
+      if (other.name != null) {
+        return false;
+      }
+    }
+    else if (!name.equals(other.name)) {
+      return false;
+    }
     if (protocol == null) {
       if (other.protocol != null) {
         return false;
@@ -160,6 +168,8 @@ public class SensorModel {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
+    result = prime * result + ((slug == null) ? 0 : slug.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
     result = prime * result + ((protocol == null) ? 0 : protocol.hashCode());
     result = prime * result + ((type == null) ? 0 : type.hashCode());
     result = prime * result + ((version == null) ? 0 : version.hashCode());

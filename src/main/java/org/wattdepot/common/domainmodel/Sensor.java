@@ -110,6 +110,14 @@ public class Sensor implements IDomainModel {
     else if (!slug.equals(other.slug)) {
       return false;
     }
+    if (name == null) {
+      if (other.name != null) {
+        return false;
+      }
+    }
+    else if (!name.equals(other.name)) {
+      return false;
+    }
     if (locationId == null) {
       if (other.locationId != null) {
         return false;
@@ -226,6 +234,7 @@ public class Sensor implements IDomainModel {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((slug == null) ? 0 : slug.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
     result = prime * result + ((locationId == null) ? 0 : locationId.hashCode());
     result = prime * result + ((modelId == null) ? 0 : modelId.hashCode());
     result = prime * result + ((ownerId == null) ? 0 : ownerId.hashCode());

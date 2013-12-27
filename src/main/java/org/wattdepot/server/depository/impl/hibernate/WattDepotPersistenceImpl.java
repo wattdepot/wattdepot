@@ -273,8 +273,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * java.util.Set<String>)
    */
   @Override
-  public Organization defineOrganization(String id, Set<String> users)
+  public Organization defineOrganization(String name, Set<String> users)
       throws UniqueIdException {
+    String id = Slug.slugify(name);
     Organization g = getOrganization(id);
     if (g != null) {
       throw new UniqueIdException(id + " is already a Organization id.");
@@ -290,7 +291,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     // }
     // session.saveOrUpdate(u);
     // }
-    g = new Organization(id, users);
+    g = new Organization(name, users);
     session.saveOrUpdate(g);
     session.getTransaction().commit();
     session.close();
@@ -344,9 +345,10 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * java.util.List, org.wattdepot.datamodel.Organization)
    */
   @Override
-  public SensorGroup defineSensorGroup(String id, Set<String> sensorIds,
+  public SensorGroup defineSensorGroup(String name, Set<String> sensorIds,
       String ownerId) throws UniqueIdException, MisMatchedOwnerException,
       IdNotFoundException {
+    String id = Slug.slugify(name);
     for (String sensorId : sensorIds) {
       Sensor sensor = getSensor(sensorId, ownerId);
       if (sensor != null) {
@@ -367,7 +369,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    sg = new SensorGroup(id, sensorIds, ownerId);
+    sg = new SensorGroup(name, sensorIds, ownerId);
     session.save(sg);
     session.getTransaction().commit();
     session.close();
@@ -383,8 +385,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * org.wattdepot.datamodel.Organization)
    */
   @Override
-  public SensorModel defineSensorModel(String id, String protocol, String type,
+  public SensorModel defineSensorModel(String name, String protocol, String type,
       String version) throws UniqueIdException {
+    String id = Slug.slugify(name);
     SensorModel sm = null;
     sm = getSensorModel(id);
     if (sm != null) {
@@ -393,7 +396,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    sm = new SensorModel(id, protocol, type, version);
+    sm = new SensorModel(name, protocol, type, version);
     session.save(sm);
     session.getTransaction().commit();
     session.close();
@@ -459,9 +462,10 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public Depository defineWattDepository(String name,
       MeasurementType measurementType, String ownerId) throws UniqueIdException {
+    String id = Slug.slugify(name);
     Depository d = null;
     try {
-      d = getWattDeposiory(name, ownerId);
+      d = getWattDeposiory(id, ownerId);
     }
     catch (MisMatchedOwnerException e) {
       throw new UniqueIdException(name + " is used by another owner.");

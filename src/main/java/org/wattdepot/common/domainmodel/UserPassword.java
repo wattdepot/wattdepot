@@ -29,13 +29,15 @@ import org.jasypt.util.password.StrongPasswordEncryptor;
 public class UserPassword {
   /** Name of property used to store the admin password. */
   public static final String ADMIN_USER_PASSWORD = "wattdepot-server.admin.password";
+
+  /** The encryptor to use for all passwords. */
+  private static final StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
   
   /** The password for the admin user. */
   public static final UserPassword ADMIN = new UserPassword(UserInfo.ROOT.getId(), "admin");
   private String id;
   private String encryptedPassword;
   private String plainText;
-  private StrongPasswordEncryptor passwordEncryptor;
 
   static {
     String password = System.getProperty(ADMIN_USER_PASSWORD);
@@ -49,7 +51,7 @@ public class UserPassword {
    * Default constructor.
    */
   public UserPassword() {
-    this.passwordEncryptor = new StrongPasswordEncryptor();
+
   }
 
   /**
@@ -62,7 +64,6 @@ public class UserPassword {
    *          The plain text password.
    */
   public UserPassword(String id, String plainTextPassword) {
-    this.passwordEncryptor = new StrongPasswordEncryptor();
     this.id = id;
     this.plainText = plainTextPassword;
     this.encryptedPassword = passwordEncryptor.encryptPassword(plainTextPassword);
@@ -77,7 +78,7 @@ public class UserPassword {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((encryptedPassword == null) ? 0 : encryptedPassword.hashCode());
+    result = prime * result + ((plainText == null) ? 0 : plainText.hashCode());
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
@@ -104,7 +105,7 @@ public class UserPassword {
         return false;
       }
     }
-    else if (!encryptedPassword.equals(other.encryptedPassword)) {
+    else if (!plainText.equals(other.plainText)) {
       return false;
     }
     if (id == null) {

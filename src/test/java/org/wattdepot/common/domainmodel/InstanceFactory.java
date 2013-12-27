@@ -42,17 +42,16 @@ public class InstanceFactory {
    * @return A Depository instance for testing.
    */
   public static Depository getDepository() {
-    return new Depository("Test Depository", getMeasurementType(),
-        getOrganization().getSlug());
+    return new Depository("Test Depository", getMeasurementType(), getOrganization().getSlug());
   }
 
   /**
    * @return A Location instance for testing.
    */
   public static SensorLocation getLocation() {
-    return new SensorLocation("Test Location Ilima 6th", new Double(21.294642),
-        new Double(-157.812727), new Double(30),
-        "Hale Aloha Ilima residence hall 6th floor", getOrganization().getSlug());
+    return new SensorLocation("Test Location Ilima 6th", new Double(21.294642), new Double(
+        -157.812727), new Double(30), "Hale Aloha Ilima residence hall 6th floor",
+        getOrganization().getSlug());
   }
 
   /**
@@ -60,11 +59,54 @@ public class InstanceFactory {
    */
   public static Measurement getMeasurementOne() {
     try {
-      Date measTime = DateConvert
-          .parseCalStringToDate("2013-11-20T14:35:27.925-1000");
+      Date measTime = DateConvert.parseCalStringToDate("2013-11-20T14:35:27.925-1000");
       Double value = 100.0;
-      return new Measurement(getSensor().getSlug(), measTime, value, getMeasurementType()
-          .unit());
+      return new Measurement(getSensor().getSlug(), measTime, value, getMeasurementType().unit());
+    }
+    catch (ParseException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    catch (DatatypeConfigurationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  public static Date getTimeBeforeM1() {
+    try {
+      return DateConvert.parseCalStringToDate("2013-11-20T13:35:32.290-1000");
+    }
+    catch (ParseException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    catch (DatatypeConfigurationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  public static Date getTimeBetweenM1andM2() {
+    try {
+      return DateConvert.parseCalStringToDate("2013-11-20T14:35:32.290-1000");
+    }
+    catch (ParseException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    catch (DatatypeConfigurationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  public static Date getTimeBetweenM1andM3() {
+    try {
+      return DateConvert.parseCalStringToDate("2013-11-20T14:39:32.290-1000");
     }
     catch (ParseException e) {
       // TODO Auto-generated catch block
@@ -82,11 +124,9 @@ public class InstanceFactory {
    */
   public static Measurement getMeasurementThree() {
     try {
-      Date measTime = DateConvert
-          .parseCalStringToDate("2013-11-20T14:45:37.925-1000");
+      Date measTime = DateConvert.parseCalStringToDate("2013-11-20T14:45:37.925-1000");
       Double value = 100.0;
-      return new Measurement(getSensor().getSlug(), measTime, value, getMeasurementType()
-          .unit());
+      return new Measurement(getSensor().getSlug(), measTime, value, getMeasurementType().unit());
     }
     catch (ParseException e) {
       // TODO Auto-generated catch block
@@ -104,11 +144,9 @@ public class InstanceFactory {
    */
   public static Measurement getMeasurementTwo() {
     try {
-      Date measTime = DateConvert
-          .parseCalStringToDate("2013-11-20T14:35:37.925-1000");
+      Date measTime = DateConvert.parseCalStringToDate("2013-11-20T14:35:37.925-1000");
       Double value = 100.0;
-      return new Measurement(getSensor().getSlug(), measTime, value, getMeasurementType()
-          .unit());
+      return new Measurement(getSensor().getSlug(), measTime, value, getMeasurementType().unit());
     }
     catch (ParseException e) {
       // TODO Auto-generated catch block
@@ -140,8 +178,8 @@ public class InstanceFactory {
    * @return A Sensor instance for testing.
    */
   public static Sensor getSensor() {
-    return new Sensor("Test Sensor", "test_sensor_uri", getLocation().getSlug(),
-        getSensorModel().getSlug(), getOrganization().getSlug());
+    return new Sensor("Test Sensor", "test_sensor_uri", getLocation().getSlug(), getSensorModel()
+        .getSlug(), getOrganization().getSlug());
   }
 
   /**
@@ -157,8 +195,8 @@ public class InstanceFactory {
    * @return A SensorModel instance for testing.
    */
   public static SensorModel getSensorModel() {
-    return new SensorModel("Test Sensor Model", "test_model_protocol",
-        "test_model_type", "test_model_version");
+    return new SensorModel("Test Sensor Model", "test_model_protocol", "test_model_type",
+        "test_model_version");
   }
 
   /**
@@ -179,13 +217,32 @@ public class InstanceFactory {
   }
 
   /**
+   * @return A second Organization instance for testing.
+   */
+  public static Organization getOrganization2() {
+    Set<String> users = new HashSet<String>();
+    users.add(getUserInfo().getId());
+    return new Organization("Test User Group2", users);
+  }
+
+  /**
    * @return A UserInfo instance for testing.
    */
   public static UserInfo getUserInfo() {
     Set<Property> properties = new HashSet<Property>();
     properties.add(getProperty());
-    return new UserInfo("test_user_id", "test_first_name", "test_last_name",
-        "test_email@test.com", "test-user-group", properties);
+    return new UserInfo("test_user_id", "test_first_name", "test_last_name", "test_email@test.com",
+        "test-user-group", properties);
+  }
+
+  /**
+   * @return A UserInfo instance for testing.
+   */
+  public static UserInfo getUserInfo2() {
+    Set<Property> properties = new HashSet<Property>();
+    properties.add(getProperty());
+    return new UserInfo("test_user_id2", "test_first_name2", "test_last_name2",
+        "test_email2@test.com", "test-user-group", properties);
   }
 
   /**
@@ -193,5 +250,12 @@ public class InstanceFactory {
    */
   public static UserPassword getUserPassword() {
     return new UserPassword("test_user_id", "plain_text_password");
+  }
+
+  /**
+   * @return A second UserPassword instance for testing.
+   */
+  public static UserPassword getUserPassword2() {
+    return new UserPassword("test_user_id2", "plain_text_password2");
   }
 }

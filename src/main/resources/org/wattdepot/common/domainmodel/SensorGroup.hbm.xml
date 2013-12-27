@@ -11,11 +11,11 @@
         <property name="name" type = "java.lang.String">
             <column name="NAME" />
         </property>
-        <set name="sensors" inverse="false" table="SENSOR" lazy="false">
+        <set name="sensors" table="SENSORS">
             <key>
                 <column name="SENSORGROUP_ID" />
             </key>
-            <one-to-many class="org.wattdepot.common.domainmodel.Sensor" />
+            <element column="SENSORID" type="java.lang.String"/>
         </set>
         <property name="ownerId" type="java.lang.String">
             <column name="OWNERID" />

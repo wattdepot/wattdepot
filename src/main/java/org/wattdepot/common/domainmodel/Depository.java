@@ -89,8 +89,7 @@ public class Depository implements IDomainModel {
       return false;
     }
     if (!getClass().isAssignableFrom(obj.getClass())
-        && !obj.getClass().isAssignableFrom(getClass())
-        && getClass() != obj.getClass()) {
+        && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
     Depository other = (Depository) obj;
@@ -111,6 +110,17 @@ public class Depository implements IDomainModel {
       return false;
     }
     return true;
+  }
+
+  /**
+   * @param sensor
+   *          The Sensor making the measurements.
+   * @return The earliest measurement Value
+   * @throws NoMeasurementException
+   *           If there aren't any measurements around the time.
+   */
+  public MeasuredValue getEarliestMeasuredValue(Sensor sensor) throws NoMeasurementException {
+    throw new RuntimeException("Not implemented");
   }
 
   /**
@@ -182,8 +192,7 @@ public class Depository implements IDomainModel {
    * @throws NoMeasurementException
    *           If there aren't any measurements around the time.
    */
-  public Double getValue(String sensorId, Date timestamp)
-      throws NoMeasurementException {
+  public Double getValue(String sensorId, Date timestamp) throws NoMeasurementException {
     throw new RuntimeException("Not implemented.");
   }
 
@@ -199,8 +208,7 @@ public class Depository implements IDomainModel {
    * @throws NoMeasurementException
    *           if there are no measurements around the start or end time.
    */
-  public Double getValue(String sensorId, Date start, Date end)
-      throws NoMeasurementException {
+  public Double getValue(String sensorId, Date start, Date end) throws NoMeasurementException {
     throw new RuntimeException("Not implemented.");
   }
 
@@ -255,8 +263,7 @@ public class Depository implements IDomainModel {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result
-        + ((measurementType == null) ? 0 : measurementType.hashCode());
+    result = prime * result + ((measurementType == null) ? 0 : measurementType.hashCode());
     result = prime * result + ((name == null) ? 0 : name.hashCode());
     return result;
   }
@@ -271,8 +278,7 @@ public class Depository implements IDomainModel {
    */
   public boolean isOwner(Organization group) {
     if (ownerId != null
-        && (ownerId.equals(group.getSlug()) || group
-            .equals(Organization.ADMIN_GROUP))) {
+        && (ownerId.equals(group.getSlug()) || group.equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;
@@ -339,8 +345,8 @@ public class Depository implements IDomainModel {
    */
   @Override
   public String toString() {
-    return "Depository [name=" + name + ", slug=" + slug + ", measurementType="
-        + measurementType + "]";
+    return "Depository [name=" + name + ", slug=" + slug + ", measurementType=" + measurementType
+        + "]";
   }
 
 }
