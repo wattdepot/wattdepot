@@ -371,10 +371,6 @@
                 <version>${findbugs.plugin.version}</version>
                 <configuration>
                     <excludeFilterFile>${findbugs.filter.file}</excludeFilterFile>
-                    <excludes>
-                        <exclude>**/datamodel/**</exclude>
-                        <exclude>**/tinker/**</exclude>
-                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -391,8 +387,6 @@
                 <version>${checkstyle.plugin.version}</version>
                 <configuration>
                     <configLocation>${checkstyle.filter.file}</configLocation>
-                    <excludes>**/datamodel/**
-                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -412,9 +406,6 @@
                     <linkXref>false</linkXref>
                     <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
                     <minimumTokens>100</minimumTokens>
-                    <excludes>
-                        <exclude>**/datamodel/**</exclude>
-                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -455,10 +446,6 @@
                             <version>${findbugs.plugin.version}</version>
                             <configuration>
                                 <excludeFilterFile>${findbugs.filter.file}</excludeFilterFile>
-                                <excludes>
-                                    <exclude>**/datamodel/**</exclude>
-                                    <exclude>**/tinker/**</exclude>
-                                </excludes>
                             </configuration>
                         </plugin>
                         <plugin>
@@ -467,7 +454,6 @@
                             <version>${checkstyle.plugin.version}</version>
                             <configuration>
                                 <configLocation>${checkstyle.filter.file}</configLocation>
-                                <excludes>**/datamodel/**, **/tinker/**</excludes>
                             </configuration>
                         </plugin>
                         <plugin>
@@ -487,21 +473,12 @@
                                 <linkXref>false</linkXref>
                                 <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
                                 <minimumTokens>100</minimumTokens>
-                                <excludes>
-                                    <exclude>**/tinker/**</exclude>
-                                    <exclude>**/datamodel/**</exclude>
-                                </excludes>
                             </configuration>
                         </plugin>
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-javadoc-plugin</artifactId>
                             <version>${javadoc.plugin.version}</version>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.jacoco</groupId>
-                            <artifactId>jacoco-maven-plugin</artifactId>
-                            <version>0.6.3.201306030806</version>
                         </plugin>
                     </reportPlugins>
                 </configuration>

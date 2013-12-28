@@ -111,7 +111,7 @@ public abstract class MultiThreadedCollector extends TimerTask {
     this.debug = debug;
     this.metaData = new CollectorProcessDefinition(Slug.slugify(sensorId + " " + pollingInterval + " "
         + depository.getName()), sensorId, pollingInterval, depository.getName(), null);
-    client.putCollectorMetaData(metaData);
+    client.putCollectorProcessDefinition(metaData);
     this.depository = depository;
     client.putDepository(depository);
     validate();

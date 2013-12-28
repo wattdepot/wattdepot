@@ -414,7 +414,7 @@ public interface WattDepotInterface {
    * @param process
    *          the CollectorMetaData.
    */
-  public void putCollectorMetaData(CollectorProcessDefinition process);
+  public void putCollectorProcessDefinition(CollectorProcessDefinition process);
 
   /**
    * Updates the given Depository in the WattDepot Server.

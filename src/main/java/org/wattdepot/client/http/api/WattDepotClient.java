@@ -805,7 +805,7 @@ public class WattDepotClient implements WattDepotInterface {
    */
   @Override
   public boolean isHealthy() {
-    ClientResource client = makeClient(this.groupId + "/");
+    ClientResource client = makeClient("");
     client.head();
     boolean healthy = client.getStatus().isSuccess();
     client.release();
@@ -823,7 +823,6 @@ public class WattDepotClient implements WattDepotInterface {
   public ClientResource makeClient(String requestString) {
     logger.fine(this.wattDepotUri + requestString);
     Reference reference = new Reference(this.wattDepotUri + requestString);
-    // System.out.print(reference);
     ClientResource client = new ClientResource(reference);
     client.setChallengeResponse(authentication);
     return client;
@@ -837,7 +836,7 @@ public class WattDepotClient implements WattDepotInterface {
    * .datamodel.CollectorMetaData)
    */
   @Override
-  public void putCollectorMetaData(CollectorProcessDefinition process) {
+  public void putCollectorProcessDefinition(CollectorProcessDefinition process) {
     ClientResource client = makeClient(this.groupId + "/"
         + Labels.COLLECTOR_META_DATA + "/");
     CollectorProcessDefinitionPutResource resource = client
@@ -912,9 +911,6 @@ public class WattDepotClient implements WattDepotInterface {
         .wrap(DepositoryMeasurementPutResource.class);
     try {
       resource.store(measurement);
-    }
-    catch (ResourceException e) {
-      e.printStackTrace();
     }
     finally {
       client.release();

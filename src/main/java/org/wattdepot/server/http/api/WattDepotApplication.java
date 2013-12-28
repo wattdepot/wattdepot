@@ -161,6 +161,7 @@ public class WattDepotApplication extends Application {
         Redirector.MODE_CLIENT_PERMANENT);
     router.attach("/app/", redirector);
 
+    router.attach(API.BASE_URI, IsAliveServerResource.class);
     // router.attach("/wattdepot/", LoginPageServerResource.class);
     // router.attach("/wattdepot/login/", LoginServerResource.class);
     // Group administration UI.

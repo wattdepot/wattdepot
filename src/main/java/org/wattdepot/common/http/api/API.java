@@ -29,262 +29,263 @@ import org.wattdepot.common.domainmodel.Labels;
 public class API {
 
   /**
+   * <b>/wattdepot/</b> URI for seeing if the server is alive. Supports GET
+   * requests.
+   */
+  public static final String BASE_URI = "/" + Labels.WATTDEPOT + "/";
+  /**
    * <b>/wattdepot/{org-id}/</b> URI for the group administration User
    * Interface. Supports GET requests.
    */
-  public static final String ADMIN_URI = "/" + Labels.WATTDEPOT + "/" + Labels.ORGANIZATION_ID_VAR + "/";
+  public static final String ADMIN_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/";
 
   /**
    * <b>/wattdepot/{org-id}/collector-metadata/</b> URI for storing
    * CollectorMetaData. Use PUT requests.
    */
-  public static final String COLLECTOR_META_DATA_PUT_URI = "/" + Labels.WATTDEPOT + "/"
-      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.COLLECTOR_META_DATA + "/";
+  public static final String COLLECTOR_META_DATA_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR
+      + "/" + Labels.COLLECTOR_META_DATA + "/";
 
   /**
    * <b>/wattdepot/{org-id}/collector-metadata/</b> URI for manipulating
    * CollectorMetaData. Supports GET, POST, and DELETE requests.
    */
-  public static final String COLLECTOR_META_DATA_URI = "/" + Labels.WATTDEPOT + "/"
-      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.COLLECTOR_META_DATA + "/"
-      + Labels.COLLECTOR_META_DATA_ID_VAR;
+  public static final String COLLECTOR_META_DATA_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.COLLECTOR_META_DATA + "/" + Labels.COLLECTOR_META_DATA_ID_VAR;
 
   /**
    * <b>/wattdepot/{org-id}/collector-metadatas/</b> URI for getting all the
    * defined CollectorMetaData. Use GET requests.
    */
-  public static final String COLLECTOR_META_DATAS_URI = "/" + Labels.WATTDEPOT + "/"
-      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.COLLECTOR_META_DATAS + "/";
+  public static final String COLLECTOR_META_DATAS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.COLLECTOR_META_DATAS + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/depositories/</b> URI for getting all
-   * Depositories. Use GET requests.
+   * <b>/wattdepot/{org-id}/depositories/</b> URI for getting all Depositories.
+   * Use GET requests.
    */
-  public static final String DEPOSITORIES_URI = "/" + Labels.WATTDEPOT + "/" + Labels.ORGANIZATION_ID_VAR
-      + "/" + Labels.DEPOSITORIES + "/";
+  public static final String DEPOSITORIES_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORIES + "/";
 
   /**
    * <b>/wattdepot/{org-id}/depository/</b> URI for storing new Depositories.
    * Use PUT requests.
    */
-  public static final String DEPOSITORY_PUT_URI = "/" + Labels.WATTDEPOT + "/"
-      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.DEPOSITORY + "/";
+  public static final String DEPOSITORY_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/";
 
   /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/sensors/</b> URI for
    * getting all the sensors that have stored measurements in the depository.
    * Use GET requests.
    */
-  public static final String DEPOSITORY_SENSORS_URI = "/" + Labels.WATTDEPOT + "/"
-      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/"
-      + Labels.SENSORS + "/";
+  public static final String DEPOSITORY_SENSORS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.SENSORS + "/";
 
   /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}</b> URI for Depository
    * manipulation. Supports GET, POST, and DELETE requests.
    */
-  public static final String DEPOSITORY_URI = "/" + Labels.WATTDEPOT + "/" + Labels.ORGANIZATION_ID_VAR
-      + "/" + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR;
+  public static final String DEPOSITORY_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR;
 
   /**
-   * <b>/wattdepot/{org-id}/depository/{depository-id}/measurement/</b> URI
-   * for putting a measurement into the depsository. Use PUT requests.
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/measurement/</b> URI for
+   * putting a measurement into the depsository. Use PUT requests.
    */
-  public static final String MEASUREMENT_PUT_URI = "/" + Labels.WATTDEPOT + "/"
-      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/"
-      + Labels.MEASUREMENT + "/";
+  public static final String MEASUREMENT_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.MEASUREMENT + "/";
 
   /**
    * <b>/wattdepot/public/measurement-type/</b> URI for storing new
    * MeasurmentTypes. Use PUT requests.
    */
-  public static final String MEASUREMENT_TYPE_PUT_URI = "/" + Labels.WATTDEPOT + "/"
-      + Labels.PUBLIC + "/" + Labels.MEASUREMENT_TYPE + "/";
+  public static final String MEASUREMENT_TYPE_PUT_URI = BASE_URI + Labels.PUBLIC + "/"
+      + Labels.MEASUREMENT_TYPE + "/";
 
   /**
    * <b>/wattdepot/public/measurement-type/{measurement-type-id}</b> URI for
    * MeasurmentType manipulation. Supports GET, POST, and DELETE requests.
    */
-  public static final String MEASUREMENT_TYPE_URI = "/" + Labels.WATTDEPOT + "/" + Labels.PUBLIC
-      + "/" + Labels.MEASUREMENT_TYPE + "/" + Labels.MEASUREMENT_TYPE_ID_VAR;
+  public static final String MEASUREMENT_TYPE_URI = BASE_URI + Labels.PUBLIC + "/"
+      + Labels.MEASUREMENT_TYPE + "/" + Labels.MEASUREMENT_TYPE_ID_VAR;
 
   /**
    * <b>/wattdepot/public/measurement-types/</b> URI for getting all
    * MeasurmentTypes. Use GET requests.
    */
-  public static final String MEASUREMENT_TYPES_URI = "/" + Labels.WATTDEPOT + "/" + Labels.PUBLIC
-      + "/" + Labels.MEASUREMENT_TYPES + "/";
+  public static final String MEASUREMENT_TYPES_URI = BASE_URI + Labels.PUBLIC + "/"
+      + Labels.MEASUREMENT_TYPES + "/";
 
   /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/measurement/{
    * measurement-id}</b> URI for manipulating a measurement in the depsository.
    * Supports GET and DELETE requests.
    */
-  public static final String MEASUREMENT_URI = "/" + Labels.WATTDEPOT + "/" + Labels.ORGANIZATION_ID_VAR
-      + "/" + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.MEASUREMENT + "/"
+  public static final String MEASUREMENT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.MEASUREMENT + "/"
       + Labels.MEASUREMENT_ID_VAR;
   /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/measurements/gviz/</b>
    * URI to get all the measurements in the depsository. Use GET requests.
    */
-  public static final String MEASUREMENTS_GVIZ_URI = "/" + Labels.WATTDEPOT + "/"
-      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/"
-      + Labels.MEASUREMENTS + "/" + Labels.GVIZ + "/";
+  public static final String MEASUREMENTS_GVIZ_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.MEASUREMENTS + "/"
+      + Labels.GVIZ + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/depository/{depository-id}/measurements/</b> URI
-   * to get all the measurements in the depsository. Use GET requests.
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/measurements/</b> URI to
+   * get all the measurements in the depsository. Use GET requests.
    */
-  public static final String MEASUREMENTS_URI = "/" + Labels.WATTDEPOT + "/" + Labels.ORGANIZATION_ID_VAR
-      + "/" + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.MEASUREMENTS + "/";
+  public static final String MEASUREMENTS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.MEASUREMENTS + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/organization/</b> URI to store UserGroups. Use
-   * PUT requests.
+   * <b>/wattdepot/{org-id}/organization/</b> URI to store UserGroups. Use PUT
+   * requests.
    */
-  public static final String ORGANIZATION_PUT_URI = "/" + Labels.WATTDEPOT + "/"
-      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.ORGANIZATION + "/";
+  public static final String ORGANIZATION_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.ORGANIZATION + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/user-group/{user-org-id}</b> URI to
-   * manipulate SensorGroups. Supports GET, POST, and DELETE requests.
+   * <b>/wattdepot/{org-id}/user-group/{user-org-id}</b> URI to manipulate
+   * SensorGroups. Supports GET, POST, and DELETE requests.
    */
-  public static final String ORGANIZATION_URI = "/" + Labels.WATTDEPOT + "/" + Labels.ORGANIZATION_ID_VAR
-      + "/" + Labels.ORGANIZATION + "/" + Labels.ORGANIZATION_ID2_VAR;
+  public static final String ORGANIZATION_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.ORGANIZATION + "/" + Labels.ORGANIZATION_ID2_VAR;
 
   /**
    * <b>/wattdepot/{org-id}/user-groups/</b> URI to get all defined
    * SensorGroups. Use GET requests.
    */
-  public static final String ORGANIZATIONS_URI = "/" + Labels.WATTDEPOT + "/" + Labels.ORGANIZATION_ID_VAR
-      + "/" + Labels.ORGANIZATIONS + "/";
+  public static final String ORGANIZATIONS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.ORGANIZATIONS + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/sensor-group/</b> URI to store SensorGroups. Use
-   * PUT requests.
+   * <b>/wattdepot/{org-id}/sensor-group/</b> URI to store SensorGroups. Use PUT
+   * requests.
    */
-  public static final String SENSOR_GROUP_PUT_URI = "/" + Labels.WATTDEPOT + "/"
-      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.SENSOR_GROUP + "/";
+  public static final String SENSOR_GROUP_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.SENSOR_GROUP + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/sensor-group/{sensor-org-id}</b> URI to
-   * manipulate SensorGroups. Supports GET, POST, and DELETE requests.
+   * <b>/wattdepot/{org-id}/sensor-group/{sensor-org-id}</b> URI to manipulate
+   * SensorGroups. Supports GET, POST, and DELETE requests.
    */
-  public static final String SENSOR_GROUP_URI = "/" + Labels.WATTDEPOT + "/" + Labels.ORGANIZATION_ID_VAR
-      + "/" + Labels.SENSOR_GROUP + "/" + Labels.SENSOR_GROUP_ID_VAR;
+  public static final String SENSOR_GROUP_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.SENSOR_GROUP + "/" + Labels.SENSOR_GROUP_ID_VAR;
 
   /**
    * <b>/wattdepot/{org-id}/sensor-groups/</b> URI to get all defined
    * SensorGroups. Use GET requests.
    */
-  public static final String SENSOR_GROUPS_URI = "/" + Labels.WATTDEPOT + "/" + Labels.ORGANIZATION_ID_VAR
-      + "/" + Labels.SENSOR_GROUPS + "/";
+  public static final String SENSOR_GROUPS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.SENSOR_GROUPS + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/location/</b> URI to store SensorLocations. Use
-   * PUT requests.
+   * <b>/wattdepot/{org-id}/location/</b> URI to store SensorLocations. Use PUT
+   * requests.
    */
-  public static final String SENSOR_LOCATION_PUT_URI = "/" + Labels.WATTDEPOT + "/"
-      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.LOCATION + "/";
+  public static final String SENSOR_LOCATION_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.LOCATION + "/";
 
   /**
    * <b>/wattdepot/{org-id}/location/{location-id}</b> URI to manipulate
    * SensorLocations. Supports GET, POST, and DELETE requests.
    */
-  public static final String SENSOR_LOCATION_URI = "/" + Labels.WATTDEPOT + "/"
-      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.LOCATION + "/" + Labels.LOCATION_ID_VAR;
+  public static final String SENSOR_LOCATION_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.LOCATION + "/" + Labels.LOCATION_ID_VAR;
 
   /**
    * <b>/wattdepot/{org-id}/locations/</b> URI to get all defined
    * SensorLocations. Use GET requests.
    */
-  public static final String SENSOR_LOCATIONS_URI = "/" + Labels.WATTDEPOT + "/"
-      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.LOCATIONS + "/";
+  public static final String SENSOR_LOCATIONS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.LOCATIONS + "/";
 
   /**
    * <b>/wattdepot/public/sensor-model/</b> URI for storing new SensorModels.
    * Use PUT requests.
    */
-  public static final String SENSOR_MODEL_PUT_URI = "/" + Labels.WATTDEPOT + "/" + Labels.PUBLIC
-      + "/" + Labels.SENSOR_MODEL + "/";
+  public static final String SENSOR_MODEL_PUT_URI = BASE_URI + Labels.PUBLIC + "/"
+      + Labels.SENSOR_MODEL + "/";
 
   /**
    * <b>/wattdepot/public/sensor-model/{sensor-model-id}</b> URI for SensorModel
    * manipulation. Supports GET, POST, and DELETE requests.
    */
-  public static final String SENSOR_MODEL_URI = "/" + Labels.WATTDEPOT + "/" + Labels.PUBLIC + "/"
+  public static final String SENSOR_MODEL_URI = BASE_URI + Labels.PUBLIC + "/"
       + Labels.SENSOR_MODEL + "/" + Labels.SENSOR_MODEL_ID_VAR;
 
   /**
    * <b>/wattdepot/public/sensor-models/</b> URI for getting all SensorModels.
    * Use GET reqeusts.
    */
-  public static final String SENSOR_MODELS_URI = "/" + Labels.WATTDEPOT + "/" + Labels.PUBLIC + "/"
+  public static final String SENSOR_MODELS_URI = BASE_URI + Labels.PUBLIC + "/"
       + Labels.SENSOR_MODELS + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/sensor/</b> URI to store Sensors. Use PUT
-   * requests.
+   * <b>/wattdepot/{org-id}/sensor/</b> URI to store Sensors. Use PUT requests.
    */
-  public static final String SENSOR_PUT_URI = "/" + Labels.WATTDEPOT + "/" + Labels.ORGANIZATION_ID_VAR
-      + "/" + Labels.SENSOR + "/";
+  public static final String SENSOR_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.SENSOR + "/";
 
   /**
    * <b>/wattdepot/{org-id}/sensor/{sensor-id}</b> URI to manipulate Sensors.
    * Supports GET, POST, and DELETE requests.
    */
-  public static final String SENSOR_URI = "/" + Labels.WATTDEPOT + "/" + Labels.ORGANIZATION_ID_VAR + "/"
+  public static final String SENSOR_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + Labels.SENSOR + "/" + Labels.SENSOR_ID_VAR;
 
   /**
-   * <b>/wattdepot/{org-id}/sensors/</b> URI to get all defined Sensors. Use
-   * GET requests.
+   * <b>/wattdepot/{org-id}/sensors/</b> URI to get all defined Sensors. Use GET
+   * requests.
    */
-  public static final String SENSORS_URI = "/" + Labels.WATTDEPOT + "/" + Labels.ORGANIZATION_ID_VAR + "/"
+  public static final String SENSORS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + Labels.SENSORS + "/";
 
   /**
    * <b>/wattdepot/{org-id}/user/{user-id}</b> URI for manipulating UserInfos.
    * Supports GET, POST, and DELETE requests.
    */
-  public static final String USER_PASSWORD_URI = "/" + Labels.WATTDEPOT + "/" + Labels.ORGANIZATION_ID_VAR + "/"
+  public static final String USER_PASSWORD_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + Labels.USER_PASSWORD + "/" + Labels.USER_PASSWORD_ID_VAR;
 
   /**
    * <b>/wattdepot/{org-id}/user/{user-id}</b> URI for manipulating UserInfos.
    * Supports GET, POST, and DELETE requests.
    */
-  public static final String USER_URI = "/" + Labels.WATTDEPOT + "/" + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.USER + "/" + Labels.USER_ID_VAR;
+  public static final String USER_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/" + Labels.USER
+      + "/" + Labels.USER_ID_VAR;
 
   /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/value/gviz/</b> URI to
    * get all the measured value. Use GET requests.
    */
-  public static final String VALUE_GVIZ_URI = "/" + Labels.WATTDEPOT + "/" + Labels.ORGANIZATION_ID_VAR
-      + "/" + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUE + "/"
-      + Labels.GVIZ + "/";
+  public static final String VALUE_GVIZ_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUE + "/" + Labels.GVIZ
+      + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/depository/{depository-id}/value/</b> URI to get
-   * all the measured value. Use GET requests.
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/value/</b> URI to get all
+   * the measured value. Use GET requests.
    */
-  public static final String VALUE_URI = "/" + Labels.WATTDEPOT + "/" + Labels.ORGANIZATION_ID_VAR + "/"
+  public static final String VALUE_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUE + "/";
 
   /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/values/gviz/</b> URI to
    * get all the measured value. Use GET requests.
    */
-  public static final String VALUES_GVIZ_URI = "/" + Labels.WATTDEPOT + "/" + Labels.ORGANIZATION_ID_VAR
-      + "/" + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/"
+  public static final String VALUES_GVIZ_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/"
       + Labels.GVIZ + "/";
 
   /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/values/</b> URI to get
    * all the measured value. Use GET requests.
    */
-  public static final String VALUES_URI = "/" + Labels.WATTDEPOT + "/" + Labels.ORGANIZATION_ID_VAR + "/"
+  public static final String VALUES_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/";
 
 }

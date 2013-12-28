@@ -34,6 +34,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
 import org.wattdepot.client.ClientProperties;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
@@ -57,6 +59,7 @@ import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MeasurementGapException;
 import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.logger.WattDepotLogger;
@@ -115,24 +118,20 @@ public class TestWattDepotClient {
       ClientProperties properties = new ClientProperties();
       this.logger = WattDepotLogger.getLogger("org.wattdepot.client",
           properties.get(ClientProperties.CLIENT_HOME_DIR));
-      WattDepotLogger.setLoggingLevel(logger,
-          properties.get(ClientProperties.LOGGING_LEVEL_KEY));
+      WattDepotLogger.setLoggingLevel(logger, properties.get(ClientProperties.LOGGING_LEVEL_KEY));
       logger.finest("setUp()");
       ClientProperties props = new ClientProperties();
       props.setTestProperties();
-      this.serverURL = "http://"
-          + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
+      this.serverURL = "http://" + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
           + props.get(ClientProperties.PORT_KEY) + "/";
       logger.finest(serverURL);
       if (admin == null) {
         try {
-          admin = new WattDepotAdminClient(serverURL,
-              props.get(ClientProperties.USER_NAME),
+          admin = new WattDepotAdminClient(serverURL, props.get(ClientProperties.USER_NAME),
               props.get(ClientProperties.USER_PASSWORD));
         }
         catch (Exception e) {
-          System.out.println("Failed with "
-              + props.get(ClientProperties.USER_NAME) + " and "
+          System.out.println("Failed with " + props.get(ClientProperties.USER_NAME) + " and "
               + props.get(ClientProperties.USER_PASSWORD));
         }
       }
@@ -146,8 +145,7 @@ public class TestWattDepotClient {
         e.printStackTrace();
       }
       if (test == null) {
-        test = new WattDepotClient(serverURL, testPassword.getId(),
-            testPassword.getPlainText());
+        test = new WattDepotClient(serverURL, testPassword.getId(), testPassword.getPlainText());
       }
       test.isHealthy();
       test.getWattDepotUri();
@@ -191,8 +189,8 @@ public class TestWattDepotClient {
       fail("We used good credentials");
     }
     try {
-      WattDepotClient bad = new WattDepotClient("http://localhost",
-          testPassword.getId(), testPassword.getPlainText());
+      WattDepotClient bad = new WattDepotClient("http://localhost", testPassword.getId(),
+          testPassword.getPlainText());
       fail(bad + " should not exist.");
     }
     catch (IllegalArgumentException e) {
@@ -202,8 +200,8 @@ public class TestWattDepotClient {
       fail("We used good credentials");
     }
     try {
-      WattDepotClient bad = new WattDepotClient(serverURL,
-          testPassword.getId(), testPassword.getEncryptedPassword());
+      WattDepotClient bad = new WattDepotClient(serverURL, testPassword.getId(),
+          testPassword.getEncryptedPassword());
       fail(bad + " should not exist.");
     }
     catch (BadCredentialException e) {
@@ -257,8 +255,7 @@ public class TestWattDepotClient {
     }
 
     // error conditions
-    Depository bogus = new Depository("bogus", depo.getMeasurementType(),
-        depo.getOwnerId());
+    Depository bogus = new Depository("bogus", depo.getMeasurementType(), depo.getOwnerId());
     try {
       test.deleteDepository(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -310,9 +307,8 @@ public class TestWattDepotClient {
       fail("Should have " + loc);
     }
     // error conditions
-    SensorLocation bogus = new SensorLocation("bogus", loc.getLatitude(),
-        loc.getLongitude(), loc.getAltitude(), loc.getDescription(),
-        loc.getOwnerId());
+    SensorLocation bogus = new SensorLocation("bogus", loc.getLatitude(), loc.getLongitude(),
+        loc.getAltitude(), loc.getDescription(), loc.getOwnerId());
     try {
       test.deleteLocation(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -357,9 +353,8 @@ public class TestWattDepotClient {
       }
       list = test.getMeasurementTypes();
       assertNotNull(list);
-      assertTrue("Expecting " + numTypes + " got "
-          + list.getMeasurementTypes().size(), list.getMeasurementTypes()
-          .size() == numTypes);
+      assertTrue("Expecting " + numTypes + " got " + list.getMeasurementTypes().size(), list
+          .getMeasurementTypes().size() == numTypes);
       // delete instance (DELETE)
       try {
         test.deleteMeasurementType(ret);
@@ -383,8 +378,7 @@ public class TestWattDepotClient {
     }
 
     // error conditions
-    MeasurementType bogus = new MeasurementType("bogus_meas_type",
-        Unit.valueOf("dyn"));
+    MeasurementType bogus = new MeasurementType("bogus_meas_type", Unit.valueOf("dyn"));
     try {
       test.deleteMeasurementType(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -405,8 +399,18 @@ public class TestWattDepotClient {
     SensorList list = test.getSensors();
     assertNotNull(list);
     assertTrue(list.getSensors().size() == 0);
-    // Put new instance (CREATE)
-    test.putSensor(sensor);
+    try {
+      // Put new instance (CREATE)
+      test.putSensor(sensor);
+      fail("Can't put a sensor w/o location or model being defined.");
+    }
+    catch (ResourceException re) {
+      if (re.getStatus().equals(Status.CLIENT_ERROR_FAILED_DEPENDENCY)) {
+        addSensorLocation();
+        addSensorModel();
+        test.putSensor(sensor);
+      }
+    }
     list = test.getSensors();
     assertTrue(list.getSensors().contains(sensor));
     try {
@@ -433,8 +437,8 @@ public class TestWattDepotClient {
       fail("Should have " + sensor);
     }
     // error conditions
-    Sensor bogus = new Sensor("bogus", sensor.getUri(),
-        sensor.getSensorLocationId(), sensor.getModelId(), sensor.getOwnerId());
+    Sensor bogus = new Sensor("bogus", sensor.getUri(), sensor.getSensorLocationId(),
+        sensor.getModelId(), sensor.getOwnerId());
     try {
       test.deleteSensor(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -454,8 +458,19 @@ public class TestWattDepotClient {
     SensorGroupList list = test.getSensorGroups();
     assertNotNull(list);
     assertTrue(list.getGroups().size() == 0);
-    // Put new instance (CREATE)
-    test.putSensorGroup(group);
+    try {
+      // Put new instance (CREATE)
+      test.putSensorGroup(group);
+      fail("Can't put SensorGroup w/o defining the sensor.");
+    }
+    catch (ResourceException e) {
+      if (e.getStatus().equals(Status.CLIENT_ERROR_FAILED_DEPENDENCY)) {
+        addSensorLocation();
+        addSensorModel();
+        addSensor();
+        test.putSensorGroup(group);
+      }
+    }
     list = test.getSensorGroups();
     assertTrue(list.getGroups().contains(group));
     try {
@@ -482,8 +497,7 @@ public class TestWattDepotClient {
       fail("Should have " + group);
     }
     // error conditions
-    SensorGroup bogus = new SensorGroup("bogus", group.getSensors(),
-        group.getOwnerId());
+    SensorGroup bogus = new SensorGroup("bogus", group.getSensors(), group.getOwnerId());
     try {
       test.deleteSensorGroup(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -532,8 +546,8 @@ public class TestWattDepotClient {
       fail("Should have " + model);
     }
     // error conditions
-    SensorModel bogus = new SensorModel("bogus", model.getProtocol(),
-        model.getType(), model.getVersion());
+    SensorModel bogus = new SensorModel("bogus", model.getProtocol(), model.getType(),
+        model.getVersion());
     try {
       test.deleteSensorModel(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -553,14 +567,24 @@ public class TestWattDepotClient {
     CollectorProcessDefinitionList list = test.getCollectorMetaDatas();
     assertNotNull(list);
     assertTrue(list.getDatas().size() == 0);
-    // Put new instance (CREATE)
-    test.putCollectorMetaData(data);
+    try {
+      // Put new instance (CREATE)
+      test.putCollectorProcessDefinition(data);
+      fail("Can't put a CollectorProcessDefinition for a sensor that isn't defined.");
+    }
+    catch (ResourceException e) {
+      if (e.getStatus().equals(Status.CLIENT_ERROR_FAILED_DEPENDENCY)) {
+        addSensorLocation();
+        addSensorModel();
+        addSensor();
+        test.putCollectorProcessDefinition(data);
+      }
+    }
     list = test.getCollectorMetaDatas();
     assertTrue(list.getDatas().contains(data));
     try {
       // get instance (READ)
-      CollectorProcessDefinition ret = test
-          .getCollectorMetaData(data.getSlug());
+      CollectorProcessDefinition ret = test.getCollectorMetaData(data.getSlug());
       assertEquals(data, ret);
       ret.setDepositoryId("new depotistory_id");
       test.updateCollectorMetaData(ret);
@@ -581,9 +605,8 @@ public class TestWattDepotClient {
       fail("Should have " + data);
     }
     // error conditions
-    CollectorProcessDefinition bogus = new CollectorProcessDefinition("bogus",
-        data.getSensorId(), data.getPollingInterval(), data.getDepositoryId(),
-        data.getOwnerId());
+    CollectorProcessDefinition bogus = new CollectorProcessDefinition("bogus", data.getSensorId(),
+        data.getPollingInterval(), data.getDepositoryId(), data.getOwnerId());
     try {
       test.deleteCollectorMetaData(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -604,39 +627,51 @@ public class TestWattDepotClient {
     Measurement m2 = InstanceFactory.getMeasurementTwo();
     Measurement m3 = InstanceFactory.getMeasurementThree();
     try {
-      test.putMeasurement(depo, m1);
+      try {
+        test.putMeasurement(depo, m1);
+        fail("Can't put a measurement with a sensor that isn't defined.");
+      }
+      catch (ResourceException re) {
+        if (re.getStatus().equals(Status.CLIENT_ERROR_FAILED_DEPENDENCY)) {
+          addSensorLocation();
+          addSensorModel();
+          addSensor();
+          test.putMeasurement(depo, m1);
+        }
+      }
       test.putMeasurement(depo, m3);
       Sensor s1 = test.getSensor(m1.getSensorId());
       Double val = test.getValue(depo, s1, m1.getDate());
-      assertTrue("Got " + val + " was expecting " + m1.getValue(), m1
-          .getValue().equals(val));
+      assertTrue("Got " + val + " was expecting " + m1.getValue(), m1.getValue().equals(val));
       Sensor s2 = test.getSensor(m2.getSensorId());
-      val = test.getValue(depo, s2, m2.getDate());
-      assertTrue("Got " + val + " was expecting " + m1.getValue(), m1
-          .getValue().equals(val));
+      val = test.getValue(depo, s2, m2.getDate(), 799L);
+      assertTrue("Got " + val + " was expecting " + m1.getValue(), m1.getValue().equals(val));
+      val = test.getValue(depo, s1, m1.getDate(), m2.getDate());
+      assertTrue("Got " + val + " was expecting " + (m2.getValue() - m1.getValue()),
+          (m2.getValue() - m1.getValue()) == val);
+      val = test.getValue(depo, s1, m1.getDate(), m2.getDate(), 799L);
+      assertTrue("Got " + val + " was expecting " + (m2.getValue() - m1.getValue()),
+          (m2.getValue() - m1.getValue()) == val);
       // Get list
-      MeasurementList list = test.getMeasurements(depo, s1, m1.getDate(),
-          m3.getDate());
+      MeasurementList list = test.getMeasurements(depo, s1, m1.getDate(), m3.getDate());
       assertNotNull(list);
 
-      assertTrue("expecting " + 2 + " got " + list.getMeasurements().size(),
-          list.getMeasurements().size() == 2);
+      assertTrue("expecting " + 2 + " got " + list.getMeasurements().size(), list.getMeasurements()
+          .size() == 2);
       assertTrue(list.getMeasurements().contains(m1));
       assertTrue(list.getMeasurements().contains(m3));
       test.putMeasurement(depo, m2);
       try {
         test.deleteMeasurement(depo, m1);
-        list = test.getMeasurements(depo, s1, m1.getDate(),
-            m3.getDate());
+        list = test.getMeasurements(depo, s1, m1.getDate(), m3.getDate());
         assertNotNull(list);
 
-        assertTrue("expecting " + 2 + " got " + list.getMeasurements().size(),
-            list.getMeasurements().size() == 2);
+        assertTrue("expecting " + 2 + " got " + list.getMeasurements().size(), list
+            .getMeasurements().size() == 2);
       }
       catch (IdNotFoundException e) {
         fail(m1 + " does exist in the depo");
       }
-
     }
     catch (MeasurementTypeException e) {
       fail(e.getMessage());
@@ -645,6 +680,9 @@ public class TestWattDepotClient {
       fail(e.getMessage());
     }
     catch (IdNotFoundException e1) {
+      fail(e1.getMessage());
+    }
+    catch (MeasurementGapException e1) {
       fail(e1.getMessage());
     }
 
@@ -659,8 +697,7 @@ public class TestWattDepotClient {
     catch (MeasurementTypeException e) {
       // this is what we expect.
     }
-    bogus = new Measurement(m1.getSensorId(), new Date(), new Double(1.0),
-        Unit.valueOf("dyn"));
+    bogus = new Measurement(m1.getSensorId(), new Date(), new Double(1.0), Unit.valueOf("dyn"));
     try {
       test.deleteMeasurement(depo, bogus);
       fail(bogus + " isn't in the depot");
@@ -670,4 +707,85 @@ public class TestWattDepotClient {
     }
   }
 
+  /**
+   * Adds The test SensorLocation to the WattDepotServer if it isn't defined.
+   */
+  private void addSensorLocation() {
+    SensorLocation loc = InstanceFactory.getLocation();
+    try {
+      test.getLocation(loc.getSlug());
+    }
+    catch (IdNotFoundException e) {
+      // we can add the location.
+      test.putLocation(loc);
+    }
+  }
+
+  /**
+   * Deletes The test SensorLocation from the WattDepotServer if it isn't
+   * defined.
+   */
+  private void deleteSensorLocation() {
+    SensorLocation loc = InstanceFactory.getLocation();
+    try {
+      test.deleteLocation(loc);
+    }
+    catch (IdNotFoundException e) {
+      // doesn't exist so we don't have to do anything.
+    }
+  }
+
+  /**
+   * Adds the test SensorModel to the WattDepotServer if it isn't defined.
+   */
+  private void addSensorModel() {
+    SensorModel model = InstanceFactory.getSensorModel();
+    try {
+      test.getSensorModel(model.getSlug());
+    }
+    catch (IdNotFoundException e) {
+      // we can add the model.
+      test.putSensorModel(model);
+    }
+  }
+
+  /**
+   * Deletes the test SensorModel from the WattDepotServer if it isn't defined.
+   */
+  private void deleteSensorModel() {
+    SensorModel model = InstanceFactory.getSensorModel();
+    try {
+      test.deleteSensorModel(model);
+    }
+    catch (IdNotFoundException e) {
+      // didn't exist so there isn't any problem.
+    }
+  }
+
+  /**
+   * Adds the Sensor to the WattDepotServer if it isn't defined.
+   */
+  private void addSensor() {
+    Sensor sensor = InstanceFactory.getSensor();
+    try {
+      test.getSensor(sensor.getSlug());
+    }
+    catch (IdNotFoundException e) {
+      // doesn't exist so we can add it.
+      test.putSensor(sensor);
+    }
+  }
+
+  /**
+   * Deletes the Sensor from the WattDepotServer if it isn't defined.
+   */
+  private void deleteSensor() {
+    Sensor sensor = InstanceFactory.getSensor();
+    try {
+      test.deleteSensor(sensor);
+    }
+    catch (IdNotFoundException e) {
+      // didn't exist so we're done.
+    }
+  }
 }

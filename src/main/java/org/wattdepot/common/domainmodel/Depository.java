@@ -92,24 +92,29 @@ public class Depository implements IDomainModel {
         && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
-    Depository other = (Depository) obj;
-    if (measurementType == null) {
-      if (other.measurementType != null) {
+    try {
+      Depository other = (Depository) obj;
+      if (measurementType == null) {
+        if (other.measurementType != null) {
+          return false;
+        }
+      }
+      else if (!measurementType.equals(other.measurementType)) {
         return false;
       }
-    }
-    else if (!measurementType.equals(other.measurementType)) {
-      return false;
-    }
-    if (name == null) {
-      if (other.name != null) {
+      if (name == null) {
+        if (other.name != null) {
+          return false;
+        }
+      }
+      else if (!name.equals(other.name)) {
         return false;
       }
+      return true;
     }
-    else if (!name.equals(other.name)) {
+    catch (ClassCastException e) {
       return false;
     }
-    return true;
   }
 
   /**

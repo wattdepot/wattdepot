@@ -607,7 +607,7 @@ public class TestWattDepotPersistenceImpl {
     List<MeasurementType> list = impl.getMeasurementTypes();
     int numMeasurementTypes = list.size();
     assertTrue(numMeasurementTypes >= 0);
-    MeasurementType type = InstanceFactory.getMeasurementType();
+    MeasurementType type = InstanceFactory.getMeasurementType2();
     // create a MeasurementType
     try {
       impl.defineMeasurementType(type.getName(), type.getUnits());

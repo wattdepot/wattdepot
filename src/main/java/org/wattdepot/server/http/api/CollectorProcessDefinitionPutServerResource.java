@@ -30,7 +30,8 @@ import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.CollectorProcessDefinitionPutResource;
 
 /**
- * CollectorProcessDefinitionServerResource - Handles the CollectorProcessDefinition HTTP API
+ * CollectorProcessDefinitionServerResource - Handles the
+ * CollectorProcessDefinition HTTP API
  * (("/wattdepot/{org-id}/collector-metadata/",
  * "/wattdepot/{org-id}/collector-metadata/{collector-metadata-id}").
  * 
@@ -42,7 +43,8 @@ public class CollectorProcessDefinitionPutServerResource extends WattDepotServer
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.restlet.CollectorProcessDefinitionResource#store(org.wattdepot
+   * @see
+   * org.wattdepot.restlet.CollectorProcessDefinitionResource#store(org.wattdepot
    * .datamodel.CollectorProcessDefinition)
    */
   @Override
@@ -54,8 +56,14 @@ public class CollectorProcessDefinitionPutServerResource extends WattDepotServer
       if (!depot.getCollectorProcessDefinitionIds(orgId).contains(metadata.getSlug())) {
         try {
           Sensor s = depot.getSensor(metadata.getSensorId(), orgId);
-          depot.defineCollectorProcessDefinition(metadata.getName(), s.getSlug(),
-              metadata.getPollingInterval(), metadata.getDepositoryId(), owner.getSlug());
+          if (s != null) {
+            depot.defineCollectorProcessDefinition(metadata.getName(), s.getSlug(),
+                metadata.getPollingInterval(), metadata.getDepositoryId(), owner.getSlug());
+          }
+          else {
+            setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "Sensor " + metadata.getSensorId()
+                + " is not defined.");
+          }
         }
         catch (UniqueIdException e) {
           setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());

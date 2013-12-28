@@ -183,6 +183,14 @@ public class InstanceFactory {
   }
 
   /**
+   * @return A MeasurementType instance for testing.
+   */
+  public static MeasurementType getMeasurementType2() {
+    Unit<?> unit = UnitsHelper.quantities.get("Flow Rate (gal/s)");
+    return new MeasurementType("Test MeasurementType Name2", unit);
+  }
+
+  /**
    * @return A Property instance for testing.
    */
   public static Property getProperty() {
