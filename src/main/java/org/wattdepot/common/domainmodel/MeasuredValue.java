@@ -118,6 +118,28 @@ public class MeasuredValue {
   }
 
   /**
+   * @param meas
+   *          a Measurement
+   * @return true if this MeasuredValue has the same sensorId, time,
+   *         MeasurementType, and value as the Measurement.
+   */
+  public boolean equivalent(Measurement meas) {
+    if (!sensorId.equals(meas.getSensorId())) {
+      return false;
+    }
+    if (!date.equals(meas.getDate())) {
+      return false;
+    }
+    if (!measurementType.getUnits().equals(meas.getMeasurementType())) {
+      return false;
+    }
+    if (Math.abs(this.value - meas.getValue()) > 0.0001) {
+      return false;
+    }
+    return true;
+  }
+  
+  /**
    * @return the date
    */
   public Date getDate() {

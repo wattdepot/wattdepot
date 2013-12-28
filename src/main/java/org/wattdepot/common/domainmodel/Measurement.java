@@ -21,9 +21,11 @@ package org.wattdepot.common.domainmodel;
 import java.util.Date;
 
 import javax.measure.unit.Unit;
+import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.jscience.physics.amount.Amount;
 import org.wattdepot.common.exception.BadSlugException;
+import org.wattdepot.common.util.DateConvert;
 import org.wattdepot.common.util.Slug;
 
 //import javax.measure.unit.Unit;
@@ -59,8 +61,7 @@ public class Measurement {
    * @param units
    *          The type of the measurement.
    */
-  public Measurement(String sensorId, Date timestamp, Double value,
-      Unit<?> units) {
+  public Measurement(String sensorId, Date timestamp, Double value, Unit<?> units) {
     // Can a sensor create two measurements at the same time with the same type?
     this.slug = Slug.slugify(sensorId + timestamp + units);
     this.sensorId = sensorId;
@@ -84,8 +85,7 @@ public class Measurement {
       return false;
     }
     if (!getClass().isAssignableFrom(obj.getClass())
-        && !obj.getClass().isAssignableFrom(getClass())
-        && getClass() != obj.getClass()) {
+        && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
     Measurement other = (Measurement) obj;
@@ -121,6 +121,29 @@ public class Measurement {
     else if (!value.equals(other.value)) {
       return false;
     }
+    return true;
+  }
+
+  /**
+   * @param value
+   *          a MeasuredValue
+   * @return true if this Measurement has the same sensorId, time,
+   *         MeasurementType, and value as the MeasuredValue.
+   */
+  public boolean equivalent(MeasuredValue value) {
+    if (!sensorId.equals(value.getSensorId())) {
+      return false;
+    }
+    if (!timestamp.equals(value.getDate())) {
+      return false;
+    }
+    if (Math.abs(this.value - value.getValue()) > 0.0001) {
+      return false;
+    }
+    if (!getMeasurementType().equals(value.getMeasurementType().getUnits())) {
+      return false;
+    }
+
     return true;
   }
 
@@ -236,9 +259,16 @@ public class Measurement {
    */
   @Override
   public String toString() {
-    return "Measurement [slug= " + slug + ", sensorId=" + sensorId
-        + ", timestamp=" + timestamp + ", value=" + value + ", units=" + units
-        + "]";
+    try {
+      return "Measurement [slug= " + slug + ", sensorId=" + sensorId + ", timestamp="
+          + DateConvert.convertDate(timestamp) + ", value=" + value + ", units=" + units + "]";
+    }
+    catch (DatatypeConfigurationException e) {
+      // shouldn't happen
+      e.printStackTrace();
+    }
+    return "Measurement [slug= " + slug + ", sensorId=" + sensorId + ", timestamp=" + timestamp
+        + ", value=" + value + ", units=" + units + "]";
   }
 
   /**

@@ -95,10 +95,10 @@ public class DepositoryValueServer extends WattDepotServerResource {
           Date time = null;
 
           if (earliest != null) {
-            return deposit.getEarliestMeasuredValue(sensor);
+            return deposit.getEarliestMeasuredValue(sensorId);
           }
           else if (latest != null) {
-            return deposit.getLatestMeasuredValue(sensor);
+            return deposit.getLatestMeasuredValue(sensorId);
           }
           else if (timestamp != null) {
             time = DateConvert.parseCalStringToDate(timestamp);

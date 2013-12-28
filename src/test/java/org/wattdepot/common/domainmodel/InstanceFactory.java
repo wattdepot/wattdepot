@@ -74,6 +74,21 @@ public class InstanceFactory {
     return null;
   }
 
+  public static Date getTimeAfterM3() {
+    try {
+      return DateConvert.parseCalStringToDate("2013-11-20T14:45:47.925-1000");
+    }
+    catch (ParseException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    catch (DatatypeConfigurationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return null;
+  }
+
   public static Date getTimeBeforeM1() {
     try {
       return DateConvert.parseCalStringToDate("2013-11-20T13:35:32.290-1000");

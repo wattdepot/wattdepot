@@ -113,13 +113,24 @@ public class Depository implements IDomainModel {
   }
 
   /**
-   * @param sensor
-   *          The Sensor making the measurements.
+   * @param sensorId
+   *          The id of the Sensor making the measurements.
    * @return The earliest measurement Value
    * @throws NoMeasurementException
    *           If there aren't any measurements around the time.
    */
-  public MeasuredValue getEarliestMeasuredValue(Sensor sensor) throws NoMeasurementException {
+  public MeasuredValue getEarliestMeasuredValue(String sensorId) throws NoMeasurementException {
+    throw new RuntimeException("Not implemented");
+  }
+
+  /**
+   * @param sensorId
+   *          The id of the Sensor making the measurements.
+   * @return The latest measurement Value
+   * @throws NoMeasurementException
+   *           If there aren't any measurements around the time.
+   */
+  public MeasuredValue getLatestMeasuredValue(String sensorId) throws NoMeasurementException {
     throw new RuntimeException("Not implemented");
   }
 

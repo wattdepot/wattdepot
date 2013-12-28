@@ -334,6 +334,20 @@
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
                         </configuration>
                     </execution>
+                    <execution>
+                        <!-- Generate coverage report html in target/site/jacoco/ from target/jacoco.exec -->
+                        <id>report</id>
+                        <phase>site</phase>
+                        <goals><goal>report</goal></goals>
+                        <configuration>
+                            <!-- Sets the path to the file which contains 
+                                the execution data. -->
+                            <dataFile>${jacoco.ut.execution.data.file}</dataFile>
+                            <!-- Sets the output directory for the code coverage 
+                                report. -->
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -483,6 +497,11 @@
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-javadoc-plugin</artifactId>
                             <version>${javadoc.plugin.version}</version>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.jacoco</groupId>
+                            <artifactId>jacoco-maven-plugin</artifactId>
+                            <version>0.6.3.201306030806</version>
                         </plugin>
                     </reportPlugins>
                 </configuration>

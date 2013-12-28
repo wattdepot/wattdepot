@@ -27,7 +27,6 @@ import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.MeasuredValue;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementType;
-import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.exception.MeasurementGapException;
 import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.NoMeasurementException;
@@ -235,13 +234,14 @@ public class DepositoryImpl extends Depository {
   }
 
   /**
-   * @param sensor
-   *          The Sensor making the measurements.
+   * @param sensorId
+   *          The id of the Sensor making the measurements.
    * @return The latest measurement Value
    * @throws NoMeasurementException
    *           If there aren't any measurements around the time.
    */
-  public MeasuredValue getLatestMeasuredValue(Sensor sensor) throws NoMeasurementException {
+  @Override
+  public MeasuredValue getLatestMeasuredValue(String sensorId) throws NoMeasurementException {
     MeasuredValue value = null;
     Session session = Manager.getFactory(serverProperties).openSession();
     MeasurementType type = getMeasurementType();
@@ -252,10 +252,10 @@ public class DepositoryImpl extends Depository {
             "FROM MeasurementImpl WHERE depository = :name AND sensor = :sensor "
                 + "AND date IN (SELECT max(date) FROM MeasurementImpl WHERE "
                 + "depository = :name AND sensor = :sensor)").setParameter("name", this)
-        .setParameter("sensor", sensor).list();
+        .setParameter("sensor", sensorId).list();
     if (result.size() > 0) {
       MeasurementImpl meas = result.get(0);
-      value = new MeasuredValue(sensor.getSlug(), meas.getValue(), type);
+      value = new MeasuredValue(sensorId, meas.getValue(), type);
       value.setDate(meas.getDate());
     }
 
@@ -264,13 +264,14 @@ public class DepositoryImpl extends Depository {
   }
 
   /**
-   * @param sensor
-   *          The Sensor making the measurements.
+   * @param sensorId
+   *          The id of the Sensor making the measurements.
    * @return The earliest measurement Value
    * @throws NoMeasurementException
    *           If there aren't any measurements around the time.
    */
-  public MeasuredValue getEarliestMeasuredValue(Sensor sensor) throws NoMeasurementException {
+  @Override
+  public MeasuredValue getEarliestMeasuredValue(String sensorId) throws NoMeasurementException {
     MeasuredValue value = null;
     Session session = Manager.getFactory(serverProperties).openSession();
     MeasurementType type = getMeasurementType();
@@ -278,13 +279,13 @@ public class DepositoryImpl extends Depository {
     @SuppressWarnings("unchecked")
     List<MeasurementImpl> result = (List<MeasurementImpl>) session
         .createQuery(
-            "FROM MeasurementImpl WHERE depository = :name AND sensor = :sensor "
+            "FROM MeasurementImpl WHERE depository = :name AND sensorId = :sensorId "
                 + "AND date IN (SELECT min(date) FROM MeasurementImpl WHERE "
-                + "depository = :name AND sensor = :sensor)").setParameter("name", this)
-        .setParameter("sensor", sensor).list();
+                + "depository = :name AND sensorId = :sensorId)").setParameter("name", this)
+        .setParameter("sensorId", sensorId).list();
     if (result.size() > 0) {
       MeasurementImpl meas = result.get(0);
-      value = new MeasuredValue(sensor.getSlug(), meas.getValue(), type);
+      value = new MeasuredValue(sensorId, meas.getValue(), type);
       value.setDate(meas.getDate());
     }
 
@@ -498,52 +499,44 @@ public class DepositoryImpl extends Depository {
             justBefore = b;
           }
         }
-        MeasurementImpl justAfter = null;
-        for (MeasurementImpl a : after) {
-          if (a.getSensorId().equals(sensorId)) {
-            if (justAfter == null) {
-              justAfter = a;
-            }
-            else if (a.getDate().compareTo(justBefore.getDate()) > 0) {
-              justAfter = a;
-            }
+      }
+      if (justBefore == null) {
+        session.getTransaction().commit();
+        session.close();
+        throw new NoMeasurementException("Cannot find measurement before " + timestamp);
+      }
+      MeasurementImpl justAfter = null;
+      for (MeasurementImpl a : after) {
+        if (a.getSensorId().equals(sensorId)) {
+          if (justAfter == null) {
+            justAfter = a;
           }
-          if (justBefore != null && justAfter != null) {
-            Double val1 = justBefore.getValue();
-            Double val2 = justAfter.getValue();
-            Double deltaV = val2 - val1;
-            Long t1 = justBefore.getDate().getTime();
-            Long t2 = justAfter.getDate().getTime();
-            Long deltaT = t2 - t1;
-            if ((deltaT / 1000) > gapSeconds) {
-              session.getTransaction().commit();
-              session.close();
-              throw new MeasurementGapException("Gap of " + (deltaT / 1000) + "s is longer than "
-                  + gapSeconds);
-            }
-            Long t3 = timestamp.getTime();
-            Long toDate = t3 - t1;
-            Double slope = deltaV / deltaT;
-            ret = val1 + (slope * toDate);
-          }
-          else if (justBefore == null && justAfter == null) {
-            session.getTransaction().commit();
-            session.close();
-            throw new NoMeasurementException("Cannot find measurements before or after "
-                + timestamp);
-          }
-          else if (justBefore == null) {
-            session.getTransaction().commit();
-            session.close();
-            throw new NoMeasurementException("Cannot find measurement before " + timestamp);
-          }
-          else if (justAfter == null) {
-            session.getTransaction().commit();
-            session.close();
-            throw new NoMeasurementException("Cannot find measurement after " + timestamp);
+          else if (a.getDate().compareTo(justBefore.getDate()) > 0) {
+            justAfter = a;
           }
         }
       }
+      if (justAfter == null) {
+        session.getTransaction().commit();
+        session.close();
+        throw new NoMeasurementException("Cannot find measurement after " + timestamp);
+      }
+      Double val1 = justBefore.getValue();
+      Double val2 = justAfter.getValue();
+      Double deltaV = val2 - val1;
+      Long t1 = justBefore.getDate().getTime();
+      Long t2 = justAfter.getDate().getTime();
+      Long deltaT = t2 - t1;
+      if ((deltaT / 1000) > gapSeconds) {
+        session.getTransaction().commit();
+        session.close();
+        throw new MeasurementGapException("Gap of " + (deltaT / 1000) + "s is longer than "
+            + gapSeconds);
+      }
+      Long t3 = timestamp.getTime();
+      Long toDate = t3 - t1;
+      Double slope = deltaV / deltaT;
+      ret = val1 + (slope * toDate);
     }
     session.getTransaction().commit();
     session.close();

@@ -315,6 +315,8 @@ public class TestWattDepotPersistenceImpl {
       assertTrue(defined.equals(dep));
       assertTrue(defined.toString().equals(dep.toString()));
       assertTrue(defined.hashCode() == dep.hashCode());
+      Depository copy = impl.getWattDeposiory(dep.getSlug(), dep.getOwnerId());
+      assertTrue(copy.equals(defined));
     }
     catch (MisMatchedOwnerException e) {
       e.printStackTrace();
@@ -367,6 +369,7 @@ public class TestWattDepotPersistenceImpl {
     }
     // create a depository to store the measurements.
     Depository dep = InstanceFactory.getDepository();
+    String sensorId = null;
     try {
       impl.defineWattDepository(dep.getName(), dep.getMeasurementType(), dep.getOwnerId());
       Depository d = impl.getWattDeposiory(dep.getSlug(), dep.getOwnerId());
@@ -375,6 +378,7 @@ public class TestWattDepotPersistenceImpl {
       Measurement m1 = InstanceFactory.getMeasurementOne();
       Measurement m2 = InstanceFactory.getMeasurementTwo();
       Measurement m3 = InstanceFactory.getMeasurementThree();
+      sensorId = m1.getSensorId();
       d.putMeasurement(m1);
       d.putMeasurement(m2);
       d.putMeasurement(m3);
@@ -383,16 +387,16 @@ public class TestWattDepotPersistenceImpl {
       assertTrue(defined.equals(m1));
       assertTrue(defined.toString().equals(m1.toString()));
       // assertTrue(defined.hashCode() == m1.hashCode());
-      List<Measurement> list = d.getMeasurements(m1.getSensorId());
+      List<Measurement> list = d.getMeasurements(sensorId);
       assertTrue(list.size() == 3);
-      list = d.getMeasurements(m1.getSensorId(), InstanceFactory.getTimeBetweenM1andM2(),
+      list = d.getMeasurements(sensorId, InstanceFactory.getTimeBetweenM1andM2(),
           InstanceFactory.getTimeBetweenM1andM3());
       assertTrue(list.size() == 1);
       try {
-        Double val = d.getValue(m1.getSensorId(), InstanceFactory.getTimeBetweenM1andM2());
+        Double val = d.getValue(sensorId, InstanceFactory.getTimeBetweenM1andM2());
         assertTrue(Math.abs(val - m1.getValue()) < 0.001);
         try {
-          Double val2 = d.getValue(m1.getSensorId(), InstanceFactory.getTimeBetweenM1andM2(), 700L);
+          Double val2 = d.getValue(sensorId, InstanceFactory.getTimeBetweenM1andM2(), 700L);
           assertTrue(Math.abs(val - val2) < 0.001);
         }
         catch (MeasurementGapException e) {
@@ -400,26 +404,65 @@ public class TestWattDepotPersistenceImpl {
           fail(e.getMessage() + " should not happen");
         }
         try {
-          d.getValue(m1.getSensorId(), InstanceFactory.getTimeBetweenM1andM2(), 70L);
+          Double val2 = d.getValue(sensorId, m2.getDate(), 700L);
+          assertTrue(Math.abs(val - val2) < 0.001);
+        }
+        catch (MeasurementGapException e) {
+          e.printStackTrace();
+          fail(e.getMessage() + " should not happen");
+        }
+        try {
+          d.getValue(sensorId, InstanceFactory.getTimeBetweenM1andM2(), 70L);
           fail("Should detect gap.");
         }
         catch (MeasurementGapException e) {
           // expected
         }
+        val = d.getValue(sensorId, m1.getDate());
+        assertTrue(Math.abs(val - m1.getValue()) < 0.0001);
       }
       catch (NoMeasurementException e) {
         e.printStackTrace();
         fail(e.getMessage() + " should not happen");
       }
       try {
-        d.getValue(m1.getSensorId(), InstanceFactory.getTimeBeforeM1());
+        d.getValue(sensorId, InstanceFactory.getTimeBeforeM1());
         fail("Should throw NoMeasurementException.");
       }
       catch (NoMeasurementException e) {
         // expected
       }
       try {
-        Double val = d.getValue(m1.getSensorId(), InstanceFactory.getTimeBetweenM1andM2(),
+        d.getValue(sensorId, InstanceFactory.getTimeAfterM3());
+        fail("Should throw NoMeasurementException.");
+      }
+      catch (NoMeasurementException e) {
+        // expected
+      }
+      try {
+        d.getValue(sensorId, InstanceFactory.getTimeBeforeM1(), 700L);
+        fail("Should throw NoMeasurementException.");
+      }
+      catch (NoMeasurementException e) {
+        // expected
+      }
+      catch (MeasurementGapException e) {
+        e.printStackTrace();
+        fail(e.getMessage() + " should not happen");
+      }
+      try {
+        d.getValue(sensorId, InstanceFactory.getTimeAfterM3(), 700L);
+        fail("Should throw NoMeasurementException.");
+      }
+      catch (NoMeasurementException e) {
+        // expected
+      }
+      catch (MeasurementGapException e) {
+        e.printStackTrace();
+        fail(e.getMessage() + " should not happen");
+      }
+      try {
+        Double val = d.getValue(sensorId, InstanceFactory.getTimeBetweenM1andM2(),
             InstanceFactory.getTimeBetweenM1andM3());
         assertTrue(Math.abs(val - 0.0) < 0.001);
       }
@@ -428,7 +471,7 @@ public class TestWattDepotPersistenceImpl {
         fail(e.getMessage() + " shouldn't happen");
       }
       try {
-        Double val = d.getValue(m1.getSensorId(), InstanceFactory.getTimeBetweenM1andM2(),
+        Double val = d.getValue(sensorId, InstanceFactory.getTimeBetweenM1andM2(),
             InstanceFactory.getTimeBetweenM1andM3(), 700L);
         assertTrue(Math.abs(val - 0.0) < 0.001);
       }
@@ -440,7 +483,26 @@ public class TestWattDepotPersistenceImpl {
         e.printStackTrace();
         fail(e.getMessage() + " shouldn't happen");
       }
-      MeasuredValue earliest = d.getEarliestMeasuredValue();
+      try {
+        MeasuredValue earliest = d.getEarliestMeasuredValue(sensorId);
+        assertNotNull(earliest);
+        assertTrue(earliest.equivalent(m1));
+        assertTrue(earliest.getSensorId().equals(m1.getSensorId()));
+        assertTrue(earliest.getValue().equals(m1.getValue()));
+        assertTrue(earliest.getMeasurementType().getUnits().equals(m1.getMeasurementType()));
+        assertTrue(earliest.getDate().equals(m1.getDate()));
+        MeasuredValue latest = d.getLatestMeasuredValue(sensorId);
+        assertNotNull(latest);
+        assertTrue(latest.equivalent(m3));
+        assertTrue(latest.getSensorId().equals(m3.getSensorId()));
+      }
+      catch (NoMeasurementException e) {
+        e.printStackTrace();
+        fail(e.getMessage() + " should not happen");
+      }
+      List<String> sensors = d.listSensors();
+      assertNotNull(sensors);
+      assertTrue(sensors.contains(sensorId));
       d.deleteMeasurement(m1);
       d.deleteMeasurement(m2);
       d.deleteMeasurement(m3);
