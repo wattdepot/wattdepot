@@ -115,13 +115,12 @@ public class TestWattDepotClient {
   @Before
   public void setUp() {
     try {
-      ClientProperties properties = new ClientProperties();
-      this.logger = WattDepotLogger.getLogger("org.wattdepot.client",
-          properties.get(ClientProperties.CLIENT_HOME_DIR));
-      WattDepotLogger.setLoggingLevel(logger, properties.get(ClientProperties.LOGGING_LEVEL_KEY));
-      logger.finest("setUp()");
       ClientProperties props = new ClientProperties();
       props.setTestProperties();
+      this.logger = WattDepotLogger.getLogger("org.wattdepot.client",
+          props.get(ClientProperties.CLIENT_HOME_DIR));
+      WattDepotLogger.setLoggingLevel(logger, props.get(ClientProperties.LOGGING_LEVEL_KEY));
+      logger.finest("setUp()");
       this.serverURL = "http://" + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
           + props.get(ClientProperties.PORT_KEY) + "/";
       logger.finest(serverURL);
