@@ -1,5 +1,5 @@
 /**
- * UserInfoResource.java This file is part of WattDepot.
+ * UserInfoPutResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -18,43 +18,25 @@
  */
 package org.wattdepot.common.http.api;
 
-import org.restlet.resource.Delete;
-import org.restlet.resource.Get;
-import org.restlet.resource.Post;
+import org.restlet.resource.Put;
 import org.wattdepot.common.domainmodel.UserInfo;
 
 /**
- * UserResource - HTTP /wattdepot/{org-id}/user/{user-id} Interface for data
- * model UserInfo.
+ * UserInfoPutResource - HTTP PUT /wattdepot/user/ Interface for data model
+ * UserInfo.
  * 
  * @author Cam Moore
  * 
  */
-public interface UserInfoResource {
+public interface UserInfoPutResource {
 
   /**
-   * Defines GET /wattdepot/{org-id}/user/{user-id} API call.
-   * 
-   * @return The User with the given id. The id is sent in the request.
-   */
-  @Get("json")
-  // Use JSON as transport encoding.
-  public UserInfo retrieve();
-
-  /**
-   * Defines the POST /wattdepot/{org-id}/user/{user-id} API call.
+   * Defines the PUT /wattdepot/user/ API call.
    * 
    * @param user
-   *          The UserInfo to update.
+   *          The User to store.
    */
-  @Post("json")
-  public void update(UserInfo user);
-
-  /**
-   * Defined the DEL /wattdepot/user/{user_id} API call. The id is sent in the
-   * request.
-   */
-  @Delete
-  public void remove();
+  @Put()
+  public void store(UserInfo user);
 
 }

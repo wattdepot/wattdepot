@@ -74,28 +74,13 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
    * .UserInfo)
    */
   @Override
-  public void store(UserInfo user) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/user/ with " + user);
-    if (!depot.getUsers().contains(user)) {
-      try {
-        UserInfo defined = depot.defineUserInfo(user.getId(), user.getFirstName(),
-            user.getLastName(), user.getEmail(), user.getOrganizationId(), user.getProperties());
-        WattDepotApplication app = (WattDepotApplication) getApplication();
-        UserPassword up = app.getDepot().getUserPassword(user.getId());
-        if (up != null && defined != null) {
-          MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
-          User newUser = new User(user.getId(), up.getPlainText(), user.getFirstName(),
-              user.getLastName(), user.getEmail());
-          realm.getUsers().add(newUser);
-          realm.map(newUser, app.getRole(defined.getOrganizationId()));
-        }
-        else {
-          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No password information for " + user.getId());
-        }
-      }
-      catch (UniqueIdException e) {
-        setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
-      }
+  public void update(UserInfo user) {
+    getLogger().log(Level.INFO, "POST /wattdepot/{" + orgId + "}/user/{" + userId + "}");
+    if (depot.getUsers().contains(user)) {
+      // do something.
+    }
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No User " + userId + " in WattDepot.");
     }
   }
 

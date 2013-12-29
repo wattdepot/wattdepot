@@ -252,6 +252,13 @@ public class API {
       + Labels.USER_PASSWORD + "/" + Labels.USER_PASSWORD_ID_VAR;
 
   /**
+   * <b>/wattdepot/{org-id}/user/</b> URI for putting UserInfos.
+   * Supports PUT requests.
+   */
+  public static final String USER_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/" + Labels.USER
+      + "/";
+
+  /**
    * <b>/wattdepot/{org-id}/user/{user-id}</b> URI for manipulating UserInfos.
    * Supports GET, POST, and DELETE requests.
    */

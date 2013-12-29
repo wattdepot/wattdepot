@@ -22,10 +22,18 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.wattdepot.client.ClientProperties;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Property;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.domainmodel.SensorLocation;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
+import org.wattdepot.common.exception.BadCredentialException;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.util.logger.WattDepotLogger;
 
 /**
@@ -37,7 +45,8 @@ import org.wattdepot.common.util.logger.WattDepotLogger;
 public class ExampleInstances {
 
   private WattDepotAdminClient admin;
-  private WattDepotClient client;
+  private WattDepotClient cmoore;
+  private WattDepotClient johnson;
 
   public ExampleInstances() {
     ClientProperties props = new ClientProperties();
@@ -53,6 +62,18 @@ public class ExampleInstances {
     }
     if (admin != null) {
       setUpOrganization();
+      try {
+        cmoore = new WattDepotClient(serverURL, "cmoore", "secret1");
+      }
+      catch (BadCredentialException e) {
+        e.printStackTrace();
+      }
+      try {
+        johnson = new WattDepotClient(serverURL, "johnson", "secret2");
+      }
+      catch (BadCredentialException e) {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -65,14 +86,108 @@ public class ExampleInstances {
         org.getSlug(), new HashSet<Property>());
     org.getUsers().add(user1.getId());
     org.getUsers().add(user2.getId());
-    admin.putUserPassword(new UserPassword(user1.getId(), "secret"));
-    admin.putUserPassword(new UserPassword(user2.getId(), "secret"));
-    admin.putUser(user1);
-    admin.putUser(user2);
-    admin.putOrganization(org);
-    admin.updateOrganization(org);
-    
+    // check to see if the instances are defined in WattDepot
+    try {
+      Organization defined = admin.getOrganization(org.getSlug());
+      if (defined == null) {
+        admin.putUserPassword(new UserPassword(user1.getId(), "secret1"));
+        admin.putUserPassword(new UserPassword(user2.getId(), "secret2"));
+        admin.putUser(user1);
+        admin.putUser(user2);
+        admin.putOrganization(org);
+      }
+    }
+    catch (IdNotFoundException e) {
+      // not defined so put it.
+      admin.putUserPassword(new UserPassword(user1.getId(), "secret"));
+      admin.putUserPassword(new UserPassword(user2.getId(), "secret"));
+      admin.putUser(user1);
+      admin.putUser(user2);
+      admin.putOrganization(org);
+    }
+  }
 
+  private void setUpItems() {
+    SensorLocation loc = new SensorLocation("Ilima 6th floor", new Double(21.294642), new Double(
+        -157.812727), new Double(30), "Hale Aloha Ilima residence hall 6th floor", "uh");
+    try {
+      cmoore.getLocation(loc.getSlug());
+    }
+    catch (IdNotFoundException e) {
+      cmoore.putLocation(loc);
+    }
+    Sensor telco = new Sensor("Ilima 6th telco", "http://telco", loc.getSlug(), "shark",
+        loc.getOwnerId());
+    try {
+      cmoore.getSensor(telco.getSlug());
+    }
+    catch (IdNotFoundException e) {
+      johnson.putSensor(telco);
+    }
+    Sensor elect = new Sensor("Ilima 6th electrical", "http://elect", loc.getSlug(), "shark",
+        loc.getOwnerId());
+    try {
+      johnson.getSensor(elect.getSlug());
+    }
+    catch (IdNotFoundException e) {
+      cmoore.putSensor(elect);
+    }
+    Set<String> sensors = new HashSet<String>();
+    sensors.add(telco.getSlug());
+    sensors.add(elect.getSlug());
+    SensorGroup ilima6 = new SensorGroup("Ilima 6th", sensors, loc.getOwnerId());
+    try {
+      cmoore.getSensorGroup(ilima6.getSlug());
+    }
+    catch (IdNotFoundException e) {
+      johnson.putSensorGroup(ilima6);
+    }
+    MeasurementType e = null;
+    MeasurementType p = null;
+    try {
+      e = cmoore.getMeasurementType("energy-wh");
+      p = johnson.getMeasurementType("power-w");
+    }
+    catch (IdNotFoundException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+    }
+    Depository energy = null;
+    if (e != null) {
+      energy = new Depository("Ilima Energy", e, loc.getOwnerId());
+      try {
+        cmoore.getDepository(energy.getSlug());
+      }
+      catch (IdNotFoundException e1) {
+        johnson.putDepository(energy);
+      }
+    }
+    if (p != null) {
+      Depository power = new Depository("Ilima Power", p, loc.getOwnerId());
+      try {
+        johnson.getDepository(power.getSlug());
+      }
+      catch (IdNotFoundException e1) {
+        johnson.putDepository(power);
+      }
+    }
+
+    CollectorProcessDefinition energyCPD1 = new CollectorProcessDefinition("Ilima 6th telco energy",
+        telco.getSlug(), 10L, energy.getSlug(), energy.getOwnerId());
+    CollectorProcessDefinition energyCPD2 = new CollectorProcessDefinition("Ilima 6th elect energy",
+        elect.getSlug(), 10L, energy.getSlug(), energy.getOwnerId());
+    try {
+      cmoore.getCollectorMetaData(energyCPD2.getSlug());
+    }
+    catch (IdNotFoundException e1) {
+      cmoore.putCollectorProcessDefinition(energyCPD2);
+    }
+    try {
+      cmoore.getCollectorMetaData(energyCPD1.getSlug());
+    }
+    catch (IdNotFoundException e1) {
+      cmoore.putCollectorProcessDefinition(energyCPD1);
+    }
   }
 
   /**
@@ -80,7 +195,7 @@ public class ExampleInstances {
    */
   public static void main(String[] args) {
     ExampleInstances e = new ExampleInstances();
-
+    e.setUpItems();
   }
 
 }

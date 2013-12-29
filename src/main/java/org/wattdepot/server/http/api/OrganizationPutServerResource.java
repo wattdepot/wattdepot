@@ -29,67 +29,66 @@ import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
+import org.wattdepot.common.http.api.OrganizationPutResource;
 import org.wattdepot.common.http.api.OrganizationResource;
 
 /**
  * UserGroupServerResource - Handles the HTTP API
- * ("/wattdepot/{org-id}/organization/",
- * "/wattdepot/{org-id}/organization/{org-id}").
+ * ("/wattdepot/{org-id}/organization/").
  * 
  * @author Cam Moore
  * 
  */
-public class OrganizationServerResource extends WattDepotServerResource implements OrganizationResource {
-
-  private String userGroupId;
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.restlet.resource.Resource#doInit()
-   */
-  @Override
-  protected void doInit() throws ResourceException {
-    super.doInit();
-    this.userGroupId = getAttribute(Labels.ORGANIZATION_ID2);
-  }
+public class OrganizationPutServerResource extends WattDepotServerResource implements
+    OrganizationPutResource {
 
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.restlet.UserGroupResource#retrieve()
+   * @see org.wattdepot.restlet.UserGroupResource#store(org.wattdepot.datamodel
+   * .UserGroup)
    */
   @Override
-  public Organization retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/organization/{" + userGroupId + "}");
-    Organization group = null;
-    group = depot.getOrganization(userGroupId);
-    return group;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.restlet.UserGroupResource#remove()
-   */
-  @Override
-  public void remove() {
-    getLogger().log(Level.INFO, "DEL /wattdepot/{" + orgId + "}/organization/{" + userGroupId + "}");
-    try {
-      depot.deleteOrganization(userGroupId);
-      WattDepotApplication app = (WattDepotApplication) getApplication();
-      // create the new Role for the group
-      String roleName = userGroupId;
-      Role role = app.getRole(roleName);
-      MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
-      app.getRoles().remove(role);
-      for (User user : realm.getUsers()) {
-        realm.findRoles(user).remove(role);
+  public void store(Organization usergroup) {
+    getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/organization/ with " + usergroup);
+    if (!depot.getOrganizationIds().contains(usergroup.getSlug())) {
+      try {
+        Organization defined = depot.defineOrganization(usergroup.getName(), usergroup.getUsers());
+        defined.setSlug(usergroup.getSlug());
+        depot.updateOrganization(defined);
+        WattDepotApplication app = (WattDepotApplication) getApplication();
+        // create the new Role for the group
+        String roleName = defined.getSlug();
+        Role role = new Role(roleName);
+        app.getRoles().add(role);
+        MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
+        for (User user : realm.getUsers()) { // loop through all the Restlet
+                                             // users
+          for (String userId : defined.getUsers()) {
+            if (user.getIdentifier().equals(userId)) {
+              // assign the user to the role.
+              realm.map(user, role);
+            }
+          }
+        }
+      }
+      catch (UniqueIdException e) {
+        setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
       }
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+    else {
+      depot.updateOrganization(usergroup);
+      // update the Realm
+      WattDepotApplication app = (WattDepotApplication) getApplication();
+      // create the new Role for the group
+      String roleName = usergroup.getSlug();
+      Role role = app.getRole(roleName);
+      MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
+      for (String userId : usergroup.getUsers()) {
+        realm.map(getUser(userId), role);
+      }
     }
+
   }
 
   /**
@@ -108,20 +107,4 @@ public class OrganizationServerResource extends WattDepotServerResource implemen
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see org.wattdepot.common.http.api.OrganizationResource#update(org.wattdepot.common.domainmodel.Organization)
-   */
-  @Override
-  public void update(Organization organization) {
-    depot.updateOrganization(organization);
-    // update the Realm
-    WattDepotApplication app = (WattDepotApplication) getApplication();
-    // create the new Role for the group
-    String roleName = organization.getSlug();
-    Role role = app.getRole(roleName);
-    MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
-    for (String userId : organization.getUsers()) {
-      realm.map(getUser(userId), role);
-    }
-  }
 }

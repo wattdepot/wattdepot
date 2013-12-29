@@ -1,5 +1,5 @@
 /**
- * UserInfosResource.java This file is part of WattDepot.
+ * UserInfoList.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -16,27 +16,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.common.http.api;
+package org.wattdepot.common.domainmodel;
 
-import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.UserInfoList;
+import java.util.ArrayList;
 
 /**
- * UserInfosResource - The HTTP GET /wattdepot/{org-id}/users/ Interface for
- * UserInfos.
- * 
+ * UserInfoList - A list of UserInfo instances.
+ *
  * @author Cam Moore
- * 
+ *
  */
-public interface UserInfosResource {
+public class UserInfoList {
+  private ArrayList<UserInfo> users;
+  
+  /**
+   * Default Constructor.
+   */
+  public UserInfoList() {
+    users = new ArrayList<UserInfo>();
+  }
 
   /**
-   * Defines the GET /wattdepot/{org-id}/users/ API call.
-   * 
-   * @return a List of the defined Users.
+   * @return the users
    */
-  @Get("json")
-  // Use JSON as transport encoding.
-  public UserInfoList retrieve();
+  public ArrayList<UserInfo> getUsers() {
+    return users;
+  }
+
+  /**
+   * @param users the users to set
+   */
+  public void setUsers(ArrayList<UserInfo> users) {
+    this.users = users;
+  }
 
 }

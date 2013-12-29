@@ -1,5 +1,5 @@
 /**
- * UserInfosResource.java This file is part of WattDepot.
+ * OrganizationPutResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -18,25 +18,25 @@
  */
 package org.wattdepot.common.http.api;
 
-import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.UserInfoList;
+import org.restlet.resource.Put;
+import org.wattdepot.common.domainmodel.Organization;
 
 /**
- * UserInfosResource - The HTTP GET /wattdepot/{org-id}/users/ Interface for
- * UserInfos.
+ * OrganizationPutResource - HTTP PUT /wattdepot/{org-id}/organization/
+ * Interface for data model organization.
  * 
  * @author Cam Moore
  * 
  */
-public interface UserInfosResource {
+public interface OrganizationPutResource {
 
   /**
-   * Defines the GET /wattdepot/{org-id}/users/ API call.
+   * Defines the PUT /wattdepot/{org-id}/organization/ API call.
    * 
-   * @return a List of the defined Users.
+   * @param organization
+   *          The organization to store.
    */
-  @Get("json")
-  // Use JSON as transport encoding.
-  public UserInfoList retrieve();
+  @Put
+  public void store(Organization organization);
 
 }

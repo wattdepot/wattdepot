@@ -52,15 +52,6 @@ public interface OrganizationResource {
   public void update(Organization organization);
 
   /**
-   * Defines the PUT /wattdepot/{org-id}/organization/ API call.
-   * 
-   * @param organization
-   *          The organization to store.
-   */
-  @Put
-  public void store(Organization organization);
-
-  /**
    * Defined the DEL /wattdepot/{org-id}/organization/{org-id} API call. The id
    * is sent in the request.
    */

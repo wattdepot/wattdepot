@@ -19,15 +19,22 @@
 package org.wattdepot.client.http.api;
 
 import org.restlet.resource.ClientResource;
+import org.restlet.resource.ResourceException;
 import org.wattdepot.client.WattDepotAdminInterface;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.domainmodel.OrganizationList;
 import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.domainmodel.UserInfoList;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.http.api.OrganizationPutResource;
 import org.wattdepot.common.http.api.OrganizationResource;
+import org.wattdepot.common.http.api.OrganizationsResource;
+import org.wattdepot.common.http.api.UserInfoPutResource;
 import org.wattdepot.common.http.api.UserInfoResource;
+import org.wattdepot.common.http.api.UserInfosResource;
 import org.wattdepot.common.http.api.UserPasswordResource;
 
 /**
@@ -36,8 +43,7 @@ import org.wattdepot.common.http.api.UserPasswordResource;
  * @author Cam Moore
  * 
  */
-public class WattDepotAdminClient extends WattDepotClient implements
-    WattDepotAdminInterface {
+public class WattDepotAdminClient extends WattDepotClient implements WattDepotAdminInterface {
 
   /**
    * Creates a new WattDepotAdminClient.
@@ -66,15 +72,43 @@ public class WattDepotAdminClient extends WattDepotClient implements
    * (non-Javadoc)
    * 
    * @see
+   * org.wattdepot.client.WattDepotAdminInterface#deleteOrganization(java.lang
+   * .String)
+   */
+  @Override
+  public void deleteOrganization(String id) throws IdNotFoundException {
+    ClientResource client = makeClient("admin/" + Labels.ORGANIZATION + "/" + id);
+    OrganizationResource resource = client.wrap(OrganizationResource.class);
+    try {
+      resource.remove();
+    }
+    catch (ResourceException re) {
+      throw new IdNotFoundException(id + " is not a defined Organization.");
+    }
+    finally {
+      client.release();
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
    * org.wattdepot.client.WattDepotAdminInterface#deleteUser(java.lang.String)
    */
   @Override
   public void deleteUser(String id) throws IdNotFoundException {
-    ClientResource client = makeClient("admin/" + Labels.USER + "/"
-        + id);
+    ClientResource client = makeClient("admin/" + Labels.USER + "/" + id);
     UserInfoResource resource = client.wrap(UserInfoResource.class);
-    resource.remove();
-    client.release();
+    try {
+      resource.remove();
+    }
+    catch (ResourceException re) {
+      throw new IdNotFoundException(id + " is not a defined UserInfo.");
+    }
+    finally {
+      client.release();
+    }
   }
 
   /*
@@ -86,11 +120,32 @@ public class WattDepotAdminClient extends WattDepotClient implements
    */
   @Override
   public void deleteUserPassword(String id) throws IdNotFoundException {
-    ClientResource client = makeClient("admin/"
-        + Labels.USER_PASSWORD + "/" + id);
+    ClientResource client = makeClient("admin/" + Labels.USER_PASSWORD + "/" + id);
     UserPasswordResource resource = client.wrap(UserPasswordResource.class);
     try {
       resource.remove();
+    }
+    catch (ResourceException re) {
+      throw new IdNotFoundException(id + " is not a defined UserPassword.");
+    }
+    finally {
+      client.release();
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.client.WattDepotAdminInterface#putOrganization(org.wattdepot
+   * .common.domainmodel.Organization)
+   */
+  @Override
+  public void putOrganization(Organization org) {
+    ClientResource client = makeClient("admin/" + Labels.ORGANIZATION + "/");
+    OrganizationPutResource resource = client.wrap(OrganizationPutResource.class);
+    try {
+      resource.store(org);
     }
     finally {
       client.release();
@@ -106,9 +161,8 @@ public class WattDepotAdminClient extends WattDepotClient implements
    */
   @Override
   public void putUser(UserInfo user) {
-    ClientResource client = makeClient("admin/" + Labels.USER + "/"
-        + user.getId());
-    UserInfoResource resource = client.wrap(UserInfoResource.class);
+    ClientResource client = makeClient("admin/" + Labels.USER + "/");
+    UserInfoPutResource resource = client.wrap(UserInfoPutResource.class);
     try {
       resource.store(user);
     }
@@ -126,52 +180,22 @@ public class WattDepotAdminClient extends WattDepotClient implements
    */
   @Override
   public void putUserPassword(UserPassword password) {
-    ClientResource client = makeClient("admin/"
-        + Labels.USER_PASSWORD + "/" + password.getId());
+    ClientResource client = makeClient("admin/" + Labels.USER_PASSWORD + "/" + password.getId());
     UserPasswordResource resource = client.wrap(UserPasswordResource.class);
     resource.store(password);
     client.release();
   }
 
-  /* (non-Javadoc)
-   * @see org.wattdepot.client.WattDepotAdminInterface#deleteOrganization(java.lang.String)
-   */
-  @Override
-  public void deleteOrganization(String id) throws IdNotFoundException {
-    ClientResource client = makeClient("admin/" + Labels.ORGANIZATION
-        + "/" + id);
-    OrganizationResource resource = client.wrap(OrganizationResource.class);
-    try {
-      resource.remove();
-    }
-    finally {
-      client.release();
-    }
-  }
-
-  /* (non-Javadoc)
-   * @see org.wattdepot.client.WattDepotAdminInterface#putOrganization(org.wattdepot.common.domainmodel.Organization)
-   */
-  @Override
-  public void putOrganization(Organization org) {
-    ClientResource client = makeClient("admin/" + Labels.ORGANIZATION
-        + "/");
-    OrganizationResource resource = client.wrap(OrganizationResource.class);
-    try {
-      resource.store(org);
-    }
-    finally {
-      client.release();
-    }
-  }
-
-  /* (non-Javadoc)
-   * @see org.wattdepot.client.WattDepotAdminInterface#updateOrganization(org.wattdepot.common.domainmodel.Organization)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.client.WattDepotAdminInterface#updateOrganization(org.wattdepot
+   * .common.domainmodel.Organization)
    */
   @Override
   public void updateOrganization(Organization org) {
-    ClientResource client = makeClient("admin/" + Labels.ORGANIZATION
-        + "/" + org.getSlug());
+    ClientResource client = makeClient("admin/" + Labels.ORGANIZATION + "/" + org.getSlug());
     OrganizationResource resource = client.wrap(OrganizationResource.class);
     try {
       resource.update(org);
@@ -179,6 +203,132 @@ public class WattDepotAdminClient extends WattDepotClient implements
     finally {
       client.release();
     }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.client.WattDepotAdminInterface#updateUser(org.wattdepot
+   * .common.domainmodel.UserInfo)
+   */
+  @Override
+  public void updateUser(UserInfo user) {
+    ClientResource client = makeClient("admin/" + Labels.USER + "/" + user.getId());
+    UserInfoResource resource = client.wrap(UserInfoResource.class);
+    try {
+      resource.update(user);
+    }
+    finally {
+      client.release();
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.client.WattDepotAdminInterface#getOrganization(java.lang.
+   * String)
+   */
+  @Override
+  public Organization getOrganization(String id) throws IdNotFoundException {
+    ClientResource client = makeClient("admin/" + Labels.ORGANIZATION + "/" + id);
+    OrganizationResource resource = client.wrap(OrganizationResource.class);
+    Organization ret = null;
+    try {
+      ret = resource.retrieve();
+    }
+    catch (ResourceException re) {
+      throw new IdNotFoundException(id + " is not a defined Organization.");
+    }
+    finally {
+      client.release();
+    }
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.client.WattDepotAdminInterface#getOrganizations()
+   */
+  @Override
+  public OrganizationList getOrganizations() {
+    ClientResource client = makeClient("admin/" + Labels.ORGANIZATIONS + "/");
+    OrganizationsResource resource = client.wrap(OrganizationsResource.class);
+    OrganizationList ret = null;
+    try {
+      ret = resource.retrieve();
+    }
+    finally {
+      client.release();
+    }
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.client.WattDepotAdminInterface#getUser(java.lang.String)
+   */
+  @Override
+  public UserInfo getUser(String id) throws IdNotFoundException {
+    ClientResource client = makeClient("admin/" + Labels.USER + "/" + id);
+    UserInfoResource resource = client.wrap(UserInfoResource.class);
+    UserInfo ret = null;
+    try {
+      ret = resource.retrieve();
+    }
+    catch (ResourceException re) {
+      throw new IdNotFoundException(id + " is not a defined UserInfo.");
+    }
+    finally {
+      client.release();
+    }
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.client.WattDepotAdminInterface#getUsers()
+   */
+  @Override
+  public UserInfoList getUsers() {
+    ClientResource client = makeClient("admin/" + Labels.USERS + "/");
+    UserInfosResource resource = client.wrap(UserInfosResource.class);
+    UserInfoList ret = null;
+    try {
+      ret = resource.retrieve();
+    }
+    finally {
+      client.release();
+    }
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.client.WattDepotAdminInterface#getUserPassword(java.lang.
+   * String)
+   */
+  @Override
+  public UserPassword getUserPassword(String id) throws IdNotFoundException {
+    ClientResource client = makeClient("admin/" + Labels.USER_PASSWORD + "/" + id);
+    UserPasswordResource resource = client.wrap(UserPasswordResource.class);
+    UserPassword ret = null;
+    try {
+      ret = resource.retrieve();
+    }
+    catch (ResourceException re) {
+      throw new IdNotFoundException(id + " is not a defined UserPassword.");
+    }
+    finally {
+      client.release();
+    }
+    return ret;
   }
 
 }

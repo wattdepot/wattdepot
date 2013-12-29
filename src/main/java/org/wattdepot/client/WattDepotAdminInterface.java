@@ -19,7 +19,9 @@
 package org.wattdepot.client;
 
 import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.domainmodel.OrganizationList;
 import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.domainmodel.UserInfoList;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;
 
@@ -60,6 +62,43 @@ public interface WattDepotAdminInterface {
   public void deleteUserPassword(String id) throws IdNotFoundException;
 
   /**
+   * @param id
+   *          The unique id of the Organization.
+   * @return The Organization with the given id.
+   * @throws IdNotFoundException
+   *           if the id does not exist.
+   */
+  public Organization getOrganization(String id) throws IdNotFoundException;
+
+  /**
+   * @return All the defined Organizations in an OrganizationList.
+   */
+  public OrganizationList getOrganizations();
+
+  /**
+   * @param id
+   *          The unique id of the UserInfo.
+   * @return The UserInfo with the given id.
+   * @throws IdNotFoundException
+   *           if the id does not exist.
+   */
+  public UserInfo getUser(String id) throws IdNotFoundException;
+
+  /**
+   * @return All the defined Users in a UserInfoList.
+   */
+  public UserInfoList getUsers();
+
+  /**
+   * @param id
+   *          The unique id of the UserPassword.
+   * @return The UserPassword with the given id.
+   * @throws IdNotFoundException
+   *           if the id does not exist.
+   */
+  public UserPassword getUserPassword(String id) throws IdNotFoundException;
+
+  /**
    * Stores the given user in the WattDepot Server.
    * 
    * @param user
@@ -82,11 +121,20 @@ public interface WattDepotAdminInterface {
    *          The UserPassword to store.
    */
   public void putUserPassword(UserPassword password);
-  
+
   /**
    * Updates the Organization in the WattDepot Server.
    * 
-   * @param org the Organization to update.
+   * @param org
+   *          the Organization to update.
    */
   public void updateOrganization(Organization org);
+
+  /**
+   * Updates the UserInfo in the WattDepot Server.
+   * 
+   * @param user
+   *          the UserInfo to update.
+   */
+  void updateUser(UserInfo user);
 }
