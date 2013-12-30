@@ -32,7 +32,7 @@ import org.wattdepot.common.util.Slug;
  * 
  */
 public class CollectorProcessDefinition implements IDomainModel {
-  /** A unique id for the CollectorMetaData. */
+  /** A unique id for the CollectorProcessDefinitionData. */
   private String slug;
   /** The human readable name. */
   private String name;
@@ -56,7 +56,7 @@ public class CollectorProcessDefinition implements IDomainModel {
 
   /**
    * @param name
-   *          The name of the CollectorMetaData.
+   *          The name of the CollectorProcessDefinitionData.
    * @param sensorId
    *          The id of the sensor that measures the environment.
    * @param poll

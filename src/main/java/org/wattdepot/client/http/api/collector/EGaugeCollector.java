@@ -86,7 +86,7 @@ public class EGaugeCollector extends MultiThreadedCollector {
    * @param password
    *          The password for the user.
    * @param collectorId
-   *          The CollectorMetaDataId used to initialize this collector.
+   *          The CollectorProcessDefinitionId used to initialize this collector.
    * @param debug
    *          flag for debugging messages.
    * @throws BadCredentialException

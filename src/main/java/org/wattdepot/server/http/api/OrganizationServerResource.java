@@ -28,13 +28,11 @@ import org.restlet.security.User;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.OrganizationResource;
 
 /**
  * UserGroupServerResource - Handles the HTTP API
- * ("/wattdepot/{org-id}/organization/",
- * "/wattdepot/{org-id}/organization/{org-id}").
+ * ("/wattdepot/{org-id}/organization/{org-id}").
  * 
  * @author Cam Moore
  * 

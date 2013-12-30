@@ -34,10 +34,9 @@ import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.util.logger.WattDepotLogger;
 
 /**
- * ExampleInstances
+ * ExampleInstances inserts some example instances into WattDepot.
  * 
  * @author Cam Moore
  * 
@@ -48,6 +47,9 @@ public class ExampleInstances {
   private WattDepotClient cmoore;
   private WattDepotClient johnson;
 
+  /**
+   * Creates several clients for inserting instances into WattDepot.
+   */
   public ExampleInstances() {
     ClientProperties props = new ClientProperties();
     String serverURL = "http://" + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
@@ -77,6 +79,10 @@ public class ExampleInstances {
     }
   }
 
+  /**
+   * Creates a University of Hawaii, Manoa organization and two users in that
+   * organziation.
+   */
   private void setUpOrganization() {
     Organization org = new Organization("University of Hawaii, Manoa");
     org.setSlug("uh");
@@ -107,6 +113,10 @@ public class ExampleInstances {
     }
   }
 
+  /**
+   * Creates two Depositories, a SensorLocation, two Sensors, a SensorGroup, and
+   * two CollectorProcessDefinitions.
+   */
   private void setUpItems() {
     SensorLocation loc = new SensorLocation("Ilima 6th floor", new Double(21.294642), new Double(
         -157.812727), new Double(30), "Hale Aloha Ilima residence hall 6th floor", "uh");
@@ -161,6 +171,23 @@ public class ExampleInstances {
       catch (IdNotFoundException e1) {
         johnson.putDepository(energy);
       }
+      CollectorProcessDefinition energyCPD1 = new CollectorProcessDefinition(
+          "Ilima 6th telco energy", telco.getSlug(), 10L, energy.getSlug(), energy.getOwnerId());
+      CollectorProcessDefinition energyCPD2 = new CollectorProcessDefinition(
+          "Ilima 6th elect energy", elect.getSlug(), 10L, energy.getSlug(), energy.getOwnerId());
+      try {
+        cmoore.getCollectorProcessDefinition(energyCPD2.getSlug());
+      }
+      catch (IdNotFoundException e1) {
+        cmoore.putCollectorProcessDefinition(energyCPD2);
+      }
+      try {
+        cmoore.getCollectorProcessDefinition(energyCPD1.getSlug());
+      }
+      catch (IdNotFoundException e1) {
+        cmoore.putCollectorProcessDefinition(energyCPD1);
+      }
+
     }
     if (p != null) {
       Depository power = new Depository("Ilima Power", p, loc.getOwnerId());
@@ -171,27 +198,10 @@ public class ExampleInstances {
         johnson.putDepository(power);
       }
     }
-
-    CollectorProcessDefinition energyCPD1 = new CollectorProcessDefinition("Ilima 6th telco energy",
-        telco.getSlug(), 10L, energy.getSlug(), energy.getOwnerId());
-    CollectorProcessDefinition energyCPD2 = new CollectorProcessDefinition("Ilima 6th elect energy",
-        elect.getSlug(), 10L, energy.getSlug(), energy.getOwnerId());
-    try {
-      cmoore.getCollectorMetaData(energyCPD2.getSlug());
-    }
-    catch (IdNotFoundException e1) {
-      cmoore.putCollectorProcessDefinition(energyCPD2);
-    }
-    try {
-      cmoore.getCollectorMetaData(energyCPD1.getSlug());
-    }
-    catch (IdNotFoundException e1) {
-      cmoore.putCollectorProcessDefinition(energyCPD1);
-    }
   }
 
   /**
-   * @param args
+   * @param args command line arguments.
    */
   public static void main(String[] args) {
     ExampleInstances e = new ExampleInstances();

@@ -1,5 +1,5 @@
 /**
- * CollectorMetaDataResource.java This file is part of WattDepot.
+ * CollectorProcessDefinitionResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -24,7 +24,7 @@ import org.restlet.resource.Post;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 
 /**
- * CollectorMetaDataResource - HTTP Interface for CollectorMetaData.
+ * CollectorProcessDefinitionResource - HTTP Interface for CollectorProcessDefinition.
  * 
  * @author Cam Moore
  * 

@@ -28,17 +28,17 @@ public class Labels {
   /** The String indicating admin group. */
   public static final String ADMIN = "admin";
 
-  /** The label for a given CollectorMetaData. */
-  public static final String COLLECTOR_META_DATA = "collector-metadata";
+  /** The label for a given CollectorProcessDefinitionData. */
+  public static final String COLLECTOR_PROCESS_DEFINITION = "collector-process-definition";
 
-  /** The label for the CollectorMetaData id. */
-  public static final String COLLECTOR_META_DATA_ID = "collector-metadata-id";
+  /** The label for the CollectorProcessDefinitionData id. */
+  public static final String COLLECTOR_PROCESS_DEFINITION_ID = "collector-process-definition-id";
 
-  /** The label for the CollectorMetaData id variable. */
-  public static final String COLLECTOR_META_DATA_ID_VAR = "{" + COLLECTOR_META_DATA_ID + "}";
+  /** The label for the CollectorProcessDefinitionData id variable. */
+  public static final String COLLECTOR_PROCESS_DEFINITION_ID_VAR = "{" + COLLECTOR_PROCESS_DEFINITION_ID + "}";
 
-  /** The label for all CollectorMetaDatas. */
-  public static final String COLLECTOR_META_DATAS = "collector-metadatas";
+  /** The label for all CollectorProcessDefinitionDatas. */
+  public static final String COLLECTOR_PROCESS_DEFINITIONS = "collector-process-definitions";
 
   /** The label for all the Depositories. */
   public static final String DEPOSITORIES = "depositories";

@@ -21,16 +21,12 @@ package org.wattdepot.server.http.api;
 import java.util.logging.Level;
 
 import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
 import org.restlet.security.MemoryRealm;
 import org.restlet.security.Role;
 import org.restlet.security.User;
-import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Organization;
-import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.OrganizationPutResource;
-import org.wattdepot.common.http.api.OrganizationResource;
 
 /**
  * UserGroupServerResource - Handles the HTTP API

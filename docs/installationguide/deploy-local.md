@@ -23,7 +23,7 @@ Follow the [entity definition instructions](http://wattdepot.viewdocs.io/wattdep
 
 ## Run the collectors
 
-Once the CollectorMetaDatas are defined in the system, you can start the Collector processes.
+Once the CollectorProcessDefinitions are defined in the system, you can start the Collector processes.
 
 Change to the top level of the wattdepot distribution you downloaded. Run the Collectors. Currently, 
 you have to start a separate process for each Collector you want to run.

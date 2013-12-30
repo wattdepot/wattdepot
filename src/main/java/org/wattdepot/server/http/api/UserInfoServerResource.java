@@ -22,13 +22,9 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import org.restlet.security.MemoryRealm;
-import org.restlet.security.User;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.UserInfo;
-import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.UserInfoResource;
 
 /**
@@ -78,6 +74,7 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
     getLogger().log(Level.INFO, "POST /wattdepot/{" + orgId + "}/user/{" + userId + "}");
     if (depot.getUsers().contains(user)) {
       // do something.
+      depot.updateUserInfo(user);
     }
     else {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No User " + userId + " in WattDepot.");

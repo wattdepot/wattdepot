@@ -127,14 +127,14 @@ public interface WattDepotInterface {
   public void deleteSensorModel(SensorModel model) throws IdNotFoundException;
 
   /**
-   * Deletes the given CollectorMetaData.
+   * Deletes the given CollectorProcessDefinitionData.
    * 
    * @param process
-   *          the CollectorMetaData to delete.
+   *          the CollectorProcessDefinitionData to delete.
    * @throws IdNotFoundException
-   *           if the CollectorMetaData is not found in the server.
+   *           if the CollectorProcessDefinitionData is not found in the server.
    */
-  public void deleteCollectorMetaData(CollectorProcessDefinition process)
+  public void deleteCollectorProcessDefinition(CollectorProcessDefinition process)
       throws IdNotFoundException;
 
   /**
@@ -243,22 +243,22 @@ public interface WattDepotInterface {
   public SensorModelList getSensorModels();
 
   /**
-   * Retrieves the CollectorMetaData with the given id from the WattDepot
+   * Retrieves the CollectorProcessDefinitionData with the given id from the WattDepot
    * Server.
    * 
    * @param id
-   *          The CollectorMetaData's id.
-   * @return the CollectorMetaData with the given id or null.
+   *          The CollectorProcessDefinitionData's id.
+   * @return the CollectorProcessDefinitionData with the given id or null.
    * @exception IdNotFoundException
-   *              if the given id is not a CollectorMetaData's id.
+   *              if the given id is not a CollectorProcessDefinitionData's id.
    */
-  public CollectorProcessDefinition getCollectorMetaData(String id)
+  public CollectorProcessDefinition getCollectorProcessDefinition(String id)
       throws IdNotFoundException;
 
   /**
-   * @return The defined CollectorMetaDatas.
+   * @return The defined CollectorProcessDefinitionDatas.
    */
-  public CollectorProcessDefinitionList getCollectorMetaDatas();
+  public CollectorProcessDefinitionList getCollectorProcessDefinition();
 
   /**
    * @return The defined Sensors.
@@ -409,10 +409,10 @@ public interface WattDepotInterface {
   public void putSensorModel(SensorModel model);
 
   /**
-   * Stores the given CollectorMetaData in the WattDepot Server.
+   * Stores the given CollectorProcessDefinitionData in the WattDepot Server.
    * 
    * @param process
-   *          the CollectorMetaData.
+   *          the CollectorProcessDefinitionData.
    */
   public void putCollectorProcessDefinition(CollectorProcessDefinition process);
 
@@ -465,10 +465,10 @@ public interface WattDepotInterface {
   public void updateSensorModel(SensorModel model);
 
   /**
-   * Updates the given CollectorMetaData in the WattDepot Server.
+   * Updates the given CollectorProcessDefinitionData in the WattDepot Server.
    * 
    * @param process
-   *          The CollectorMetaData to update.
+   *          The CollectorProcessDefinitionData to update.
    */
-  public void updateCollectorMetaData(CollectorProcessDefinition process);
+  public void updateCollectorProcessDefinition(CollectorProcessDefinition process);
 }

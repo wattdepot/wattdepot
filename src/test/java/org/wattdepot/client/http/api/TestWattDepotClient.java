@@ -557,13 +557,13 @@ public class TestWattDepotClient {
   }
 
   /**
-   * Test method for CollectorMetaDataes.
+   * Test method for CollectorProcessDefinitions.
    */
   @Test
-  public void testCollectorMetaData() {
+  public void testCollectorProcessDefinition() {
     CollectorProcessDefinition data = InstanceFactory.getCollectorProcessDefinition();
     // Get list
-    CollectorProcessDefinitionList list = test.getCollectorMetaDatas();
+    CollectorProcessDefinitionList list = test.getCollectorProcessDefinition();
     assertNotNull(list);
     assertTrue(list.getDatas().size() == 0);
     try {
@@ -579,21 +579,21 @@ public class TestWattDepotClient {
         test.putCollectorProcessDefinition(data);
       }
     }
-    list = test.getCollectorMetaDatas();
+    list = test.getCollectorProcessDefinition();
     assertTrue(list.getDatas().contains(data));
     try {
       // get instance (READ)
-      CollectorProcessDefinition ret = test.getCollectorMetaData(data.getSlug());
+      CollectorProcessDefinition ret = test.getCollectorProcessDefinition(data.getSlug());
       assertEquals(data, ret);
       ret.setDepositoryId("new depotistory_id");
-      test.updateCollectorMetaData(ret);
-      list = test.getCollectorMetaDatas();
+      test.updateCollectorProcessDefinition(ret);
+      list = test.getCollectorProcessDefinition();
       assertNotNull(list);
       assertTrue(list.getDatas().size() == 1);
       // delete instance (DELETE)
-      test.deleteCollectorMetaData(data);
+      test.deleteCollectorProcessDefinition(data);
       try {
-        ret = test.getCollectorMetaData(data.getSlug());
+        ret = test.getCollectorProcessDefinition(data.getSlug());
         assertNull(ret);
       }
       catch (IdNotFoundException e) {
@@ -607,7 +607,7 @@ public class TestWattDepotClient {
     CollectorProcessDefinition bogus = new CollectorProcessDefinition("bogus", data.getSensorId(),
         data.getPollingInterval(), data.getDepositoryId(), data.getOwnerId());
     try {
-      test.deleteCollectorMetaData(bogus);
+      test.deleteCollectorProcessDefinition(bogus);
       fail("Shouldn't be able to delete " + bogus);
     }
     catch (IdNotFoundException e) {

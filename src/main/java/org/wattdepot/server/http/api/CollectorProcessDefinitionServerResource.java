@@ -51,7 +51,7 @@ public class CollectorProcessDefinitionServerResource extends WattDepotServerRes
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.metaDataId = getAttribute(Labels.COLLECTOR_META_DATA_ID);
+    this.metaDataId = getAttribute(Labels.COLLECTOR_PROCESS_DEFINITION_ID);
   }
 
   /*

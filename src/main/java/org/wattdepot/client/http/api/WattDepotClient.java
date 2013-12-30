@@ -161,14 +161,14 @@ public class WattDepotClient implements WattDepotInterface {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.client.WattDepotInterface#deleteCollectorMetaData(org.wattdepot
-   * .datamodel.CollectorMetaData)
+   * org.wattdepot.client.WattDepotInterface#deleteCollectorProcessDefinition(org.wattdepot
+   * .datamodel.CollectorProcessDefinition)
    */
   @Override
-  public void deleteCollectorMetaData(CollectorProcessDefinition process)
+  public void deleteCollectorProcessDefinition(CollectorProcessDefinition process)
       throws IdNotFoundException {
     ClientResource client = makeClient(this.groupId + "/"
-        + Labels.COLLECTOR_META_DATA + "/" + process.getSlug());
+        + Labels.COLLECTOR_PROCESS_DEFINITION + "/" + process.getSlug());
     CollectorProcessDefinitionResource resource = client
         .wrap(CollectorProcessDefinitionResource.class);
     try {
@@ -347,14 +347,14 @@ public class WattDepotClient implements WattDepotInterface {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.client.WattDepotInterface#getCollectorMetaData(java.lang
+   * @see org.wattdepot.client.WattDepotInterface#getCollectorProcessDefinition(java.lang
    * .String)
    */
   @Override
-  public CollectorProcessDefinition getCollectorMetaData(String id)
+  public CollectorProcessDefinition getCollectorProcessDefinition(String id)
       throws IdNotFoundException {
     ClientResource client = makeClient(this.groupId + "/"
-        + Labels.COLLECTOR_META_DATA + "/" + id);
+        + Labels.COLLECTOR_PROCESS_DEFINITION + "/" + id);
     CollectorProcessDefinitionResource resource = client
         .wrap(CollectorProcessDefinitionResource.class);
     try {
@@ -363,7 +363,7 @@ public class WattDepotClient implements WattDepotInterface {
       return ret;
     }
     catch (ResourceException e) {
-      throw new IdNotFoundException(id + " is not a known CollectorMetaData. ");
+      throw new IdNotFoundException(id + " is not a known CollectorProcessDefinition. ");
     }
     finally {
       if (client != null) {
@@ -375,12 +375,12 @@ public class WattDepotClient implements WattDepotInterface {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.client.WattDepotInterface#getCollectorMetaDatas()
+   * @see org.wattdepot.client.WattDepotInterface#getCollectorProcessDefinitions()
    */
   @Override
-  public CollectorProcessDefinitionList getCollectorMetaDatas() {
+  public CollectorProcessDefinitionList getCollectorProcessDefinition() {
     ClientResource client = makeClient(this.groupId + "/"
-        + Labels.COLLECTOR_META_DATAS + "/");
+        + Labels.COLLECTOR_PROCESS_DEFINITIONS + "/");
     CollectorProcessDefinitionsResource resource = client
         .wrap(CollectorProcessDefinitionsResource.class);
     CollectorProcessDefinitionList ret = resource.retrieve();
@@ -832,13 +832,13 @@ public class WattDepotClient implements WattDepotInterface {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.client.WattDepotInterface#putCollectorMetaData(org.wattdepot
-   * .datamodel.CollectorMetaData)
+   * org.wattdepot.client.WattDepotInterface#putCollectorProcessDefinition(org.wattdepot
+   * .datamodel.CollectorProcessDefinition)
    */
   @Override
   public void putCollectorProcessDefinition(CollectorProcessDefinition process) {
     ClientResource client = makeClient(this.groupId + "/"
-        + Labels.COLLECTOR_META_DATA + "/");
+        + Labels.COLLECTOR_PROCESS_DEFINITION + "/");
     CollectorProcessDefinitionPutResource resource = client
         .wrap(CollectorProcessDefinitionPutResource.class);
     try {
@@ -999,13 +999,13 @@ public class WattDepotClient implements WattDepotInterface {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.client.WattDepotInterface#updateCollectorMetaData(org.wattdepot
-   * .datamodel.CollectorMetaData)
+   * org.wattdepot.client.WattDepotInterface#updateCollectorProcessDefinition(org.wattdepot
+   * .datamodel.CollectorProcessDefinition)
    */
   @Override
-  public void updateCollectorMetaData(CollectorProcessDefinition process) {
+  public void updateCollectorProcessDefinition(CollectorProcessDefinition process) {
     ClientResource client = makeClient(this.groupId + "/"
-        + Labels.COLLECTOR_META_DATA + "/" + process.getSlug());
+        + Labels.COLLECTOR_PROCESS_DEFINITION + "/" + process.getSlug());
     CollectorProcessDefinitionResource resource = client
         .wrap(CollectorProcessDefinitionResource.class);
     try {

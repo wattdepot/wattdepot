@@ -76,7 +76,7 @@ public class CollectorProcessDefinitionPutServerResource extends WattDepotServer
         }
       }
       else {
-        setStatus(Status.CLIENT_ERROR_CONFLICT, "CollectorMeta " + metadata.getName()
+        setStatus(Status.CLIENT_ERROR_CONFLICT, "CollectorProcessDefinition " + metadata.getName()
             + " is already defined.");
       }
     }

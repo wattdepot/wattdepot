@@ -63,7 +63,7 @@ public abstract class MultiThreadedCollector extends TimerTask {
    * @param password
    *          The password for the user.
    * @param collectorId
-   *          The CollectorMetaDataId used to initialize this collector.
+   *          The CollectorProcessDefinitionId used to initialize this collector.
    * @param debug
    *          flag for debugging messages.
    * @throws BadCredentialException
@@ -78,7 +78,7 @@ public abstract class MultiThreadedCollector extends TimerTask {
       BadSensorUriException {
     this.client = new WattDepotClient(serverUri, username, password);
     this.debug = debug;
-    this.metaData = client.getCollectorMetaData(collectorId);
+    this.metaData = client.getCollectorProcessDefinition(collectorId);
     this.depository = client.getDepository(metaData.getDepositoryId());
     validate();
   }
@@ -135,7 +135,7 @@ public abstract class MultiThreadedCollector extends TimerTask {
    * @param password
    *          The password for the user.
    * @param collectorId
-   *          The CollectorMetaDataId used to initialize this collector.
+   *          The CollectorProcessDefinitionId used to initialize this collector.
    * @param debug
    *          flag for debugging messages.
    * @param debug
@@ -177,7 +177,7 @@ public abstract class MultiThreadedCollector extends TimerTask {
     SensorModel model = null;
     
     try {
-      metaData = staticClient.getCollectorMetaData(collectorId);
+      metaData = staticClient.getCollectorProcessDefinition(collectorId);
       staticClient.getDepository(metaData.getDepositoryId());
       sensor = staticClient.getSensor(metaData.getSensorId());
       model = staticClient.getSensorModel(sensor.getModelId());

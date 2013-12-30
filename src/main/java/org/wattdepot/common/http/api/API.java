@@ -41,24 +41,24 @@ public class API {
 
   /**
    * <b>/wattdepot/{org-id}/collector-metadata/</b> URI for storing
-   * CollectorMetaData. Use PUT requests.
+   * CollectorProcessDefinition. Use PUT requests.
    */
-  public static final String COLLECTOR_META_DATA_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR
-      + "/" + Labels.COLLECTOR_META_DATA + "/";
+  public static final String COLLECTOR_PROCESS_DEFINITION_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR
+      + "/" + Labels.COLLECTOR_PROCESS_DEFINITION + "/";
 
   /**
    * <b>/wattdepot/{org-id}/collector-metadata/</b> URI for manipulating
-   * CollectorMetaData. Supports GET, POST, and DELETE requests.
+   * CollectorProcessDefinition. Supports GET, POST, and DELETE requests.
    */
-  public static final String COLLECTOR_META_DATA_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.COLLECTOR_META_DATA + "/" + Labels.COLLECTOR_META_DATA_ID_VAR;
+  public static final String COLLECTOR_PROCESS_DEFINITION_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.COLLECTOR_PROCESS_DEFINITION + "/" + Labels.COLLECTOR_PROCESS_DEFINITION_ID_VAR;
 
   /**
    * <b>/wattdepot/{org-id}/collector-metadatas/</b> URI for getting all the
-   * defined CollectorMetaData. Use GET requests.
+   * defined CollectorProcessDefinition. Use GET requests.
    */
-  public static final String COLLECTOR_META_DATAS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.COLLECTOR_META_DATAS + "/";
+  public static final String COLLECTOR_PROCESS_DEFINITIONS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.COLLECTOR_PROCESS_DEFINITIONS + "/";
 
   /**
    * <b>/wattdepot/{org-id}/depositories/</b> URI for getting all Depositories.

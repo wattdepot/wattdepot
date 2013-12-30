@@ -166,10 +166,10 @@ public class WattDepotApplication extends Application {
     // router.attach("/wattdepot/login/", LoginServerResource.class);
     // Group administration UI.
     router.attach(API.ADMIN_URI, AdminServerResource.class);
-    // CollectorMetaData
-    router.attach(API.COLLECTOR_META_DATA_PUT_URI, CollectorProcessDefinitionPutServerResource.class);
-    router.attach(API.COLLECTOR_META_DATA_URI, CollectorProcessDefinitionServerResource.class);
-    router.attach(API.COLLECTOR_META_DATAS_URI, CollectorProcessDefinitionsServerResource.class);
+    // CollectorProcessDefinition
+    router.attach(API.COLLECTOR_PROCESS_DEFINITION_PUT_URI, CollectorProcessDefinitionPutServerResource.class);
+    router.attach(API.COLLECTOR_PROCESS_DEFINITION_URI, CollectorProcessDefinitionServerResource.class);
+    router.attach(API.COLLECTOR_PROCESS_DEFINITIONS_URI, CollectorProcessDefinitionsServerResource.class);
     // Depositories and Measurements
     router.attach(API.DEPOSITORY_PUT_URI, DepositoryPutServerResource.class);
     router.attach(API.DEPOSITORY_URI, DepositoryServerResource.class);
