@@ -102,9 +102,9 @@ public class EGaugeCollector extends MultiThreadedCollector {
     super(serverUri, username, password, collectorId, debug);
     this.measType = depository.getMeasurementType();
     this.measUnit = Unit.valueOf(measType.getUnits());
-    this.sensor = client.getSensor(metaData.getSensorId());
+    this.sensor = client.getSensor(definition.getSensorId());
 
-    Property prop = this.metaData.getProperty("registerName");
+    Property prop = this.definition.getProperty("registerName");
     if (prop != null) {
       this.registerName = prop.getValue();
     }
@@ -117,7 +117,7 @@ public class EGaugeCollector extends MultiThreadedCollector {
           + "/cgi-bin/egauge?v1&tot&inst";
     }
     catch (MalformedURLException e) {
-      throw new BadSensorUriException(client.getSensor(metaData.getSensorId())
+      throw new BadSensorUriException(client.getSensor(definition.getSensorId())
           .getUri() + " is not a valid URI.");
     }
   }
@@ -151,22 +151,22 @@ public class EGaugeCollector extends MultiThreadedCollector {
         debug);
     this.measType = depository.getMeasurementType();
     this.measUnit = Unit.valueOf(measType.getUnits());
-    this.sensor = client.getSensor(metaData.getSensorId());
+    this.sensor = client.getSensor(definition.getSensorId());
 
-    Property prop = this.metaData.getProperty("registerName");
+    Property prop = this.definition.getProperty("registerName");
     if (prop != null) {
       this.registerName = prop.getValue();
     }
     URL sensorURL;
     try {
-      sensorURL = new URL(client.getSensor(metaData.getSensorId()).getUri());
+      sensorURL = new URL(client.getSensor(definition.getSensorId()).getUri());
       String sensorHostName = sensorURL.getHost();
       // CAM using v1&tot&inst returns v1.0 xml data.
       this.eGaugeUri = "http://" + sensorHostName
           + "/cgi-bin/egauge?v1&tot&inst";
     }
     catch (MalformedURLException e) {
-      throw new BadSensorUriException(client.getSensor(metaData.getSensorId())
+      throw new BadSensorUriException(client.getSensor(definition.getSensorId())
           .getUri() + " is not a valid URI.");
     }
 
@@ -261,7 +261,7 @@ public class EGaugeCollector extends MultiThreadedCollector {
       else {
         value = energy.to(measUnit).getEstimatedValue();
       }
-      meas = new Measurement(metaData.getSensorId(), timestamp, value, measUnit);
+      meas = new Measurement(definition.getSensorId(), timestamp, value, measUnit);
     }
     catch (MalformedURLException e) {
       System.err.format("URI %s was invalid leading to malformed URL%n",
@@ -322,7 +322,7 @@ public class EGaugeCollector extends MultiThreadedCollector {
         "WattDepot Server URI. (http://server.wattdepot.org)");
     options.addOption("u", "username", true, "Username");
     options.addOption("p", "password", true, "Password");
-    options.addOption("c", "collector", true, "Collector Metadata Id");
+    options.addOption("c", "collector", true, "Collector Process Definition Id");
     options.addOption("d", "debug", false,
         "Displays sensor data as it is sent to the server.");
 
@@ -378,7 +378,7 @@ public class EGaugeCollector extends MultiThreadedCollector {
       System.out.println("WattDepot Server: " + serverUri);
       System.out.println("Username: " + username);
       System.out.println("Password: " + password);
-      System.out.println("Collector Metadata Id: " + collectorId);
+      System.out.println("Collector Process Definition Id: " + collectorId);
       System.out.println("debug: " + debug);
       System.out.println();
     }

@@ -136,7 +136,7 @@ public class SharkCollector extends MultiThreadedCollector {
     super(serverUri, username, password, collectorId, debug);
     this.measType = depository.getMeasurementType();
     this.measUnit = Unit.valueOf(measType.getUnits());
-    this.sensor = client.getSensor(metaData.getSensorId());
+    this.sensor = client.getSensor(definition.getSensorId());
     this.sensorName = sensor.getName();
 
     URL sensorURL;
@@ -194,7 +194,7 @@ public class SharkCollector extends MultiThreadedCollector {
     options.addOption("s", "server", true, "WattDepot Server URI. (http://server.wattdepot.org)");
     options.addOption("u", "username", true, "Username");
     options.addOption("p", "password", true, "Password");
-    options.addOption("c", "collector", true, "Collector Metadata Id");
+    options.addOption("c", "collector", true, "Collector Process Definition Id");
     options.addOption("d", "debug", false, "Displays sensor data as it is sent to the server.");
 
     CommandLine cmd = null;
@@ -248,7 +248,7 @@ public class SharkCollector extends MultiThreadedCollector {
       System.out.println("WattDepot Server: " + serverUri);
       System.out.println("Username: " + username);
       System.out.println("Password: " + password);
-      System.out.println("Collector Metadata Id: " + collectorId);
+      System.out.println("Collector Process Definition Id: " + collectorId);
       System.out.println("debug: " + debug);
       System.out.println();
     }

@@ -26,7 +26,7 @@ import org.wattdepot.common.http.api.CollectorProcessDefinitionsResource;
 
 /**
  * SensorProcessesServerResource - Handles the SensorProcesses HTTP API
- * ("/wattdepot/{org-id}/collector-metadatas/").
+ * ("/wattdepot/{org-id}/collector-process-definitions/").
  * 
  * @author Cam Moore
  * 
@@ -41,7 +41,7 @@ public class CollectorProcessDefinitionsServerResource extends WattDepotServerRe
    */
   @Override
   public CollectorProcessDefinitionList retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/collector-metadatas/");
+    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/collector-process-definitions/");
     CollectorProcessDefinitionList ret = new CollectorProcessDefinitionList();
     for (CollectorProcessDefinition sp : depot.getCollectorProcessDefinitions(orgId)) {
       ret.getDatas().add(sp);

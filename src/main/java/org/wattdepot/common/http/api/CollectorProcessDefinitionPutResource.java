@@ -31,12 +31,12 @@ import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 public interface CollectorProcessDefinitionPutResource {
 
   /**
-   * Defines the PUT /wattdepot/collector-metadata/ API call.
+   * Defines the PUT /wattdepot/collector-process-definition/ API call.
    * 
-   * @param metadata
+   * @param definition
    *          The CollectorProcessDefinition to store.
    */
   @Put
-  public void store(CollectorProcessDefinition metadata);
+  public void store(CollectorProcessDefinition definition);
 
 }

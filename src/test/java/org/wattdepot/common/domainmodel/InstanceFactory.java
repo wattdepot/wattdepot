@@ -223,10 +223,10 @@ public class InstanceFactory {
   }
 
   /**
-   * @return A CollectorMetaData instance for testing.
+   * @return A CollectorProcessDefinition instance for testing.
    */
   public static CollectorProcessDefinition getCollectorProcessDefinition() {
-    return new CollectorProcessDefinition("Test Collector Metadata", getSensor().getSlug(), 10L,
+    return new CollectorProcessDefinition("Test Collector Process Defintion", getSensor().getSlug(), 10L,
         "test_depository", getOrganization().getSlug());
   }
 

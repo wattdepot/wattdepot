@@ -45,8 +45,8 @@ public abstract class MultiThreadedCollector extends TimerTask {
 
   /** Flag for debugging messages. */
   protected boolean debug;
-  /** The metadata about the collector. */
-  protected CollectorProcessDefinition metaData;
+  /** The definition about the collector. */
+  protected CollectorProcessDefinition definition;
 
   /** The client used to communicate with the WattDepot server. */
   protected WattDepotClient client;
@@ -78,8 +78,8 @@ public abstract class MultiThreadedCollector extends TimerTask {
       BadSensorUriException {
     this.client = new WattDepotClient(serverUri, username, password);
     this.debug = debug;
-    this.metaData = client.getCollectorProcessDefinition(collectorId);
-    this.depository = client.getDepository(metaData.getDepositoryId());
+    this.definition = client.getCollectorProcessDefinition(collectorId);
+    this.depository = client.getDepository(definition.getDepositoryId());
     validate();
   }
 
@@ -109,9 +109,9 @@ public abstract class MultiThreadedCollector extends TimerTask {
       BadSensorUriException, IdNotFoundException {
     this.client = new WattDepotClient(serverUri, username, password);
     this.debug = debug;
-    this.metaData = new CollectorProcessDefinition(Slug.slugify(sensorId + " " + pollingInterval + " "
+    this.definition = new CollectorProcessDefinition(Slug.slugify(sensorId + " " + pollingInterval + " "
         + depository.getName()), sensorId, pollingInterval, depository.getName(), null);
-    client.putCollectorProcessDefinition(metaData);
+    client.putCollectorProcessDefinition(definition);
     this.depository = depository;
     client.putDepository(depository);
     validate();
@@ -121,7 +121,7 @@ public abstract class MultiThreadedCollector extends TimerTask {
    * @return true if everything is good to go.
    */
   public boolean isValid() {
-    if (this.client != null && this.metaData != null) {
+    if (this.client != null && this.definition != null) {
       return true;
     }
     return false;
@@ -171,15 +171,15 @@ public abstract class MultiThreadedCollector extends TimerTask {
       Thread.sleep(2000);
       return false;
     }
-    // Get the collector metadata
-    CollectorProcessDefinition metaData = null;
+    // Get the collector process definition
+    CollectorProcessDefinition definition = null;
     Sensor sensor = null;
     SensorModel model = null;
     
     try {
-      metaData = staticClient.getCollectorProcessDefinition(collectorId);
-      staticClient.getDepository(metaData.getDepositoryId());
-      sensor = staticClient.getSensor(metaData.getSensorId());
+      definition = staticClient.getCollectorProcessDefinition(collectorId);
+      staticClient.getDepository(definition.getDepositoryId());
+      sensor = staticClient.getSensor(definition.getSensorId());
       model = staticClient.getSensorModel(sensor.getModelId());
       // Get SensorModel to determine what type of collector to start.
       if (model.getName().equals(SensorModelHelper.EGAUGE) && model.getVersion().equals("1.0")) {
@@ -190,7 +190,7 @@ public abstract class MultiThreadedCollector extends TimerTask {
           if (collector.isValid()) {
             System.out.format("Started polling %s sensor at %s%n", sensor.getName(),
                 Tstamp.makeTimestamp());
-            t.schedule(collector, 0, metaData.getPollingInterval() * 1000);
+            t.schedule(collector, 0, definition.getPollingInterval() * 1000);
           }
           else {
             System.err.format("Cannot poll %s sensor%n", sensor.getName());
@@ -214,7 +214,7 @@ public abstract class MultiThreadedCollector extends TimerTask {
           if (collector.isValid()) {
             System.out.format("Started polling %s sensor at %s%n", sensor.getName(),
                 Tstamp.makeTimestamp());
-            t.schedule(collector, 0, metaData.getPollingInterval() * 1000);
+            t.schedule(collector, 0, definition.getPollingInterval() * 1000);
           }
           else {
             System.err.format("Cannot poll %s sensor%n", sensor.getName());
@@ -244,7 +244,7 @@ public abstract class MultiThreadedCollector extends TimerTask {
    * @throws IdNotFoundException 
    */
   private void validate() throws BadSensorUriException, IdNotFoundException {
-    Sensor s = client.getSensor(metaData.getSensorId());
+    Sensor s = client.getSensor(definition.getSensorId());
     String[] schemes = { "http", "https" };
     UrlValidator urlValidator = new UrlValidator(schemes);
     if (!urlValidator.isValid(s.getUri())) {

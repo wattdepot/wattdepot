@@ -79,7 +79,7 @@ $(function(){
         <li><a id="depositories_tab_link" href="#depositories" data-toggle="tab">Depositories</a></li>
         <li><a id="sensors_tab_link" href="#sensors" data-toggle="tab">Sensors</a></li>
         <li><a id="sensorgroups_tab_link" href="#sensorgroups" data-toggle="tab">Sensor Groups</a></li>
-        <li><a id="sensorprocesses_tab_link" href="#sensorprocesses" data-toggle="tab">Collector Metadata</a></li>
+        <li><a id="sensorprocesses_tab_link" href="#sensorprocesses" data-toggle="tab">Collector Process Definitions</a></li>
     </ul>
     <!-- Tab panes -->
     <div class="tab-content">
@@ -336,7 +336,7 @@ $(function(){
             <div class="well">
                 <table class="table">
                     <thead>
-                      <tr><th colspan="5"><h3>Collector Metadata</h3></th></tr>
+                      <tr><th colspan="5"><h3>Collector Process Definitions</h3></th></tr>
                         <tr>
                             <th>Id</th>
                             <th>Name</th>
@@ -370,7 +370,7 @@ $(function(){
                     </#list>
                     </tbody>
                 </table>
-                <button data-toggle="modal" data-target="#addProcessModal" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> Add Collector Metadata</button>
+                <button data-toggle="modal" data-target="#addProcessModal" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> Add Collector Process Definition</button>
             </div>       
         </div>
     </div>  
@@ -629,13 +629,13 @@ $(function(){
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->    
 
-  <!-- Add Collector Metadata -->
+  <!-- Add Collector Process Defintion -->
   <div class="modal fade" id="addProcessModal" tabindex="-1" role="dialog" aria-labelledby="addProcessModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title">Add/Edit Collector Metadata</h4>
+          <h4 class="modal-title">Add/Edit Collector Process Definition</h4>
         </div>
         <div class="modal-body">
           <div class="container">
@@ -645,7 +645,7 @@ $(function(){
                  <label class="col-sm-3 control-label">Collector Name</label>
                  <div class="col-sm-9">
                    <input class="form-control" type="text" name="sensorprocess_name" class="form-control">
-                   <p class="help-block">Unique name for the metadata.</p>
+                   <p class="help-block">Unique name for the definition.</p>
                  </div>
               </div>
               <div class="form-group">

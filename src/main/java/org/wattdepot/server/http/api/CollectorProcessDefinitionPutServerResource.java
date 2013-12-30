@@ -32,8 +32,7 @@ import org.wattdepot.common.http.api.CollectorProcessDefinitionPutResource;
 /**
  * CollectorProcessDefinitionServerResource - Handles the
  * CollectorProcessDefinition HTTP API
- * (("/wattdepot/{org-id}/collector-metadata/",
- * "/wattdepot/{org-id}/collector-metadata/{collector-metadata-id}").
+ * ("/wattdepot/{org-id}/collector-process-definition/").
  * 
  * @author Cam Moore
  * 
@@ -48,20 +47,20 @@ public class CollectorProcessDefinitionPutServerResource extends WattDepotServer
    * .datamodel.CollectorProcessDefinition)
    */
   @Override
-  public void store(CollectorProcessDefinition metadata) {
+  public void store(CollectorProcessDefinition definition) {
     getLogger().log(Level.INFO,
-        "PUT /wattdepot/{" + orgId + "}/collector-metadata/ with " + metadata);
+        "PUT /wattdepot/{" + orgId + "}/collector-process-definition/ with " + definition);
     Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
-      if (!depot.getCollectorProcessDefinitionIds(orgId).contains(metadata.getSlug())) {
+      if (!depot.getCollectorProcessDefinitionIds(orgId).contains(definition.getSlug())) {
         try {
-          Sensor s = depot.getSensor(metadata.getSensorId(), orgId);
+          Sensor s = depot.getSensor(definition.getSensorId(), orgId);
           if (s != null) {
-            depot.defineCollectorProcessDefinition(metadata.getName(), s.getSlug(),
-                metadata.getPollingInterval(), metadata.getDepositoryId(), owner.getSlug());
+            depot.defineCollectorProcessDefinition(definition.getName(), s.getSlug(),
+                definition.getPollingInterval(), definition.getDepositoryId(), owner.getSlug());
           }
           else {
-            setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "Sensor " + metadata.getSensorId()
+            setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "Sensor " + definition.getSensorId()
                 + " is not defined.");
           }
         }
@@ -76,7 +75,7 @@ public class CollectorProcessDefinitionPutServerResource extends WattDepotServer
         }
       }
       else {
-        setStatus(Status.CLIENT_ERROR_CONFLICT, "CollectorProcessDefinition " + metadata.getName()
+        setStatus(Status.CLIENT_ERROR_CONFLICT, "CollectorProcessDefinition " + definition.getName()
             + " is already defined.");
       }
     }

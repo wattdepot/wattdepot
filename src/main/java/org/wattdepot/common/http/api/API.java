@@ -40,21 +40,21 @@ public class API {
   public static final String ADMIN_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/collector-metadata/</b> URI for storing
+   * <b>/wattdepot/{org-id}/collector-process-definition/</b> URI for storing
    * CollectorProcessDefinition. Use PUT requests.
    */
   public static final String COLLECTOR_PROCESS_DEFINITION_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR
       + "/" + Labels.COLLECTOR_PROCESS_DEFINITION + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/collector-metadata/</b> URI for manipulating
+   * <b>/wattdepot/{org-id}/collector-process-definition/</b> URI for manipulating
    * CollectorProcessDefinition. Supports GET, POST, and DELETE requests.
    */
   public static final String COLLECTOR_PROCESS_DEFINITION_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + Labels.COLLECTOR_PROCESS_DEFINITION + "/" + Labels.COLLECTOR_PROCESS_DEFINITION_ID_VAR;
 
   /**
-   * <b>/wattdepot/{org-id}/collector-metadatas/</b> URI for getting all the
+   * <b>/wattdepot/{org-id}/collector-process-definitions/</b> URI for getting all the
    * defined CollectorProcessDefinition. Use GET requests.
    */
   public static final String COLLECTOR_PROCESS_DEFINITIONS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"

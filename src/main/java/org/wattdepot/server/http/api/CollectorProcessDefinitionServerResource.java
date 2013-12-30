@@ -30,9 +30,10 @@ import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.CollectorProcessDefinitionResource;
 
 /**
- * CollectorProcessDefinitionServerResource - Handles the CollectorProcessDefinition HTTP API
- * (("/wattdepot/{org-id}/collector-metadata/",
- * "/wattdepot/{org-id}/collector-metadata/{collector-metadata-id}").
+ * CollectorProcessDefinitionServerResource - Handles the
+ * CollectorProcessDefinition HTTP API (
+ * "/wattdepot/{org-id}/collector-process-definition/{collector-process-definition-id}"
+ * ).
  * 
  * @author Cam Moore
  * 
@@ -40,8 +41,8 @@ import org.wattdepot.common.http.api.CollectorProcessDefinitionResource;
 public class CollectorProcessDefinitionServerResource extends WattDepotServerResource implements
     CollectorProcessDefinitionResource {
 
-  /** The collector-metadata_id from the request. */
-  private String metaDataId;
+  /** The collector-process-definition_id from the request. */
+  private String definitionId;
 
   /*
    * (non-Javadoc)
@@ -51,7 +52,7 @@ public class CollectorProcessDefinitionServerResource extends WattDepotServerRes
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.metaDataId = getAttribute(Labels.COLLECTOR_PROCESS_DEFINITION_ID);
+    this.definitionId = getAttribute(Labels.COLLECTOR_PROCESS_DEFINITION_ID);
   }
 
   /*
@@ -62,17 +63,17 @@ public class CollectorProcessDefinitionServerResource extends WattDepotServerRes
   @Override
   public CollectorProcessDefinition retrieve() {
     getLogger().log(Level.INFO,
-        "GET /wattdepot/{" + orgId + "}/CollectorProcessDefinition/{" + metaDataId + "}");
+        "GET /wattdepot/{" + orgId + "}/CollectorProcessDefinition/{" + definitionId + "}");
     CollectorProcessDefinition process = null;
     try {
-      process = depot.getCollectorProcessDefinition(metaDataId, orgId);
+      process = depot.getCollectorProcessDefinition(definitionId, orgId);
     }
     catch (MisMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
     }
     if (process == null) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "CollectorProcessDefinition " + metaDataId
-          + " is not defined.");
+      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "CollectorProcessDefinition "
+          + definitionId + " is not defined.");
     }
     return process;
   }
@@ -85,9 +86,9 @@ public class CollectorProcessDefinitionServerResource extends WattDepotServerRes
   @Override
   public void remove() {
     getLogger().log(Level.INFO,
-        "DEL /wattdepot/{" + orgId + "}/collector-metadata/{" + metaDataId + "}");
+        "DEL /wattdepot/{" + orgId + "}/collector-process-definition/{" + definitionId + "}");
     try {
-      depot.deleteCollectorProcessDefinition(metaDataId, orgId);
+      depot.deleteCollectorProcessDefinition(definitionId, orgId);
     }
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
@@ -101,20 +102,20 @@ public class CollectorProcessDefinitionServerResource extends WattDepotServerRes
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.common.http.api.CollectorProcessDefinitionResource#update(org.wattdepot
-   * .common.domainmodel.CollectorProcessDefinition)
+   * org.wattdepot.common.http.api.CollectorProcessDefinitionResource#update
+   * (org.wattdepot .common.domainmodel.CollectorProcessDefinition)
    */
   @Override
-  public void update(CollectorProcessDefinition metadata) {
+  public void update(CollectorProcessDefinition definition) {
     getLogger().log(
         Level.INFO,
-        "POST /wattdepot/{" + orgId + "}/collector-metadata/{" + metaDataId + "} with "
-            + metadata);
+        "POST /wattdepot/{" + orgId + "}/collector-process-definition/{" + definitionId + "} with "
+            + definition);
     Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
-      if (metadata.getSlug().equals(metaDataId)) {
-        if (depot.getCollectorProcessDefinitionIds(orgId).contains(metadata.getSlug())) {
-          depot.updateCollectorProcessDefinition(metadata);
+      if (definition.getSlug().equals(definitionId)) {
+        if (depot.getCollectorProcessDefinitionIds(orgId).contains(definition.getSlug())) {
+          depot.updateCollectorProcessDefinition(definition);
         }
       }
       else {

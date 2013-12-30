@@ -30,7 +30,7 @@ To use a WattDepot server, begin by requesting a user name and password from the
 * Add and delete depositories
 * Add and delete sensors (and their associated locations, models, and properties)
 * Add and delete sensor groups
-* Add and delete collector metadata
+* Add and delete collector process definitions
 * Add and delete measurements (if you are doing this manually).
 * Query the server for measurements and measured values in a variety of ways.
 
@@ -65,9 +65,9 @@ One implementation of a Collector might be a software program that uses the IP a
 
 An alternative implementation of a Collector is a person who reads a meter manually to obtain a measurement, then uses a GUI interface to a WattDepot server to store that value.
 
-In order for a Collector to do its job, it must be able to obtain information about the Sensor it is supposed to contact. It is also useful for the Collector to know how often it should collect data, what data to collect, and where to store it in the server. WattDepot represents this information with the "Collector Metadata" entity.
+In order for a Collector to do its job, it must be able to obtain information about the Sensor it is supposed to contact. It is also useful for the Collector to know how often it should collect data, what data to collect, and where to store it in the server. WattDepot represents this information with the "Collector Process Definition" entity.
 
-In prior versions of WattDepot, the collector software programs hard-wired information about when, where, and how often to collect data into their source code. In this version, we expect Collector programs to first query the WattDepot server to obtain their metadata, and use that metadata to determine what to do.  By representing the task associated with a Collector in the server explicitly as metadata, the server can provide significant new capabilities to users. For example, a server can now understand how frequently to receive data from a Collector, and signal the user if data is not being received as expected.
+In prior versions of WattDepot, the collector software programs hard-wired information about when, where, and how often to collect data into their source code. In this version, we expect Collector programs to first query the WattDepot server to obtain their process definition, and use that definition to determine what to do.  By representing the task associated with a Collector in the server explicitly as process definition, the server can provide significant new capabilities to users. For example, a server can now understand how frequently to receive data from a Collector, and signal the user if data is not being received as expected.
 
 ## Depository
 

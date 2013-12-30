@@ -143,27 +143,27 @@ Delete this representation of a sensor model.
 
 See the [Collector domain model description](overview/domainmodel#collector) for details about this concept.
 
-*(Do we want to call this "collector-metadata", or just "collector"? Which is less confusing?)*
+*(Do we want to call this "collector-process-definition", or just "collector"? Which is less confusing?)*
 
-### GET /wattdepot/{org-id}/collector-metadata/{collector-metadata-id}
+### GET /wattdepot/{org-id}/collector-process-definition/{collector-process-definition-id}
 
-Retrieve the representation of this Collector metadata instance.
+Retrieve the representation of this Collector process definition instance.
 
-### GET /wattdepot/{org-id}/collector-metadatas/
+### GET /wattdepot/{org-id}/collector-process-definitions/
 
-Retrieve a list of representations of all Collector metadata instances associated with this group.
+Retrieve a list of representations of all Collector process definition instances associated with this group.
 
-### PUT /wattdepot/{org-id}/collector-metadata/
+### PUT /wattdepot/{org-id}/collector-process-definition/
 
-Create a new representation of a collector's metadata.
+Create a new representation of a collector's process definition.
 
-### POST /wattdepot/{org-id}/collector-metadata/{collector-metadata-id}
+### POST /wattdepot/{org-id}/collector-process-definition/{collector-process-definition-id}
 
-Update a pre-existing collector's metadata.
+Update a pre-existing collector's process definition.
 
-### DELETE /wattdepot/{org-id}/collector-metadata/{collector-metadata-id}
+### DELETE /wattdepot/{org-id}/collector-process-definition/{collector-process-definition-id}
 
-Delete this metadata representation.
+Delete this process definition representation.
 
 
 -------------
