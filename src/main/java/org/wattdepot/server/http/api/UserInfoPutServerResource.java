@@ -51,9 +51,9 @@ public class UserInfoPutServerResource extends WattDepotServerResource implement
   public void store(UserInfo user) {
     getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/user/ with " + user);
     if (orgId.equals(user.getOrganizationId()) || orgId.equals(Organization.ADMIN_GROUP_NAME)) {
-      if (!depot.getUserIds().contains(user.getId())) {
+      if (!depot.getUserIds(orgId).contains(user.getId())) {
         try {
-          UserPassword password = depot.getUserPassword(user.getId());
+          UserPassword password = depot.getUserPassword(user.getId(), orgId);
           if (password != null) {
             UserInfo defined = depot
                 .defineUserInfo(user.getId(), user.getFirstName(), user.getLastName(),

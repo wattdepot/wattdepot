@@ -56,7 +56,7 @@ public class ExampleInstances {
         + props.get(ClientProperties.PORT_KEY) + "/";
     try {
       admin = new WattDepotAdminClient(serverURL, props.get(ClientProperties.USER_NAME),
-          props.get(ClientProperties.USER_PASSWORD));
+          Organization.ADMIN_GROUP_NAME, props.get(ClientProperties.USER_PASSWORD));
     }
     catch (Exception e) {
       System.out.println("Failed with " + props.get(ClientProperties.USER_NAME) + " and "
@@ -65,13 +65,13 @@ public class ExampleInstances {
     if (admin != null) {
       setUpOrganization();
       try {
-        cmoore = new WattDepotClient(serverURL, "cmoore", "secret1");
+        cmoore = new WattDepotClient(serverURL, "cmoore", "uh", "secret1");
       }
       catch (BadCredentialException e) {
         e.printStackTrace();
       }
       try {
-        johnson = new WattDepotClient(serverURL, "johnson", "secret2");
+        johnson = new WattDepotClient(serverURL, "johnson", "uh", "secret2");
       }
       catch (BadCredentialException e) {
         e.printStackTrace();
@@ -96,8 +96,10 @@ public class ExampleInstances {
     try {
       Organization defined = admin.getOrganization(org.getSlug());
       if (defined == null) {
-        admin.putUserPassword(new UserPassword(user1.getId(), "secret1"));
-        admin.putUserPassword(new UserPassword(user2.getId(), "secret2"));
+        admin
+            .putUserPassword(new UserPassword(user1.getId(), user1.getOrganizationId(), "secret1"));
+        admin
+            .putUserPassword(new UserPassword(user2.getId(), user2.getOrganizationId(), "secret2"));
         admin.putUser(user1);
         admin.putUser(user2);
         admin.putOrganization(org);
@@ -105,8 +107,8 @@ public class ExampleInstances {
     }
     catch (IdNotFoundException e) {
       // not defined so put it.
-      admin.putUserPassword(new UserPassword(user1.getId(), "secret"));
-      admin.putUserPassword(new UserPassword(user2.getId(), "secret"));
+      admin.putUserPassword(new UserPassword(user1.getId(), user1.getOrganizationId(), "secret"));
+      admin.putUserPassword(new UserPassword(user2.getId(), user2.getOrganizationId(), "secret"));
       admin.putUser(user1);
       admin.putUser(user2);
       admin.putOrganization(org);
@@ -201,7 +203,8 @@ public class ExampleInstances {
   }
 
   /**
-   * @param args command line arguments.
+   * @param args
+   *          command line arguments.
    */
   public static void main(String[] args) {
     ExampleInstances e = new ExampleInstances();

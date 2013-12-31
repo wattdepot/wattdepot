@@ -93,14 +93,16 @@ public class TestWattDepotPersistenceImpl {
     if (testO == null) {
       impl.defineOrganization(testOrg.getSlug(), testOrg.getUsers());
     }
-    UserInfo testU = impl.getUser(testUser.getId());
+    UserInfo testU = impl.getUser(testUser.getId(), testUser.getOrganizationId());
     if (testU == null) {
       impl.defineUserInfo(testUser.getId(), testUser.getFirstName(), testUser.getLastName(),
           testUser.getEmail(), testUser.getOrganizationId(), testUser.getProperties());
     }
-    UserPassword testP = impl.getUserPassword(testPassword.getId());
+    UserPassword testP = impl.getUserPassword(testPassword.getId(),
+        testPassword.getOrganizationId());
     if (testP == null) {
-      impl.defineUserPassword(testPassword.getId(), testPassword.getPlainText());
+      impl.defineUserPassword(testPassword.getId(), testPassword.getOrganizationId(),
+          testPassword.getPlainText());
     }
   }
 
@@ -112,13 +114,14 @@ public class TestWattDepotPersistenceImpl {
    */
   @After
   public void tearDown() throws Exception {
-    UserPassword testP = impl.getUserPassword(testPassword.getId());
+    UserPassword testP = impl.getUserPassword(testPassword.getId(),
+        testPassword.getOrganizationId());
     if (testP != null) {
-      impl.deleteUserPassword(testP.getId());
+      impl.deleteUserPassword(testP.getId(), testPassword.getOrganizationId());
     }
-    UserInfo testU = impl.getUser(testUser.getId());
+    UserInfo testU = impl.getUser(testUser.getId(), testUser.getOrganizationId());
     if (testU != null) {
-      impl.deleteUser(testU.getId());
+      impl.deleteUser(testU.getId(), testU.getOrganizationId());
     }
     Organization testO = impl.getOrganization(testOrg.getSlug());
     if (testO != null) {
@@ -1005,27 +1008,27 @@ public class TestWattDepotPersistenceImpl {
    */
   @Test
   public void testUsers() {
-    List<UserInfo> list = impl.getUsers();
+    UserInfo user = InstanceFactory.getUserInfo2();
+    List<UserInfo> list = impl.getUsers(user.getOrganizationId());
     int numUsers = list.size();
     assertTrue(numUsers >= 0);
-    UserInfo user = InstanceFactory.getUserInfo2();
     try {
       impl.defineUserInfo(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(),
           user.getOrganizationId(), user.getProperties());
-      list = impl.getUsers();
+      list = impl.getUsers(user.getOrganizationId());
       assertTrue(numUsers + 1 == list.size());
-      List<String> ids = impl.getUserIds();
+      List<String> ids = impl.getUserIds(user.getOrganizationId());
       assertTrue(list.size() == ids.size());
-      UserInfo defined = impl.getUser(user.getId());
+      UserInfo defined = impl.getUser(user.getId(), user.getOrganizationId());
       assertNotNull(defined);
       assertTrue(defined.equals(user));
       assertTrue(defined.toString().equals(user.toString()));
       assertTrue(defined.hashCode() == user.hashCode());
       defined.setFirstName("New Name");
       impl.updateUserInfo(defined);
-      list = impl.getUsers();
+      list = impl.getUsers(user.getOrganizationId());
       assertTrue(numUsers + 1 == list.size());
-      UserInfo updated = impl.getUser(user.getId());
+      UserInfo updated = impl.getUser(user.getId(), user.getOrganizationId());
       assertNotNull(updated);
       assertFalse(updated.equals(user));
       assertFalse(updated.toString().equals(user.toString()));
@@ -1041,15 +1044,15 @@ public class TestWattDepotPersistenceImpl {
       fail(e.getMessage() + " should not happen");
     }
     try {
-      impl.deleteUser("bogus-user-id-4502");
+      impl.deleteUser("bogus-user-id-4502", "bogus-organization-9520");
       fail("should be able to delete bogus user.");
     }
     catch (IdNotFoundException e) {
       // expected.
     }
     try {
-      impl.deleteUser(user.getId());
-      list = impl.getUsers();
+      impl.deleteUser(user.getId(), user.getOrganizationId());
+      list = impl.getUsers(user.getOrganizationId());
       assertTrue(numUsers == list.size());
     }
     catch (IdNotFoundException e) {
@@ -1065,14 +1068,15 @@ public class TestWattDepotPersistenceImpl {
   public void testUserPasswords() {
     UserPassword password = InstanceFactory.getUserPassword2();
     try {
-      impl.defineUserPassword(password.getId(), password.getPlainText());
-      UserPassword defined = impl.getUserPassword(password.getId());
+      impl.defineUserPassword(password.getId(), password.getOrganizationId(),
+          password.getPlainText());
+      UserPassword defined = impl.getUserPassword(password.getId(), password.getOrganizationId());
       assertNotNull(defined);
       assertTrue(defined.equals(password));
       assertTrue(defined.hashCode() == password.hashCode());
       defined.setPlainText("New plainText");
       impl.updateUserPassword(defined);
-      UserPassword updated = impl.getUserPassword(password.getId());
+      UserPassword updated = impl.getUserPassword(password.getId(), password.getOrganizationId());
       assertNotNull(updated);
       assertFalse(updated.equals(password));
       assertFalse(updated.toString().equals(password.toString()));
@@ -1083,14 +1087,14 @@ public class TestWattDepotPersistenceImpl {
       fail(e.getMessage() + " should not happen");
     }
     try {
-      impl.deleteUserPassword("bogus-user-password-id-9685");
+      impl.deleteUserPassword("bogus-user-password-id-9685", "bogus-organization-5928");
       fail("Should not be able to delete bogus password.");
     }
     catch (IdNotFoundException e) {
       // expected.
     }
     try {
-      impl.deleteUserPassword(password.getId());
+      impl.deleteUserPassword(password.getId(), password.getOrganizationId());
     }
     catch (IdNotFoundException e) {
       e.printStackTrace();

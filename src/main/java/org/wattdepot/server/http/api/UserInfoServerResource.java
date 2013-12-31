@@ -56,7 +56,7 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
   @Override
   public UserInfo retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/user/{" + userId + "}");
-    UserInfo user = depot.getUser(userId);
+    UserInfo user = depot.getUser(userId, orgId);
     if (user == null) {
       setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "User " + userId + " is not defined.");
     }
@@ -72,7 +72,7 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
   @Override
   public void update(UserInfo user) {
     getLogger().log(Level.INFO, "POST /wattdepot/{" + orgId + "}/user/{" + userId + "}");
-    if (depot.getUsers().contains(user)) {
+    if (depot.getUsers(orgId).contains(user)) {
       // do something.
       depot.updateUserInfo(user);
     }
@@ -90,7 +90,7 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
   public void remove() {
     getLogger().log(Level.INFO, "DEL /wattdepot/{" + orgId + "}/user/{" + userId + "}");
     try {
-      depot.deleteUser(userId);
+      depot.deleteUser(userId, orgId);
     }
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());

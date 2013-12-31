@@ -54,16 +54,18 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    * @param username
    *          The name of the user. The user must be defined in the WattDepot
    *          server.
+   * @param orgId
+   *          the id of the organization the user is in.
    * @param password
    *          The password for the user.
    * @throws BadCredentialException
    *           If the user or password don't match the credentials on the
    *           WattDepot server.
    */
-  public WattDepotAdminClient(String serverUri, String username, String password)
+  public WattDepotAdminClient(String serverUri, String username, String orgId, String password)
       throws BadCredentialException {
-    super(serverUri, username, password);
-    if (!getGroupId().equals("admin")) {
+    super(serverUri, username, orgId, password);
+    if (!getOrganizationId().equals("admin")) {
       throw new BadCredentialException("Wrong group.");
     }
   }
@@ -97,8 +99,8 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    * org.wattdepot.client.WattDepotAdminInterface#deleteUser(java.lang.String)
    */
   @Override
-  public void deleteUser(String id) throws IdNotFoundException {
-    ClientResource client = makeClient("admin/" + Labels.USER + "/" + id);
+  public void deleteUser(String id, String orgId) throws IdNotFoundException {
+    ClientResource client = makeClient(orgId + "/" + Labels.USER + "/" + id);
     UserInfoResource resource = client.wrap(UserInfoResource.class);
     try {
       resource.remove();
@@ -119,8 +121,8 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    * .String)
    */
   @Override
-  public void deleteUserPassword(String id) throws IdNotFoundException {
-    ClientResource client = makeClient("admin/" + Labels.USER_PASSWORD + "/" + id);
+  public void deleteUserPassword(String id, String orgId) throws IdNotFoundException {
+    ClientResource client = makeClient(orgId + "/" + Labels.USER_PASSWORD + "/" + id);
     UserPasswordResource resource = client.wrap(UserPasswordResource.class);
     try {
       resource.remove();
@@ -161,7 +163,7 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    */
   @Override
   public void putUser(UserInfo user) {
-    ClientResource client = makeClient("admin/" + Labels.USER + "/");
+    ClientResource client = makeClient(user.getOrganizationId() + "/" + Labels.USER + "/");
     UserInfoPutResource resource = client.wrap(UserInfoPutResource.class);
     try {
       resource.store(user);
@@ -180,7 +182,8 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    */
   @Override
   public void putUserPassword(UserPassword password) {
-    ClientResource client = makeClient("admin/" + Labels.USER_PASSWORD + "/" + password.getId());
+    ClientResource client = makeClient(password.getOrganizationId() + "/" + Labels.USER_PASSWORD
+        + "/" + password.getId());
     UserPasswordResource resource = client.wrap(UserPasswordResource.class);
     resource.store(password);
     client.release();
@@ -272,8 +275,8 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    * @see org.wattdepot.client.WattDepotAdminInterface#getUser(java.lang.String)
    */
   @Override
-  public UserInfo getUser(String id) throws IdNotFoundException {
-    ClientResource client = makeClient("admin/" + Labels.USER + "/" + id);
+  public UserInfo getUser(String id, String orgId) throws IdNotFoundException {
+    ClientResource client = makeClient(orgId + "/" + Labels.USER + "/" + id);
     UserInfoResource resource = client.wrap(UserInfoResource.class);
     UserInfo ret = null;
     try {
@@ -294,8 +297,8 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    * @see org.wattdepot.client.WattDepotAdminInterface#getUsers()
    */
   @Override
-  public UserInfoList getUsers() {
-    ClientResource client = makeClient("admin/" + Labels.USERS + "/");
+  public UserInfoList getUsers(String orgId) {
+    ClientResource client = makeClient(orgId + "/" + Labels.USERS + "/");
     UserInfosResource resource = client.wrap(UserInfosResource.class);
     UserInfoList ret = null;
     try {
@@ -315,8 +318,8 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    * String)
    */
   @Override
-  public UserPassword getUserPassword(String id) throws IdNotFoundException {
-    ClientResource client = makeClient("admin/" + Labels.USER_PASSWORD + "/" + id);
+  public UserPassword getUserPassword(String id, String orgId) throws IdNotFoundException {
+    ClientResource client = makeClient(orgId + "/" + Labels.USER_PASSWORD + "/" + id);
     UserPasswordResource resource = client.wrap(UserPasswordResource.class);
     UserPassword ret = null;
     try {

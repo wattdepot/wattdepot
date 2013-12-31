@@ -127,7 +127,7 @@ public class TestWattDepotClient {
       if (admin == null) {
         try {
           admin = new WattDepotAdminClient(serverURL, props.get(ClientProperties.USER_NAME),
-              props.get(ClientProperties.USER_PASSWORD));
+              "admin", props.get(ClientProperties.USER_PASSWORD));
         }
         catch (Exception e) {
           System.out.println("Failed with " + props.get(ClientProperties.USER_NAME) + " and "
@@ -144,7 +144,8 @@ public class TestWattDepotClient {
         e.printStackTrace();
       }
       if (test == null) {
-        test = new WattDepotClient(serverURL, testPassword.getId(), testPassword.getPlainText());
+        test = new WattDepotClient(serverURL, testUser.getId(),
+            testUser.getOrganizationId(), testPassword.getPlainText());
       }
       test.isHealthy();
       test.getWattDepotUri();
@@ -161,9 +162,9 @@ public class TestWattDepotClient {
   @After
   public void tearDown() throws Exception {
     logger.finest("tearDown()");
-    admin.deleteUser(testPassword.getId());
+    admin.deleteUser(testPassword.getId(), testUser.getOrganizationId());
     admin.deleteOrganization(testGroup.getSlug());
-    admin.deleteUserPassword(testUser.getId());
+    admin.deleteUserPassword(testUser.getId(), testUser.getOrganizationId());
     logger.finest("Done tearDown()");
   }
 
@@ -178,7 +179,7 @@ public class TestWattDepotClient {
     // test some bad cases
     try {
       WattDepotClient bad = new WattDepotClient(null, testPassword.getId(),
-          testPassword.getPlainText());
+          testPassword.getOrganizationId(), testPassword.getPlainText());
       fail(bad + " should not exist.");
     }
     catch (IllegalArgumentException e) {
@@ -189,7 +190,7 @@ public class TestWattDepotClient {
     }
     try {
       WattDepotClient bad = new WattDepotClient("http://localhost", testPassword.getId(),
-          testPassword.getPlainText());
+          testPassword.getOrganizationId(), testPassword.getPlainText());
       fail(bad + " should not exist.");
     }
     catch (IllegalArgumentException e) {
@@ -200,7 +201,7 @@ public class TestWattDepotClient {
     }
     try {
       WattDepotClient bad = new WattDepotClient(serverURL, testPassword.getId(),
-          testPassword.getEncryptedPassword());
+          testPassword.getOrganizationId(), testPassword.getEncryptedPassword());
       fail(bad + " should not exist.");
     }
     catch (BadCredentialException e) {
@@ -565,7 +566,7 @@ public class TestWattDepotClient {
     // Get list
     CollectorProcessDefinitionList list = test.getCollectorProcessDefinition();
     assertNotNull(list);
-    assertTrue(list.getDatas().size() == 0);
+    assertTrue(list.getDefinitions().size() == 0);
     try {
       // Put new instance (CREATE)
       test.putCollectorProcessDefinition(data);
@@ -580,7 +581,7 @@ public class TestWattDepotClient {
       }
     }
     list = test.getCollectorProcessDefinition();
-    assertTrue(list.getDatas().contains(data));
+    assertTrue(list.getDefinitions().contains(data));
     try {
       // get instance (READ)
       CollectorProcessDefinition ret = test.getCollectorProcessDefinition(data.getSlug());
@@ -589,7 +590,7 @@ public class TestWattDepotClient {
       test.updateCollectorProcessDefinition(ret);
       list = test.getCollectorProcessDefinition();
       assertNotNull(list);
-      assertTrue(list.getDatas().size() == 1);
+      assertTrue(list.getDefinitions().size() == 1);
       // delete instance (DELETE)
       test.deleteCollectorProcessDefinition(data);
       try {

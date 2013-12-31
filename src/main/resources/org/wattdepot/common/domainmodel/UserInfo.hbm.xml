@@ -17,6 +17,9 @@
         <property name="email" type="java.lang.String">
             <column name="EMAIL" />
         </property>
+        <property name="organizationId" type="java.lang.String">
+            <column name="ORGANIZATION" />
+        </property>
         <set name="properties" table="PROPERTY" inverse="false" lazy="false">
             <key>
                 <column name="USER_ID" />

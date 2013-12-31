@@ -32,12 +32,14 @@ public class UserPassword {
 
   /** The encryptor to use for all passwords. */
   private static final StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
-  
+
   /** The password for the admin user. */
-  public static final UserPassword ADMIN = new UserPassword(UserInfo.ROOT.getId(), "admin");
+  public static final UserPassword ADMIN = new UserPassword(UserInfo.ROOT.getId(),
+      UserInfo.ROOT.getOrganizationId(), "admin");
   private String id;
   private String encryptedPassword;
   private String plainText;
+  private String orgId;
 
   static {
     String password = System.getProperty(ADMIN_USER_PASSWORD);
@@ -60,27 +62,27 @@ public class UserPassword {
    * 
    * @param id
    *          The user's id.
+   * @param orgId
+   *          the user's organization id.
    * @param plainTextPassword
    *          The plain text password.
    */
-  public UserPassword(String id, String plainTextPassword) {
+  public UserPassword(String id, String orgId, String plainTextPassword) {
     this.id = id;
     this.plainText = plainTextPassword;
     this.encryptedPassword = passwordEncryptor.encryptPassword(plainTextPassword);
+    this.orgId = orgId;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * Checks the given password.
    * 
-   * @see java.lang.Object#hashCode()
+   * @param inputPassword
+   *          The password to check.
+   * @return True if the password is correct.
    */
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((plainText == null) ? 0 : plainText.hashCode());
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
-    return result;
+  public boolean checkPassword(String inputPassword) {
+    return passwordEncryptor.checkPassword(inputPassword, encryptedPassword);
   }
 
   /*
@@ -116,32 +118,15 @@ public class UserPassword {
     else if (!id.equals(other.id)) {
       return false;
     }
+    if (orgId == null) {
+      if (other.orgId != null) {
+        return false;
+      }
+    }
+    else if (!orgId.equals(other.orgId)) {
+      return false;
+    }
     return true;
-  }
-
-  /**
-   * @return the plainText
-   */
-  public String getPlainText() {
-    return plainText;
-  }
-
-  /**
-   * @param plainText the plainText to set
-   */
-  public void setPlainText(String plainText) {
-    this.plainText = plainText;
-  }
-
-  /**
-   * Checks the given password.
-   * 
-   * @param inputPassword
-   *          The password to check.
-   * @return True if the password is correct.
-   */
-  public boolean checkPassword(String inputPassword) {
-    return passwordEncryptor.checkPassword(inputPassword, encryptedPassword);
   }
 
   /**
@@ -156,6 +141,35 @@ public class UserPassword {
    */
   public String getId() {
     return id;
+  }
+
+  /**
+   * @return the organization id.
+   */
+  public String getOrganizationId() {
+    return orgId;
+  }
+
+  /**
+   * @return the plainText
+   */
+  public String getPlainText() {
+    return plainText;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((plainText == null) ? 0 : plainText.hashCode());
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((orgId == null) ? 0 : orgId.hashCode());
+    return result;
   }
 
   /**
@@ -175,6 +189,14 @@ public class UserPassword {
   }
 
   /**
+   * @param orgId
+   *          the new organization id to set.
+   */
+  public void setOrganizationId(String orgId) {
+    this.orgId = orgId;
+  }
+
+  /**
    * Sets the encrypted password by encrypting the plain text.
    * 
    * @param plainText
@@ -184,12 +206,21 @@ public class UserPassword {
     this.encryptedPassword = passwordEncryptor.encryptPassword(plainText);
   }
 
-  /* (non-Javadoc)
+  /**
+   * @param plainText
+   *          the plainText to set
+   */
+  public void setPlainText(String plainText) {
+    this.plainText = plainText;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.Object#toString()
    */
   @Override
   public String toString() {
     return "UserPassword [id=" + id + ", encryptedPassword=" + encryptedPassword + "]";
   }
-  
 }

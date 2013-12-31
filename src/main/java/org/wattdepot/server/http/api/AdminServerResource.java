@@ -59,7 +59,7 @@ public class AdminServerResource extends WattDepotServerResource {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/");
     if (!isInRole(orgId) && !isInRole("admin")) {
       User user = getClientInfo().getUser();
-      UserInfo info = depot.getUser(user.getIdentifier());
+      UserInfo info = depot.getUser(user.getIdentifier(), orgId);
       Organization group = depot.getUsersGroup(info);
       if (group != null) {
         redirectPermanent("/wattdepot/" + group.getSlug() + "/");
@@ -70,7 +70,7 @@ public class AdminServerResource extends WattDepotServerResource {
     }
     Map<String, Object> dataModel = new HashMap<String, Object>();
     // get some stuff from the database
-    List<UserInfo> users = depot.getUsers();
+    List<UserInfo> users = depot.getUsers("admin");
     List<Organization> groups = depot.getOrganizations();
     List<Depository> depos = depot.getWattDepositories(orgId);
     List<SensorLocation> locs = depot.getLocations(orgId);

@@ -272,13 +272,13 @@ public class InstanceFactory {
    * @return A UserPassword instance for testing.
    */
   public static UserPassword getUserPassword() {
-    return new UserPassword("test_user_id", "plain_text_password");
+    return new UserPassword("test_user_id", "test-user-group", "plain_text_password");
   }
 
   /**
    * @return A second UserPassword instance for testing.
    */
   public static UserPassword getUserPassword2() {
-    return new UserPassword("test_user_id2", "plain_text_password2");
+    return new UserPassword("test_user_id2", "test-user-group", "plain_text_password2");
   }
 }

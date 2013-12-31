@@ -38,10 +38,12 @@ public interface WattDepotAdminInterface {
    * 
    * @param id
    *          the unique id of the User.
+   * @param orgId
+   *          the id of the user's organization.
    * @throws IdNotFoundException
    *           if the User's id is not found.
    */
-  public void deleteUser(String id) throws IdNotFoundException;
+  public void deleteUser(String id, String orgId) throws IdNotFoundException;
 
   /**
    * Deletes the given Organization.
@@ -56,10 +58,12 @@ public interface WattDepotAdminInterface {
   /**
    * @param id
    *          the unique id of the UserPassword.
+   * @param orgId
+   *          the organization id.
    * @throws IdNotFoundException
    *           if the UserPassword is not found.
    */
-  public void deleteUserPassword(String id) throws IdNotFoundException;
+  public void deleteUserPassword(String id, String orgId) throws IdNotFoundException;
 
   /**
    * @param id
@@ -78,25 +82,32 @@ public interface WattDepotAdminInterface {
   /**
    * @param id
    *          The unique id of the UserInfo.
+   * @param orgId
+   *          the id of the user's organization.
    * @return The UserInfo with the given id.
    * @throws IdNotFoundException
    *           if the id does not exist.
    */
-  public UserInfo getUser(String id) throws IdNotFoundException;
+  public UserInfo getUser(String id, String orgId) throws IdNotFoundException;
 
   /**
+   * @param orgId
+   *          the id of the users' organization.
+   * 
    * @return All the defined Users in a UserInfoList.
    */
-  public UserInfoList getUsers();
+  public UserInfoList getUsers(String orgId);
 
   /**
    * @param id
    *          The unique id of the UserPassword.
+   * @param orgId
+   *          the organization id.
    * @return The UserPassword with the given id.
    * @throws IdNotFoundException
    *           if the id does not exist.
    */
-  public UserPassword getUserPassword(String id) throws IdNotFoundException;
+  public UserPassword getUserPassword(String id, String orgId) throws IdNotFoundException;
 
   /**
    * Stores the given user in the WattDepot Server.

@@ -46,7 +46,10 @@ import org.apache.commons.cli.PosixParser;
 import org.jscience.physics.amount.Amount;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementType;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.BadSensorUriException;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -118,10 +121,13 @@ public class SharkCollector extends MultiThreadedCollector {
    *          The URI for the WattDepot server.
    * @param username
    *          The name of a user defined in the WattDepot server.
+   * @param orgId
+   *          the user's organization id.
    * @param password
    *          The password for the user.
    * @param collectorId
-   *          The CollectorProcessDefinitionId used to initialize this collector.
+   *          The CollectorProcessDefinitionId used to initialize this
+   *          collector.
    * @param debug
    *          flag for debugging messages.
    * @throws BadCredentialException
@@ -131,9 +137,10 @@ public class SharkCollector extends MultiThreadedCollector {
    * @throws BadSensorUriException
    *           if the Sensor's URI isn't valid.
    */
-  public SharkCollector(String serverUri, String username, String password, String collectorId,
-      boolean debug) throws BadCredentialException, IdNotFoundException, BadSensorUriException {
-    super(serverUri, username, password, collectorId, debug);
+  public SharkCollector(String serverUri, String username, String orgId, String password,
+      String collectorId, boolean debug) throws BadCredentialException, IdNotFoundException,
+      BadSensorUriException {
+    super(serverUri, username, orgId, password, collectorId, debug);
     this.measType = depository.getMeasurementType();
     this.measUnit = Unit.valueOf(measType.getUnits());
     this.sensor = client.getSensor(definition.getSensorId());
@@ -149,8 +156,7 @@ public class SharkCollector extends MultiThreadedCollector {
       throw new BadSensorUriException(sensor.getUri() + " is not a valid URI.");
     }
     catch (UnknownHostException e) {
-      throw new BadSensorUriException("Unable to resolve sensor at "
-          + sensor.getUri());
+      throw new BadSensorUriException("Unable to resolve sensor at " + sensor.getUri());
     }
   }
 
@@ -180,7 +186,7 @@ public class SharkCollector extends MultiThreadedCollector {
       }
     }
   }
-  
+
   /**
    * Processes the command line arguments and starts the eGauge Collector.
    * 
@@ -193,13 +199,15 @@ public class SharkCollector extends MultiThreadedCollector {
         "Usage: EGaugeCollector <server uri> <username> <password> <collectorid>");
     options.addOption("s", "server", true, "WattDepot Server URI. (http://server.wattdepot.org)");
     options.addOption("u", "username", true, "Username");
+    options.addOption("o", "organizationId", true, "User's Organization id.");
     options.addOption("p", "password", true, "Password");
-    options.addOption("c", "collector", true, "Collector Process Definition Id");
+    options.addOption("c", "collectorId", true, "Collector Process Definition Id.");
     options.addOption("d", "debug", false, "Displays sensor data as it is sent to the server.");
 
     CommandLine cmd = null;
     String serverUri = null;
     String username = null;
+    String organizationId = null;
     String password = null;
     String collectorId = null;
     boolean debug = false;
@@ -227,13 +235,19 @@ public class SharkCollector extends MultiThreadedCollector {
       username = cmd.getOptionValue("u");
     }
     else {
-      username = "admin";
+      username = UserInfo.ROOT.getId();
+    }
+    if (cmd.hasOption("o")) {
+      organizationId = cmd.getOptionValue("o");
+    }
+    else {
+      organizationId = Organization.ADMIN_GROUP.getSlug();
     }
     if (cmd.hasOption("p")) {
       password = cmd.getOptionValue("p");
     }
     else {
-      password = "admin";
+      password = UserPassword.ADMIN.getPlainText();
     }
     if (cmd.hasOption("c")) {
       collectorId = cmd.getOptionValue("c");
@@ -253,7 +267,8 @@ public class SharkCollector extends MultiThreadedCollector {
       System.out.println();
     }
     try {
-      if (!MultiThreadedCollector.start(serverUri, username, password, collectorId, debug)) {
+      if (!MultiThreadedCollector.start(serverUri, username, organizationId, password, collectorId,
+          debug)) {
         System.exit(1);
       }
     }
@@ -265,7 +280,7 @@ public class SharkCollector extends MultiThreadedCollector {
       e.printStackTrace();
       System.exit(1);
     }
-  }  
+  }
 
   /**
    * Need to retrieve some configuration parameters from meter, but only want to

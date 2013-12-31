@@ -58,7 +58,7 @@ public class UserPasswordServerResource extends WattDepotServerResource implemen
   @Override
   public UserPassword retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/user-password/{" + userId + "}");
-    UserPassword user = depot.getUserPassword(userId);
+    UserPassword user = depot.getUserPassword(userId, orgId);
     if (user == null) {
       setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "User " + userId + " is not defined.");
     }
@@ -79,9 +79,9 @@ public class UserPasswordServerResource extends WattDepotServerResource implemen
   @Override
   public void store(UserPassword user) {
     getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/user-password/ with " + user);
-    if (!depot.getUserIds().contains(user.getId())) {
+    if (!depot.getUserIds(orgId).contains(user.getId())) {
       try {
-        depot.defineUserPassword(user.getId(), user.getPlainText());
+        depot.defineUserPassword(user.getId(), orgId, user.getPlainText());
       }
       catch (UniqueIdException e) {
         setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
@@ -101,7 +101,7 @@ public class UserPasswordServerResource extends WattDepotServerResource implemen
   public void remove() {
     getLogger().log(Level.INFO, "DEL /wattdepot/{" + orgId + "}/user-password/{" + userId + "}");
     try {
-      depot.deleteUserPassword(userId);
+      depot.deleteUserPassword(userId, orgId);
     }
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());

@@ -28,28 +28,28 @@ import java.util.ArrayList;
  * 
  */
 public class CollectorProcessDefinitionList {
-  private ArrayList<CollectorProcessDefinition> processes;
+  private ArrayList<CollectorProcessDefinition> definitions;
 
   /**
    * Default Constructor.
    */
   public CollectorProcessDefinitionList() {
-    processes = new ArrayList<CollectorProcessDefinition>();
+    definitions = new ArrayList<CollectorProcessDefinition>();
   }
 
   /**
    * @return the models
    */
-  public ArrayList<CollectorProcessDefinition> getDatas() {
-    return processes;
+  public ArrayList<CollectorProcessDefinition> getDefinitions() {
+    return definitions;
   }
 
   /**
-   * @param models
-   *          the models to set
+   * @param definitions
+   *          the collector process definitions to set
    */
-  public void setDatas(ArrayList<CollectorProcessDefinition> models) {
-    this.processes = models;
+  public void setDefinitions(ArrayList<CollectorProcessDefinition> definitions) {
+    this.definitions = definitions;
   }
 
 }

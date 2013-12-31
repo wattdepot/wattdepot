@@ -46,9 +46,12 @@ import org.w3c.dom.Document;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementType;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Property;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorModel;
+import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.BadSensorUriException;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -75,7 +78,7 @@ public class EGaugeCollector extends MultiThreadedCollector {
   private Unit<?> measUnit;
   /** The eGuage sensor. */
   private Sensor sensor;
-  
+
   /**
    * Initializes the EGaugeCollector.
    * 
@@ -83,10 +86,13 @@ public class EGaugeCollector extends MultiThreadedCollector {
    *          The URI for the WattDepot server.
    * @param username
    *          The name of a user defined in the WattDepot server.
+   * @param orgId
+   *          the id of the organization.
    * @param password
    *          The password for the user.
    * @param collectorId
-   *          The CollectorProcessDefinitionId used to initialize this collector.
+   *          The CollectorProcessDefinitionId used to initialize this
+   *          collector.
    * @param debug
    *          flag for debugging messages.
    * @throws BadCredentialException
@@ -96,10 +102,10 @@ public class EGaugeCollector extends MultiThreadedCollector {
    * @throws BadSensorUriException
    *           if the Sensor's URI isn't valid.
    */
-  public EGaugeCollector(String serverUri, String username, String password,
-      String collectorId, boolean debug) throws BadCredentialException,
-      IdNotFoundException, BadSensorUriException {
-    super(serverUri, username, password, collectorId, debug);
+  public EGaugeCollector(String serverUri, String username, String orgId, String password,
+      String collectorId, boolean debug) throws BadCredentialException, IdNotFoundException,
+      BadSensorUriException {
+    super(serverUri, username, orgId, password, collectorId, debug);
     this.measType = depository.getMeasurementType();
     this.measUnit = Unit.valueOf(measType.getUnits());
     this.sensor = client.getSensor(definition.getSensorId());
@@ -113,12 +119,11 @@ public class EGaugeCollector extends MultiThreadedCollector {
       sensorURL = new URL(sensor.getUri());
       String sensorHostName = sensorURL.getHost();
       // CAM using v1&tot&inst returns v1.0 xml data.
-      this.eGaugeUri = "http://" + sensorHostName
-          + "/cgi-bin/egauge?v1&tot&inst";
+      this.eGaugeUri = "http://" + sensorHostName + "/cgi-bin/egauge?v1&tot&inst";
     }
     catch (MalformedURLException e) {
-      throw new BadSensorUriException(client.getSensor(definition.getSensorId())
-          .getUri() + " is not a valid URI.");
+      throw new BadSensorUriException(client.getSensor(definition.getSensorId()).getUri()
+          + " is not a valid URI.");
     }
   }
 
@@ -127,6 +132,8 @@ public class EGaugeCollector extends MultiThreadedCollector {
    *          The URI for the WattDepot server.
    * @param username
    *          The name of a user defined in the WattDepot server.
+   * @param orgId
+   *          the user's organization id.
    * @param password
    *          The password for the user.
    * @param sensor
@@ -144,10 +151,10 @@ public class EGaugeCollector extends MultiThreadedCollector {
    * @throws IdNotFoundException
    *           if the processId is not defined.
    */
-  public EGaugeCollector(String serverUri, String username, String password,
+  public EGaugeCollector(String serverUri, String username, String orgId, String password,
       Sensor sensor, Long pollingInterval, Depository depository, boolean debug)
       throws BadCredentialException, BadSensorUriException, IdNotFoundException {
-    super(serverUri, username, password, sensor.getSlug(), pollingInterval, depository,
+    super(serverUri, username, orgId, password, sensor.getSlug(), pollingInterval, depository,
         debug);
     this.measType = depository.getMeasurementType();
     this.measUnit = Unit.valueOf(measType.getUnits());
@@ -162,12 +169,11 @@ public class EGaugeCollector extends MultiThreadedCollector {
       sensorURL = new URL(client.getSensor(definition.getSensorId()).getUri());
       String sensorHostName = sensorURL.getHost();
       // CAM using v1&tot&inst returns v1.0 xml data.
-      this.eGaugeUri = "http://" + sensorHostName
-          + "/cgi-bin/egauge?v1&tot&inst";
+      this.eGaugeUri = "http://" + sensorHostName + "/cgi-bin/egauge?v1&tot&inst";
     }
     catch (MalformedURLException e) {
-      throw new BadSensorUriException(client.getSensor(definition.getSensorId())
-          .getUri() + " is not a valid URI.");
+      throw new BadSensorUriException(client.getSensor(definition.getSensorId()).getUri()
+          + " is not a valid URI.");
     }
 
   }
@@ -197,8 +203,7 @@ public class EGaugeCollector extends MultiThreadedCollector {
       return false;
     }
     // validate that measType is power or energy.
-    if (!measType.getSlug().startsWith("power")
-        && !measType.getSlug().startsWith("energy")) {
+    if (!measType.getSlug().startsWith("power") && !measType.getSlug().startsWith("energy")) {
       return false;
     }
 
@@ -239,12 +244,12 @@ public class EGaugeCollector extends MultiThreadedCollector {
       XPath powerXpath = factory.newXPath();
       XPath energyXpath = factory.newXPath();
       // Path to get the current power consumed measured by the meter in watts
-      String exprPowerString = "//r[@rt='total' and @t='P' and @n='"
-          + this.registerName + "']/i/text()";
+      String exprPowerString = "//r[@rt='total' and @t='P' and @n='" + this.registerName
+          + "']/i/text()";
       XPathExpression exprPower = powerXpath.compile(exprPowerString);
       // Path to get the energy consumed month to date in watt seconds
-      String exprEnergyString = "//r[@rt='total' and @t='P' and @n='"
-          + this.registerName + "']/v/text()";
+      String exprEnergyString = "//r[@rt='total' and @t='P' and @n='" + this.registerName
+          + "']/v/text()";
       XPathExpression exprEnergy = energyXpath.compile(exprEnergyString);
       Object powerResult = exprPower.evaluate(doc, XPathConstants.NUMBER);
       Object energyResult = exprEnergy.evaluate(doc, XPathConstants.NUMBER);
@@ -253,8 +258,7 @@ public class EGaugeCollector extends MultiThreadedCollector {
       // power is given in W
       Amount<?> power = Amount.valueOf((Double) powerResult, SI.WATT);
       // energy given in Ws
-      Amount<?> energy = Amount.valueOf((Double) energyResult,
-          SI.WATT.times(SI.SECOND));
+      Amount<?> energy = Amount.valueOf((Double) energyResult, SI.WATT.times(SI.SECOND));
       if (isPower()) {
         value = power.to(measUnit).getEstimatedValue();
       }
@@ -264,8 +268,7 @@ public class EGaugeCollector extends MultiThreadedCollector {
       meas = new Measurement(definition.getSensorId(), timestamp, value, measUnit);
     }
     catch (MalformedURLException e) {
-      System.err.format("URI %s was invalid leading to malformed URL%n",
-          eGaugeUri);
+      System.err.format("URI %s was invalid leading to malformed URL%n", eGaugeUri);
     }
     catch (XPathExpressionException e) {
       System.err.println("Bad XPath expression, this should never happen.");
@@ -274,16 +277,14 @@ public class EGaugeCollector extends MultiThreadedCollector {
       System.err.println("Unable to configure XML parser, this is weird.");
     }
     catch (SAXException e) {
-      System.err
-          .format(
-              "%s: Got bad XML from eGauge sensor %s (%s), hopefully this is temporary.%n",
-              Tstamp.makeTimestamp(), sensor.getName(), e);
+      System.err.format(
+          "%s: Got bad XML from eGauge sensor %s (%s), hopefully this is temporary.%n",
+          Tstamp.makeTimestamp(), sensor.getName(), e);
     }
     catch (IOException e) {
-      System.err
-          .format(
-              "%s: Unable to retrieve data from eGauge sensor %s (%s), hopefully this is temporary.%n",
-              Tstamp.makeTimestamp(), sensor.getName(), e);
+      System.err.format(
+          "%s: Unable to retrieve data from eGauge sensor %s (%s), hopefully this is temporary.%n",
+          Tstamp.makeTimestamp(), sensor.getName(), e);
     }
 
     if (meas != null) {
@@ -291,8 +292,8 @@ public class EGaugeCollector extends MultiThreadedCollector {
         this.client.putMeasurement(depository, meas);
       }
       catch (MeasurementTypeException e) {
-        System.err.format("%s does not store %s measurements%n",
-            depository.getName(), meas.getMeasurementType());
+        System.err.format("%s does not store %s measurements%n", depository.getName(),
+            meas.getMeasurementType());
       }
       if (debug) {
         System.out.println(meas);
@@ -315,20 +316,19 @@ public class EGaugeCollector extends MultiThreadedCollector {
    */
   public static void main(String[] args) {
     Options options = new Options();
-    options
-        .addOption("h", "help", false,
-            "Usage: EGaugeCollector <server uri> <username> <password> <collectorid>");
-    options.addOption("s", "server", true,
-        "WattDepot Server URI. (http://server.wattdepot.org)");
+    options.addOption("h", "help", false,
+        "Usage: EGaugeCollector <server uri> <username> <password> <collectorid>");
+    options.addOption("s", "server", true, "WattDepot Server URI. (http://server.wattdepot.org)");
     options.addOption("u", "username", true, "Username");
+    options.addOption("o", "organizationId", true, "User's Organization id.");
     options.addOption("p", "password", true, "Password");
     options.addOption("c", "collector", true, "Collector Process Definition Id");
-    options.addOption("d", "debug", false,
-        "Displays sensor data as it is sent to the server.");
+    options.addOption("d", "debug", false, "Displays sensor data as it is sent to the server.");
 
     CommandLine cmd = null;
     String serverUri = null;
     String username = null;
+    String organizationId = null;
     String password = null;
     String collectorId = null;
     boolean debug = false;
@@ -339,8 +339,7 @@ public class EGaugeCollector extends MultiThreadedCollector {
       cmd = parser.parse(options, args);
     }
     catch (ParseException e) {
-      System.err.println("Command line parsing failed. Reason: "
-          + e.getMessage() + ". Exiting.");
+      System.err.println("Command line parsing failed. Reason: " + e.getMessage() + ". Exiting.");
       System.exit(1);
     }
     if (cmd.hasOption("h")) {
@@ -357,13 +356,19 @@ public class EGaugeCollector extends MultiThreadedCollector {
       username = cmd.getOptionValue("u");
     }
     else {
-      username = "admin";
+      username = UserInfo.ROOT.getId();
+    }
+    if (cmd.hasOption("o")) {
+      organizationId = cmd.getOptionValue("o");
+    }
+    else {
+      organizationId = Organization.ADMIN_GROUP.getSlug();
     }
     if (cmd.hasOption("p")) {
       password = cmd.getOptionValue("p");
     }
     else {
-      password = "admin";
+      password = UserPassword.ADMIN.getPlainText();
     }
     if (cmd.hasOption("c")) {
       collectorId = cmd.getOptionValue("c");
@@ -377,14 +382,15 @@ public class EGaugeCollector extends MultiThreadedCollector {
     if (debug) {
       System.out.println("WattDepot Server: " + serverUri);
       System.out.println("Username: " + username);
+      System.out.println("OrganizationID: " + organizationId);
       System.out.println("Password: " + password);
       System.out.println("Collector Process Definition Id: " + collectorId);
       System.out.println("debug: " + debug);
       System.out.println();
     }
     try {
-      if (!MultiThreadedCollector.start(serverUri, username, password,
-          collectorId, debug)) {
+      if (!MultiThreadedCollector.start(serverUri, username, organizationId, password, collectorId,
+          debug)) {
         System.exit(1);
       }
     }

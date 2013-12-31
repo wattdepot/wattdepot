@@ -60,10 +60,13 @@ public abstract class MultiThreadedCollector extends TimerTask {
    *          The URI for the WattDepot server.
    * @param username
    *          The name of a user defined in the WattDepot server.
+   * @param orgId
+   *          the id of the organization the user is in.
    * @param password
    *          The password for the user.
    * @param collectorId
-   *          The CollectorProcessDefinitionId used to initialize this collector.
+   *          The CollectorProcessDefinitionId used to initialize this
+   *          collector.
    * @param debug
    *          flag for debugging messages.
    * @throws BadCredentialException
@@ -73,10 +76,10 @@ public abstract class MultiThreadedCollector extends TimerTask {
    * @throws BadSensorUriException
    *           if the Sensor's URI isn't valid.
    */
-  public MultiThreadedCollector(String serverUri, String username, String password,
+  public MultiThreadedCollector(String serverUri, String username, String orgId, String password,
       String collectorId, boolean debug) throws BadCredentialException, IdNotFoundException,
       BadSensorUriException {
-    this.client = new WattDepotClient(serverUri, username, password);
+    this.client = new WattDepotClient(serverUri, username, orgId, password);
     this.debug = debug;
     this.definition = client.getCollectorProcessDefinition(collectorId);
     this.depository = client.getDepository(definition.getDepositoryId());
@@ -88,6 +91,8 @@ public abstract class MultiThreadedCollector extends TimerTask {
    *          The URI for the WattDepot server.
    * @param username
    *          The name of a user defined in the WattDepot server.
+   * @param orgId
+   *          the id of the user's organization.
    * @param password
    *          The password for the user.
    * @param sensorId
@@ -102,15 +107,16 @@ public abstract class MultiThreadedCollector extends TimerTask {
    *           if the user or password don't match the credentials in WattDepot.
    * @throws BadSensorUriException
    *           if the Sensor's URI isn't valid.
-   * @throws IdNotFoundException if there is a problem with the sensorId.
+   * @throws IdNotFoundException
+   *           if there is a problem with the sensorId.
    */
-  public MultiThreadedCollector(String serverUri, String username, String password, String sensorId,
-      Long pollingInterval, Depository depository, boolean debug) throws BadCredentialException,
-      BadSensorUriException, IdNotFoundException {
-    this.client = new WattDepotClient(serverUri, username, password);
+  public MultiThreadedCollector(String serverUri, String username, String orgId, String password,
+      String sensorId, Long pollingInterval, Depository depository, boolean debug)
+      throws BadCredentialException, BadSensorUriException, IdNotFoundException {
+    this.client = new WattDepotClient(serverUri, username, orgId, password);
     this.debug = debug;
-    this.definition = new CollectorProcessDefinition(Slug.slugify(sensorId + " " + pollingInterval + " "
-        + depository.getName()), sensorId, pollingInterval, depository.getName(), null);
+    this.definition = new CollectorProcessDefinition(Slug.slugify(sensorId + " " + pollingInterval
+        + " " + depository.getName()), sensorId, pollingInterval, depository.getName(), null);
     client.putCollectorProcessDefinition(definition);
     this.depository = depository;
     client.putDepository(depository);
@@ -132,10 +138,13 @@ public abstract class MultiThreadedCollector extends TimerTask {
    *          The URI for the WattDepot server.
    * @param username
    *          The name of a user defined in the WattDepot server.
+   * @param orgId
+   *          the user's organization id.
    * @param password
    *          The password for the user.
    * @param collectorId
-   *          The CollectorProcessDefinitionId used to initialize this collector.
+   *          The CollectorProcessDefinitionId used to initialize this
+   *          collector.
    * @param debug
    *          flag for debugging messages.
    * @param debug
@@ -145,7 +154,7 @@ public abstract class MultiThreadedCollector extends TimerTask {
    * @throws BadCredentialException
    *           if the username and password are invalid.
    */
-  public static boolean start(String serverUri, String username, String password,
+  public static boolean start(String serverUri, String username, String orgId, String password,
       String collectorId, boolean debug) throws InterruptedException, BadCredentialException {
 
     // Before starting any sensors, confirm that we can connect to the WattDepot
@@ -163,7 +172,7 @@ public abstract class MultiThreadedCollector extends TimerTask {
     // (such as launchd), so it is OK to terminate because it should get
     // restarted if the server
     // isn't up quite yet.
-    WattDepotClient staticClient = new WattDepotClient(serverUri, username, password);
+    WattDepotClient staticClient = new WattDepotClient(serverUri, username, orgId, password);
     if (!staticClient.isHealthy()) {
       System.err.format("Could not connect to server %s. Aborting.%n", serverUri);
       // Pause briefly to rate limit restarts if server doesn't come up for a
@@ -175,7 +184,7 @@ public abstract class MultiThreadedCollector extends TimerTask {
     CollectorProcessDefinition definition = null;
     Sensor sensor = null;
     SensorModel model = null;
-    
+
     try {
       definition = staticClient.getCollectorProcessDefinition(collectorId);
       staticClient.getDepository(definition.getDepositoryId());
@@ -185,8 +194,8 @@ public abstract class MultiThreadedCollector extends TimerTask {
       if (model.getName().equals(SensorModelHelper.EGAUGE) && model.getVersion().equals("1.0")) {
         Timer t = new Timer();
         try {
-          EGaugeCollector collector = new EGaugeCollector(serverUri, username, password, collectorId,
-              debug);
+          EGaugeCollector collector = new EGaugeCollector(serverUri, username, sensor.getOwnerId(),
+              password, collectorId, debug);
           if (collector.isValid()) {
             System.out.format("Started polling %s sensor at %s%n", sensor.getName(),
                 Tstamp.makeTimestamp());
@@ -209,8 +218,8 @@ public abstract class MultiThreadedCollector extends TimerTask {
       else if (model.getName().equals(SensorModelHelper.SHARK) && model.getVersion().equals("1.03")) {
         Timer t = new Timer();
         try {
-          SharkCollector collector = new SharkCollector(serverUri, username, password, collectorId,
-              debug);
+          SharkCollector collector = new SharkCollector(serverUri, username, orgId, password,
+              collectorId, debug);
           if (collector.isValid()) {
             System.out.format("Started polling %s sensor at %s%n", sensor.getName(),
                 Tstamp.makeTimestamp());
@@ -241,7 +250,8 @@ public abstract class MultiThreadedCollector extends TimerTask {
   /**
    * @throws BadSensorUriException
    *           if the Sensor's URI isn't valid.
-   * @throws IdNotFoundException 
+   * @throws IdNotFoundException
+   *           if there is a problem with the Collector Process Definition.
    */
   private void validate() throws BadSensorUriException, IdNotFoundException {
     Sensor s = client.getSensor(definition.getSensorId());

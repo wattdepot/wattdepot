@@ -77,11 +77,12 @@ public abstract class WattDepotPersistence {
    * @throws MisMatchedOwnerException
    *           if the given owner doesn't match the owners of the Sensor or
    *           Depository.
-   * @throws IdNotFoundException if the sensorId or ownerId are not defined.
+   * @throws IdNotFoundException
+   *           if the sensorId or ownerId are not defined.
    */
-  public abstract CollectorProcessDefinition defineCollectorProcessDefinition(
-      String name, String sensorId, Long pollingInterval, String depositoryId,
-      String ownerId) throws UniqueIdException, MisMatchedOwnerException, IdNotFoundException;
+  public abstract CollectorProcessDefinition defineCollectorProcessDefinition(String name,
+      String sensorId, Long pollingInterval, String depositoryId, String ownerId)
+      throws UniqueIdException, MisMatchedOwnerException, IdNotFoundException;
 
   /**
    * Defines a new Location in WattDepot.
@@ -102,9 +103,8 @@ public abstract class WattDepotPersistence {
    * @throws UniqueIdException
    *           if the id is already used for another Location.
    */
-  public abstract SensorLocation defineLocation(String name, Double latitude,
-      Double longitude, Double altitude, String description, String ownerId)
-      throws UniqueIdException;
+  public abstract SensorLocation defineLocation(String name, Double latitude, Double longitude,
+      Double altitude, String description, String ownerId) throws UniqueIdException;
 
   /**
    * Defines a new MeasurementType in WattDepot.
@@ -118,8 +118,8 @@ public abstract class WattDepotPersistence {
    * @throws UniqueIdException
    *           if the slug derived from name is already defined.
    */
-  public abstract MeasurementType defineMeasurementType(String name,
-      String units) throws UniqueIdException;
+  public abstract MeasurementType defineMeasurementType(String name, String units)
+      throws UniqueIdException;
 
   /**
    * @param name
@@ -153,9 +153,8 @@ public abstract class WattDepotPersistence {
    * @throws IdNotFoundException
    *           if locationId, modelId, or ownerId are not actual Ids.
    */
-  public abstract Sensor defineSensor(String name, String uri,
-      String locationId, String modelId, String ownerId)
-      throws UniqueIdException, MisMatchedOwnerException, IdNotFoundException;
+  public abstract Sensor defineSensor(String name, String uri, String locationId, String modelId,
+      String ownerId) throws UniqueIdException, MisMatchedOwnerException, IdNotFoundException;
 
   /**
    * @param name
@@ -172,9 +171,8 @@ public abstract class WattDepotPersistence {
    * @throws IdNotFoundException
    *           if locationId, modelId, or ownerId are not actual Ids.
    */
-  public abstract SensorGroup defineSensorGroup(String name,
-      Set<String> sensors, String ownerId) throws UniqueIdException,
-      MisMatchedOwnerException, IdNotFoundException;
+  public abstract SensorGroup defineSensorGroup(String name, Set<String> sensors, String ownerId)
+      throws UniqueIdException, MisMatchedOwnerException, IdNotFoundException;
 
   /**
    * Defines a new SensorModel in WattDepot.
@@ -191,8 +189,8 @@ public abstract class WattDepotPersistence {
    * @throws UniqueIdException
    *           if the id is already used for another SensorModel.
    */
-  public abstract SensorModel defineSensorModel(String name, String protocol,
-      String type, String version) throws UniqueIdException;
+  public abstract SensorModel defineSensorModel(String name, String protocol, String type,
+      String version) throws UniqueIdException;
 
   /**
    * Defines a new UserInfo with the given information.
@@ -213,20 +211,21 @@ public abstract class WattDepotPersistence {
    * @throws UniqueIdException
    *           if the id is already used for another UserInfo.
    */
-  public abstract UserInfo defineUserInfo(String userId, String firstName,
-      String lastName, String email, String orgId, Set<Property> properties)
-      throws UniqueIdException;
+  public abstract UserInfo defineUserInfo(String userId, String firstName, String lastName,
+      String email, String orgId, Set<Property> properties) throws UniqueIdException;
 
   /**
    * @param userId
    *          The unique userId.
+   * @param orgId
+   *          the user's organization id.
    * @param password
    *          The user's password.
    * @return The defined UserPassword.
    * @throws UniqueIdException
    *           if the id is already used for another UserInfo.
    */
-  public abstract UserPassword defineUserPassword(String userId, String password)
+  public abstract UserPassword defineUserPassword(String userId, String orgId, String password)
       throws UniqueIdException;
 
   /**
@@ -242,8 +241,8 @@ public abstract class WattDepotPersistence {
    * @throws UniqueIdException
    *           if the id is already used for another WattDepository.
    */
-  public abstract Depository defineWattDepository(String name,
-      MeasurementType measurementType, String ownerId) throws UniqueIdException;
+  public abstract Depository defineWattDepository(String name, MeasurementType measurementType,
+      String ownerId) throws UniqueIdException;
 
   /**
    * Deletes the given CollectorProcessDefinition.
@@ -257,8 +256,8 @@ public abstract class WattDepotPersistence {
    * @throws MisMatchedOwnerException
    *           if the groupId doesn't match the owner of the sensor process.
    */
-  public abstract void deleteCollectorProcessDefinition(String slug,
-      String groupId) throws IdNotFoundException, MisMatchedOwnerException;
+  public abstract void deleteCollectorProcessDefinition(String slug, String groupId)
+      throws IdNotFoundException, MisMatchedOwnerException;
 
   /**
    * Deletes the given location.
@@ -272,8 +271,8 @@ public abstract class WattDepotPersistence {
    * @throws MisMatchedOwnerException
    *           if the groupId doesn't match the owner of the location.
    */
-  public abstract void deleteLocation(String id, String groupId)
-      throws IdNotFoundException, MisMatchedOwnerException;
+  public abstract void deleteLocation(String id, String groupId) throws IdNotFoundException,
+      MisMatchedOwnerException;
 
   /**
    * Deletes the given measurement type.
@@ -283,8 +282,7 @@ public abstract class WattDepotPersistence {
    * @throws IdNotFoundException
    *           if the slug is not a known MeasurementType.
    */
-  public abstract void deleteMeasurementType(String slug)
-      throws IdNotFoundException;
+  public abstract void deleteMeasurementType(String slug) throws IdNotFoundException;
 
   /**
    * @param id
@@ -306,8 +304,8 @@ public abstract class WattDepotPersistence {
    * @throws MisMatchedOwnerException
    *           if the groupId doesn't match the owner of the sensor.
    */
-  public abstract void deleteSensor(String id, String groupId)
-      throws IdNotFoundException, MisMatchedOwnerException;
+  public abstract void deleteSensor(String id, String groupId) throws IdNotFoundException,
+      MisMatchedOwnerException;
 
   /**
    * Deletes the given SensorGroup.
@@ -321,8 +319,8 @@ public abstract class WattDepotPersistence {
    * @throws MisMatchedOwnerException
    *           if the groupId doesn't match the owner of the sensor group.
    */
-  public abstract void deleteSensorGroup(String id, String groupId)
-      throws IdNotFoundException, MisMatchedOwnerException;
+  public abstract void deleteSensorGroup(String id, String groupId) throws IdNotFoundException,
+      MisMatchedOwnerException;
 
   /**
    * Deletes the given SensorModel.
@@ -337,19 +335,22 @@ public abstract class WattDepotPersistence {
   /**
    * @param id
    *          The unique id of the User.
+   * @param orgId
+   *          the id of the organization the user is a member.
    * @throws IdNotFoundException
    *           If the id is not known or defined.
    */
-  public abstract void deleteUser(String id) throws IdNotFoundException;
+  public abstract void deleteUser(String id, String orgId) throws IdNotFoundException;
 
   /**
    * @param userId
    *          The id of the UserPassword to delete.
+   * @param orgId
+   *          the user's organization id.
    * @throws IdNotFoundException
    *           If the id is not known or defined.
    */
-  public abstract void deleteUserPassword(String userId)
-      throws IdNotFoundException;
+  public abstract void deleteUserPassword(String userId, String orgId) throws IdNotFoundException;
 
   /**
    * Deletes the given WattDepository.
@@ -363,8 +364,8 @@ public abstract class WattDepotPersistence {
    * @throws MisMatchedOwnerException
    *           if the groupId doesn't match the owner of the sensor process.
    */
-  public abstract void deleteWattDepository(String id, String groupId)
-      throws IdNotFoundException, MisMatchedOwnerException;
+  public abstract void deleteWattDepository(String id, String groupId) throws IdNotFoundException,
+      MisMatchedOwnerException;
 
   /**
    * @param id
@@ -375,8 +376,8 @@ public abstract class WattDepotPersistence {
    * @throws MisMatchedOwnerException
    *           if the groupId doesn't match the owner of the sensor process.
    */
-  public abstract CollectorProcessDefinition getCollectorProcessDefinition(
-      String id, String groupId) throws MisMatchedOwnerException;
+  public abstract CollectorProcessDefinition getCollectorProcessDefinition(String id, String groupId)
+      throws MisMatchedOwnerException;
 
   /**
    * @param groupId
@@ -391,8 +392,7 @@ public abstract class WattDepotPersistence {
    * @return The known/defined CollectorProcessDefinitiones owned by the given
    *         group id.
    */
-  public abstract List<CollectorProcessDefinition> getCollectorProcessDefinitions(
-      String groupId);
+  public abstract List<CollectorProcessDefinition> getCollectorProcessDefinitions(String groupId);
 
   /**
    * @param id
@@ -458,8 +458,7 @@ public abstract class WattDepotPersistence {
    * @throws MisMatchedOwnerException
    *           if the groupId doesn't match the owner of the sensor.
    */
-  public abstract Sensor getSensor(String id, String groupId)
-      throws MisMatchedOwnerException;
+  public abstract Sensor getSensor(String id, String groupId) throws MisMatchedOwnerException;
 
   /**
    * @param id
@@ -542,26 +541,34 @@ public abstract class WattDepotPersistence {
   /**
    * @param id
    *          the unique id for the UserInfo.
+   * @param orgId
+   *          the id of the organization the user is in.
    * @return The UserInfo with the given id.
    */
-  public abstract UserInfo getUser(String id);
+  public abstract UserInfo getUser(String id, String orgId);
 
   /**
+   * @param orgId
+   *          the id of the organization the user is in.
    * @return A list of the defined user Ids.
    */
-  public abstract List<String> getUserIds();
+  public abstract List<String> getUserIds(String orgId);
 
   /**
    * @param id
    *          The user's id.
+   * @param orgId
+   *          the id of the organization the user is in.
    * @return the UserPassword instance associated with the user.
    */
-  public abstract UserPassword getUserPassword(String id);
+  public abstract UserPassword getUserPassword(String id, String orgId);
 
   /**
+   * @param orgId
+   *          the id of the organization the user is in.
    * @return The known/defined UserInfos.
    */
-  public abstract List<UserInfo> getUsers();
+  public abstract List<UserInfo> getUsers(String orgId);
 
   /**
    * @param user
@@ -622,8 +629,8 @@ public abstract class WattDepotPersistence {
       if (sm == null) {
         SensorModel model = SensorModelHelper.models.get(key);
         try {
-          defineSensorModel(model.getName(), model.getProtocol(),
-              model.getType(), model.getVersion());
+          defineSensorModel(model.getName(), model.getProtocol(), model.getType(),
+              model.getVersion());
         }
         catch (UniqueIdException e) {
           e.printStackTrace();

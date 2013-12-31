@@ -266,6 +266,12 @@ public class API {
       + "/" + Labels.USER_ID_VAR;
 
   /**
+   * <b>/wattdepot/{org-id}/users/</b> URI for getting the UserInfos in the organization.
+   * Supports GET requests.
+   */
+  public static final String USERS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/" + Labels.USERS
+      + "/";
+  /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/value/gviz/</b> URI to
    * get all the measured value. Use GET requests.
    */

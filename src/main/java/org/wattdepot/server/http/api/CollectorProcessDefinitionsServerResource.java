@@ -44,7 +44,7 @@ public class CollectorProcessDefinitionsServerResource extends WattDepotServerRe
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/collector-process-definitions/");
     CollectorProcessDefinitionList ret = new CollectorProcessDefinitionList();
     for (CollectorProcessDefinition sp : depot.getCollectorProcessDefinitions(orgId)) {
-      ret.getDatas().add(sp);
+      ret.getDefinitions().add(sp);
     }
     return ret;
   }

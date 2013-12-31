@@ -88,7 +88,7 @@ public class WattDepotComponent extends Component {
     for (Organization group : app.getDepot().getOrganizations()) {
       app.getRoles().add(new Role(group.getSlug()));
       for (String userId : group.getUsers()) {
-        UserPassword up = app.getDepot().getUserPassword(userId);
+        UserPassword up = app.getDepot().getUserPassword(userId, group.getSlug());
         User user = null;
         if (userId.equals(UserInfo.ROOT.getId())) {
           // There isn't a UserInfo stored in persistence for ROOT.
@@ -97,7 +97,7 @@ public class WattDepotComponent extends Component {
               UserInfo.ROOT.getEmail());
         }
         else {
-          UserInfo info = app.getDepot().getUser(userId);
+          UserInfo info = app.getDepot().getUser(userId, group.getSlug());
           user = new User(info.getId(), up.getPlainText(),
               info.getFirstName(), info.getLastName(), info.getEmail());
         }
