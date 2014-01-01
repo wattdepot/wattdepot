@@ -94,13 +94,13 @@ public class TestWattDepotAdminClient {
       admin.deleteOrganization("organization-three");
     }
     catch (Exception e) {
-      e.printStackTrace();
+      // e.printStackTrace();
     }
     server.stop();
   }
 
   /**
-   * 
+   * Setup the logging and create the WattDepotAdminClient admin.
    */
   @Before
   public void setUp() {
@@ -109,18 +109,22 @@ public class TestWattDepotAdminClient {
       props.setTestProperties();
       this.logger = WattDepotLogger.getLogger("org.wattdepot.client",
           props.get(ClientProperties.CLIENT_HOME_DIR));
-      WattDepotLogger.setLoggingLevel(logger, props.get(ClientProperties.LOGGING_LEVEL_KEY));
+      WattDepotLogger.setLoggingLevel(logger,
+          props.get(ClientProperties.LOGGING_LEVEL_KEY));
       logger.finest("setUp()");
-      this.serverURL = "http://" + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
+      this.serverURL = "http://"
+          + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
           + props.get(ClientProperties.PORT_KEY) + "/";
       logger.finest(serverURL);
       if (admin == null) {
         try {
-          admin = new WattDepotAdminClient(serverURL, props.get(ClientProperties.USER_NAME),
-              "admin", props.get(ClientProperties.USER_PASSWORD));
+          admin = new WattDepotAdminClient(serverURL,
+              props.get(ClientProperties.USER_NAME), "admin",
+              props.get(ClientProperties.USER_PASSWORD));
         }
         catch (Exception e) {
-          System.out.println("Failed with " + props.get(ClientProperties.USER_NAME) + " and "
+          System.out.println("Failed with "
+              + props.get(ClientProperties.USER_NAME) + " and "
               + props.get(ClientProperties.USER_PASSWORD));
         }
       }
@@ -155,8 +159,9 @@ public class TestWattDepotAdminClient {
     admin.putOrganization(three);
     list = admin.getOrganizations();
     assertNotNull(list);
-    assertTrue("Expecting " + (numOrganizations + 3) + " got " + list.getOrganizations().size(),
-        (numOrganizations + 3) == list.getOrganizations().size());
+    assertTrue("Expecting " + (numOrganizations + 3) + " got "
+        + list.getOrganizations().size(), (numOrganizations + 3) == list
+        .getOrganizations().size());
     try {
       admin.deleteOrganization(three.getSlug());
     }
@@ -181,17 +186,18 @@ public class TestWattDepotAdminClient {
     // create two users with same id different organizations.
     UserPassword up1 = new UserPassword("id", one.getSlug(), "secret1");
     admin.putUserPassword(up1);
-    UserInfo u1 = new UserInfo("id", "firstName", "lastName", "email", one.getSlug(),
-        new HashSet<Property>());
+    UserInfo u1 = new UserInfo("id", "firstName", "lastName", "email",
+        one.getSlug(), new HashSet<Property>());
     admin.putUser(u1);
     UserPassword up2 = new UserPassword("id", two.getSlug(), "secret2");
     admin.putUserPassword(up2);
-    UserInfo u2 = new UserInfo("id", "firstName", "lastName", "email", two.getSlug(),
-        new HashSet<Property>());
+    UserInfo u2 = new UserInfo("id", "firstName", "lastName", "email",
+        two.getSlug(), new HashSet<Property>());
     admin.putUser(u2);
     UserInfoList ulist = admin.getUsers(one.getSlug());
     assertNotNull(ulist);
-    assertTrue("Expecting 1 got " + ulist.getUsers().size(), ulist.getUsers().size() == 1);
+    assertTrue("Expecting 1 got " + ulist.getUsers().size(), ulist.getUsers()
+        .size() == 1);
     ulist = admin.getUsers(two.getSlug());
     assertNotNull(ulist);
     assertTrue(ulist.getUsers().size() == 1);

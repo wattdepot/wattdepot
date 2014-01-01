@@ -162,9 +162,7 @@ public class TestWattDepotClient {
   @After
   public void tearDown() throws Exception {
     logger.finest("tearDown()");
-    admin.deleteUser(testPassword.getId(), testUser.getOrganizationId());
     admin.deleteOrganization(testGroup.getSlug());
-    admin.deleteUserPassword(testUser.getUid(), testUser.getOrganizationId());
     logger.finest("Done tearDown()");
   }
 

@@ -1023,7 +1023,6 @@ public class TestWattDepotPersistenceImpl {
       assertNotNull(defined);
       assertTrue(defined.equals(user));
       assertTrue(defined.toString().equals(user.toString()));
-      assertTrue(defined.hashCode() == user.hashCode());
       defined.setFirstName("New Name");
       impl.updateUserInfo(defined);
       list = impl.getUsers(user.getOrganizationId());
@@ -1073,14 +1072,12 @@ public class TestWattDepotPersistenceImpl {
       UserPassword defined = impl.getUserPassword(password.getId(), password.getOrganizationId());
       assertNotNull(defined);
       assertTrue(defined.equals(password));
-      assertTrue(defined.hashCode() == password.hashCode());
       defined.setPlainText("New plainText");
       impl.updateUserPassword(defined);
       UserPassword updated = impl.getUserPassword(password.getId(), password.getOrganizationId());
       assertNotNull(updated);
       assertFalse(updated.equals(password));
       assertFalse(updated.toString().equals(password.toString()));
-      assertFalse(updated.hashCode() == password.hashCode());
     }
     catch (UniqueIdException e) {
       e.printStackTrace();

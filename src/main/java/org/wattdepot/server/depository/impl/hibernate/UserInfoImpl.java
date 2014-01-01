@@ -30,15 +30,17 @@ import org.wattdepot.common.domainmodel.UserInfo;
  * @author Cam Moore
  * 
  */
+@SuppressWarnings("PMD.UselessOverridingMethod")
 public class UserInfoImpl extends UserInfo {
 
+  /** Database primary key. */
   private Long pk;
 
   /**
-   * 
+   * Default constructor.
    */
   public UserInfoImpl() {
-    // TODO Auto-generated constructor stub
+
   }
 
   /**
@@ -58,22 +60,17 @@ public class UserInfoImpl extends UserInfo {
   public UserInfoImpl(String uid, String firstName, String lastName,
       String email, String orgId, Set<Property> properties) {
     super(uid, firstName, lastName, email, orgId, properties);
-    // TODO Auto-generated constructor stub
   }
 
   /**
-   * @return the pk
+   * Converter constructor.
+   * 
+   * @param info
+   *          UserInfo to clone.
    */
-  public Long getPk() {
-    return pk;
-  }
-
-  /**
-   * @param pk
-   *          the pk to set
-   */
-  public void setPk(Long pk) {
-    this.pk = pk;
+  public UserInfoImpl(UserInfo info) {
+    super(info.getUid(), info.getFirstName(), info.getLastName(), info
+        .getEmail(), info.getOrganizationId(), info.getProperties());
   }
 
   /*
@@ -87,6 +84,40 @@ public class UserInfoImpl extends UserInfo {
   public boolean addProperty(Property e) {
     // TODO Auto-generated method stub
     return super.addProperty(e);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (this == obj) {
+      return true;
+    }
+    if (obj.getClass().equals(UserInfo.class)) {
+      return super.equals(obj);
+    }
+    if (!super.equals(obj)) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    UserInfoImpl other = (UserInfoImpl) obj;
+    if (pk == null) {
+      if (other.pk != null) {
+        return false;
+      }
+    }
+    else if (!pk.equals(other.pk)) {
+      return false;
+    }
+    return true;
   }
 
   /*
@@ -114,17 +145,6 @@ public class UserInfoImpl extends UserInfo {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.common.domainmodel.UserInfo#getUID()
-   */
-  @Override
-  public String getUid() {
-    // TODO Auto-generated method stub
-    return super.getUid();
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see org.wattdepot.common.domainmodel.UserInfo#getLastName()
    */
   @Override
@@ -142,6 +162,13 @@ public class UserInfoImpl extends UserInfo {
   public String getOrganizationId() {
     // TODO Auto-generated method stub
     return super.getOrganizationId();
+  }
+
+  /**
+   * @return the pk
+   */
+  public Long getPk() {
+    return pk;
   }
 
   /*
@@ -165,6 +192,30 @@ public class UserInfoImpl extends UserInfo {
   public Property getProperty(String key) {
     // TODO Auto-generated method stub
     return super.getProperty(key);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.common.domainmodel.UserInfo#getUID()
+   */
+  @Override
+  public String getUid() {
+    // TODO Auto-generated method stub
+    return super.getUid();
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((pk == null) ? 0 : pk.hashCode());
+    return result;
   }
 
   /*
@@ -205,17 +256,6 @@ public class UserInfoImpl extends UserInfo {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.common.domainmodel.UserInfo#setUID(java.lang.String)
-   */
-  @Override
-  public void setUid(String id) {
-    // TODO Auto-generated method stub
-    super.setUid(id);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see
    * org.wattdepot.common.domainmodel.UserInfo#setLastName(java.lang.String)
    */
@@ -238,6 +278,14 @@ public class UserInfoImpl extends UserInfo {
     super.setOrganizationId(organizationId);
   }
 
+  /**
+   * @param pk
+   *          the pk to set
+   */
+  public void setPk(Long pk) {
+    this.pk = pk;
+  }
+
   /*
    * (non-Javadoc)
    * 
@@ -252,42 +300,12 @@ public class UserInfoImpl extends UserInfo {
   /*
    * (non-Javadoc)
    * 
-   * @see java.lang.Object#hashCode()
+   * @see org.wattdepot.common.domainmodel.UserInfo#setUID(java.lang.String)
    */
   @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + ((pk == null) ? 0 : pk.hashCode());
-    return result;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
-  @Override
-  public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
-    if (!super.equals(obj)) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    UserInfoImpl other = (UserInfoImpl) obj;
-    if (pk == null) {
-      if (other.pk != null) {
-        return false;
-      }
-    }
-    else if (!pk.equals(other.pk)) {
-      return false;
-    }
-    return true;
+  public void setUid(String id) {
+    // TODO Auto-generated method stub
+    super.setUid(id);
   }
 
 }

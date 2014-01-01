@@ -98,7 +98,8 @@ public class UserPassword {
     if (obj == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if (!getClass().isAssignableFrom(obj.getClass())
+        && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
     UserPassword other = (UserPassword) obj;
@@ -221,6 +222,6 @@ public class UserPassword {
    */
   @Override
   public String toString() {
-    return "UserPassword [id=" + id + ", encryptedPassword=" + encryptedPassword + "]";
+    return "UserPassword [id=" + id + ", orgId=" + orgId + ", encryptedPassword=" + encryptedPassword + "]";
   }
 }
