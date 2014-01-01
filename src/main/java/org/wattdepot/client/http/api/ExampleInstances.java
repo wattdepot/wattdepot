@@ -90,16 +90,16 @@ public class ExampleInstances {
         new HashSet<Property>());
     UserInfo user2 = new UserInfo("johnson", "Philip", "Johnson", "philipmjohnson@gmail.com",
         org.getSlug(), new HashSet<Property>());
-    org.getUsers().add(user1.getId());
-    org.getUsers().add(user2.getId());
+    org.getUsers().add(user1.getUid());
+    org.getUsers().add(user2.getUid());
     // check to see if the instances are defined in WattDepot
     try {
       Organization defined = admin.getOrganization(org.getSlug());
       if (defined == null) {
         admin
-            .putUserPassword(new UserPassword(user1.getId(), user1.getOrganizationId(), "secret1"));
+            .putUserPassword(new UserPassword(user1.getUid(), user1.getOrganizationId(), "secret1"));
         admin
-            .putUserPassword(new UserPassword(user2.getId(), user2.getOrganizationId(), "secret2"));
+            .putUserPassword(new UserPassword(user2.getUid(), user2.getOrganizationId(), "secret2"));
         admin.putUser(user1);
         admin.putUser(user2);
         admin.putOrganization(org);
@@ -107,8 +107,8 @@ public class ExampleInstances {
     }
     catch (IdNotFoundException e) {
       // not defined so put it.
-      admin.putUserPassword(new UserPassword(user1.getId(), user1.getOrganizationId(), "secret"));
-      admin.putUserPassword(new UserPassword(user2.getId(), user2.getOrganizationId(), "secret"));
+      admin.putUserPassword(new UserPassword(user1.getUid(), user1.getOrganizationId(), "secret"));
+      admin.putUserPassword(new UserPassword(user2.getUid(), user2.getOrganizationId(), "secret"));
       admin.putUser(user1);
       admin.putUser(user2);
       admin.putOrganization(org);

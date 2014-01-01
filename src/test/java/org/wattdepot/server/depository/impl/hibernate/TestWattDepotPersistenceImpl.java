@@ -93,9 +93,9 @@ public class TestWattDepotPersistenceImpl {
     if (testO == null) {
       impl.defineOrganization(testOrg.getSlug(), testOrg.getUsers());
     }
-    UserInfo testU = impl.getUser(testUser.getId(), testUser.getOrganizationId());
+    UserInfo testU = impl.getUser(testUser.getUid(), testUser.getOrganizationId());
     if (testU == null) {
-      impl.defineUserInfo(testUser.getId(), testUser.getFirstName(), testUser.getLastName(),
+      impl.defineUserInfo(testUser.getUid(), testUser.getFirstName(), testUser.getLastName(),
           testUser.getEmail(), testUser.getOrganizationId(), testUser.getProperties());
     }
     UserPassword testP = impl.getUserPassword(testPassword.getId(),
@@ -119,9 +119,9 @@ public class TestWattDepotPersistenceImpl {
     if (testP != null) {
       impl.deleteUserPassword(testP.getId(), testPassword.getOrganizationId());
     }
-    UserInfo testU = impl.getUser(testUser.getId(), testUser.getOrganizationId());
+    UserInfo testU = impl.getUser(testUser.getUid(), testUser.getOrganizationId());
     if (testU != null) {
-      impl.deleteUser(testU.getId(), testU.getOrganizationId());
+      impl.deleteUser(testU.getUid(), testU.getOrganizationId());
     }
     Organization testO = impl.getOrganization(testOrg.getSlug());
     if (testO != null) {
@@ -1013,13 +1013,13 @@ public class TestWattDepotPersistenceImpl {
     int numUsers = list.size();
     assertTrue(numUsers >= 0);
     try {
-      impl.defineUserInfo(user.getId(), user.getFirstName(), user.getLastName(), user.getEmail(),
+      impl.defineUserInfo(user.getUid(), user.getFirstName(), user.getLastName(), user.getEmail(),
           user.getOrganizationId(), user.getProperties());
       list = impl.getUsers(user.getOrganizationId());
       assertTrue(numUsers + 1 == list.size());
       List<String> ids = impl.getUserIds(user.getOrganizationId());
       assertTrue(list.size() == ids.size());
-      UserInfo defined = impl.getUser(user.getId(), user.getOrganizationId());
+      UserInfo defined = impl.getUser(user.getUid(), user.getOrganizationId());
       assertNotNull(defined);
       assertTrue(defined.equals(user));
       assertTrue(defined.toString().equals(user.toString()));
@@ -1028,7 +1028,7 @@ public class TestWattDepotPersistenceImpl {
       impl.updateUserInfo(defined);
       list = impl.getUsers(user.getOrganizationId());
       assertTrue(numUsers + 1 == list.size());
-      UserInfo updated = impl.getUser(user.getId(), user.getOrganizationId());
+      UserInfo updated = impl.getUser(user.getUid(), user.getOrganizationId());
       assertNotNull(updated);
       assertFalse(updated.equals(user));
       assertFalse(updated.toString().equals(user.toString()));
@@ -1051,7 +1051,7 @@ public class TestWattDepotPersistenceImpl {
       // expected.
     }
     try {
-      impl.deleteUser(user.getId(), user.getOrganizationId());
+      impl.deleteUser(user.getUid(), user.getOrganizationId());
       list = impl.getUsers(user.getOrganizationId());
       assertTrue(numUsers == list.size());
     }

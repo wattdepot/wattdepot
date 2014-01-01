@@ -90,15 +90,15 @@ public class WattDepotComponent extends Component {
       for (String userId : group.getUsers()) {
         UserPassword up = app.getDepot().getUserPassword(userId, group.getSlug());
         User user = null;
-        if (userId.equals(UserInfo.ROOT.getId())) {
+        if (userId.equals(UserInfo.ROOT.getUid())) {
           // There isn't a UserInfo stored in persistence for ROOT.
-          user = new User(UserInfo.ROOT.getId(), up.getPlainText(),
+          user = new User(UserInfo.ROOT.getUid(), up.getPlainText(),
               UserInfo.ROOT.getFirstName(), UserInfo.ROOT.getLastName(),
               UserInfo.ROOT.getEmail());
         }
         else {
           UserInfo info = app.getDepot().getUser(userId, group.getSlug());
-          user = new User(info.getId(), up.getPlainText(),
+          user = new User(info.getUid(), up.getPlainText(),
               info.getFirstName(), info.getLastName(), info.getEmail());
         }
         realm.getUsers().add(user);

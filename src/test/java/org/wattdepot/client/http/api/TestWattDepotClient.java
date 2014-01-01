@@ -144,7 +144,7 @@ public class TestWattDepotClient {
         e.printStackTrace();
       }
       if (test == null) {
-        test = new WattDepotClient(serverURL, testUser.getId(),
+        test = new WattDepotClient(serverURL, testUser.getUid(),
             testUser.getOrganizationId(), testPassword.getPlainText());
       }
       test.isHealthy();
@@ -164,7 +164,7 @@ public class TestWattDepotClient {
     logger.finest("tearDown()");
     admin.deleteUser(testPassword.getId(), testUser.getOrganizationId());
     admin.deleteOrganization(testGroup.getSlug());
-    admin.deleteUserPassword(testUser.getId(), testUser.getOrganizationId());
+    admin.deleteUserPassword(testUser.getUid(), testUser.getOrganizationId());
     logger.finest("Done tearDown()");
   }
 

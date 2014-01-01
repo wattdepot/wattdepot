@@ -36,7 +36,7 @@ public class UserInfo {
       new HashSet<Property>());
 
   /** A unique id for the User. */
-  private String id;
+  private String uid;
   /** The User's first name. */
   private String firstName;
   /** The User's last name. */
@@ -51,7 +51,7 @@ public class UserInfo {
   static {
     String adminName = System.getProperty(ADMIN_USER_NAME);
     if (adminName != null) {
-      ROOT.setId(adminName);
+      ROOT.setUid(adminName);
     }
   }
 
@@ -80,7 +80,7 @@ public class UserInfo {
    */
   public UserInfo(String id, String firstName, String lastName, String email, String orgId,
       Set<Property> properties) {
-    this.id = id;
+    this.uid = id;
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
@@ -115,12 +115,12 @@ public class UserInfo {
       return false;
     }
     UserInfo other = (UserInfo) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (uid == null) {
+      if (other.uid != null) {
         return false;
       }
     }
-    else if (!id.equals(other.id)) {
+    else if (!uid.equals(other.uid)) {
       return false;
     }
     if (firstName == null) {
@@ -159,8 +159,8 @@ public class UserInfo {
   /**
    * @return the unique id.
    */
-  public String getId() {
-    return id;
+  public String getUid() {
+    return uid;
   }
 
   /**
@@ -207,7 +207,7 @@ public class UserInfo {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((uid == null) ? 0 : uid.hashCode());
     result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
     result = prime * result
         + ((properties == null) ? 0 : properties.hashCode());
@@ -244,8 +244,8 @@ public class UserInfo {
    * @param id
    *          the id to set
    */
-  public void setId(String id) {
-    this.id = id;
+  public void setUid(String id) {
+    this.uid = id;
   }
 
   /**
@@ -278,7 +278,7 @@ public class UserInfo {
    */
   @Override
   public String toString() {
-    return "User {\"id\"=\"" + id + "\", \"firstname\"=\"" + firstName
+    return "User {\"id\"=\"" + uid + "\", \"firstname\"=\"" + firstName
         + "\", \"lastname\"=\"" + lastName + "\", \"email\"=\"" + email
         + "\", \"properties\"=" + properties + "}";
   }

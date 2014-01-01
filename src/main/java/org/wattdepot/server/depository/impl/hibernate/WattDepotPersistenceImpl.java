@@ -67,7 +67,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   public WattDepotPersistenceImpl(ServerProperties properties) {
     super();
     setServerProperties(properties);
-    UserPassword adminPassword = getUserPassword(UserInfo.ROOT.getId(),
+    UserPassword adminPassword = getUserPassword(UserInfo.ROOT.getUid(),
         UserInfo.ROOT.getOrganizationId());
     // if (getSessionClose() != getSessionOpen()) {
     // throw new RuntimeException("opens and closed mismatched.");
@@ -1290,7 +1290,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.close();
     sessionClose++;
     for (UserInfo u : (List<UserInfo>) result) {
-      if (id.equals(u.getId()) && orgId.equals(u.getOrganizationId())) {
+      if (id.equals(u.getUid()) && orgId.equals(u.getOrganizationId())) {
         ret = u;
       }
     }
@@ -1306,7 +1306,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   public List<String> getUserIds(String orgId) {
     ArrayList<String> ret = new ArrayList<String>();
     for (UserInfo u : getUsers(orgId)) {
-      ret.add(u.getId());
+      ret.add(u.getUid());
     }
     return ret;
   }
@@ -1370,7 +1370,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public Organization getUsersGroup(UserInfo user) {
     for (Organization group : getOrganizations()) {
-      if (group.getUsers().contains(user.getId())) {
+      if (group.getUsers().contains(user.getUid())) {
         return group;
       }
     }

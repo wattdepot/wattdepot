@@ -25,7 +25,7 @@ import org.wattdepot.common.domainmodel.UserInfoList;
 import org.wattdepot.common.http.api.UserInfosResource;
 
 /**
- * UserInfosServerResource
+ * UserInfosServerResource handles the /wattdepot/{org-id}/users/ request.
  *
  * @author Cam Moore
  *

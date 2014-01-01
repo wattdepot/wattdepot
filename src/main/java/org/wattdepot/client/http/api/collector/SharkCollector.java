@@ -235,7 +235,7 @@ public class SharkCollector extends MultiThreadedCollector {
       username = cmd.getOptionValue("u");
     }
     else {
-      username = UserInfo.ROOT.getId();
+      username = UserInfo.ROOT.getUid();
     }
     if (cmd.hasOption("o")) {
       organizationId = cmd.getOptionValue("o");

@@ -74,6 +74,9 @@ public class InstanceFactory {
     return null;
   }
 
+  /**
+   * @return a Date after measurement 3.
+   */
   public static Date getTimeAfterM3() {
     try {
       return DateConvert.parseCalStringToDate("2013-11-20T14:45:47.925-1000");
@@ -89,6 +92,9 @@ public class InstanceFactory {
     return null;
   }
 
+  /**
+   * @return a Date before measurement 1.
+   */
   public static Date getTimeBeforeM1() {
     try {
       return DateConvert.parseCalStringToDate("2013-11-20T13:35:32.290-1000");
@@ -104,6 +110,9 @@ public class InstanceFactory {
     return null;
   }
 
+  /**
+   * @return a Date between measurement 1 and 2.
+   */
   public static Date getTimeBetweenM1andM2() {
     try {
       return DateConvert.parseCalStringToDate("2013-11-20T14:35:32.290-1000");
@@ -119,6 +128,9 @@ public class InstanceFactory {
     return null;
   }
 
+  /**
+   * @return a Date after measurement 1 and before measurement 3.
+   */
   public static Date getTimeBetweenM1andM3() {
     try {
       return DateConvert.parseCalStringToDate("2013-11-20T14:39:32.290-1000");
@@ -235,7 +247,7 @@ public class InstanceFactory {
    */
   public static Organization getOrganization() {
     Set<String> users = new HashSet<String>();
-    users.add(getUserInfo().getId());
+    users.add(getUserInfo().getUid());
     return new Organization("Test User Group", users);
   }
 
@@ -244,7 +256,7 @@ public class InstanceFactory {
    */
   public static Organization getOrganization2() {
     Set<String> users = new HashSet<String>();
-    users.add(getUserInfo().getId());
+    users.add(getUserInfo().getUid());
     return new Organization("Test User Group2", users);
   }
 

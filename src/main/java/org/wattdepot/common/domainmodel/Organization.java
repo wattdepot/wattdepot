@@ -50,7 +50,7 @@ public class Organization {
   protected Set<String> users;
 
   static {
-    ADMIN_GROUP.add(UserInfo.ROOT.getId());
+    ADMIN_GROUP.add(UserInfo.ROOT.getUid());
   }
 
   /**

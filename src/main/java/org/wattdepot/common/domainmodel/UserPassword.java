@@ -34,7 +34,7 @@ public class UserPassword {
   private static final StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
 
   /** The password for the admin user. */
-  public static final UserPassword ADMIN = new UserPassword(UserInfo.ROOT.getId(),
+  public static final UserPassword ADMIN = new UserPassword(UserInfo.ROOT.getUid(),
       UserInfo.ROOT.getOrganizationId(), "admin");
   private String id;
   private String encryptedPassword;

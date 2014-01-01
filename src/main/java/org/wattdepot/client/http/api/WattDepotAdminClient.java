@@ -216,7 +216,7 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    */
   @Override
   public void updateUser(UserInfo user) {
-    ClientResource client = makeClient("admin/" + Labels.USER + "/" + user.getId());
+    ClientResource client = makeClient("admin/" + Labels.USER + "/" + user.getUid());
     UserInfoResource resource = client.wrap(UserInfoResource.class);
     try {
       resource.update(user);

@@ -52,6 +52,7 @@
         <mapping resource="org/wattdepot/common/domainmodel/CollectorProcessDefinition.hbm.xml" />
         <mapping resource="org/wattdepot/common/domainmodel/Organization.hbm.xml" />
         <mapping resource="org/wattdepot/common/domainmodel/UserInfo.hbm.xml" />
+        <mapping resource="org/wattdepot/server/depository/impl/hibernate/UserInfoImpl.hbm.xml" />
         <mapping resource="org/wattdepot/common/domainmodel/UserPassword.hbm.xml" />
 
     </session-factory>

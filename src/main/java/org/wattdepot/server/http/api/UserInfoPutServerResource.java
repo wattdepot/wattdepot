@@ -51,12 +51,12 @@ public class UserInfoPutServerResource extends WattDepotServerResource implement
   public void store(UserInfo user) {
     getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/user/ with " + user);
     if (orgId.equals(user.getOrganizationId()) || orgId.equals(Organization.ADMIN_GROUP_NAME)) {
-      if (!depot.getUserIds(orgId).contains(user.getId())) {
+      if (!depot.getUserIds(orgId).contains(user.getUid())) {
         try {
-          UserPassword password = depot.getUserPassword(user.getId(), orgId);
+          UserPassword password = depot.getUserPassword(user.getUid(), orgId);
           if (password != null) {
             UserInfo defined = depot
-                .defineUserInfo(user.getId(), user.getFirstName(), user.getLastName(),
+                .defineUserInfo(user.getUid(), user.getFirstName(), user.getLastName(),
                     user.getEmail(), user.getOrganizationId(), user.getProperties());
             // Add user to Realm
             WattDepotApplication app = (WattDepotApplication) getApplication();
@@ -66,14 +66,14 @@ public class UserInfoPutServerResource extends WattDepotServerResource implement
               app.getRoles().add(role);
             }
             MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
-            User u = new User(defined.getId(), password.getPlainText(), defined.getFirstName(),
+            User u = new User(defined.getUid(), password.getPlainText(), defined.getFirstName(),
                 defined.getLastName(), defined.getEmail());
             realm.getUsers().add(u);
             realm.map(u, role);
           }
           else {
             setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED,
-                "No UserPassword defined for " + user.getId());
+                "No UserPassword defined for " + user.getUid());
           }
         }
         catch (UniqueIdException e) {
@@ -82,7 +82,7 @@ public class UserInfoPutServerResource extends WattDepotServerResource implement
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "User " + user.getId() + " is not in "
+      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "User " + user.getUid() + " is not in "
           + orgId);
     }
   }

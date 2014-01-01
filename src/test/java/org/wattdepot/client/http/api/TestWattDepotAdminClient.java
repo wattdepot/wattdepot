@@ -23,7 +23,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.HashSet;
-import java.util.Set;
 import java.util.logging.Logger;
 
 import org.junit.After;
@@ -43,7 +42,7 @@ import org.wattdepot.common.util.logger.WattDepotLogger;
 import org.wattdepot.server.WattDepotServer;
 
 /**
- * TestWattDepotAdminClient
+ * TestWattDepotAdminClient tests for the WattDepotAdminClient.
  * 
  * @author Cam Moore
  * 
@@ -133,10 +132,10 @@ public class TestWattDepotAdminClient {
   }
 
   /**
-   * @throws java.lang.Exception
+   * 
    */
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     logger.finest("tearDown()");
   }
 
