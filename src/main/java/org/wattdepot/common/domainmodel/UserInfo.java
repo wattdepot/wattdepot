@@ -30,28 +30,28 @@ import java.util.Set;
 public class UserInfo {
   /** Name of property used to store the admin username. */
   public static final String ADMIN_USER_NAME = "wattdepot-server.admin.name";
-  
+
   /** The admin user. */
-  public static final UserInfo ROOT = new UserInfo("root", "root", null, null, true,
+  public static final UserInfo ROOT = new UserInfo("root", "root", null, null, null,
       new HashSet<Property>());
 
   /** A unique id for the User. */
-  private String id;
+  private String uid;
   /** The User's first name. */
   private String firstName;
   /** The User's last name. */
   private String lastName;
   /** The User's email address. */
   private String email;
-  /** True if the user is an admin. */
-  private Boolean admin;
   /** Additional properties of the user. */
   private Set<Property> properties;
+  /** orgId the organization id this user belongs to. */
+  private String organizationId;
 
   static {
     String adminName = System.getProperty(ADMIN_USER_NAME);
     if (adminName != null) {
-      ROOT.setId(adminName);
+      ROOT.setUid(adminName);
     }
   }
 
@@ -73,18 +73,18 @@ public class UserInfo {
    *          The user's last name.
    * @param email
    *          The user's email address.
-   * @param admin
-   *          True if they are an admin.
+   * @param orgId
+   *          The id of the organization this user belongs to.
    * @param properties
    *          The additional properties for the user.
    */
-  public UserInfo(String id, String firstName, String lastName, String email, 
-      Boolean admin, Set<Property> properties) {
-    this.id = id;
+  public UserInfo(String id, String firstName, String lastName, String email, String orgId,
+      Set<Property> properties) {
+    this.uid = id;
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
-    this.admin = admin;
+    this.organizationId = orgId;
     this.properties = properties;
   }
 
@@ -111,24 +111,17 @@ public class UserInfo {
     if (obj == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if (!getClass().isAssignableFrom(obj.getClass())
+        && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
     UserInfo other = (UserInfo) obj;
-    if (admin == null) {
-      if (other.admin != null) {
+    if (uid == null) {
+      if (other.uid != null) {
         return false;
       }
     }
-    else if (!admin.equals(other.admin)) {
-      return false;
-    }
-    if (id == null) {
-      if (other.id != null) {
-        return false;
-      }
-    }
-    else if (!id.equals(other.id)) {
+    else if (!uid.equals(other.uid)) {
       return false;
     }
     if (firstName == null) {
@@ -151,13 +144,6 @@ public class UserInfo {
   }
 
   /**
-   * @return the admin
-   */
-  public Boolean getAdmin() {
-    return admin;
-  }
-
-  /**
    * @return the email
    */
   public String getEmail() {
@@ -174,8 +160,8 @@ public class UserInfo {
   /**
    * @return the unique id.
    */
-  public String getId() {
-    return id;
+  public String getUid() {
+    return uid;
   }
 
   /**
@@ -183,6 +169,13 @@ public class UserInfo {
    */
   public String getLastName() {
     return lastName;
+  }
+
+  /**
+   * @return the organizationId
+   */
+  public String getOrganizationId() {
+    return organizationId;
   }
 
   /**
@@ -215,10 +208,10 @@ public class UserInfo {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((admin == null) ? 0 : admin.hashCode());
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((uid == null) ? 0 : uid.hashCode());
     result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
-    result = prime * result + ((properties == null) ? 0 : properties.hashCode());
+    result = prime * result
+        + ((properties == null) ? 0 : properties.hashCode());
     return result;
   }
 
@@ -230,14 +223,6 @@ public class UserInfo {
    */
   public boolean removeProperty(Object o) {
     return properties.remove(o);
-  }
-
-  /**
-   * @param admin
-   *          the admin to set
-   */
-  public void setAdmin(Boolean admin) {
-    this.admin = admin;
   }
 
   /**
@@ -260,8 +245,8 @@ public class UserInfo {
    * @param id
    *          the id to set
    */
-  public void setId(String id) {
-    this.id = id;
+  public void setUid(String id) {
+    this.uid = id;
   }
 
   /**
@@ -270,6 +255,13 @@ public class UserInfo {
    */
   public void setLastName(String lastName) {
     this.lastName = lastName;
+  }
+
+  /**
+   * @param organizationId the organizationId to set
+   */
+  public void setOrganizationId(String organizationId) {
+    this.organizationId = organizationId;
   }
 
   /**
@@ -287,9 +279,9 @@ public class UserInfo {
    */
   @Override
   public String toString() {
-    return "User {\"id\"=\"" + id + "\", \"firstname\"=\"" + firstName + "\", \"lastname\"=\"" + lastName
-        + "\", \"email\"=\"" + email + "\", \"admin\"=" + admin
-        + ", \"properties\"=" + properties + "}";
+    return "User {\"id\"=\"" + uid + "\", \"firstname\"=\"" + firstName
+        + "\", \"lastname\"=\"" + lastName + "\", \"email\"=\"" + email
+        + "\", \"properties\"=" + properties + "}";
   }
 
 }

@@ -95,9 +95,9 @@ in the Sensors table.
 <img width="400" src="https://raw.github.com/wattdepot/wattdepot/master/docs/userguide/SensorDefined.png">
 </a>
 
-## Define Collector Metadata
+## Define Collector Process Definition
 
-Collector Metadata tells the Collector processes which sensor to poll, how often to poll the sensor 
+Collector Process Definition tells the Collector processes which sensor to poll, how often to poll the sensor 
 and which depository to store the measurements in. 
 
 <a href="https://raw.github.com/wattdepot/wattdepot/master/docs/userguide/AddMetadataDialog.png">

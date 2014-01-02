@@ -25,13 +25,13 @@ package org.wattdepot.common.exception;
  * @author Cam Moore
  * 
  */
-public class MissMatchedOwnerException extends Exception {
+public class MisMatchedOwnerException extends Exception {
 
   /** Serial Version ID. */
   private static final long serialVersionUID = -7949771009371995775L;
 
   /** Default Constructor. */
-  public MissMatchedOwnerException() {
+  public MisMatchedOwnerException() {
     super();
   }
 
@@ -41,7 +41,7 @@ public class MissMatchedOwnerException extends Exception {
    * @param cause
    *          The Throwable cause of the exception.
    */
-  public MissMatchedOwnerException(String message, Throwable cause) {
+  public MisMatchedOwnerException(String message, Throwable cause) {
     super(message, cause);
   }
 
@@ -49,7 +49,7 @@ public class MissMatchedOwnerException extends Exception {
    * @param message
    *          A String message about the exception.
    */
-  public MissMatchedOwnerException(String message) {
+  public MisMatchedOwnerException(String message) {
     super(message);
   }
 
@@ -57,7 +57,7 @@ public class MissMatchedOwnerException extends Exception {
    * @param cause
    *          The Throwable cause of the exception.
    */
-  public MissMatchedOwnerException(Throwable cause) {
+  public MisMatchedOwnerException(Throwable cause) {
     super(cause);
   }
 

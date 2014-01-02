@@ -1,5 +1,5 @@
 /**
- * CollectorMetaDataResource.java This file is part of WattDepot.
+ * UserInfoList.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -16,26 +16,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.common.http.api;
+package org.wattdepot.common.domainmodel;
 
-import org.restlet.resource.Put;
-import org.wattdepot.common.domainmodel.CollectorMetaData;
+import java.util.ArrayList;
 
 /**
- * CollectorMetaDataResource - HTTP Interface for CollectorMetaData.
- * 
+ * UserInfoList - A list of UserInfo instances.
+ *
  * @author Cam Moore
- * 
+ *
  */
-public interface CollectorMetaDataPutResource {
+public class UserInfoList {
+  private ArrayList<UserInfo> users;
+  
+  /**
+   * Default Constructor.
+   */
+  public UserInfoList() {
+    users = new ArrayList<UserInfo>();
+  }
 
   /**
-   * Defines the PUT /wattdepot/collector-metadata/ API call.
-   * 
-   * @param metadata
-   *          The CollectorMetaData to store.
+   * @return the users
    */
-  @Put
-  public void store(CollectorMetaData metadata);
+  public ArrayList<UserInfo> getUsers() {
+    return users;
+  }
+
+  /**
+   * @param users the users to set
+   */
+  public void setUsers(ArrayList<UserInfo> users) {
+    this.users = users;
+  }
 
 }

@@ -1,5 +1,5 @@
 /**
- * SensorProcess.java This file is part of WattDepot.
+ * CollectorProcessDefinition.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -21,59 +21,60 @@ package org.wattdepot.common.domainmodel;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.wattdepot.common.exception.BadSlugException;
 import org.wattdepot.common.util.Slug;
 
 /**
- * SensorProcess - Represents a process that queries a Sensor and produces
- * measurements.
+ * CollectorProcessDefinition - Represents a process that queries a Sensor and
+ * produces measurements.
  * 
  * @author Cam Moore
  * 
  */
-public class CollectorMetaData {
-  /** A unique id for the CollectorMetaData. */
-  private String id;
+public class CollectorProcessDefinition implements IDomainModel {
+  /** A unique id for the CollectorProcessDefinitionData. */
+  private String slug;
   /** The human readable name. */
   private String name;
-  /** The sensor making the measurements. */
-  protected Sensor sensor;
+  /** The id of the sensor making the measurements. */
+  protected String sensorId;
   /** The number of seconds between polls. */
   protected Long pollingInterval;
   /** The id of the depository where the measurements are stored. */
   protected String depositoryId;
-  /** Additional properties for the SensorProcess. */
+  /** Additional properties for the Collector. */
   protected Set<Property> properties;
-  /** The owner of this sensor process. */
-  private Organization owner;
+  /** The id of the owner of this collector. */
+  private String ownerId;
 
   /**
    * Hide the default constructor.
    */
-  protected CollectorMetaData() {
+  protected CollectorProcessDefinition() {
 
   }
 
   /**
    * @param name
-   *          The name of the CollectorMetaData.
-   * @param sensor
-   *          The sensor that measures the environment.
+   *          The name of the CollectorProcessDefinitionData.
+   * @param sensorId
+   *          The id of the sensor that measures the environment.
    * @param poll
    *          The number of seconds between polls.
    * @param depositoryId
    *          The depository_id where measurements are stored.
-   * @param owner
-   *          the owner of the sensor process.
+   * @param ownerId
+   *          the id of the owner of the collector.
    */
-  public CollectorMetaData(String name, Sensor sensor, Long poll, String depositoryId,
-      Organization owner) {
-    this.id = Slug.slugify(name);
+  public CollectorProcessDefinition(String name, String sensorId, Long poll,
+      String depositoryId, String ownerId) {
+    this.slug = Slug.slugify(name);
     this.name = name;
-    this.sensor = sensor;
+    this.sensorId = sensorId;
     this.pollingInterval = poll;
     this.depositoryId = depositoryId;
     this.properties = new HashSet<Property>();
-    this.owner = owner;
+    this.ownerId = ownerId;
   }
 
   /**
@@ -102,7 +103,7 @@ public class CollectorMetaData {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    CollectorMetaData other = (CollectorMetaData) obj;
+    CollectorProcessDefinition other = (CollectorProcessDefinition) obj;
     if (depositoryId == null) {
       if (other.depositoryId != null) {
         return false;
@@ -111,20 +112,20 @@ public class CollectorMetaData {
     else if (!depositoryId.equals(other.depositoryId)) {
       return false;
     }
-    if (id == null) {
-      if (other.id != null) {
+    if (slug == null) {
+      if (other.slug != null) {
         return false;
       }
     }
-    else if (!id.equals(other.id)) {
+    else if (!slug.equals(other.slug)) {
       return false;
     }
-    if (owner == null) {
-      if (other.owner != null) {
+    if (ownerId == null) {
+      if (other.ownerId != null) {
         return false;
       }
     }
-    else if (!owner.equals(other.owner)) {
+    else if (!ownerId.equals(other.ownerId)) {
       return false;
     }
     if (pollingInterval == null) {
@@ -143,12 +144,20 @@ public class CollectorMetaData {
     else if (!properties.equals(other.properties)) {
       return false;
     }
-    if (sensor == null) {
-      if (other.sensor != null) {
+    if (sensorId == null) {
+      if (other.sensorId != null) {
         return false;
       }
     }
-    else if (!sensor.equals(other.sensor)) {
+    else if (!sensorId.equals(other.sensorId)) {
+      return false;
+    }
+    if (name == null) {
+      if (other.name != null) {
+        return false;
+      }
+    }
+    else if (!name.equals(other.name)) {
       return false;
     }
     return true;
@@ -162,13 +171,6 @@ public class CollectorMetaData {
   }
 
   /**
-   * @return the id
-   */
-  public String getId() {
-    return id;
-  }
-
-  /**
    * @return the name
    */
   public String getName() {
@@ -178,8 +180,8 @@ public class CollectorMetaData {
   /**
    * @return the owner
    */
-  public Organization getOwner() {
-    return owner;
+  public String getOwnerId() {
+    return ownerId;
   }
 
   /**
@@ -213,8 +215,15 @@ public class CollectorMetaData {
   /**
    * @return the sensor
    */
-  public Sensor getSensor() {
-    return sensor;
+  public String getSensorId() {
+    return sensorId;
+  }
+
+  /**
+   * @return the slug
+   */
+  public String getSlug() {
+    return slug;
   }
 
   /*
@@ -226,12 +235,16 @@ public class CollectorMetaData {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((depositoryId == null) ? 0 : depositoryId.hashCode());
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
-    result = prime * result + ((owner == null) ? 0 : owner.hashCode());
-    result = prime * result + ((pollingInterval == null) ? 0 : pollingInterval.hashCode());
-    result = prime * result + ((properties == null) ? 0 : properties.hashCode());
-    result = prime * result + ((sensor == null) ? 0 : sensor.hashCode());
+    result = prime * result
+        + ((depositoryId == null) ? 0 : depositoryId.hashCode());
+    result = prime * result + ((slug == null) ? 0 : slug.hashCode());
+    result = prime * result + ((ownerId == null) ? 0 : ownerId.hashCode());
+    result = prime * result
+        + ((pollingInterval == null) ? 0 : pollingInterval.hashCode());
+    result = prime * result
+        + ((properties == null) ? 0 : properties.hashCode());
+    result = prime * result + ((sensorId == null) ? 0 : sensorId.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
     return result;
   }
 
@@ -244,7 +257,9 @@ public class CollectorMetaData {
    *         ADMIN_GROUP.
    */
   public boolean isOwner(Organization group) {
-    if (owner != null && (owner.equals(group) || group.equals(Organization.ADMIN_GROUP))) {
+    if (ownerId != null
+        && (ownerId.equals(group.getSlug()) || group
+            .equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;
@@ -269,30 +284,22 @@ public class CollectorMetaData {
   }
 
   /**
-   * @param id
-   *          the id to set
-   */
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  /**
    * @param name
    *          the name to set
    */
   public void setName(String name) {
     this.name = name;
-    if (this.id == null) {
-      this.id = Slug.slugify(name);
+    if (this.slug == null) {
+      this.slug = Slug.slugify(name);
     }
   }
 
   /**
-   * @param owner
-   *          the owner to set
+   * @param ownerId
+   *          the id of the owner to set
    */
-  public void setOwner(Organization owner) {
-    this.owner = owner;
+  public void setOwnerId(String ownerId) {
+    this.ownerId = ownerId;
   }
 
   /**
@@ -312,11 +319,26 @@ public class CollectorMetaData {
   }
 
   /**
-   * @param sensor
-   *          the sensor to set
+   * @param sensorId
+   *          the id of the sensor to set
    */
-  public void setSensor(Sensor sensor) {
-    this.sensor = sensor;
+  public void setSensorId(String sensorId) {
+    this.sensorId = sensorId;
+  }
+
+  /**
+   * @param slug
+   *          the id to set
+   * @exception BadSlugException
+   *              if the slug is not a valid slug.
+   */
+  public void setSlug(String slug) throws BadSlugException {
+    if (Slug.validateSlug(slug)) {
+      this.slug = slug;      
+    }
+    else {
+      throw new BadSlugException(slug + " is not a valid slug.");
+    }
   }
 
   /*
@@ -326,9 +348,10 @@ public class CollectorMetaData {
    */
   @Override
   public String toString() {
-    return "CollectorMetaData [name=" + name + ", sensor=" + sensor + ", pollingInterval="
-        + pollingInterval + ", depositoryId=" + depositoryId + ", properties=" + properties
-        + ", owner=" + owner + "]";
+    return "CollectorProcessDefinition [name=" + name + ", slug=" + slug
+        + ", sensorId=" + sensorId + ", pollingInterval=" + pollingInterval
+        + ", depositoryId=" + depositoryId + ", properties=" + properties
+        + ", ownerId=" + ownerId + "]";
   }
 
 }

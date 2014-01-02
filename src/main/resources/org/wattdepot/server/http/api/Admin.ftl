@@ -79,7 +79,7 @@ $(function(){
         <li><a id="depositories_tab_link" href="#depositories" data-toggle="tab">Depositories</a></li>
         <li><a id="sensors_tab_link" href="#sensors" data-toggle="tab">Sensors</a></li>
         <li><a id="sensorgroups_tab_link" href="#sensorgroups" data-toggle="tab">Sensor Groups</a></li>
-        <li><a id="sensorprocesses_tab_link" href="#sensorprocesses" data-toggle="tab">Collector Metadata</a></li>
+        <li><a id="sensorprocesses_tab_link" href="#sensorprocesses" data-toggle="tab">Collector Process Definitions</a></li>
     </ul>
     <!-- Tab panes -->
     <div class="tab-content">
@@ -101,10 +101,10 @@ $(function(){
                     <#list users as u>
                         <tr><td>${u.firstName!}</td><td>${u.lastName!}</td><td>${u.id}</td><td>${u.email!}</td>
                             <td>
-                                <#if ! u.admin><span class="glyphicon glyphicon-pencil" onclick="edit_user_dialog(event, '${u.id}');"></span></#if>
+                                <#if u.id == "root"><span class="glyphicon glyphicon-pencil" onclick="edit_user_dialog(event, '${u.slug}');"></span></#if>
                             </td>
                             <td>
-                                <#if ! u.admin><span class="glyphicon glyphicon-remove" onclick="delete_user_dialog(event, '${u.id}');"></span></#if>
+                                <#if u.id == "root"><span class="glyphicon glyphicon-remove" onclick="delete_user_dialog(event, '${u.slug}');"></span></#if>
                             </td>
                         </tr>
                     </#list>
@@ -128,12 +128,12 @@ $(function(){
                     </thead>
                     <tbody>
                     <#list groups as g>
-                        <tr><td>${g.id}</td><td>${g.name}</td><td><#list g.users as u>${u.id} </#list></td>
+                        <tr><td>${g.slug}</td><td>${g.name}</td><td><#list g.users as u>${u} </#list></td>
                             <td>
-                                <#if g.id != "admin"><span class="glyphicon glyphicon-pencil" onclick="edit_usergroup_dialog(event, '${g.id}');"></span></#if>
+                                <#if g.slug != "admin"><span class="glyphicon glyphicon-pencil" onclick="edit_usergroup_dialog(event, '${g.slug}');"></span></#if>
                             </td>
                             <td>
-                                <#if g.id != "admin"><span class="glyphicon glyphicon-remove" onclick="delete_usergroup_dialog(event, '${g.id}');"></span></#if>
+                                <#if g.slug != "admin"><span class="glyphicon glyphicon-remove" onclick="delete_usergroup_dialog(event, '${g.slug}');"></span></#if>
                             </td>
                         </tr>
                     </#list>
@@ -160,12 +160,12 @@ $(function(){
                     </thead>
                     <tbody>
                     <#list depositories as d>
-                        <tr><td>${d.id}</td><td>${d.name}</td><td><#if d.getMeasurementType()??>${d.measurementType.name}</#if></td><#if groupId == "admin"><td>${d.owner.id}</td></#if>
+                        <tr><td>${d.slug}</td><td>${d.name}</td><td><#if d.getMeasurementType()??>${d.measurementType.name}</#if></td><#if groupId == "admin"><td>${d.owner.id}</td></#if>
                             <td>
-                                <span class="glyphicon glyphicon-pencil" onclick="edit_depository_dialog(event, '${d.id}');"></span>
+                                <span class="glyphicon glyphicon-pencil" onclick="edit_depository_dialog(event, '${d.slug}');"></span>
                             </td>
                             <td>
-                                <span class="glyphicon glyphicon-remove" onclick="delete_depository_dialog(event, '${d.id}');"></span>
+                                <span class="glyphicon glyphicon-remove" onclick="delete_depository_dialog(event, '${d.slug}');"></span>
                             </td>
                         </tr>
                     </#list>
@@ -193,18 +193,18 @@ $(function(){
                     </thead>
                     <tbody>
                     <#list sensors as s>
-                        <tr><td>${s.id}</td>
+                        <tr><td>${s.slug}</td>
                             <td>${s.name}</td>
                             <td>${s.uri}</td>
                             <td><#if s.getSensorLocation()??>${s.sensorLocation.id}</#if></td>
-                            <td><#if s.getModel()??>${s.model.id}</#if></td>
-                            <#if groupId == "admin"><td>${s.owner.id}</td></#if>
+                            <td><#if s.getModel()??>${s.modelId}</#if></td>
+                            <#if groupId == "admin"><td>${s.ownerId}</td></#if>
                             <td>[<#assign k = s.properties?size><#list s.properties as prop>{"${prop.key}":"${prop.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]</td>
                             <td>
-                                <span class="glyphicon glyphicon-pencil" onclick="edit_sensor_dialog(event, '${s.id}');"></span>
+                                <span class="glyphicon glyphicon-pencil" onclick="edit_sensor_dialog(event, '${s.slug}');"></span>
                             </td>
                             <td>
-                                <span class="glyphicon glyphicon-remove" onclick="delete_sensor_dialog(event, '${s.id}');"></span>
+                                <span class="glyphicon glyphicon-remove" onclick="delete_sensor_dialog(event, '${s.slug}');"></span>
                             </td>
                         </tr>
                     </#list>
@@ -280,12 +280,12 @@ $(function(){
                                 </thead>
                                 <tbody>
                                 <#list sensormodels as m>
-                                    <tr><td>${m.id}</td><td>${m.name}</td><td>${m.protocol}</td><td>${m.type}</td><td>${m.version}</td>
+                                    <tr><td>${m.slug}</td><td>${m.name}</td><td>${m.protocol}</td><td>${m.type}</td><td>${m.version}</td>
                                         <td>
-                                            <#if groupId == "admin"><span class="glyphicon glyphicon-pencil" onclick="edit_model_dialog(event, '${m.id}');"></span></#if>
+                                            <#if groupId == "admin"><span class="glyphicon glyphicon-pencil" onclick="edit_model_dialog(event, '${m.slug}');"></span></#if>
                                         </td>
                                         <td>
-                                            <#if groupId == "admin"><span class="glyphicon glyphicon-remove" onclick="delete_model_dialog(event, '${m.id}');"></span></#if>
+                                            <#if groupId == "admin"><span class="glyphicon glyphicon-remove" onclick="delete_model_dialog(event, '${m.slug}');"></span></#if>
                                         </td>
                                     </tr>
                                 </#list>
@@ -315,15 +315,15 @@ $(function(){
                     </thead>
                     <tbody>
                     <#list sensorgroups as g>
-                        <tr><td>${g.id}</td>
+                        <tr><td>${g.slug}</td>
                             <td>${g.name}</td>
-                            <td><#list g.sensors as u>${u.id} </#list></td>
+                            <td><#list g.sensors as u>${u.slug} </#list></td>
                             <#if groupId == "admin"><td>${g.owner.id}</td></#if>
                             <td>
-                                <span class="glyphicon glyphicon-pencil" onclick="edit_sensorgroup_dialog(event, '${g.id}');"></span>
+                                <span class="glyphicon glyphicon-pencil" onclick="edit_sensorgroup_dialog(event, '${g.slug}');"></span>
                             </td>
                             <td>
-                                <span class="glyphicon glyphicon-remove" onclick="delete_sensorgroup_dialog(event, '${g.id}');"></span>
+                                <span class="glyphicon glyphicon-remove" onclick="delete_sensorgroup_dialog(event, '${g.slug}');"></span>
                             </td>
                         </tr>
                     </#list>
@@ -336,7 +336,7 @@ $(function(){
             <div class="well">
                 <table class="table">
                     <thead>
-                      <tr><th colspan="5"><h3>Collector Metadata</h3></th></tr>
+                      <tr><th colspan="5"><h3>Collector Process Definitions</h3></th></tr>
                         <tr>
                             <th>Id</th>
                             <th>Name</th>
@@ -353,24 +353,24 @@ $(function(){
                     </thead>
                     <tbody>
                     <#list sensorprocesses as p>
-                        <tr><td>${p.id}</td>
+                        <tr><td>${p.slug}</td>
                             <td>${p.name}</td>
-                            <td>${p.sensor.id}</td>
+                            <td>${p.sensorId}</td>
                             <td>${p.pollingInterval}</td>
                             <td>${p.depositoryId}</td>
                             <#if groupId == "admin"><td>${p.owner.id}</td></#if>
                             <td>[<#assign k = p.properties?size><#list p.properties as prop>{"${prop.key}":"${prop.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]</td>
                             <td>
-                                <span class="glyphicon glyphicon-pencil" onclick="edit_process_dialog(event, '${p.id}');"></span>
+                                <span class="glyphicon glyphicon-pencil" onclick="edit_process_dialog(event, '${p.slug}');"></span>
                             </td>
                             <td>
-                                <span class="glyphicon glyphicon-remove" onclick="delete_process_dialog(event, '${p.id}');"></span>
+                                <span class="glyphicon glyphicon-remove" onclick="delete_process_dialog(event, '${p.slug}');"></span>
                             </td>
                         </tr>
                     </#list>
                     </tbody>
                 </table>
-                <button data-toggle="modal" data-target="#addProcessModal" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> Add Collector Metadata</button>
+                <button data-toggle="modal" data-target="#addProcessModal" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> Add Collector Process Definition</button>
             </div>       
         </div>
     </div>  
@@ -459,7 +459,7 @@ $(function(){
                 <div class="col-md-9">
                   <select class="form-control" name="sensor_model">
                   <#list sensormodels as sm>
-                    <option value="${sm.id}">${sm.name}</option>
+                    <option value="${sm.slug}">${sm.name}</option>
                   </#list>
                   </select>
                   <p class="help-block">Select the model for the sensor.</p>
@@ -611,7 +611,7 @@ $(function(){
                             <div class="col-md-9">
                             <select class="form-control" name="groupsensors" multiple="multiple">
                             <#list sensors as s>
-                                <option value="${s.id}">${s.id}</option>
+                                <option value="${s.slug}">${s.slug}</option>
                             </#list>
                             </select>
                             <p class="help-block"></p>
@@ -629,13 +629,13 @@ $(function(){
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->    
 
-  <!-- Add Collector Metadata -->
+  <!-- Add Collector Process Defintion -->
   <div class="modal fade" id="addProcessModal" tabindex="-1" role="dialog" aria-labelledby="addProcessModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title">Add/Edit Collector Metadata</h4>
+          <h4 class="modal-title">Add/Edit Collector Process Definition</h4>
         </div>
         <div class="modal-body">
           <div class="container">
@@ -645,7 +645,7 @@ $(function(){
                  <label class="col-sm-3 control-label">Collector Name</label>
                  <div class="col-sm-9">
                    <input class="form-control" type="text" name="sensorprocess_name" class="form-control">
-                   <p class="help-block">Unique name for the metadata.</p>
+                   <p class="help-block">Unique name for the definition.</p>
                  </div>
               </div>
               <div class="form-group">
@@ -653,7 +653,7 @@ $(function(){
                 <div class="col-sm-9">
                   <select class="form-control" name="process_sensor">
                   <#list sensors as s>
-                    <option value="${s.id}">${s.name}</option>
+                    <option value="${s.slug}">${s.name}</option>
                   </#list>
                   </select>
                   <p class="help-block">Select the sensor making measurements.</p>
@@ -671,7 +671,7 @@ $(function(){
                 <div class="col-sm-9">
                   <select class="form-control" name="process_depository">
                   <#list depositories as d>
-                    <option value="${d.id}">${d.name}</option>
+                    <option value="${d.slug}">${d.name}</option>
                   </#list>
                   </select>
                   <p class="help-block">Select the depository to store the measurements.</p>
@@ -749,7 +749,7 @@ $(function(){
                             <div class="col-md-9">
                                 <select class="form-control" name="depository_type">
                                 <#list measurementtypes as mt>
-                                    <option value="${mt.id}">${mt.name}</option>
+                                    <option value="${mt.slug}">${mt.name}</option>
                                 </#list>
                                 </select>
                                 <p class="help-block">The type of measurement the depository stores.</p>
@@ -786,20 +786,20 @@ $(document).ready(function () {
 var GROUPID = "${groupId}";
 var USERS = {};
 <#list users as u>
-USERS["${u.id}"] = {"id": "${u.id}", "firstName" : "${u.firstName!"none"}", "lastName" : "${u.lastName!"none"}", "email" : "${u.email!"none"}", "admin" : <#if u.admin>true<#else>false</#if>, "properties" : [<#assign k = u.properties?size><#list u.properties as p>{"key":"${p.key}", "value":"${p.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]};
+USERS["${u.id}"] = {"id": "${u.id}", "firstName" : "${u.firstName!"none"}", "lastName" : "${u.lastName!"none"}", "email" : "${u.email!"none"}", "properties" : [<#assign k = u.properties?size><#list u.properties as p>{"key":"${p.key}", "value":"${p.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]};
 </#list>
 var USERGROUPS = {};
 <#list groups as g>
-USERGROUPS["${g.id}"] = {"id": "${g.id}", "name": "${g.name}", "users": [
+USERGROUPS["${g.slug}"] = {"id": "${g.slug}", "name": "${g.name}", "users": [
 <#assign j = g.users?size>
 <#list g.users as u>
-{"id": "${u.id}", "firstName" : "${u.firstName!"none"}", "lastName" : "${u.lastName!"none"}", "email" : "${u.email!"none"}", "admin" : <#if u.admin>true<#else>false</#if>, "properties" : [<#assign k = u.properties?size><#list u.properties as p>{"key":"${p.key}", "value":"${p.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]}<#if j != 1>,</#if><#assign j = j - 1>
+{"id": "${u}"}<#if j != 1>,</#if><#assign j = j - 1>
 </#list>
 ]};
 </#list>
 var DEPOSITORIES = {};
 <#list depositories as d>
-DEPOSITORIES["${d.id}"] = {"id": "${d.id}", "name": "${d.name}", "measurementType": "${d.measurementType}", "ownerId": "${d.owner.id}"};
+DEPOSITORIES["${d.slug}"] = {"id": "${d.slug}", "name": "${d.name}", "measurementType": "${d.measurementType}", "ownerId": "${d.owner.id}"};
 </#list>
 var LOCATIONS = {};
 <#list locations as l>
@@ -807,28 +807,28 @@ LOCATIONS["${l.id}"] = {"id": "${l.id}", "name": "${l.name}", "latitude": ${l.la
 </#list>
 var MODELS = {};
 <#list sensormodels as m>
-MODELS["${m.id}"] = {"id": "${m.id}", "name": "${m.name}", "protocol": "${m.protocol}", "type": "${m.type}", "version": "${m.version}"};
+MODELS["${m.slug}"] = {"id": "${m.slug}", "name": "${m.name}", "protocol": "${m.protocol}", "type": "${m.type}", "version": "${m.version}"};
 </#list>
 var SENSORS = {};
 <#list sensors as s>
-SENSORS["${s.id}"] = {"id": "${s.id}", "name": "${s.name}", "uri": "${s.uri}", "locationId": "<#if s.getSensorLocation()??>${s.sensorLocation.id}</#if>", "modelId": "<#if s.getModel()??>${s.model.id}</#if>", "ownerId": "${s.owner.id}", "properties" : [<#assign k = s.properties?size><#list s.properties as p>{"key":"${p.key}", "value":"${p.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]};
+SENSORS["${s.slug}"] = {"id": "${s.slug}", "name": "${s.name}", "uri": "${s.uri}", "locationId": "<#if s.getSensorLocation()??>${s.sensorLocationId}</#if>", "modelId": "<#if s.getModel()??>${s.modelId}</#if>", "ownerId": "${s.ownerId}", "properties" : [<#assign k = s.properties?size><#list s.properties as p>{"key":"${p.key}", "value":"${p.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]};
 </#list>
 var SENSORGROUPS = {};
 <#list sensorgroups as sg>
-SENSORGROUPS["${sg.id}"] = {"id": "${sg.id}", "name": "${sg.name}", "sensors": [
+SENSORGROUPS["${sg.slug}"] = {"id": "${sg.slug}", "name": "${sg.name}", "sensors": [
 <#assign sgLen = sg.sensors?size>
 <#list sg.sensors as s>
-{"id": "${s.id}"}<#if sgLen != 1>,</#if><#assign sgLen = sgLen - 1>
+{"id": "${s.slug}"}<#if sgLen != 1>,</#if><#assign sgLen = sgLen - 1>
 </#list>
 ], "ownerId": "${sg.owner.id}"};
 </#list>
 var SENSORPROCESSES = {};
 <#list sensorprocesses as sp>
-SENSORPROCESSES["${sp.id}"] = {"id": "${sp.id}", "name": "${sp.name}",  "sensorId": "${sp.sensor.id}", "pollingInterval": ${sp.pollingInterval}, "depositoryId": "${sp.depositoryId}", "ownerId": "${sp.owner.id}", "properties" : [<#assign k = sp.properties?size><#list sp.properties as p>{"key":"${p.key}", "value":"${p.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]};
+SENSORPROCESSES["${sp.slug}"] = {"id": "${sp.slug}", "name": "${sp.name}",  "sensorId": "${sp.sensorId}", "pollingInterval": ${sp.pollingInterval}, "depositoryId": "${sp.depositoryId}", "ownerId": "${sp.owner.id}", "properties" : [<#assign k = sp.properties?size><#list sp.properties as p>{"key":"${p.key}", "value":"${p.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]};
 </#list>
 var MEASUREMENTTYPES = {};
 <#list measurementtypes as mt>
-MEASUREMENTTYPES["${mt.id}"] = {"id": "${mt.id}", "name": "${mt.name}", "units": "${mt.units}"};
+MEASUREMENTTYPES["${mt.slug}"] = {"id": "${mt.slug}", "name": "${mt.name}", "units": "${mt.units}"};
 </#list>
 </script>
 </body>

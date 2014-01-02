@@ -20,6 +20,7 @@ package org.wattdepot.common.domainmodel;
 
 import java.util.Set;
 
+import org.wattdepot.common.exception.BadSlugException;
 import org.wattdepot.common.util.Slug;
 
 /**
@@ -29,15 +30,15 @@ import org.wattdepot.common.util.Slug;
  * @author Cam Moore
  * 
  */
-public class SensorGroup {
-  /** The unique id for this group. */
-  private String id;
+public class SensorGroup implements IDomainModel {
+  /** The unique slug for this group usable in URLs. */
+  private String slug;
   /** The name of the group. */
   private String name;
   /** The List of sensors the compose this group. */
-  protected Set<Sensor> sensors;
+  protected Set<String> sensors;
   /** The owner of this sensor model. */
-  private Organization owner;
+  private String ownerId;
 
   /**
    * Hide the default constructor.
@@ -53,24 +54,24 @@ public class SensorGroup {
    *          The name.
    * @param sensors
    *          The set of sensors in the group.
-   * @param owner
-   *          the owner of the location.
+   * @param ownerId
+   *          the id of the owner of the SensorGroup.
    */
-  public SensorGroup(String name, Set<Sensor> sensors, Organization owner) {
-    this.id = Slug.slugify(name);
+  public SensorGroup(String name, Set<String> sensors, String ownerId) {
+    this.slug = Slug.slugify(name);
     this.name = name;
     this.sensors = sensors;
-    this.owner = owner;
+    this.ownerId = ownerId;
   }
 
   /**
-   * @param e
-   *          The sensor to add.
+   * @param sensorId
+   *          The id of the sensor to add.
    * @return true if successful.
    * @see java.util.List#add(java.lang.Object)
    */
-  public boolean add(Sensor e) {
-    return sensors.add(e);
+  public boolean add(String sensorId) {
+    return sensors.add(sensorId);
   }
 
   /**
@@ -100,20 +101,28 @@ public class SensorGroup {
       return false;
     }
     SensorGroup other = (SensorGroup) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (slug == null) {
+      if (other.slug != null) {
         return false;
       }
     }
-    else if (!id.equals(other.id)) {
+    else if (!slug.equals(other.slug)) {
       return false;
     }
-    if (owner == null) {
-      if (other.owner != null) {
+    if (name == null) {
+      if (other.name != null) {
         return false;
       }
     }
-    else if (!owner.equals(other.owner)) {
+    else if (!name.equals(other.name)) {
+      return false;
+    }
+    if (ownerId == null) {
+      if (other.ownerId != null) {
+        return false;
+      }
+    }
+    else if (!ownerId.equals(other.ownerId)) {
       return false;
     }
     if (sensors == null) {
@@ -130,8 +139,8 @@ public class SensorGroup {
   /**
    * @return the id
    */
-  public String getId() {
-    return id;
+  public String getSlug() {
+    return slug;
   }
 
   /**
@@ -144,14 +153,14 @@ public class SensorGroup {
   /**
    * @return the owner
    */
-  public Organization getOwner() {
-    return owner;
+  public String getOwnerId() {
+    return ownerId;
   }
 
   /**
    * @return the sensors
    */
-  public Set<Sensor> getSensors() {
+  public Set<String> getSensors() {
     return sensors;
   }
 
@@ -164,8 +173,9 @@ public class SensorGroup {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
-    result = prime * result + ((owner == null) ? 0 : owner.hashCode());
+    result = prime * result + ((slug == null) ? 0 : slug.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
+    result = prime * result + ((ownerId == null) ? 0 : ownerId.hashCode());
     result = prime * result + ((sensors == null) ? 0 : sensors.hashCode());
     return result;
   }
@@ -179,7 +189,8 @@ public class SensorGroup {
    *         ADMIN_GROUP.
    */
   public boolean isOwner(Organization group) {
-    if (owner != null && (owner.equals(group) || group.equals(Organization.ADMIN_GROUP))) {
+    if (ownerId != null
+        && (ownerId.equals(group.getSlug()) || group.equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;
@@ -196,11 +207,18 @@ public class SensorGroup {
   }
 
   /**
-   * @param id
-   *          the id to set
+   * @param slug
+   *          the slug to set
+   * @exception BadSlugException
+   *              if the slug isn't valid.
    */
-  public void setId(String id) {
-    this.id = id;
+  public void setSlug(String slug) throws BadSlugException {
+    if (Slug.validateSlug(slug)) {
+      this.slug = slug;
+    }
+    else {
+      throw new BadSlugException(slug + " is not a valid slug.");
+    }
   }
 
   /**
@@ -209,24 +227,24 @@ public class SensorGroup {
    */
   public void setName(String name) {
     this.name = name;
-    if (this.id == null) {
-      this.id = Slug.slugify(name);
+    if (this.slug == null) {
+      this.slug = Slug.slugify(name);
     }
   }
 
   /**
    * @param owner
-   *          the owner to set
+   *          the id of the owner to set
    */
-  public void setOwner(Organization owner) {
-    this.owner = owner;
+  public void setOwnerId(String owner) {
+    this.ownerId = owner;
   }
 
   /**
    * @param sensors
    *          the sensors to set
    */
-  public void setSensors(Set<Sensor> sensors) {
+  public void setSensors(Set<String> sensors) {
     this.sensors = sensors;
   }
 
@@ -237,7 +255,8 @@ public class SensorGroup {
    */
   @Override
   public String toString() {
-    return "SensorGroup [id=" + id + ", sensors=" + sensors + ", owner=" + owner + "]";
+    return "SensorGroup [id=" + slug + ", name=" + name + ", sensors=" + sensors + ", ownerId="
+        + ownerId + "]";
   }
 
 }

@@ -334,6 +334,20 @@
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
                         </configuration>
                     </execution>
+                    <execution>
+                        <!-- Generate coverage report html in target/site/jacoco/ from target/jacoco.exec -->
+                        <id>report</id>
+                        <phase>site</phase>
+                        <goals><goal>report</goal></goals>
+                        <configuration>
+                            <!-- Sets the path to the file which contains 
+                                the execution data. -->
+                            <dataFile>${jacoco.ut.execution.data.file}</dataFile>
+                            <!-- Sets the output directory for the code coverage 
+                                report. -->
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -357,10 +371,6 @@
                 <version>${findbugs.plugin.version}</version>
                 <configuration>
                     <excludeFilterFile>${findbugs.filter.file}</excludeFilterFile>
-                    <excludes>
-                        <exclude>**/datamodel/**</exclude>
-                        <exclude>**/tinker/**</exclude>
-                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -377,8 +387,6 @@
                 <version>${checkstyle.plugin.version}</version>
                 <configuration>
                     <configLocation>${checkstyle.filter.file}</configLocation>
-                    <excludes>**/datamodel/**
-                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -398,9 +406,6 @@
                     <linkXref>false</linkXref>
                     <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
                     <minimumTokens>100</minimumTokens>
-                    <excludes>
-                        <exclude>**/datamodel/**</exclude>
-                    </excludes>
                 </configuration>
                 <executions>
                     <execution>
@@ -441,10 +446,6 @@
                             <version>${findbugs.plugin.version}</version>
                             <configuration>
                                 <excludeFilterFile>${findbugs.filter.file}</excludeFilterFile>
-                                <excludes>
-                                    <exclude>**/datamodel/**</exclude>
-                                    <exclude>**/tinker/**</exclude>
-                                </excludes>
                             </configuration>
                         </plugin>
                         <plugin>
@@ -453,7 +454,6 @@
                             <version>${checkstyle.plugin.version}</version>
                             <configuration>
                                 <configLocation>${checkstyle.filter.file}</configLocation>
-                                <excludes>**/datamodel/**, **/tinker/**</excludes>
                             </configuration>
                         </plugin>
                         <plugin>
@@ -473,10 +473,6 @@
                                 <linkXref>false</linkXref>
                                 <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
                                 <minimumTokens>100</minimumTokens>
-                                <excludes>
-                                    <exclude>**/tinker/**</exclude>
-                                    <exclude>**/datamodel/**</exclude>
-                                </excludes>
                             </configuration>
                         </plugin>
                         <plugin>

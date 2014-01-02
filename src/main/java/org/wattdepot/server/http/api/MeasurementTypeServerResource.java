@@ -80,7 +80,7 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
     getLogger().log(Level.INFO,
         "POST /wattdepot/measurement-type/{" + typeSlug + "} with " + measurementType);
     if (isInRole("admin")) {
-      MeasurementType mt = depot.getMeasurementType(measurementType.getId());
+      MeasurementType mt = depot.getMeasurementType(measurementType.getSlug());
       if (mt != null) {
         depot.updateMeasurementType(measurementType);
       }

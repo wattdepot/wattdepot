@@ -1,5 +1,5 @@
 /**
- * CollectorMetaDataServerResource.java This file is part of WattDepot.
+ * CollectorProcessDefinitionServerResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -22,26 +22,27 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import org.wattdepot.common.domainmodel.CollectorMetaData;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.exception.MissMatchedOwnerException;
-import org.wattdepot.common.http.api.CollectorMetaDataResource;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
+import org.wattdepot.common.http.api.CollectorProcessDefinitionResource;
 
 /**
- * CollectorMetaDataServerResource - Handles the CollectorMetaData HTTP API
- * (("/wattdepot/{org-id}/collector-metadata/",
- * "/wattdepot/{org-id}/collector-metadata/{collector-metadata-id}").
+ * CollectorProcessDefinitionServerResource - Handles the
+ * CollectorProcessDefinition HTTP API (
+ * "/wattdepot/{org-id}/collector-process-definition/{collector-process-definition-id}"
+ * ).
  * 
  * @author Cam Moore
  * 
  */
-public class CollectorMetaDataServerResource extends WattDepotServerResource implements
-    CollectorMetaDataResource {
+public class CollectorProcessDefinitionServerResource extends WattDepotServerResource implements
+    CollectorProcessDefinitionResource {
 
-  /** The collector-metadata_id from the request. */
-  private String metaDataId;
+  /** The collector-process-definition_id from the request. */
+  private String definitionId;
 
   /*
    * (non-Javadoc)
@@ -51,28 +52,28 @@ public class CollectorMetaDataServerResource extends WattDepotServerResource imp
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.metaDataId = getAttribute(Labels.COLLECTOR_META_DATA_ID);
+    this.definitionId = getAttribute(Labels.COLLECTOR_PROCESS_DEFINITION_ID);
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.restlet.CollectorMetaDataResource#retrieve()
+   * @see org.wattdepot.restlet.CollectorProcessDefinitionResource#retrieve()
    */
   @Override
-  public CollectorMetaData retrieve() {
+  public CollectorProcessDefinition retrieve() {
     getLogger().log(Level.INFO,
-        "GET /wattdepot/{" + orgId + "}/collectormetadata/{" + metaDataId + "}");
-    CollectorMetaData process = null;
+        "GET /wattdepot/{" + orgId + "}/CollectorProcessDefinition/{" + definitionId + "}");
+    CollectorProcessDefinition process = null;
     try {
-      process = depot.getCollectorMetaData(metaDataId, orgId);
+      process = depot.getCollectorProcessDefinition(definitionId, orgId);
     }
-    catch (MissMatchedOwnerException e) {
+    catch (MisMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
     }
     if (process == null) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "CollectorMetaData " + metaDataId
-          + " is not defined.");
+      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "CollectorProcessDefinition "
+          + definitionId + " is not defined.");
     }
     return process;
   }
@@ -80,19 +81,19 @@ public class CollectorMetaDataServerResource extends WattDepotServerResource imp
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.restlet.CollectorMetaDataResource#remove()
+   * @see org.wattdepot.restlet.CollectorProcessDefinitionResource#remove()
    */
   @Override
   public void remove() {
     getLogger().log(Level.INFO,
-        "DEL /wattdepot/{" + orgId + "}/collector-metadata/{" + metaDataId + "}");
+        "DEL /wattdepot/{" + orgId + "}/collector-process-definition/{" + definitionId + "}");
     try {
-      depot.deleteCollectorMetaData(metaDataId, orgId);
+      depot.deleteCollectorProcessDefinition(definitionId, orgId);
     }
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
     }
-    catch (MissMatchedOwnerException e) {
+    catch (MisMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
     }
   }
@@ -101,20 +102,20 @@ public class CollectorMetaDataServerResource extends WattDepotServerResource imp
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.common.http.api.CollectorMetaDataResource#update(org.wattdepot
-   * .common.domainmodel.CollectorMetaData)
+   * org.wattdepot.common.http.api.CollectorProcessDefinitionResource#update
+   * (org.wattdepot .common.domainmodel.CollectorProcessDefinition)
    */
   @Override
-  public void update(CollectorMetaData metadata) {
+  public void update(CollectorProcessDefinition definition) {
     getLogger().log(
         Level.INFO,
-        "POST /wattdepot/{" + orgId + "}/collector-metadata/{" + metaDataId + "} with "
-            + metadata);
+        "POST /wattdepot/{" + orgId + "}/collector-process-definition/{" + definitionId + "} with "
+            + definition);
     Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
-      if (metadata.getId().equals(metaDataId)) {
-        if (depot.getCollectorMetaDataIds(orgId).contains(metadata.getId())) {
-          depot.updateCollectorMetaData(metadata);
+      if (definition.getSlug().equals(definitionId)) {
+        if (depot.getCollectorProcessDefinitionIds(orgId).contains(definition.getSlug())) {
+          depot.updateCollectorProcessDefinition(definition);
         }
       }
       else {

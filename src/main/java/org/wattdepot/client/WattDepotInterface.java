@@ -20,8 +20,8 @@ package org.wattdepot.client;
 
 import java.util.Date;
 
-import org.wattdepot.common.domainmodel.CollectorMetaData;
-import org.wattdepot.common.domainmodel.CollectorMetaDataList;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.DepositoryList;
 import org.wattdepot.common.domainmodel.Measurement;
@@ -127,14 +127,14 @@ public interface WattDepotInterface {
   public void deleteSensorModel(SensorModel model) throws IdNotFoundException;
 
   /**
-   * Deletes the given CollectorMetaData.
+   * Deletes the given CollectorProcessDefinitionData.
    * 
    * @param process
-   *          the CollectorMetaData to delete.
+   *          the CollectorProcessDefinitionData to delete.
    * @throws IdNotFoundException
-   *           if the CollectorMetaData is not found in the server.
+   *           if the CollectorProcessDefinitionData is not found in the server.
    */
-  public void deleteCollectorMetaData(CollectorMetaData process)
+  public void deleteCollectorProcessDefinition(CollectorProcessDefinition process)
       throws IdNotFoundException;
 
   /**
@@ -243,22 +243,22 @@ public interface WattDepotInterface {
   public SensorModelList getSensorModels();
 
   /**
-   * Retrieves the CollectorMetaData with the given id from the WattDepot
+   * Retrieves the CollectorProcessDefinitionData with the given id from the WattDepot
    * Server.
    * 
    * @param id
-   *          The CollectorMetaData's id.
-   * @return the CollectorMetaData with the given id or null.
+   *          The CollectorProcessDefinitionData's id.
+   * @return the CollectorProcessDefinitionData with the given id or null.
    * @exception IdNotFoundException
-   *              if the given id is not a CollectorMetaData's id.
+   *              if the given id is not a CollectorProcessDefinitionData's id.
    */
-  public CollectorMetaData getCollectorMetaData(String id)
+  public CollectorProcessDefinition getCollectorProcessDefinition(String id)
       throws IdNotFoundException;
 
   /**
-   * @return The defined CollectorMetaDatas.
+   * @return The defined CollectorProcessDefinitionDatas.
    */
-  public CollectorMetaDataList getCollectorMetaDatas();
+  public CollectorProcessDefinitionList getCollectorProcessDefinition();
 
   /**
    * @return The defined Sensors.
@@ -409,12 +409,12 @@ public interface WattDepotInterface {
   public void putSensorModel(SensorModel model);
 
   /**
-   * Stores the given CollectorMetaData in the WattDepot Server.
+   * Stores the given CollectorProcessDefinitionData in the WattDepot Server.
    * 
    * @param process
-   *          the CollectorMetaData.
+   *          the CollectorProcessDefinitionData.
    */
-  public void putCollectorMetaData(CollectorMetaData process);
+  public void putCollectorProcessDefinition(CollectorProcessDefinition process);
 
   /**
    * Updates the given Depository in the WattDepot Server.
@@ -465,10 +465,10 @@ public interface WattDepotInterface {
   public void updateSensorModel(SensorModel model);
 
   /**
-   * Updates the given CollectorMetaData in the WattDepot Server.
+   * Updates the given CollectorProcessDefinitionData in the WattDepot Server.
    * 
    * @param process
-   *          The CollectorMetaData to update.
+   *          The CollectorProcessDefinitionData to update.
    */
-  public void updateCollectorMetaData(CollectorMetaData process);
+  public void updateCollectorProcessDefinition(CollectorProcessDefinition process);
 }

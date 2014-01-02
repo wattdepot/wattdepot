@@ -18,6 +18,7 @@
  */
 package org.wattdepot.common.domainmodel;
 
+import org.wattdepot.common.exception.BadSlugException;
 import org.wattdepot.common.util.Slug;
 
 /**
@@ -27,8 +28,8 @@ import org.wattdepot.common.util.Slug;
  * 
  */
 public class SensorModel {
-  /** A unique id for the SensorModel. */
-  private String id;
+  /** A unique slug for the SensorModel, used for URLs. */
+  private String slug;
   /** The name for the SensorModel. */
   private String name;
   /** The protocol this sensor uses. */
@@ -56,7 +57,7 @@ public class SensorModel {
    *          The version the sensor is using.
    */
   public SensorModel(String name, String protocol, String type, String version) {
-    this.id = Slug.slugify(name);
+    this.slug = Slug.slugify(name);
     this.name = name;
     this.protocol = protocol;
     this.type = type;
@@ -80,12 +81,20 @@ public class SensorModel {
       return false;
     }
     SensorModel other = (SensorModel) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (slug == null) {
+      if (other.slug != null) {
         return false;
       }
     }
-    else if (!id.equals(other.id)) {
+    else if (!slug.equals(other.slug)) {
+      return false;
+    }
+    if (name == null) {
+      if (other.name != null) {
+        return false;
+      }
+    }
+    else if (!name.equals(other.name)) {
       return false;
     }
     if (protocol == null) {
@@ -118,8 +127,8 @@ public class SensorModel {
   /**
    * @return the id
    */
-  public String getId() {
-    return id;
+  public String getSlug() {
+    return slug;
   }
 
   /**
@@ -159,6 +168,8 @@ public class SensorModel {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
+    result = prime * result + ((slug == null) ? 0 : slug.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
     result = prime * result + ((protocol == null) ? 0 : protocol.hashCode());
     result = prime * result + ((type == null) ? 0 : type.hashCode());
     result = prime * result + ((version == null) ? 0 : version.hashCode());
@@ -166,11 +177,18 @@ public class SensorModel {
   }
 
   /**
-   * @param id
-   *          the id to set
+   * @param slug
+   *          the slug to set
+   * @exception BadSlugException
+   *              if the slug is invalid.
    */
-  public void setId(String id) {
-    this.id = id;
+  public void setSlug(String slug) throws BadSlugException {
+    if (Slug.validateSlug(slug)) {
+      this.slug = slug;
+    }
+    else {
+      throw new BadSlugException(slug + " isn't a valid slug.");
+    }
   }
 
   /**
@@ -179,8 +197,8 @@ public class SensorModel {
    */
   public void setName(String name) {
     this.name = name;
-    if (this.id == null) {
-      this.id = Slug.slugify(name);
+    if (this.slug == null) {
+      this.slug = Slug.slugify(name);
     }
   }
 
@@ -215,8 +233,8 @@ public class SensorModel {
    */
   @Override
   public String toString() {
-    return "SensorModel [id=" + id + ", name=" + name + ", protocol=" + protocol + ", type=" + type
-        + ", version=" + version + "]";
+    return "SensorModel [slug=" + slug + ", name=" + name + ", protocol="
+        + protocol + ", type=" + type + ", version=" + version + "]";
   }
 
 }

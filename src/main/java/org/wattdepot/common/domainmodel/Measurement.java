@@ -21,8 +21,11 @@ package org.wattdepot.common.domainmodel;
 import java.util.Date;
 
 import javax.measure.unit.Unit;
+import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.jscience.physics.amount.Amount;
+import org.wattdepot.common.exception.BadSlugException;
+import org.wattdepot.common.util.DateConvert;
 import org.wattdepot.common.util.Slug;
 
 //import javax.measure.unit.Unit;
@@ -34,9 +37,8 @@ import org.wattdepot.common.util.Slug;
  * 
  */
 public class Measurement {
-  /** Unique database id. If necessary. */
-  private String id;
-  private Sensor sensor;
+  private String slug;
+  private String sensorId;
   private Date timestamp;
   private Double value;
   private Amount<?> amount;
@@ -50,8 +52,8 @@ public class Measurement {
   }
 
   /**
-   * @param sensor
-   *          The sensor that made the measurement.
+   * @param sensorId
+   *          The id of the sensor that made the measurement.
    * @param timestamp
    *          The time of the measurement.
    * @param value
@@ -59,29 +61,14 @@ public class Measurement {
    * @param units
    *          The type of the measurement.
    */
-  public Measurement(Sensor sensor, Date timestamp, Double value, Unit<?> units) {
+  public Measurement(String sensorId, Date timestamp, Double value, Unit<?> units) {
     // Can a sensor create two measurements at the same time with the same type?
-    this.id = Slug.slugify(sensor.getId() + timestamp.getTime() + units);
-    this.sensor = sensor;
+    this.slug = Slug.slugify(sensorId + timestamp + units);
+    this.sensorId = sensorId;
     this.timestamp = new Date(timestamp.getTime());
     this.amount = Amount.valueOf(value, units);
     this.value = amount.getEstimatedValue();
     this.units = units;
-  }
-
-  /**
-   * @return the id
-   */
-  public String getId() {
-    return id;
-  }
-
-  /**
-   * @param id
-   *          the id to set
-   */
-  public void setId(String id) {
-    this.id = id;
   }
 
   /*
@@ -97,7 +84,8 @@ public class Measurement {
     if (obj == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if (!getClass().isAssignableFrom(obj.getClass())
+        && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
     Measurement other = (Measurement) obj;
@@ -109,12 +97,12 @@ public class Measurement {
     else if (!units.equals(other.units)) {
       return false;
     }
-    if (sensor == null) {
-      if (other.sensor != null) {
+    if (sensorId == null) {
+      if (other.sensorId != null) {
         return false;
       }
     }
-    else if (!sensor.equals(other.sensor)) {
+    else if (!sensorId.equals(other.sensorId)) {
       return false;
     }
     if (timestamp == null) {
@@ -137,17 +125,26 @@ public class Measurement {
   }
 
   /**
-   * @return the measurementType
+   * @param value
+   *          a MeasuredValue
+   * @return true if this Measurement has the same sensorId, time,
+   *         MeasurementType, and value as the MeasuredValue.
    */
-  public String getMeasurementType() {
-    return amount.getUnit().toString();
-  }
+  public boolean equivalent(MeasuredValue value) {
+    if (!sensorId.equals(value.getSensorId())) {
+      return false;
+    }
+    if (!timestamp.equals(value.getDate())) {
+      return false;
+    }
+    if (Math.abs(this.value - value.getValue()) > 0.0001) {
+      return false;
+    }
+    if (!getMeasurementType().equals(value.getMeasurementType().getUnits())) {
+      return false;
+    }
 
-  /**
-   * @return the sensor
-   */
-  public Sensor getSensor() {
-    return sensor;
+    return true;
   }
 
   /**
@@ -155,6 +152,27 @@ public class Measurement {
    */
   public Date getDate() {
     return new Date(timestamp.getTime());
+  }
+
+  /**
+   * @return the measurementType
+   */
+  public String getMeasurementType() {
+    return amount.getUnit().toString();
+  }
+
+  /**
+   * @return the id of the sensor
+   */
+  public String getSensorId() {
+    return sensorId;
+  }
+
+  /**
+   * @return the slug
+   */
+  public String getSlug() {
+    return slug;
   }
 
   /**
@@ -174,10 +192,18 @@ public class Measurement {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((units == null) ? 0 : units.hashCode());
-    result = prime * result + ((sensor == null) ? 0 : sensor.hashCode());
+    result = prime * result + ((sensorId == null) ? 0 : sensorId.hashCode());
     result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
     result = prime * result + ((value == null) ? 0 : value.hashCode());
     return result;
+  }
+
+  /**
+   * @param timestamp
+   *          the timestamp to set
+   */
+  public void setDate(Date timestamp) {
+    this.timestamp = new Date(timestamp.getTime());
   }
 
   /**
@@ -196,26 +222,26 @@ public class Measurement {
   }
 
   /**
-   * @return The units for this measurement.
+   * @param sensorId
+   *          the id of the sensor to set
    */
-  public Unit<?> units() {
-    return this.units;
+  public void setSensorId(String sensorId) {
+    this.sensorId = sensorId;
   }
 
   /**
-   * @param sensor
-   *          the sensor to set
+   * @param slug
+   *          the slug to set
+   * @exception BadSlugException
+   *              if the slug is not valid.
    */
-  public void setSensor(Sensor sensor) {
-    this.sensor = sensor;
-  }
-
-  /**
-   * @param timestamp
-   *          the timestamp to set
-   */
-  public void setDate(Date timestamp) {
-    this.timestamp = new Date(timestamp.getTime());
+  public void setSlug(String slug) throws BadSlugException {
+    if (Slug.validateSlug(slug)) {
+      this.slug = slug;
+    }
+    else {
+      throw new BadSlugException(slug + " is not a valid slug.");
+    }
   }
 
   /**
@@ -233,8 +259,23 @@ public class Measurement {
    */
   @Override
   public String toString() {
-    return "Measurement [sensor=" + sensor + ", timestamp=" + timestamp + ", value=" + value
-        + ", units=" + units + "]";
+    try {
+      return "Measurement [slug= " + slug + ", sensorId=" + sensorId + ", timestamp="
+          + DateConvert.convertDate(timestamp) + ", value=" + value + ", units=" + units + "]";
+    }
+    catch (DatatypeConfigurationException e) {
+      // shouldn't happen
+      e.printStackTrace();
+    }
+    return "Measurement [slug= " + slug + ", sensorId=" + sensorId + ", timestamp=" + timestamp
+        + ", value=" + value + ", units=" + units + "]";
+  }
+
+  /**
+   * @return The units for this measurement.
+   */
+  public Unit<?> units() {
+    return this.units;
   }
 
   // /**

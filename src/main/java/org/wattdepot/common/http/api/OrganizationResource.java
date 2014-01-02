@@ -20,7 +20,7 @@ package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
-import org.restlet.resource.Put;
+import org.restlet.resource.Post;
 import org.wattdepot.common.domainmodel.Organization;
 
 /**
@@ -36,21 +36,23 @@ public interface OrganizationResource {
    * 
    * @return The organization with the given id. The id is sent in the request.
    */
-  @Get("json") // Use JSON as transport encoding.
+  @Get("json")
+  // Use JSON as transport encoding.
   public Organization retrieve();
 
   /**
-   * Defines the PUT /wattdepot/{org-id}/organization/ API call.
+   * Defined the POST /wattdepot/{org-id}/organization/{org-id} API call. The id
+   * is sent in the request.
    * 
    * @param organization
-   *          The organization to store.
+   *          The organization to update.
    */
-  @Put
-  public void store(Organization organization);
+  @Post
+  public void update(Organization organization);
 
   /**
-   * Defined the DEL /wattdepot/{org-id}/organization/{org-id} API call. The id is sent in the
-   * request.
+   * Defined the DEL /wattdepot/{org-id}/organization/{org-id} API call. The id
+   * is sent in the request.
    */
   @Delete
   public void remove();

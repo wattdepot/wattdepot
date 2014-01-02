@@ -1,5 +1,5 @@
 /**
- * CollectorMetaDatasResouce.java This file is part of WattDepot.
+ * CollectorProcessDefinitionResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -18,22 +18,25 @@
  */
 package org.wattdepot.common.http.api;
 
-import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.CollectorMetaDataList;
+import org.restlet.resource.Put;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 
 /**
- * SensorProcessesResouce - HTTP Interface for SensorProcesses.
+ * CollectorProcessDefinitionResource - HTTP Interface for
+ * CollectorProcessDefinition.
  * 
  * @author Cam Moore
  * 
  */
-public interface CollectorMetaDatasResource {
+public interface CollectorProcessDefinitionPutResource {
+
   /**
-   * Defines the GET /wattdepot/sensorprocesses/ API call.
+   * Defines the PUT /wattdepot/collector-process-definition/ API call.
    * 
-   * @return a List of the defined SensorProcesses.
+   * @param definition
+   *          The CollectorProcessDefinition to store.
    */
-  @Get("json") // Use JSON as transport encoding.
-  public CollectorMetaDataList retrieve();
+  @Put
+  public void store(CollectorProcessDefinition definition);
 
 }

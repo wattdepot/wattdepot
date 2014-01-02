@@ -45,7 +45,7 @@ public class MeasurementTypePutServerResource extends WattDepotServerResource im
   public void store(MeasurementType measurementType) {
     getLogger().log(Level.INFO, "PUT /wattdepot/measurement-type/ with " + measurementType);
     if (isInRole("admin")) {
-      MeasurementType mt = depot.getMeasurementType(measurementType.getId());
+      MeasurementType mt = depot.getMeasurementType(measurementType.getSlug());
       if (mt == null) {
         try {
           depot.defineMeasurementType(measurementType.getName(), measurementType.getUnits());

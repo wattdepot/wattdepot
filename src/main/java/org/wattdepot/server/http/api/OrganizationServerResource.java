@@ -27,15 +27,12 @@ import org.restlet.security.Role;
 import org.restlet.security.User;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Organization;
-import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.OrganizationResource;
 
 /**
  * UserGroupServerResource - Handles the HTTP API
- * ("/wattdepot/{org-id}/organization/",
- * "/wattdepot/{org-id}/organization/{org-id}").
+ * ("/wattdepot/{org-id}/organization/{org-id}").
  * 
  * @author Cam Moore
  * 
@@ -71,53 +68,6 @@ public class OrganizationServerResource extends WattDepotServerResource implemen
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * org.wattdepot.restlet.UserGroupResource#store(org.wattdepot.datamodel
-   * .UserGroup)
-   */
-  @Override
-  public void store(Organization usergroup) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/organization/ with " + usergroup);
-    if (!depot.getOrganizationIds().contains(usergroup.getId())) {
-      try {
-        Organization defined = depot.defineOrganization(usergroup.getName(), usergroup.getUsers());
-        WattDepotApplication app = (WattDepotApplication) getApplication();
-        // create the new Role for the group
-        String roleName = defined.getId();
-        Role role = new Role(roleName);
-        app.getRoles().add(role);
-        MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
-        for (User user : realm.getUsers()) { // loop through all the Restlet
-                                             // users
-          for (UserInfo info : defined.getUsers()) {
-            if (user.getIdentifier().equals(info.getId())) {
-              // assign the user to the role.
-              realm.map(user, role);
-            }
-          }
-        }
-      }
-      catch (UniqueIdException e) {
-        setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
-      }
-    }
-    else {
-      depot.updateOrganization(usergroup);
-      // update the Realm
-      WattDepotApplication app = (WattDepotApplication) getApplication();
-      // create the new Role for the group
-      String roleName = usergroup.getId();
-      Role role = app.getRole(roleName);
-      MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
-      for (UserInfo info : usergroup.getUsers()) {
-        realm.map(getUser(info), role);
-      }
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see org.wattdepot.restlet.UserGroupResource#remove()
    */
   @Override
@@ -141,18 +91,35 @@ public class OrganizationServerResource extends WattDepotServerResource implemen
   }
 
   /**
-   * @param info
-   *          The UserInfo instance.
+   * @param userId
+   *          The id of the UserInfo instance.
    * @return The Restlet User that corresponds to the given UserInfo.
    */
-  private User getUser(UserInfo info) {
+  private User getUser(String userId) {
     WattDepotApplication app = (WattDepotApplication) getApplication();
     MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
     for (User user : realm.getUsers()) { // loop through all the Restlet users
-      if (user.getIdentifier().equals(info.getId())) {
+      if (user.getIdentifier().equals(userId)) {
         return user;
       }
     }
     return null;
+  }
+
+  /* (non-Javadoc)
+   * @see org.wattdepot.common.http.api.OrganizationResource#update(org.wattdepot.common.domainmodel.Organization)
+   */
+  @Override
+  public void update(Organization organization) {
+    depot.updateOrganization(organization);
+    // update the Realm
+    WattDepotApplication app = (WattDepotApplication) getApplication();
+    // create the new Role for the group
+    String roleName = organization.getSlug();
+    Role role = app.getRole(roleName);
+    MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
+    for (String userId : organization.getUsers()) {
+      realm.map(getUser(userId), role);
+    }
   }
 }

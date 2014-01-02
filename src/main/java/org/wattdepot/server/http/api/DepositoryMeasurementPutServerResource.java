@@ -25,8 +25,9 @@ import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.exception.MeasurementTypeException;
-import org.wattdepot.common.exception.MissMatchedOwnerException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.DepositoryMeasurementPutResource;
 
 /**
@@ -65,13 +66,19 @@ public class DepositoryMeasurementPutServerResource extends WattDepotServerResou
     try {
       Depository depository = depot.getWattDeposiory(depositoryId, orgId);
       if (depository != null) {
+        Sensor sensor = depot.getSensor(meas.getSensorId(), orgId);
+        if (sensor != null) {
         depository.putMeasurement(meas);
+        }
+        else {
+          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "Sensor " + meas.getSensorId() + " does not exist");
+        }
       }
       else {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " does not exist.");
+        setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, depositoryId + " does not exist.");
       }
     }
-    catch (MissMatchedOwnerException e) {
+    catch (MisMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
     }
     catch (MeasurementTypeException e) {

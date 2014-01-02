@@ -43,7 +43,7 @@ public class Manager {
   public static SessionFactory getFactory(ServerProperties properties) {
     if (sessionFactory == null) {
       Configuration cfg = new Configuration()
-          .addClass(org.wattdepot.common.domainmodel.CollectorMetaData.class)
+          .addClass(org.wattdepot.common.domainmodel.CollectorProcessDefinition.class)
           .addClass(org.wattdepot.common.domainmodel.Depository.class)
           .addClass(org.wattdepot.server.depository.impl.hibernate.DepositoryImpl.class)
           .addClass(org.wattdepot.common.domainmodel.Measurement.class)
@@ -55,8 +55,10 @@ public class Manager {
           .addClass(org.wattdepot.common.domainmodel.SensorLocation.class)
           .addClass(org.wattdepot.common.domainmodel.SensorModel.class)
           .addClass(org.wattdepot.common.domainmodel.Organization.class)
-          .addClass(org.wattdepot.common.domainmodel.UserInfo.class)
-          .addClass(org.wattdepot.common.domainmodel.UserPassword.class)
+          /*.addClass(org.wattdepot.common.domainmodel.UserInfo.class)*/
+          .addClass(org.wattdepot.server.depository.impl.hibernate.UserInfoImpl.class)
+          /*.addClass(org.wattdepot.common.domainmodel.UserPassword.class)*/
+          .addClass(org.wattdepot.server.depository.impl.hibernate.UserPasswordImpl.class)
           .setProperty("hibernate.connection.driver_class",
               properties.get(ServerProperties.DB_CONNECTION_DRIVER))
           .setProperty("hibernate.connection.url",

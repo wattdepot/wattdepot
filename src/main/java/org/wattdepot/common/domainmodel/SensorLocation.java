@@ -18,6 +18,7 @@
  */
 package org.wattdepot.common.domainmodel;
 
+import org.wattdepot.common.exception.BadSlugException;
 import org.wattdepot.common.util.Slug;
 
 /**
@@ -26,11 +27,11 @@ import org.wattdepot.common.util.Slug;
  * @author Cam Moore
  * 
  */
-public class SensorLocation {
+public class SensorLocation implements IDomainModel {
   /** The name for the Location. */
   private String name;
-  /** The unique id for the locations used in URIs. */
-  private String id;
+  /** The unique slug for the locations used in URIs. */
+  private String slug;
   /** The Location's decimal Latitude. */
   private Double latitude;
   /** The Location's decimal Longitude. */
@@ -39,8 +40,8 @@ public class SensorLocation {
   private Double altitude;
   /** The Location's description. */
   private String description;
-  /** The owner of this location. */
-  private Organization owner;
+  /** The id of the owner of this location. */
+  private String ownerId;
 
   /**
    * Default constructor.
@@ -60,18 +61,18 @@ public class SensorLocation {
    *          The altitude in meters w.r.t. MSL.
    * @param description
    *          A String description of the Location.
-   * @param owner
-   *          the owner of the location.
+   * @param ownerId
+   *          the id of the owner of the location.
    */
-  public SensorLocation(String name, Double latitude, Double longitude, Double altitude,
-      String description, Organization owner) {
+  public SensorLocation(String name, Double latitude, Double longitude,
+      Double altitude, String description, String ownerId) {
     this.name = name;
-    this.id = Slug.slugify(this.name);
+    this.slug = Slug.slugify(this.name);
     this.latitude = latitude;
     this.longitude = longitude;
     this.altitude = altitude;
     this.description = description;
-    this.owner = owner;
+    this.ownerId = ownerId;
   }
 
   /*
@@ -151,8 +152,8 @@ public class SensorLocation {
   /**
    * @return the id
    */
-  public String getId() {
-    return id;
+  public String getSlug() {
+    return slug;
   }
 
   /**
@@ -179,8 +180,8 @@ public class SensorLocation {
   /**
    * @return the owner
    */
-  public Organization getOwner() {
-    return owner;
+  public String getOwnerId() {
+    return ownerId;
   }
 
   /*
@@ -194,7 +195,8 @@ public class SensorLocation {
     int result = 1;
     result = prime * result + ((name == null) ? 0 : name.hashCode());
     result = prime * result + ((altitude == null) ? 0 : altitude.hashCode());
-    result = prime * result + ((description == null) ? 0 : description.hashCode());
+    result = prime * result
+        + ((description == null) ? 0 : description.hashCode());
     result = prime * result + ((latitude == null) ? 0 : latitude.hashCode());
     result = prime * result + ((longitude == null) ? 0 : longitude.hashCode());
     return result;
@@ -209,7 +211,8 @@ public class SensorLocation {
    *         ADMIN_GROUP.
    */
   public boolean isOwner(Organization group) {
-    if (owner != null && (owner.equals(group) || group.equals(Organization.ADMIN_GROUP))) {
+    if (ownerId != null
+        && (ownerId.equals(group.getSlug()) || group.equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;
@@ -232,11 +235,18 @@ public class SensorLocation {
   }
 
   /**
-   * @param id
-   *          the id to set
+   * @param slug
+   *          the slug to set
+   * @exception BadSlugException
+   *              if the slug isn't valid.
    */
-  public void setId(String id) {
-    this.id = id;
+  public void setSlug(String slug) throws BadSlugException {
+    if (Slug.validateSlug(slug)) {
+      this.slug = slug;
+    }
+    else {
+      throw new BadSlugException(slug + " is not a valid slug.");
+    }
   }
 
   /**
@@ -261,17 +271,17 @@ public class SensorLocation {
    */
   public void setName(String name) {
     this.name = name;
-    if (this.id == null) {
-      this.id = Slug.slugify(name);
+    if (this.slug == null) {
+      this.slug = Slug.slugify(name);
     }
   }
 
   /**
-   * @param owner
-   *          the owner to set
+   * @param ownerId
+   *          the id of the owner to set
    */
-  public void setOwner(Organization owner) {
-    this.owner = owner;
+  public void setOwnerId(String ownerId) {
+    this.ownerId = ownerId;
   }
 
   /*
@@ -281,8 +291,9 @@ public class SensorLocation {
    */
   @Override
   public String toString() {
-    return "Location [id=" + getId() + ", name=" + name + ", latitude=" + latitude + ", longitude="
-        + longitude + ", altitude=" + altitude + ", description=" + description + "]";
+    return "Location [slug=" + slug + ", name=" + name + ", latitude="
+        + latitude + ", longitude=" + longitude + ", altitude=" + altitude
+        + ", description=" + description + ", ownerId=" + ownerId + "]";
   }
 
 }

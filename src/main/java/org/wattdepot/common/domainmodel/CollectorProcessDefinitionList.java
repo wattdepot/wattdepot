@@ -1,5 +1,5 @@
 /**
- * SensorProcessList.java This file is part of WattDepot.
+ * CollectorProcessDefinitionList.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -21,33 +21,35 @@ package org.wattdepot.common.domainmodel;
 import java.util.ArrayList;
 
 /**
- * SensorProcessList - Attempt at getting a list across the wire.
- *
+ * CollectorProcessDefinitionList - Encapsulates an ArrayList of
+ * CollectorProcessDefinitions so Restlet can convert it to a JSON object.
+ * 
  * @author Cam Moore
- *
+ * 
  */
-public class CollectorMetaDataList {
-  private ArrayList<CollectorMetaData> processes;
-  
+public class CollectorProcessDefinitionList {
+  private ArrayList<CollectorProcessDefinition> definitions;
+
   /**
    * Default Constructor.
    */
-  public CollectorMetaDataList() {
-    processes = new ArrayList<CollectorMetaData>();
+  public CollectorProcessDefinitionList() {
+    definitions = new ArrayList<CollectorProcessDefinition>();
   }
 
   /**
    * @return the models
    */
-  public ArrayList<CollectorMetaData> getDatas() {
-    return processes;
+  public ArrayList<CollectorProcessDefinition> getDefinitions() {
+    return definitions;
   }
 
   /**
-   * @param models the models to set
+   * @param definitions
+   *          the collector process definitions to set
    */
-  public void setDatas(ArrayList<CollectorMetaData> models) {
-    this.processes = models;
+  public void setDefinitions(ArrayList<CollectorProcessDefinition> definitions) {
+    this.definitions = definitions;
   }
 
 }

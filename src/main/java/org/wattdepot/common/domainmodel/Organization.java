@@ -42,32 +42,32 @@ public class Organization {
   public static final Organization PUBLIC_GROUP = new Organization(
       Labels.PUBLIC);
 
-  /** A unique id. */
-  protected String id;
+  /** A slug usable in URLs. */
+  protected String slug;
   /** The name of the group. */
   protected String name;
-  /** The users in this group. */
-  protected Set<UserInfo> users;
+  /** The ids of the users in this group. */
+  protected Set<String> users;
 
   static {
-    ADMIN_GROUP.add(UserInfo.ROOT);
+    ADMIN_GROUP.add(UserInfo.ROOT.getUid());
   }
 
   /**
    * The default constructor.
    */
   public Organization() {
-    users = new HashSet<UserInfo>();
+    users = new HashSet<String>();
   }
 
   /**
    * @param name
-   *          The name of the UserGroup.
+   *          The name of the Organization.
    */
   public Organization(String name) {
-    this.id = Slug.slugify(name);
+    this.slug = Slug.slugify(name);
     this.name = name;
-    this.users = new HashSet<UserInfo>();
+    this.users = new HashSet<String>();
   }
 
   /**
@@ -76,20 +76,20 @@ public class Organization {
    * @param users
    *          The Users in the group.
    */
-  public Organization(String name, Set<UserInfo> users) {
-    this.id = Slug.slugify(name);
+  public Organization(String name, Set<String> users) {
+    this.slug = Slug.slugify(name);
     this.name = name;
     this.users = users;
   }
 
   /**
-   * @param e
-   *          The User to add.
+   * @param userId
+   *          The id of the User to add.
    * @return true if successful.
    * @see java.util.List#add(java.lang.Object)
    */
-  public boolean add(UserInfo e) {
-    return users.add(e);
+  public boolean add(String userId) {
+    return users.add(userId);
   }
 
   /**
@@ -119,12 +119,20 @@ public class Organization {
       return false;
     }
     Organization other = (Organization) obj;
-    if (id == null) {
-      if (other.id != null) {
+    if (slug == null) {
+      if (other.slug != null) {
         return false;
       }
     }
-    else if (!id.equals(other.id)) {
+    else if (!slug.equals(other.slug)) {
+      return false;
+    }
+    if (name == null) {
+      if (other.name != null) {
+        return false;
+      }
+    }
+    else if (!name.equals(other.name)) {
       return false;
     }
     if (users == null) {
@@ -139,10 +147,10 @@ public class Organization {
   }
 
   /**
-   * @return The unique id for the UserGroup.
+   * @return The unique slug for the Organization.
    */
-  public String getId() {
-    return id;
+  public String getSlug() {
+    return slug;
   }
 
   /**
@@ -155,7 +163,7 @@ public class Organization {
   /**
    * @return the users.
    */
-  public Set<UserInfo> getUsers() {
+  public Set<String> getUsers() {
     return users;
   }
 
@@ -168,7 +176,8 @@ public class Organization {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((slug == null) ? 0 : slug.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
     result = prime * result + ((users == null) ? 0 : users.hashCode());
     return result;
   }
@@ -184,11 +193,11 @@ public class Organization {
   }
 
   /**
-   * @param id
+   * @param slug
    *          the id to set
    */
-  public void setId(String id) {
-    this.id = id;
+  public void setSlug(String slug) {
+    this.slug = slug;
   }
 
   /**
@@ -197,8 +206,8 @@ public class Organization {
    */
   public void setName(String name) {
     this.name = name;
-    if (this.id == null) {
-      this.id = Slug.slugify(name);
+    if (this.slug == null) {
+      this.slug = Slug.slugify(name);
     }
   }
 
@@ -206,7 +215,7 @@ public class Organization {
    * @param users
    *          the users to set
    */
-  public void setUsers(Set<UserInfo> users) {
+  public void setUsers(Set<String> users) {
     this.users = users;
   }
 
@@ -217,7 +226,7 @@ public class Organization {
    */
   @Override
   public String toString() {
-    return "UserGroup [id=" + id + ", users=" + users + "]";
+    return "Organization [id=" + slug + ", name=" + name + ", users=" + users + "]";
   }
 
 }

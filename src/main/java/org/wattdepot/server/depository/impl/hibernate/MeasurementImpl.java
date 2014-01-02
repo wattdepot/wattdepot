@@ -24,7 +24,6 @@ import javax.measure.unit.Unit;
 
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Measurement;
-import org.wattdepot.common.domainmodel.Sensor;
 
 /**
  * MeasurementImpl - Hibernate persistant version of Measurement. It is 'stored'
@@ -59,8 +58,8 @@ public class MeasurementImpl extends Measurement {
   }
 
   /**
-   * @param sensor
-   *          The sensor that made the measurement.
+   * @param sensorId
+   *          The id of the sensor that made the measurement.
    * @param timestamp
    *          The time of the measurement.
    * @param value
@@ -68,8 +67,8 @@ public class MeasurementImpl extends Measurement {
    * @param units
    *          The type of the measurement.
    */
-  public MeasurementImpl(Sensor sensor, Date timestamp, Double value, Unit<?> units) {
-    super(sensor, timestamp, value, units);
+  public MeasurementImpl(String sensorId, Date timestamp, Double value, Unit<?> units) {
+    super(sensorId, timestamp, value, units);
   }
 
   /**
@@ -79,7 +78,7 @@ public class MeasurementImpl extends Measurement {
    *          the Measurement to clone.
    */
   public MeasurementImpl(Measurement meas) {
-    super(meas.getSensor(), meas.getDate(), meas.getValue(), meas.units());
+    super(meas.getSensorId(), meas.getDate(), meas.getValue(), meas.units());
   }
 
 
@@ -103,8 +102,14 @@ public class MeasurementImpl extends Measurement {
    */
   @Override
   public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
     if (this == obj) {
       return true;
+    }
+    if (obj.getClass().equals(Measurement.class)) {
+      return super.equals(obj);
     }
     if (!super.equals(obj)) {
       return false;

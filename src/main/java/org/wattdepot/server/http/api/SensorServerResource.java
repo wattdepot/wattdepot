@@ -26,7 +26,7 @@ import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.exception.MissMatchedOwnerException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.SensorResource;
 
 /**
@@ -64,7 +64,7 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
     }
-    catch (MissMatchedOwnerException e) {
+    catch (MisMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
     }
   }
@@ -81,7 +81,7 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
     try {
       sensor = depot.getSensor(sensorId, orgId);
     }
-    catch (MissMatchedOwnerException e) {
+    catch (MisMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
     }
     if (sensor == null) {
@@ -103,8 +103,8 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
         "POST /wattdepot/{" + orgId + "}/sensor/{" + sensorId + "} with " + sensor);
     Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
-      if (sensorId.equals(sensor.getId())) {
-        if (depot.getSensorIds(orgId).contains(sensor.getId())) {
+      if (sensorId.equals(sensor.getSlug())) {
+        if (depot.getSensorIds(orgId).contains(sensor.getSlug())) {
           depot.updateSensor(sensor);
         }
         else {

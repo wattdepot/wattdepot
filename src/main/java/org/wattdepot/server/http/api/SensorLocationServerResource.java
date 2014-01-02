@@ -26,7 +26,7 @@ import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.SensorLocation;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.exception.MissMatchedOwnerException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.SensorLocationResource;
 
 /**
@@ -64,7 +64,7 @@ public class SensorLocationServerResource extends WattDepotServerResource implem
     try {
       loc = depot.getLocation(locationId, orgId);
     }
-    catch (MissMatchedOwnerException e) {
+    catch (MisMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
     }
     if (loc == null) {
@@ -86,7 +86,7 @@ public class SensorLocationServerResource extends WattDepotServerResource implem
         "POST /wattdepot/{" + orgId + "}/location/ with " + sensorLocation);
     Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
-      if (depot.getLocationIds(orgId).contains(sensorLocation.getId())) {
+      if (depot.getLocationIds(orgId).contains(sensorLocation.getSlug())) {
         depot.updateLocation(sensorLocation);
       }
       else {
@@ -112,7 +112,7 @@ public class SensorLocationServerResource extends WattDepotServerResource implem
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
     }
-    catch (MissMatchedOwnerException e) {
+    catch (MisMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
     }
   }

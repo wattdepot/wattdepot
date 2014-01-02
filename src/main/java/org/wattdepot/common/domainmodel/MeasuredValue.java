@@ -20,6 +20,10 @@ package org.wattdepot.common.domainmodel;
 
 import java.util.Date;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+
+import org.wattdepot.common.util.DateConvert;
+
 /**
  * MeasuredValue - represents a measured value. Has sensor id, value and
  * measurement type.
@@ -54,10 +58,99 @@ public class MeasuredValue {
    * @param measurementType
    *          The type of the measurement.
    */
-  public MeasuredValue(String sensorId, Double value, MeasurementType measurementType) {
+  public MeasuredValue(String sensorId, Double value,
+      MeasurementType measurementType) {
     this.sensorId = sensorId;
     this.value = value;
     this.measurementType = measurementType;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    MeasuredValue other = (MeasuredValue) obj;
+    if (date == null) {
+      if (other.date != null) {
+        return false;
+      }
+    }
+    else if (!date.equals(other.date)) {
+      return false;
+    }
+    if (measurementType == null) {
+      if (other.measurementType != null) {
+        return false;
+      }
+    }
+    else if (!measurementType.equals(other.measurementType)) {
+      return false;
+    }
+    if (sensorId == null) {
+      if (other.sensorId != null) {
+        return false;
+      }
+    }
+    else if (!sensorId.equals(other.sensorId)) {
+      return false;
+    }
+    if (value == null) {
+      if (other.value != null) {
+        return false;
+      }
+    }
+    else if (!value.equals(other.value)) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * @param meas
+   *          a Measurement
+   * @return true if this MeasuredValue has the same sensorId, time,
+   *         MeasurementType, and value as the Measurement.
+   */
+  public boolean equivalent(Measurement meas) {
+    if (!sensorId.equals(meas.getSensorId())) {
+      return false;
+    }
+    if (!date.equals(meas.getDate())) {
+      return false;
+    }
+    if (!measurementType.getUnits().equals(meas.getMeasurementType())) {
+      return false;
+    }
+    if (Math.abs(this.value - meas.getValue()) > 0.0001) {
+      return false;
+    }
+    return true;
+  }
+  
+  /**
+   * @return the date
+   */
+  public Date getDate() {
+    return new Date(date.getTime());
+  }
+
+  /**
+   * @return the measurementType
+   */
+  public MeasurementType getMeasurementType() {
+    return measurementType;
   }
 
   /**
@@ -74,46 +167,73 @@ public class MeasuredValue {
     return value;
   }
 
-  /**
-   * @return the measurementType
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#hashCode()
    */
-  public MeasurementType getMeasurementType() {
-    return measurementType;
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((date == null) ? 0 : date.hashCode());
+    result = prime * result
+        + ((measurementType == null) ? 0 : measurementType.hashCode());
+    result = prime * result + ((sensorId == null) ? 0 : sensorId.hashCode());
+    result = prime * result + ((value == null) ? 0 : value.hashCode());
+    return result;
   }
 
   /**
-   * @return the date
-   */
-  public Date getDate() {
-    return new Date(date.getTime());
-  }
-
-  /**
-   * @param date the date to set
+   * @param date
+   *          the date to set
    */
   public void setDate(Date date) {
     this.date = new Date(date.getTime());
   }
 
   /**
-   * @param sensorId the sensorId to set
+   * @param measurementType
+   *          the measurementType to set
+   */
+  public void setMeasurementType(MeasurementType measurementType) {
+    this.measurementType = measurementType;
+  }
+
+  /**
+   * @param sensorId
+   *          the sensorId to set
    */
   public void setSensorId(String sensorId) {
     this.sensorId = sensorId;
   }
 
   /**
-   * @param value the value to set
+   * @param value
+   *          the value to set
    */
   public void setValue(Double value) {
     this.value = value;
   }
 
-  /**
-   * @param measurementType the measurementType to set
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
    */
-  public void setMeasurementType(MeasurementType measurementType) {
-    this.measurementType = measurementType;
+  @Override
+  public String toString() {
+    try {
+      return "MeasuredValue [sensorId=" + sensorId + ", value=" + value
+          + ", measurementType=" + measurementType + ", date="
+          + DateConvert.convertDate(date) + "]";
+    }
+    catch (DatatypeConfigurationException e) {
+      // shouldn't happen
+      e.printStackTrace();
+    }
+    return "MeasuredValue [sensorId=" + sensorId + ", value=" + value
+        + ", measurementType=" + measurementType + ", date=" + date + "]";
   }
 
 }

@@ -31,7 +31,7 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Get;
 import org.restlet.security.User;
-import org.wattdepot.common.domainmodel.CollectorMetaData;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.Sensor;
@@ -59,10 +59,10 @@ public class AdminServerResource extends WattDepotServerResource {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/");
     if (!isInRole(orgId) && !isInRole("admin")) {
       User user = getClientInfo().getUser();
-      UserInfo info = depot.getUser(user.getIdentifier());
+      UserInfo info = depot.getUser(user.getIdentifier(), orgId);
       Organization group = depot.getUsersGroup(info);
       if (group != null) {
-        redirectPermanent("/wattdepot/" + group.getId() + "/");
+        redirectPermanent("/wattdepot/" + group.getSlug() + "/");
       }
       else {
         setStatus(Status.CLIENT_ERROR_FORBIDDEN);
@@ -70,14 +70,14 @@ public class AdminServerResource extends WattDepotServerResource {
     }
     Map<String, Object> dataModel = new HashMap<String, Object>();
     // get some stuff from the database
-    List<UserInfo> users = depot.getUsers();
+    List<UserInfo> users = depot.getUsers("admin");
     List<Organization> groups = depot.getOrganizations();
     List<Depository> depos = depot.getWattDepositories(orgId);
     List<SensorLocation> locs = depot.getLocations(orgId);
     List<Sensor> sensors = depot.getSensors(orgId);
     List<SensorModel> sensorModels = depot.getSensorModels();
     List<SensorGroup> sensorGroups = depot.getSensorGroups(orgId);
-    List<CollectorMetaData> sensorProcesses = depot.getCollectorMetaDatas(orgId);
+    List<CollectorProcessDefinition> sensorProcesses = depot.getCollectorProcessDefinitions(orgId);
     List<MeasurementType> measurementTypes = depot.getMeasurementTypes();
     dataModel.put("users", users);
     dataModel.put("groups", groups);
@@ -91,9 +91,15 @@ public class AdminServerResource extends WattDepotServerResource {
     dataModel.put("measurementtypes", measurementTypes);
     dataModel.put("opens", ((WattDepotPersistenceImpl) depot).getSessionOpen());
     dataModel.put("closes", ((WattDepotPersistenceImpl) depot).getSessionClose());
+    try {
     Representation rep = new ClientResource(LocalReference.createClapReference(getClass()
         .getPackage()) + "/Admin.ftl").get();
-
-    return new TemplateRepresentation(rep, dataModel, MediaType.TEXT_HTML);
+    TemplateRepresentation template = new TemplateRepresentation(rep, dataModel, MediaType.TEXT_HTML);
+    return template;
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 }

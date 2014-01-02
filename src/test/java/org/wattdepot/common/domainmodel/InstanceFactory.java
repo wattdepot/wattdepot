@@ -26,18 +26,6 @@ import java.util.Set;
 import javax.measure.unit.Unit;
 import javax.xml.datatype.DatatypeConfigurationException;
 
-import org.wattdepot.common.domainmodel.CollectorMetaData;
-import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.Measurement;
-import org.wattdepot.common.domainmodel.MeasurementType;
-import org.wattdepot.common.domainmodel.Property;
-import org.wattdepot.common.domainmodel.Sensor;
-import org.wattdepot.common.domainmodel.SensorGroup;
-import org.wattdepot.common.domainmodel.SensorLocation;
-import org.wattdepot.common.domainmodel.SensorModel;
-import org.wattdepot.common.domainmodel.Organization;
-import org.wattdepot.common.domainmodel.UserInfo;
-import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.util.DateConvert;
 import org.wattdepot.common.util.UnitsHelper;
 
@@ -54,15 +42,16 @@ public class InstanceFactory {
    * @return A Depository instance for testing.
    */
   public static Depository getDepository() {
-    return new Depository("Test Depository", getMeasurementType(), getUserGroup());
+    return new Depository("Test Depository", getMeasurementType(), getOrganization().getSlug());
   }
 
   /**
    * @return A Location instance for testing.
    */
   public static SensorLocation getLocation() {
-    return new SensorLocation("Test Location Ilima 6th", new Double(21.294642), new Double(-157.812727),
-        new Double(30), "Hale Aloha Ilima residence hall 6th floor", getUserGroup());
+    return new SensorLocation("Test Location Ilima 6th", new Double(21.294642), new Double(
+        -157.812727), new Double(30), "Hale Aloha Ilima residence hall 6th floor",
+        getOrganization().getSlug());
   }
 
   /**
@@ -72,7 +61,79 @@ public class InstanceFactory {
     try {
       Date measTime = DateConvert.parseCalStringToDate("2013-11-20T14:35:27.925-1000");
       Double value = 100.0;
-      return new Measurement(getSensor(), measTime, value, getMeasurementType().unit());
+      return new Measurement(getSensor().getSlug(), measTime, value, getMeasurementType().unit());
+    }
+    catch (ParseException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    catch (DatatypeConfigurationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  /**
+   * @return a Date after measurement 3.
+   */
+  public static Date getTimeAfterM3() {
+    try {
+      return DateConvert.parseCalStringToDate("2013-11-20T14:45:47.925-1000");
+    }
+    catch (ParseException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    catch (DatatypeConfigurationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  /**
+   * @return a Date before measurement 1.
+   */
+  public static Date getTimeBeforeM1() {
+    try {
+      return DateConvert.parseCalStringToDate("2013-11-20T13:35:32.290-1000");
+    }
+    catch (ParseException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    catch (DatatypeConfigurationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  /**
+   * @return a Date between measurement 1 and 2.
+   */
+  public static Date getTimeBetweenM1andM2() {
+    try {
+      return DateConvert.parseCalStringToDate("2013-11-20T14:35:32.290-1000");
+    }
+    catch (ParseException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    catch (DatatypeConfigurationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  /**
+   * @return a Date after measurement 1 and before measurement 3.
+   */
+  public static Date getTimeBetweenM1andM3() {
+    try {
+      return DateConvert.parseCalStringToDate("2013-11-20T14:39:32.290-1000");
     }
     catch (ParseException e) {
       // TODO Auto-generated catch block
@@ -92,7 +153,7 @@ public class InstanceFactory {
     try {
       Date measTime = DateConvert.parseCalStringToDate("2013-11-20T14:45:37.925-1000");
       Double value = 100.0;
-      return new Measurement(getSensor(), measTime, value, getMeasurementType().unit());
+      return new Measurement(getSensor().getSlug(), measTime, value, getMeasurementType().unit());
     }
     catch (ParseException e) {
       // TODO Auto-generated catch block
@@ -112,7 +173,7 @@ public class InstanceFactory {
     try {
       Date measTime = DateConvert.parseCalStringToDate("2013-11-20T14:35:37.925-1000");
       Double value = 100.0;
-      return new Measurement(getSensor(), measTime, value, getMeasurementType().unit());
+      return new Measurement(getSensor().getSlug(), measTime, value, getMeasurementType().unit());
     }
     catch (ParseException e) {
       // TODO Auto-generated catch block
@@ -124,12 +185,21 @@ public class InstanceFactory {
     }
     return null;
   }
+
   /**
    * @return A MeasurementType instance for testing.
    */
   public static MeasurementType getMeasurementType() {
     Unit<?> unit = UnitsHelper.quantities.get("Flow Rate (gal/s)");
     return new MeasurementType("Test MeasurementType Name", unit);
+  }
+
+  /**
+   * @return A MeasurementType instance for testing.
+   */
+  public static MeasurementType getMeasurementType2() {
+    Unit<?> unit = UnitsHelper.quantities.get("Flow Rate (gal/s)");
+    return new MeasurementType("Test MeasurementType Name2", unit);
   }
 
   /**
@@ -143,17 +213,17 @@ public class InstanceFactory {
    * @return A Sensor instance for testing.
    */
   public static Sensor getSensor() {
-    return new Sensor("Test Sensor", "test_sensor_uri", getLocation(), getSensorModel(),
-        getUserGroup());
+    return new Sensor("Test Sensor", "test_sensor_uri", getLocation().getSlug(), getSensorModel()
+        .getSlug(), getOrganization().getSlug());
   }
 
   /**
    * @return A SensorGroup instance for testing.
    */
   public static SensorGroup getSensorGroup() {
-    Set<Sensor> sensors = new HashSet<Sensor>();
-    sensors.add(getSensor());
-    return new SensorGroup("Test Sensor Group", sensors, getUserGroup());
+    Set<String> sensors = new HashSet<String>();
+    sensors.add(getSensor().getSlug());
+    return new SensorGroup("Test Sensor Group", sensors, getOrganization().getSlug());
   }
 
   /**
@@ -165,20 +235,29 @@ public class InstanceFactory {
   }
 
   /**
-   * @return A CollectorMetaData instance for testing.
+   * @return A CollectorProcessDefinition instance for testing.
    */
-  public static CollectorMetaData getCollectorMetaData() {
-    return new CollectorMetaData("Test Collector Metadata", getSensor(), 10L, "test_depository",
-        getUserGroup());
+  public static CollectorProcessDefinition getCollectorProcessDefinition() {
+    return new CollectorProcessDefinition("Test Collector Process Defintion", getSensor().getSlug(), 10L,
+        "test_depository", getOrganization().getSlug());
   }
 
   /**
-   * @return A UserGroup instance for testing.
+   * @return A Organization instance for testing.
    */
-  public static Organization getUserGroup() {
-    Set<UserInfo> users = new HashSet<UserInfo>();
-    users.add(getUserInfo());
+  public static Organization getOrganization() {
+    Set<String> users = new HashSet<String>();
+    users.add(getUserInfo().getUid());
     return new Organization("Test User Group", users);
+  }
+
+  /**
+   * @return A second Organization instance for testing.
+   */
+  public static Organization getOrganization2() {
+    Set<String> users = new HashSet<String>();
+    users.add(getUserInfo().getUid());
+    return new Organization("Test User Group2", users);
   }
 
   /**
@@ -188,13 +267,30 @@ public class InstanceFactory {
     Set<Property> properties = new HashSet<Property>();
     properties.add(getProperty());
     return new UserInfo("test_user_id", "test_first_name", "test_last_name", "test_email@test.com",
-        false, properties);
+        "test-user-group", properties);
+  }
+
+  /**
+   * @return A UserInfo instance for testing.
+   */
+  public static UserInfo getUserInfo2() {
+    Set<Property> properties = new HashSet<Property>();
+    properties.add(getProperty());
+    return new UserInfo("test_user_id2", "test_first_name2", "test_last_name2",
+        "test_email2@test.com", "test-user-group", properties);
   }
 
   /**
    * @return A UserPassword instance for testing.
    */
   public static UserPassword getUserPassword() {
-    return new UserPassword("test_user_id", "plain_text_password");
+    return new UserPassword("test_user_id", "test-user-group", "plain_text_password");
+  }
+
+  /**
+   * @return A second UserPassword instance for testing.
+   */
+  public static UserPassword getUserPassword2() {
+    return new UserPassword("test_user_id2", "test-user-group", "plain_text_password2");
   }
 }

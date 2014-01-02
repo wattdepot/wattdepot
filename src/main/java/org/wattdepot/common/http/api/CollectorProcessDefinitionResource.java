@@ -1,5 +1,5 @@
 /**
- * CollectorMetaDataResource.java This file is part of WattDepot.
+ * CollectorProcessDefinitionResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -21,35 +21,43 @@ package org.wattdepot.common.http.api;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
-import org.wattdepot.common.domainmodel.CollectorMetaData;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 
 /**
- * CollectorMetaDataResource - HTTP Interface for CollectorMetaData.
+ * CollectorProcessDefinitionResource - HTTP Interface for
+ * CollectorProcessDefinition.
  * 
  * @author Cam Moore
  * 
  */
-public interface CollectorMetaDataResource {
+public interface CollectorProcessDefinitionResource {
 
   /**
-   * Defines GET /wattdepot/collector-metadata/{collector-metadata-id} API call.
+   * Defines GET
+   * /wattdepot/collector-process-definition/{collector-process-definition-id}
+   * API call.
    * 
    * @return The SensorProcess with the given id. The id is sent in the request.
    */
-  @Get("json") // Use JSON as transport encoding.
-  public CollectorMetaData retrieve();
+  @Get("json")
+  // Use JSON as transport encoding.
+  public CollectorProcessDefinition retrieve();
 
   /**
-   * Defines the POST /wattdepot/collector-metadata/{collector-metadata-id} API call.
+   * Defines the POST
+   * /wattdepot/collector-process-definition/{collector-process-definition-id}
+   * API call.
    * 
-   * @param metadata
+   * @param definition
    *          The SensorProcess to store.
    */
   @Post
-  public void update(CollectorMetaData metadata);
+  public void update(CollectorProcessDefinition definition);
+
   /**
-   * Defined the DEL /wattdepot/collector-metadata/{collector-metadata-id} API call. The
-   * id is sent in the request.
+   * Defined the DEL
+   * /wattdepot/collector-process-definition/{collector-process-definition-id}
+   * API call. The id is sent in the request.
    */
   @Delete
   public void remove();

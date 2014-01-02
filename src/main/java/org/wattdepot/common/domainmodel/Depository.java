@@ -21,7 +21,6 @@ package org.wattdepot.common.domainmodel;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.Session;
 import org.wattdepot.common.exception.MeasurementGapException;
 import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.NoMeasurementException;
@@ -34,17 +33,15 @@ import org.wattdepot.common.util.Slug;
  * @author Cam Moore
  * 
  */
-public class Depository {
-  /** The unique id for the Depository. */
-  private String id;
+public class Depository implements IDomainModel {
   /** Name of the Depository. */
   protected String name;
   /** The slug used in URIs. */
   protected String slug;
   /** Type of measurements stored in the Depository. */
   protected MeasurementType measurementType;
-  /** The owner of this depository. */
-  protected Organization owner;
+  /** The id of the owner of this depository. */
+  protected String ownerId;
 
   /**
    * The default constructor.
@@ -60,15 +57,14 @@ public class Depository {
    *          The name of the Depository.
    * @param measurementType
    *          The type of the measurements this Depository accepts.
-   * @param owner
-   *          the owner of the location.
+   * @param ownerId
+   *          the id of the owner of the location.
    */
-  public Depository(String name, MeasurementType measurementType, Organization owner) {
-    this.id = Slug.slugify(name);
+  public Depository(String name, MeasurementType measurementType, String ownerId) {
     this.name = name;
     this.slug = Slug.slugify(name);
     this.measurementType = measurementType;
-    this.owner = owner;
+    this.ownerId = ownerId;
   }
 
   /**
@@ -92,34 +88,55 @@ public class Depository {
     if (obj == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if (!getClass().isAssignableFrom(obj.getClass())
+        && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
-    Depository other = (Depository) obj;
-    if (measurementType == null) {
-      if (other.measurementType != null) {
+    try {
+      Depository other = (Depository) obj;
+      if (measurementType == null) {
+        if (other.measurementType != null) {
+          return false;
+        }
+      }
+      else if (!measurementType.equals(other.measurementType)) {
         return false;
       }
-    }
-    else if (!measurementType.equals(other.measurementType)) {
-      return false;
-    }
-    if (name == null) {
-      if (other.name != null) {
+      if (name == null) {
+        if (other.name != null) {
+          return false;
+        }
+      }
+      else if (!name.equals(other.name)) {
         return false;
       }
+      return true;
     }
-    else if (!name.equals(other.name)) {
+    catch (ClassCastException e) {
       return false;
     }
-    return true;
   }
 
   /**
-   * @return the id
+   * @param sensorId
+   *          The id of the Sensor making the measurements.
+   * @return The earliest measurement Value
+   * @throws NoMeasurementException
+   *           If there aren't any measurements around the time.
    */
-  public String getId() {
-    return id;
+  public MeasuredValue getEarliestMeasuredValue(String sensorId) throws NoMeasurementException {
+    throw new RuntimeException("Not implemented");
+  }
+
+  /**
+   * @param sensorId
+   *          The id of the Sensor making the measurements.
+   * @return The latest measurement Value
+   * @throws NoMeasurementException
+   *           If there aren't any measurements around the time.
+   */
+  public MeasuredValue getLatestMeasuredValue(String sensorId) throws NoMeasurementException {
+    throw new RuntimeException("Not implemented");
   }
 
   /**
@@ -132,35 +149,24 @@ public class Depository {
   }
 
   /**
-   * @param sensor
-   *          the Sensor.
+   * @param sensorId
+   *          the id of the Sensor.
    * @return A list of all the measurements made by the Sensor.
    */
-  public List<Measurement> getMeasurements(Sensor sensor) {
+  public List<Measurement> getMeasurements(String sensorId) {
     throw new RuntimeException("Not implemented.");
   }
 
   /**
-   * @param sensor
-   *          The Sensor.
+   * @param sensorId
+   *          The id of the Sensor.
    * @param start
    *          The start of the interval.
    * @param end
    *          The end of the interval.
    * @return A list of the measurements in the interval.
    */
-  public List<Measurement> getMeasurements(Sensor sensor, Date start, Date end) {
-    throw new RuntimeException("Not implemented.");
-  }
-
-  /**
-   * @param session
-   *          A Session with an open transaction.
-   * @param sensor
-   *          the Sensor.
-   * @return A list of all the measurements made by the Sensor.
-   */
-  public List<Measurement> getMeasurements(Session session, Sensor sensor) {
+  public List<Measurement> getMeasurements(String sensorId, Date start, Date end) {
     throw new RuntimeException("Not implemented.");
   }
 
@@ -179,10 +185,10 @@ public class Depository {
   }
 
   /**
-   * @return the owner
+   * @return the id of the owner.
    */
-  public Organization getOwner() {
-    return owner;
+  public String getOwnerId() {
+    return ownerId;
   }
 
   /**
@@ -193,8 +199,8 @@ public class Depository {
   }
 
   /**
-   * @param sensor
-   *          The Sensor making the measurements.
+   * @param sensorId
+   *          The id of the Sensor making the measurements.
    * @param timestamp
    *          The time of the value.
    * @return The Value 'measured' at the given time, most likely an interpolated
@@ -202,13 +208,13 @@ public class Depository {
    * @throws NoMeasurementException
    *           If there aren't any measurements around the time.
    */
-  public Double getValue(Sensor sensor, Date timestamp) throws NoMeasurementException {
+  public Double getValue(String sensorId, Date timestamp) throws NoMeasurementException {
     throw new RuntimeException("Not implemented.");
   }
 
   /**
-   * @param sensor
-   *          The Sensor making the measurements.
+   * @param sensorId
+   *          The id of the Sensor making the measurements.
    * @param start
    *          The start of the period.
    * @param end
@@ -218,13 +224,13 @@ public class Depository {
    * @throws NoMeasurementException
    *           if there are no measurements around the start or end time.
    */
-  public Double getValue(Sensor sensor, Date start, Date end) throws NoMeasurementException {
+  public Double getValue(String sensorId, Date start, Date end) throws NoMeasurementException {
     throw new RuntimeException("Not implemented.");
   }
 
   /**
-   * @param sensor
-   *          The Sensor making the measurements.
+   * @param sensorId
+   *          The id of the Sensor making the measurements.
    * @param start
    *          The start of the interval.
    * @param end
@@ -239,14 +245,14 @@ public class Depository {
    * @throws MeasurementGapException
    *           if the measurements around start or end are too far apart.
    */
-  public Double getValue(Sensor sensor, Date start, Date end, Long gapSeconds)
+  public Double getValue(String sensorId, Date start, Date end, Long gapSeconds)
       throws NoMeasurementException, MeasurementGapException {
     throw new RuntimeException("Not implemented.");
   }
 
   /**
-   * @param sensor
-   *          The Sensor making the measurements.
+   * @param sensorId
+   *          The id of the Sensor making the measurements.
    * @param timestamp
    *          The time of the value.
    * @param gapSeconds
@@ -259,7 +265,7 @@ public class Depository {
    * @throws MeasurementGapException
    *           if the measurements around timestamp are too far apart.
    */
-  public Double getValue(Sensor sensor, Date timestamp, Long gapSeconds)
+  public Double getValue(String sensorId, Date timestamp, Long gapSeconds)
       throws NoMeasurementException, MeasurementGapException {
     throw new RuntimeException("Not implemented.");
   }
@@ -287,25 +293,18 @@ public class Depository {
    *         ADMIN_GROUP.
    */
   public boolean isOwner(Organization group) {
-    if (owner != null && (owner.equals(group) || group.equals(Organization.ADMIN_GROUP))) {
+    if (ownerId != null
+        && (ownerId.equals(group.getSlug()) || group.equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;
   }
 
   /**
-   * @return A list of the Sensors contributing Measurements to this depository.
+   * @return A list of the Sensor ids contributing Measurements to this
+   *         depository.
    */
-  public List<Sensor> listSensors() {
-    throw new RuntimeException("Not implemented.");
-  }
-
-  /**
-   * @param session
-   *          A Session with an open transaction.
-   * @return A List of Sensors contributing measurements to this Depository.
-   */
-  public List<Sensor> listSensors(Session session) {
+  public List<String> listSensors() {
     throw new RuntimeException("Not implemented.");
   }
 
@@ -318,14 +317,6 @@ public class Depository {
    */
   public void putMeasurement(Measurement meas) throws MeasurementTypeException {
     throw new RuntimeException("Not implemented.");
-  }
-
-  /**
-   * @param id
-   *          the id to set
-   */
-  public void setId(String id) {
-    this.id = id;
   }
 
   /**
@@ -342,17 +333,17 @@ public class Depository {
    */
   public void setName(String name) {
     this.name = name;
-    if (this.id == null) {
-      this.id = Slug.slugify(name);
+    if (this.slug == null) {
+      this.slug = Slug.slugify(name);
     }
   }
 
   /**
-   * @param owner
-   *          the owner to set
+   * @param ownerId
+   *          the id of the owner.
    */
-  public void setOwner(Organization owner) {
-    this.owner = owner;
+  public void setOwnerId(String ownerId) {
+    this.ownerId = ownerId;
   }
 
   /**
@@ -370,7 +361,8 @@ public class Depository {
    */
   @Override
   public String toString() {
-    return "Depository [name=" + name + ", measurementType=" + measurementType + "]";
+    return "Depository [name=" + name + ", slug=" + slug + ", measurementType=" + measurementType
+        + "]";
   }
 
 }

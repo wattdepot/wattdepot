@@ -26,7 +26,7 @@ import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.exception.MissMatchedOwnerException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.DepositoryResource;
 
 /**
@@ -65,7 +65,7 @@ public class DepositoryServerResource extends WattDepotServerResource implements
     try {
       depo = depot.getWattDeposiory(depositoryId, orgId);
     }
-    catch (MissMatchedOwnerException e) {
+    catch (MisMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
     }
     if (depo == null) {
@@ -109,7 +109,7 @@ public class DepositoryServerResource extends WattDepotServerResource implements
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
     }
-    catch (MissMatchedOwnerException e) {
+    catch (MisMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
     }
   }
