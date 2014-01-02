@@ -216,7 +216,7 @@ public class ServerProperties {
       serverHome = wattDepot3Home + serverSubdir;
     }
     String propFileName = serverHome + "/wattdepot-server.properties";
-    String defaultAdminName = "admin";
+    String defaultAdminName = "root";
     String defaultAdminPassword = "admin";
     String defaultWattDepotImpl = "org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl";
     String defaultPort = "8192";
