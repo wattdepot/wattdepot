@@ -64,7 +64,7 @@ public class DepositoryMeasurementPutServerResource extends WattDepotServerResou
     getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/depository/{" + depositoryId
         + "}/measurement/ with " + meas);
     try {
-      Depository depository = depot.getWattDeposiory(depositoryId, orgId);
+      Depository depository = depot.getWattDepository(depositoryId, orgId);
       if (depository != null) {
         Sensor sensor = depot.getSensor(meas.getSensorId(), orgId);
         if (sensor != null) {

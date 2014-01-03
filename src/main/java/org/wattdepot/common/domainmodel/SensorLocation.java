@@ -64,8 +64,8 @@ public class SensorLocation implements IDomainModel {
    * @param ownerId
    *          the id of the owner of the location.
    */
-  public SensorLocation(String name, Double latitude, Double longitude,
-      Double altitude, String description, String ownerId) {
+  public SensorLocation(String name, Double latitude, Double longitude, Double altitude,
+      String description, String ownerId) {
     this.name = name;
     this.slug = Slug.slugify(this.name);
     this.latitude = latitude;
@@ -88,7 +88,8 @@ public class SensorLocation implements IDomainModel {
     if (obj == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if (!getClass().isAssignableFrom(obj.getClass())
+        && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
     SensorLocation other = (SensorLocation) obj;
@@ -195,8 +196,7 @@ public class SensorLocation implements IDomainModel {
     int result = 1;
     result = prime * result + ((name == null) ? 0 : name.hashCode());
     result = prime * result + ((altitude == null) ? 0 : altitude.hashCode());
-    result = prime * result
-        + ((description == null) ? 0 : description.hashCode());
+    result = prime * result + ((description == null) ? 0 : description.hashCode());
     result = prime * result + ((latitude == null) ? 0 : latitude.hashCode());
     result = prime * result + ((longitude == null) ? 0 : longitude.hashCode());
     return result;
@@ -291,9 +291,9 @@ public class SensorLocation implements IDomainModel {
    */
   @Override
   public String toString() {
-    return "Location [slug=" + slug + ", name=" + name + ", latitude="
-        + latitude + ", longitude=" + longitude + ", altitude=" + altitude
-        + ", description=" + description + ", ownerId=" + ownerId + "]";
+    return "Location [slug=" + slug + ", name=" + name + ", latitude=" + latitude + ", longitude="
+        + longitude + ", altitude=" + altitude + ", description=" + description + ", ownerId="
+        + ownerId + "]";
   }
 
 }

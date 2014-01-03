@@ -102,9 +102,10 @@ public abstract class WattDepotPersistence {
    * @return the defined Location.
    * @throws UniqueIdException
    *           if the id is already used for another Location.
+   * @throws IdNotFoundException if the ownerId is not defined.
    */
   public abstract SensorLocation defineLocation(String name, Double latitude, Double longitude,
-      Double altitude, String description, String ownerId) throws UniqueIdException;
+      Double altitude, String description, String ownerId) throws UniqueIdException, IdNotFoundException;
 
   /**
    * Defines a new MeasurementType in WattDepot.
@@ -586,7 +587,7 @@ public abstract class WattDepotPersistence {
    * @throws MisMatchedOwnerException
    *           if the groupId doesn't match the owner of the sensor process.
    */
-  public abstract Depository getWattDeposiory(String id, String groupId)
+  public abstract Depository getWattDepository(String id, String groupId)
       throws MisMatchedOwnerException;
 
   /**

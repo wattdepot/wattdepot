@@ -64,8 +64,7 @@ public class Sensor implements IDomainModel {
    * @param ownerId
    *          the id of the owner of the sensor.
    */
-  public Sensor(String name, String uri, String locationId, String modelId,
-      String ownerId) {
+  public Sensor(String name, String uri, String locationId, String modelId, String ownerId) {
     this.slug = Slug.slugify(name);
     this.name = name;
     this.uri = uri;
@@ -98,7 +97,8 @@ public class Sensor implements IDomainModel {
     if (obj == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if (!getClass().isAssignableFrom(obj.getClass())
+        && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
     Sensor other = (Sensor) obj;
@@ -252,7 +252,8 @@ public class Sensor implements IDomainModel {
    *         ADMIN_GROUP.
    */
   public boolean isOwner(Organization group) {
-    if (ownerId != null && (ownerId.equals(group.getSlug()) || group.equals(Organization.ADMIN_GROUP))) {
+    if (ownerId != null
+        && (ownerId.equals(group.getSlug()) || group.equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;

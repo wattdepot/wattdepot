@@ -84,7 +84,7 @@ public class DepositoryValueServer extends WattDepotServerResource {
             + end + "}&timestamp={" + timestamp + "}&latest={" + latest
             + "}&earliest={" + earliest + "}&gap={" + gapSeconds + "}");
     try {
-      DepositoryImpl deposit = (DepositoryImpl) depot.getWattDeposiory(
+      DepositoryImpl deposit = (DepositoryImpl) depot.getWattDepository(
           depositoryId, orgId);
       if (deposit != null) {
         Sensor sensor = depot.getSensor(sensorId, orgId);

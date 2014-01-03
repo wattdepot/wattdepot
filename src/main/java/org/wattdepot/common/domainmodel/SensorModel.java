@@ -77,7 +77,8 @@ public class SensorModel {
     if (obj == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if (!getClass().isAssignableFrom(obj.getClass())
+        && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
     SensorModel other = (SensorModel) obj;
@@ -233,8 +234,8 @@ public class SensorModel {
    */
   @Override
   public String toString() {
-    return "SensorModel [slug=" + slug + ", name=" + name + ", protocol="
-        + protocol + ", type=" + type + ", version=" + version + "]";
+    return "SensorModel [slug=" + slug + ", name=" + name + ", protocol=" + protocol + ", type="
+        + type + ", version=" + version + "]";
   }
 
 }

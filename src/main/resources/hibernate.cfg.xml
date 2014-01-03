@@ -45,15 +45,14 @@
             resource="org/wattdepot/server/depository/impl/hibernate/MeasurementImpl.hbm.xml" />
         <mapping resource="org/wattdepot/common/domainmodel/MeasurementType.hbm.xml" />
         <mapping resource="org/wattdepot/common/domainmodel/Property.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/Sensor.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/SensorGroup.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/SensorLocation.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/SensorModel.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/CollectorProcessDefinition.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/Organization.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/UserInfo.hbm.xml" />
+        <mapping resource="org/wattdepot/server/depository/impl/hibernate/SensorImpl.hbm.xml" />
+        <mapping resource="org/wattdepot/server/depository/impl/hibernate/SensorGroupImpl.hbm.xml" />
+        <mapping resource="org/wattdepot/server/depository/impl/hibernate/SensorLocationImpl.hbm.xml" />
+        <mapping resource="org/wattdepot/server/depository/impl/hibernate/SensorModelImpl.hbm.xml" />
+        <mapping resource="org/wattdepot/server/depository/impl/hibernate/CollectorProcessDefinitionImpl.hbm.xml" />
+        <mapping resource="org/wattdepot/server/depository/impl/hibernate/OrganizationImpl.hbm.xml" />
         <mapping resource="org/wattdepot/server/depository/impl/hibernate/UserInfoImpl.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/UserPassword.hbm.xml" />
+        <mapping resource="org/wattdepot/server/depository/impl/hibernate/UserPasswordImpl.hbm.xml" />
 
     </session-factory>
 

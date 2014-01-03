@@ -65,7 +65,7 @@ public class DepositoryMeasurementServerResource extends WattDepotServerResource
             + "}");
     Measurement ret = null;
     try {
-      Depository depository = depot.getWattDeposiory(depositoryId, orgId);
+      Depository depository = depot.getWattDepository(depositoryId, orgId);
       if (depository != null) {
         ret = depository.getMeasurement(measId);
       }
@@ -109,7 +109,7 @@ public class DepositoryMeasurementServerResource extends WattDepotServerResource
         "DEL /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/measurement/{" + measId
             + "}");
     try {
-      Depository depository = depot.getWattDeposiory(depositoryId, orgId);
+      Depository depository = depot.getWattDepository(depositoryId, orgId);
       if (depository != null) {
         Measurement meas = depository.getMeasurement(measId);
         depository.deleteMeasurement(meas);

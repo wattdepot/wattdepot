@@ -80,7 +80,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
     if (start != null && end != null && interval != null) {
       MeasuredValueList ret = new MeasuredValueList();
       try {
-        Depository depository = depot.getWattDeposiory(depositoryId, orgId);
+        Depository depository = depot.getWattDepository(depositoryId, orgId);
         if (depository != null) {
           Sensor sensor = depot.getSensor(sensorId, orgId);
           if (sensor != null) {

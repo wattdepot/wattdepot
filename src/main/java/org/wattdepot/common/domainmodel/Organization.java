@@ -35,12 +35,10 @@ public class Organization {
   /** The name of the admin group. */
   public static final String ADMIN_GROUP_NAME = "admin";
   /** The admin user group. */
-  public static final Organization ADMIN_GROUP = new Organization(
-      ADMIN_GROUP_NAME);
+  public static final Organization ADMIN_GROUP = new Organization(ADMIN_GROUP_NAME);
 
   /** The public user group. All groups can see publicly owned objects. */
-  public static final Organization PUBLIC_GROUP = new Organization(
-      Labels.PUBLIC);
+  public static final Organization PUBLIC_GROUP = new Organization(Labels.PUBLIC);
 
   /** A slug usable in URLs. */
   protected String slug;
@@ -72,9 +70,9 @@ public class Organization {
 
   /**
    * @param name
-   *          The name of the group.
+   *          The name of the organization.
    * @param users
-   *          The Users in the group.
+   *          The Users in the organization.
    */
   public Organization(String name, Set<String> users) {
     this.slug = Slug.slugify(name);
@@ -115,7 +113,8 @@ public class Organization {
     if (obj == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if (!getClass().isAssignableFrom(obj.getClass())
+        && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
     Organization other = (Organization) obj;

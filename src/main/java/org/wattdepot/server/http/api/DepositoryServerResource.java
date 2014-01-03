@@ -63,7 +63,7 @@ public class DepositoryServerResource extends WattDepotServerResource implements
         "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}");
     Depository depo = null;
     try {
-      depo = depot.getWattDeposiory(depositoryId, orgId);
+      depo = depot.getWattDepository(depositoryId, orgId);
     }
     catch (MisMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());

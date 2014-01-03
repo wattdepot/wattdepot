@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.SensorLocation;
 import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.SensorLocationPutResource;
 
@@ -56,6 +57,9 @@ public class SensorLocationPutServerResource extends WattDepotServerResource imp
         }
         catch (UniqueIdException e) {
           setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+        }
+        catch (IdNotFoundException e) {
+          setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
         }
       }
       else {
