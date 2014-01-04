@@ -37,7 +37,7 @@ import org.wattdepot.server.depository.impl.hibernate.DepositoryImpl;
 
 /**
  * DepositoryValueServerResource - ServerResouce that handles the GET
- * /wattdepot/{group_id}/depository/{depository_id}/value/ response.
+ * /wattdepot/{org-id}/depository/{depository-id}/value/ response.
  * 
  * @author Cam Moore
  * 
@@ -48,6 +48,8 @@ public class DepositoryValueServer extends WattDepotServerResource {
   private String start;
   private String end;
   private String timestamp;
+  private String latest;
+  private String earliest;
   private String gapSeconds;
 
   /*
@@ -62,7 +64,9 @@ public class DepositoryValueServer extends WattDepotServerResource {
     this.start = getQuery().getValues(Labels.START);
     this.end = getQuery().getValues(Labels.END);
     this.timestamp = getQuery().getValues(Labels.TIMESTAMP);
-    this.groupId = getAttribute(Labels.GROUP_ID);
+    this.latest = getQuery().getValues(Labels.LATEST);
+    this.earliest = getQuery().getValues(Labels.EARLIEST);
+    this.orgId = getAttribute(Labels.ORGANIZATION_ID);
     this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);
     this.gapSeconds = getQuery().getValues(Labels.GAP);
   }
@@ -73,27 +77,24 @@ public class DepositoryValueServer extends WattDepotServerResource {
    * @return measured value. 
    */
   public MeasuredValue doRetrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/depository/{" + depositoryId
+    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId
         + "}/value/?sensor={" + sensorId + "}&start={" + start + "}&end={" + end + "}&timestamp={"
-        + timestamp + "}&gap={" + gapSeconds + "}");
+        + timestamp + "}&latest={" + latest + "}&earliest={" + earliest + "}&gap={" + gapSeconds + "}");
     try {
-      DepositoryImpl deposit = (DepositoryImpl) depot.getWattDeposiory(depositoryId, groupId);
+      DepositoryImpl deposit = (DepositoryImpl) depot.getWattDeposiory(depositoryId, orgId);
       if (deposit != null) {
-        Sensor sensor = depot.getSensor(sensorId, groupId);
+        Sensor sensor = depot.getSensor(sensorId, orgId);
         if (sensor != null) {
           Double value = null;
           Date startDate = null;
           Date endDate = null;
           Date time = null;
-          if (start != null && end != null) {
-            startDate = DateConvert.parseCalStringToDate(start);
-            endDate = DateConvert.parseCalStringToDate(end);
-            if (gapSeconds != null) {
-              value = deposit.getValue(sensor, startDate, endDate, Long.parseLong(gapSeconds));
-            }
-            else {
-              value = deposit.getValue(sensor, startDate, endDate);
-            }
+          
+          if (earliest != null) {
+            return deposit.getEarliestMeasuredValue(sensor);
+          }
+          else if (latest != null) {
+            return deposit.getLatestMeasuredValue(sensor);
           }
           else if (timestamp != null) {
             time = DateConvert.parseCalStringToDate(timestamp);
@@ -104,6 +105,17 @@ public class DepositoryValueServer extends WattDepotServerResource {
               value = deposit.getValue(sensor, time);
             }
           }
+          else if (start != null && end != null) {
+            startDate = DateConvert.parseCalStringToDate(start);
+            endDate = DateConvert.parseCalStringToDate(end);
+            if (gapSeconds != null) {
+              value = deposit.getValue(sensor, startDate, endDate, Long.parseLong(gapSeconds));
+            }
+            else {
+              value = deposit.getValue(sensor, startDate, endDate);
+            }
+          }
+          
           MeasuredValue val = new MeasuredValue(sensorId, value, deposit.getMeasurementType());
           if (end != null) {
             val.setDate(endDate);

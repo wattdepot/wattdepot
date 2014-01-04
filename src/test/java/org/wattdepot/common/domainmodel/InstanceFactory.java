@@ -35,7 +35,7 @@ import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.domainmodel.SensorLocation;
 import org.wattdepot.common.domainmodel.SensorModel;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.util.DateConvert;
@@ -175,10 +175,10 @@ public class InstanceFactory {
   /**
    * @return A UserGroup instance for testing.
    */
-  public static UserGroup getUserGroup() {
+  public static Organization getUserGroup() {
     Set<UserInfo> users = new HashSet<UserInfo>();
     users.add(getUserInfo());
-    return new UserGroup("Test User Group", users);
+    return new Organization("Test User Group", users);
   }
 
   /**

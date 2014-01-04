@@ -30,7 +30,7 @@ import org.wattdepot.common.http.api.UserPasswordResource;
 
 /**
  * UserPasswordServerResource - Handles the UserPassword HTTP API
- * ("/wattdepot/{group_id}/userpassword/{user_id}").
+ * ("/wattdepot/{org-id}/user-password/{user-id}").
  * 
  * @author Cam Moore
  * 
@@ -57,7 +57,7 @@ public class UserPasswordServerResource extends WattDepotServerResource implemen
    */
   @Override
   public UserPassword retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/userpassword/{" + userId + "}");
+    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/user-password/{" + userId + "}");
     UserPassword user = depot.getUserPassword(userId);
     if (user == null) {
       setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "User " + userId + " is not defined.");
@@ -78,7 +78,7 @@ public class UserPasswordServerResource extends WattDepotServerResource implemen
    */
   @Override
   public void store(UserPassword user) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/{" + groupId + "}/userpassword/ with " + user);
+    getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/user-password/ with " + user);
     if (!depot.getUserIds().contains(user.getId())) {
       try {
         depot.defineUserPassword(user.getId(), user.getPlainText());
@@ -99,7 +99,7 @@ public class UserPasswordServerResource extends WattDepotServerResource implemen
    */
   @Override
   public void remove() {
-    getLogger().log(Level.INFO, "DEL /wattdepot/{" + groupId + "}/userpassword/{" + userId + "}");
+    getLogger().log(Level.INFO, "DEL /wattdepot/{" + orgId + "}/user-password/{" + userId + "}");
     try {
       depot.deleteUserPassword(userId);
     }

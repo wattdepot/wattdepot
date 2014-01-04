@@ -31,7 +31,7 @@ import org.wattdepot.common.http.api.DepositoryMeasurementPutResource;
 
 /**
  * DepositoryMeasurementServerResource - Handles the Measurement HTTP API
- * ("/wattdepot/{group_id}/depository/{depository_id}/measurement/").
+ * ("/wattdepot/{org-id}/depository/{depository_id}/measurement/").
  * 
  * @author Cam Moore
  * 
@@ -60,10 +60,10 @@ public class DepositoryMeasurementPutServerResource extends WattDepotServerResou
    */
   @Override
   public void store(Measurement meas) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/{" + groupId + "}/depository/{" + depositoryId
+    getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/depository/{" + depositoryId
         + "}/measurement/ with " + meas);
     try {
-      Depository depository = depot.getWattDeposiory(depositoryId, groupId);
+      Depository depository = depot.getWattDeposiory(depositoryId, orgId);
       if (depository != null) {
         depository.putMeasurement(meas);
       }

@@ -38,13 +38,13 @@ import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.domainmodel.SensorLocation;
 import org.wattdepot.common.domainmodel.SensorModel;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl;
 
 /**
  * AdministratorServerResource - Administrative interface for WattDepot. It
- * handles the HTTP API ("/wattdepot/{group_id}/").
+ * handles the HTTP API ("/wattdepot/{org-id}/").
  * 
  * @author Cam Moore
  * 
@@ -56,11 +56,11 @@ public class AdminServerResource extends WattDepotServerResource {
    */
   @Get()
   public Representation toHtml() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/");
-    if (!isInRole(groupId) && !isInRole("admin")) {
+    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/");
+    if (!isInRole(orgId) && !isInRole("admin")) {
       User user = getClientInfo().getUser();
       UserInfo info = depot.getUser(user.getIdentifier());
-      UserGroup group = depot.getUsersGroup(info);
+      Organization group = depot.getUsersGroup(info);
       if (group != null) {
         redirectPermanent("/wattdepot/" + group.getId() + "/");
       }
@@ -71,17 +71,17 @@ public class AdminServerResource extends WattDepotServerResource {
     Map<String, Object> dataModel = new HashMap<String, Object>();
     // get some stuff from the database
     List<UserInfo> users = depot.getUsers();
-    List<UserGroup> groups = depot.getUserGroups();
-    List<Depository> depos = depot.getWattDepositories(groupId);
-    List<SensorLocation> locs = depot.getLocations(groupId);
-    List<Sensor> sensors = depot.getSensors(groupId);
+    List<Organization> groups = depot.getOrganizations();
+    List<Depository> depos = depot.getWattDepositories(orgId);
+    List<SensorLocation> locs = depot.getLocations(orgId);
+    List<Sensor> sensors = depot.getSensors(orgId);
     List<SensorModel> sensorModels = depot.getSensorModels();
-    List<SensorGroup> sensorGroups = depot.getSensorGroups(groupId);
-    List<CollectorMetaData> sensorProcesses = depot.getCollectorMetaDatas(groupId);
+    List<SensorGroup> sensorGroups = depot.getSensorGroups(orgId);
+    List<CollectorMetaData> sensorProcesses = depot.getCollectorMetaDatas(orgId);
     List<MeasurementType> measurementTypes = depot.getMeasurementTypes();
     dataModel.put("users", users);
     dataModel.put("groups", groups);
-    dataModel.put("groupId", groupId);
+    dataModel.put("groupId", orgId);
     dataModel.put("depositories", depos);
     dataModel.put("locations", locs);
     dataModel.put("sensors", sensors);

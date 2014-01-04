@@ -26,7 +26,7 @@ import org.wattdepot.common.http.api.SensorLocationsResource;
 
 /**
  * LocationsServerResource - ServerResource that handles the URI
- * "/wattdepot/{group_id}/locations/".
+ * "/wattdepot/{org-id}/locations/".
  * 
  * @author Cam Moore
  * 
@@ -40,9 +40,9 @@ public class SensorLocationsServerResource extends WattDepotServerResource imple
    */
   @Override
   public SensorLocationList retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/locations/");
+    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/locations/");
     SensorLocationList list = new SensorLocationList();
-    for (SensorLocation l : depot.getLocations(groupId)) {
+    for (SensorLocation l : depot.getLocations(orgId)) {
       list.getLocations().add(l);
     }
     return list;

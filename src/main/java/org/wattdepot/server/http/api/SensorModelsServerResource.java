@@ -26,7 +26,7 @@ import org.wattdepot.common.http.api.SensorModelsResource;
 
 /**
  * SensorModelsServerResource - Handles the SensorGroups HTTP API
- * ("/wattdepot/{group_id}/sensormodels/").
+ * ("/wattdepot/public/sensor-models/").
  * 
  * @author Cam Moore
  * 
@@ -41,7 +41,7 @@ public class SensorModelsServerResource extends WattDepotServerResource implemen
    */
   @Override
   public SensorModelList retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/sensormodels/");
+    getLogger().log(Level.INFO, "GET /wattdepot/public/sensor-models/");
     SensorModelList ret = new SensorModelList();
     for (SensorModel sm : depot.getSensorModels()) {
       ret.getModels().add(sm);

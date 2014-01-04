@@ -36,7 +36,7 @@ import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.domainmodel.SensorLocation;
 import org.wattdepot.common.domainmodel.SensorModel;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -89,13 +89,13 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
         throw new RuntimeException("opens and closed mismatched.");
       }
     }
-    UserGroup pub = getUserGroup(UserGroup.PUBLIC_GROUP.getId());
+    Organization pub = getOrganization(Organization.PUBLIC_GROUP.getId());
     if (getSessionClose() != getSessionOpen()) {
       throw new RuntimeException("opens and closed mismatched.");
     }
     if (pub == null) {
       try {
-        defineUserGroup(UserGroup.PUBLIC_GROUP.getId(), new HashSet<UserInfo>());
+        defineOrganization(Organization.PUBLIC_GROUP.getId(), new HashSet<UserInfo>());
         if (getSessionClose() != getSessionOpen()) {
           throw new RuntimeException("opens and closed mismatched.");
         }
@@ -106,18 +106,18 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       }
     }
     else {
-      updateUserGroup(pub);
+      updateOrganization(pub);
       if (getSessionClose() != getSessionOpen()) {
         throw new RuntimeException("opens and closed mismatched.");
       }
     }
-    UserGroup admin = getUserGroup(UserGroup.ADMIN_GROUP.getId());
+    Organization admin = getOrganization(Organization.ADMIN_GROUP.getId());
     if (getSessionClose() != getSessionOpen()) {
       throw new RuntimeException("opens and closed mismatched.");
     }
     if (admin == null) {
       try {
-        defineUserGroup(UserGroup.ADMIN_GROUP.getId(), UserGroup.ADMIN_GROUP.getUsers());
+        defineOrganization(Organization.ADMIN_GROUP.getId(), Organization.ADMIN_GROUP.getUsers());
         if (getSessionClose() != getSessionOpen()) {
           throw new RuntimeException("opens and closed mismatched.");
         }
@@ -128,7 +128,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       }
     }
     else {
-      updateUserGroup(admin);
+      updateOrganization(admin);
       if (getSessionClose() != getSessionOpen()) {
         throw new RuntimeException("opens and closed mismatched.");
       }
@@ -164,14 +164,14 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * 
    * @see org.wattdepot.server.WattDepot#defineLocation(java.lang.String,
    * java.lang.Double, java.lang.Double, java.lang.Double, java.lang.String,
-   * org.wattdepot.datamodel.UserGroup)
+   * org.wattdepot.datamodel.Organization)
    */
   @Override
   public SensorLocation defineLocation(String id, Double latitude, Double longitude,
-      Double altitude, String description, UserGroup owner) throws UniqueIdException {
+      Double altitude, String description, Organization owner) throws UniqueIdException {
     SensorLocation l = null;
     try {
-      l = getLocation(id, UserGroup.ADMIN_GROUP_NAME);
+      l = getLocation(id, Organization.ADMIN_GROUP_NAME);
     }
     catch (MissMatchedOwnerException e) {
       // can't happen
@@ -223,16 +223,16 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * 
    * @see org.wattdepot.server.WattDepot#defineSensor(java.lang.String,
    * java.lang.String, org.wattdepot.datamodel.Location,
-   * org.wattdepot.datamodel.SensorModel, org.wattdepot.datamodel.UserGroup)
+   * org.wattdepot.datamodel.SensorModel, org.wattdepot.datamodel.Organization)
    */
   @Override
   public Sensor defineSensor(String id, String uri, SensorLocation l, SensorModel sm,
-      UserGroup owner) throws UniqueIdException, MissMatchedOwnerException {
+      Organization owner) throws UniqueIdException, MissMatchedOwnerException {
     if (!owner.equals(l.getOwner())) {
       throw new MissMatchedOwnerException(owner.getId() + " does not match location's.");
     }
     Sensor s = null;
-    s = getSensor(id, UserGroup.ADMIN_GROUP_NAME);
+    s = getSensor(id, Organization.ADMIN_GROUP_NAME);
     if (s != null) {
       throw new UniqueIdException(id + " is already a Sensor id.");
     }
@@ -251,10 +251,10 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * (non-Javadoc)
    * 
    * @see org.wattdepot.server.WattDepot#defineSensorGroup(java.lang.String,
-   * java.util.List, org.wattdepot.datamodel.UserGroup)
+   * java.util.List, org.wattdepot.datamodel.Organization)
    */
   @Override
-  public SensorGroup defineSensorGroup(String id, Set<Sensor> sensors, UserGroup owner)
+  public SensorGroup defineSensorGroup(String id, Set<Sensor> sensors, Organization owner)
       throws UniqueIdException, MissMatchedOwnerException {
     for (Sensor s : sensors) {
       if (!owner.equals(s.getOwner())) {
@@ -262,7 +262,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       }
     }
     SensorGroup sg = null;
-    sg = getSensorGroup(id, UserGroup.ADMIN_GROUP_NAME);
+    sg = getSensorGroup(id, Organization.ADMIN_GROUP_NAME);
     if (sg != null) {
       throw new UniqueIdException(id + " is already a SensorGroup id.");
     }
@@ -285,7 +285,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * 
    * @see org.wattdepot.server.WattDepot#defineSensorModel(java.lang.String,
    * java.lang.String, java.lang.String, java.lang.String,
-   * org.wattdepot.datamodel.UserGroup)
+   * org.wattdepot.datamodel.Organization)
    */
   @Override
   public SensorModel defineSensorModel(String id, String protocol, String type, String version)
@@ -312,17 +312,17 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * @see
    * org.wattdepot.server.WattDepot#defineCollectorMetaData(java.lang.String,
    * org.wattdepot.datamodel.Sensor, java.lang.Long, java.lang.String,
-   * org.wattdepot.datamodel.UserGroup)
+   * org.wattdepot.datamodel.Organization)
    */
   @Override
   public CollectorMetaData defineCollectorMetaData(String id, Sensor sensor, Long pollingInterval,
-      String depositoryId, UserGroup owner) throws UniqueIdException, MissMatchedOwnerException {
+      String depositoryId, Organization owner) throws UniqueIdException, MissMatchedOwnerException {
     if (!owner.equals(sensor.getOwner())) {
       throw new MissMatchedOwnerException(owner.getId() + " does not own the sensor "
           + sensor.getId());
     }
     CollectorMetaData sp = null;
-    sp = getCollectorMetaData(id, UserGroup.ADMIN_GROUP_NAME);
+    sp = getCollectorMetaData(id, Organization.ADMIN_GROUP_NAME);
     if (sp != null) {
       throw new UniqueIdException(id + " is already a SensorModel id.");
     }
@@ -341,14 +341,14 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.server.WattDepot#defineUserGroup(java.lang.String,
+   * @see org.wattdepot.server.WattDepot#defineOrganization(java.lang.String,
    * java.util.List)
    */
   @Override
-  public UserGroup defineUserGroup(String id, Set<UserInfo> users) throws UniqueIdException {
-    UserGroup g = getUserGroup(id);
+  public Organization defineOrganization(String id, Set<UserInfo> users) throws UniqueIdException {
+    Organization g = getOrganization(id);
     if (g != null) {
-      throw new UniqueIdException(id + " is already a UserGroup id.");
+      throw new UniqueIdException(id + " is already a Organization id.");
     }
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
@@ -359,7 +359,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       }
       session.saveOrUpdate(u);
     }
-    g = new UserGroup(id, users);
+    g = new Organization(id, users);
     session.saveOrUpdate(g);
     session.getTransaction().commit();
     session.close();
@@ -418,11 +418,11 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * (non-Javadoc)
    * 
    * @see org.wattdepot.server.WattDepot#defineWattDepository(java.lang.String,
-   * java.lang.String, java.lang.String, org.wattdepot.datamodel.UserGroup)
+   * java.lang.String, java.lang.String, org.wattdepot.datamodel.Organization)
    */
   @Override
   public Depository defineWattDepository(String name, MeasurementType measurementType,
-      UserGroup owner) throws UniqueIdException {
+      Organization owner) throws UniqueIdException {
     Depository d = null;
     try {
       d = getWattDeposiory(name, owner.getId());
@@ -613,9 +613,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   // * @param session
   // * The Session, a transaction must be in progress.
   // * @param group
-  // * The UserGroup to delete.
+  // * The Organization to delete.
   // */
-  // private void deleteUserGroup(Session session, UserGroup group) {
+  // private void deleteOrganization(Session session, Organization group) {
   // for (CollectorMetaData sp : getCollectorMetaDatas(session, group.getId()))
   // {
   // session.delete(sp);
@@ -646,11 +646,11 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.server.WattDepot#deleteUserGroup(java.lang.String)
+   * @see org.wattdepot.server.WattDepot#deleteOrganization(java.lang.String)
    */
   @Override
-  public void deleteUserGroup(String id) throws IdNotFoundException {
-    UserGroup g = getUserGroup(id);
+  public void deleteOrganization(String id) throws IdNotFoundException {
+    Organization g = getOrganization(id);
     if (g == null) {
       throw new IdNotFoundException(id + " is not a defined user group id.");
     }
@@ -784,9 +784,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public SensorLocation getLocation(String id, String groupId) throws MissMatchedOwnerException {
     // search through all the known locations
-    for (SensorLocation l : getLocations(UserGroup.ADMIN_GROUP_NAME)) {
+    for (SensorLocation l : getLocations(Organization.ADMIN_GROUP_NAME)) {
       if (l.getId().equals(id)) {
-        if (l.getOwner().getId().equals(groupId) || groupId.equals(UserGroup.ADMIN_GROUP_NAME)) {
+        if (l.getOwner().getId().equals(groupId) || groupId.equals(Organization.ADMIN_GROUP_NAME)) {
           return l;
         }
         else {
@@ -824,7 +824,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     List result = session.createQuery("from SensorLocation").list();
     ArrayList<SensorLocation> ret = new ArrayList<SensorLocation>();
     for (SensorLocation d : (List<SensorLocation>) result) {
-      if (groupId.equals(UserGroup.ADMIN_GROUP_NAME) || groupId.equals(d.getOwner().getId())) {
+      if (groupId.equals(Organization.ADMIN_GROUP_NAME) || groupId.equals(d.getOwner().getId())) {
         ret.add(d);
       }
     }
@@ -894,9 +894,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    */
   @Override
   public Sensor getSensor(String id, String groupId) throws MissMatchedOwnerException {
-    for (Sensor s : getSensors(UserGroup.ADMIN_GROUP_NAME)) {
+    for (Sensor s : getSensors(Organization.ADMIN_GROUP_NAME)) {
       if (s.getId().equals(id)) {
-        if (s.getOwner().getId().equals(groupId) || groupId.contains(UserGroup.ADMIN_GROUP_NAME)) {
+        if (s.getOwner().getId().equals(groupId) || groupId.contains(Organization.ADMIN_GROUP_NAME)) {
           Hibernate.initialize(s.getSensorLocation());
           Hibernate.initialize(s.getModel());
           return s;
@@ -917,9 +917,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    */
   @Override
   public SensorGroup getSensorGroup(String id, String groupId) throws MissMatchedOwnerException {
-    for (SensorGroup s : getSensorGroups(UserGroup.ADMIN_GROUP_NAME)) {
+    for (SensorGroup s : getSensorGroups(Organization.ADMIN_GROUP_NAME)) {
       if (s.getId().equals(id)) {
-        if (s.getOwner().getId().equals(groupId) || groupId.contains(UserGroup.ADMIN_GROUP_NAME)) {
+        if (s.getOwner().getId().equals(groupId) || groupId.contains(Organization.ADMIN_GROUP_NAME)) {
           for (Sensor sens : s.getSensors()) {
             Hibernate.initialize(sens);
             Hibernate.initialize(sens.getSensorLocation());
@@ -962,7 +962,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     List result = session.createQuery("from SensorGroup").list();
     ArrayList<SensorGroup> ret = new ArrayList<SensorGroup>();
     for (SensorGroup d : (List<SensorGroup>) result) {
-      if (groupId.equals(UserGroup.ADMIN_GROUP_NAME) || groupId.equals(d.getOwner().getId())) {
+      if (groupId.equals(Organization.ADMIN_GROUP_NAME) || groupId.equals(d.getOwner().getId())) {
         // for (Sensor sens : d.getSensors()) {
         // Hibernate.initialize(sens);
         // Hibernate.initialize(sens.getLocation());
@@ -1077,9 +1077,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public CollectorMetaData getCollectorMetaData(String id, String groupId)
       throws MissMatchedOwnerException {
-    for (CollectorMetaData s : getCollectorMetaDatas(UserGroup.ADMIN_GROUP_NAME)) {
+    for (CollectorMetaData s : getCollectorMetaDatas(Organization.ADMIN_GROUP_NAME)) {
       if (s.getId().equals(id)) {
-        if (s.getOwner().getId().equals(groupId) || groupId.contains(UserGroup.ADMIN_GROUP_NAME)) {
+        if (s.getOwner().getId().equals(groupId) || groupId.contains(Organization.ADMIN_GROUP_NAME)) {
           return s;
         }
         else {
@@ -1103,7 +1103,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     List result = session.createQuery("from CollectorMetaData").list();
     ArrayList<CollectorMetaData> ret = new ArrayList<CollectorMetaData>();
     for (CollectorMetaData d : (List<CollectorMetaData>) result) {
-      if (groupId.equals(UserGroup.ADMIN_GROUP_NAME) || groupId.equals(d.getOwner().getId())) {
+      if (groupId.equals(Organization.ADMIN_GROUP_NAME) || groupId.equals(d.getOwner().getId())) {
         ret.add(d);
       }
     }
@@ -1155,7 +1155,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     List result = session.createQuery("from Sensor").list();
     ArrayList<Sensor> ret = new ArrayList<Sensor>();
     for (Sensor d : (List<Sensor>) result) {
-      if (groupId.equals(UserGroup.ADMIN_GROUP_NAME) || groupId.equals(d.getOwner().getId())) {
+      if (groupId.equals(Organization.ADMIN_GROUP_NAME) || groupId.equals(d.getOwner().getId())) {
         ret.add(d);
       }
     }
@@ -1221,21 +1221,21 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.server.WattDepot#getUserGroup(java.lang.String)
+   * @see org.wattdepot.server.WattDepot#getOrganization(java.lang.String)
    */
   @SuppressWarnings("unchecked")
   @Override
-  public UserGroup getUserGroup(String id) {
-    UserGroup ret = null;
+  public Organization getOrganization(String id) {
+    Organization ret = null;
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
     @SuppressWarnings("rawtypes")
-    List result = session.createQuery("from UserGroup").list();
+    List result = session.createQuery("from Organization").list();
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-    for (UserGroup g : (List<UserGroup>) result) {
+    for (Organization g : (List<Organization>) result) {
       if (id.equals(g.getId())) {
         ret = g;
       }
@@ -1244,14 +1244,14 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   }
 
   /*
-   * (non-Javadoc)
+   * (non-Javadoc)m
    * 
-   * @see org.wattdepot.server.WattDepot#getUserGroupIds()
+   * @see org.wattdepot.server.WattDepot#getOrganizationIds()
    */
   @Override
-  public List<String> getUserGroupIds() {
+  public List<String> getOrganizationIds() {
     ArrayList<String> ret = new ArrayList<String>();
-    for (UserGroup u : getUserGroups()) {
+    for (Organization u : getOrganizations()) {
       ret.add(u.getId());
     }
     return ret;
@@ -1260,20 +1260,20 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.server.WattDepot#getUserGroups()
+   * @see org.wattdepot.server.WattDepot#getOrganizations()
    */
   @SuppressWarnings("unchecked")
   @Override
-  public List<UserGroup> getUserGroups() {
+  public List<Organization> getOrganizations() {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
     @SuppressWarnings("rawtypes")
-    List result = session.createQuery("from UserGroup").list();
+    List result = session.createQuery("from Organization").list();
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-    return (List<UserGroup>) result;
+    return (List<Organization>) result;
   }
 
   /*
@@ -1342,8 +1342,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * UserInfo)
    */
   @Override
-  public UserGroup getUsersGroup(UserInfo user) {
-    for (UserGroup group : getUserGroups()) {
+  public Organization getUsersGroup(UserInfo user) {
+    for (Organization group : getOrganizations()) {
       if (group.getUsers().contains(user)) {
         return group;
       }
@@ -1382,7 +1382,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     List result = session.createQuery("from DepositoryImpl").list();
     ArrayList<Depository> ret = new ArrayList<Depository>();
     for (Depository d : (List<Depository>) result) {
-      if (groupId.equals(UserGroup.ADMIN_GROUP_NAME) || groupId.equals(d.getOwner().getId())) {
+      if (groupId.equals(Organization.ADMIN_GROUP_NAME) || groupId.equals(d.getOwner().getId())) {
         ret.add(new DepositoryImpl(d));
       }
     }
@@ -1567,11 +1567,11 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.server.WattDepot#updateUserGroup(org.wattdepot.datamodel
-   * .UserGroup)
+   * org.wattdepot.server.WattDepot#updateOrganization(org.wattdepot.datamodel
+   * .Organization)
    */
   @Override
-  public UserGroup updateUserGroup(UserGroup group) {
+  public Organization updateOrganization(Organization group) {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();

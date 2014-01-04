@@ -24,15 +24,14 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.http.api.DepositoryResource;
 
 /**
  * DepositoryServerResource - Handles Depository HTTP API
- * ("/wattdepot/{group_id}/depository/",
- * "/wattdepot/{group_id}/depository/{depository_id}").
+ * ("/wattdepot/{org-id}/depository/{depository-id}").
  * 
  * @author Cam Moore
  * 
@@ -61,10 +60,10 @@ public class DepositoryServerResource extends WattDepotServerResource implements
   @Override
   public Depository retrieve() {
     getLogger().log(Level.INFO,
-        "GET /wattdepot/{" + groupId + "}/depository/{" + depositoryId + "}");
+        "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}");
     Depository depo = null;
     try {
-      depo = depot.getWattDeposiory(depositoryId, groupId);
+      depo = depot.getWattDeposiory(depositoryId, orgId);
     }
     catch (MissMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
@@ -85,13 +84,13 @@ public class DepositoryServerResource extends WattDepotServerResource implements
   @Override
   public void update(Depository depository) {
     getLogger().log(Level.INFO,
-        "POST /wattdepot/{" + groupId + "}/depository/{" + depositoryId + "} with " + depository);
-    UserGroup owner = depot.getUserGroup(groupId);
+        "POST /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "} with " + depository);
+    Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Can't update a Depository.");
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, groupId + " does not exist.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
   }
 
@@ -103,9 +102,9 @@ public class DepositoryServerResource extends WattDepotServerResource implements
   @Override
   public void remove() {
     getLogger().log(Level.INFO,
-        "DEL /wattdepot/{" + groupId + "}/depository/{" + depositoryId + "}");
+        "DEL /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}");
     try {
-      depot.deleteWattDepository(depositoryId, groupId);
+      depot.deleteWattDepository(depositoryId, orgId);
     }
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());

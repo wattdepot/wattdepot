@@ -22,14 +22,13 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.SensorLocation;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.SensorLocationPutResource;
 
 /**
- * LocationResource - WattDepot 3 Location Resource handles the Location HTTP
- * API ("/wattdepot/{group_id}/location/" and
- * "/wattdepot/{group_id}/location/{location_id}").
+ * SensorLocationPutResource - WattDepot Location Resource handles the Location HTTP
+ * API ("/wattdepot/{org-id}/location/").
  * 
  * @author Cam Moore
  * 
@@ -46,10 +45,10 @@ public class SensorLocationPutServerResource extends WattDepotServerResource imp
   @Override
   public void store(SensorLocation sensorLocation) {
     getLogger()
-        .log(Level.INFO, "PUT /wattdepot/{" + groupId + "}/location/ with " + sensorLocation);
-    UserGroup owner = depot.getUserGroup(groupId);
+        .log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/location/ with " + sensorLocation);
+    Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
-      if (!depot.getLocationIds(groupId).contains(sensorLocation.getId())) {
+      if (!depot.getLocationIds(orgId).contains(sensorLocation.getId())) {
         try {
           depot.defineLocation(sensorLocation.getName(), sensorLocation.getLatitude(),
               sensorLocation.getLongitude(), sensorLocation.getAltitude(),
@@ -64,7 +63,7 @@ public class SensorLocationPutServerResource extends WattDepotServerResource imp
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, groupId + " does not exist.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
   }
 

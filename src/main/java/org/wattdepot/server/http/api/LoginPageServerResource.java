@@ -31,7 +31,7 @@ import org.restlet.resource.Get;
 
 /**
  * AdministratorServerResource - Administrative interface for WattDepot. It
- * handles the HTTP API ("/wattdepot/{group_id}/").
+ * handles the HTTP API ("/wattdepot/{org-id}/").
  * 
  * @author Cam Moore
  * 

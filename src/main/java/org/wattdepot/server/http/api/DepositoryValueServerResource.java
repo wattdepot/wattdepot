@@ -24,7 +24,7 @@ import org.wattdepot.common.http.api.DepositoryValueResource;
 
 /**
  * DepositoryValueServerResource - ServerResouce that handles the GET
- * /wattdepot/{group_id}/depository/{depository_id}/value/ response.
+ * /wattdepot/{org-id}/depository/{depository-id}/value/ response.
  * 
  * @author Cam Moore
  * 

@@ -24,18 +24,14 @@ import org.wattdepot.common.util.GvizHelper;
 
 //
 /**
- * Provides access to SensorData via the Google Visualization API using the Google Visualization
- * Datasource library. The Datasource library typically wraps its functionality as a servlet,
- * requiring a servlet container. Since WattDepot is based on Restlet, we can create a cusotm
- * Datasource to avoid the servlet requirement.
+ * GvizDepositoryValueServerResource - Handles the Depository measurements
+ * HTTP API ("/wattdepot/{org-id}/depository/{depository-id}/value/gviz").
  * 
- * @see <a
- * href="http://code.google.com/apis/chart/interactive/docs/dev/implementing_data_source.html">Google
- * Visualization Datasource API</a>
  * @author Yongwen Xu
  */
 
-public class GvizDepositoryValueServerResource extends DepositoryValueServer implements GvizDepositoryValueResource {
+public class GvizDepositoryValueServerResource extends DepositoryValueServer 
+  implements GvizDepositoryValueResource {
   /** The GViz tqx query string. */
   private String tqxString = null;
   
@@ -56,7 +52,7 @@ public class GvizDepositoryValueServerResource extends DepositoryValueServer imp
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.common.httpapi.GvizResource#retrieve()
+   * @see org.wattdepot.common.httpapi.GvizDepositoryValueResource#retrieve()
    */
   @Override
   public String retrieve() {

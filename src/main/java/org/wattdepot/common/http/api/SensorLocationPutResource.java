@@ -30,7 +30,7 @@ import org.wattdepot.common.domainmodel.SensorLocation;
 public interface SensorLocationPutResource {
 
   /**
-   * Defines the PUT /wattdepot/{group_id}/location/ API call.
+   * Defines the PUT /wattdepot/{org-id}/location/ API call.
    * 
    * @param sensorLocation
    *          The Location to store.

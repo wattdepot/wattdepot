@@ -345,6 +345,20 @@ org.WattDepot.Client = function(url) {
     ajaxSend(xhr, setting, callback, errorHandler);
   }
   
+   /*
+    * Get the earliest sensordata for a specific source from the WattDepot server 
+    * with a callback function.
+    *
+    * @param source name of the source.
+    * @param callback callback function that will be called when the server responsed.
+    * @param errorHandler Callback function to be called if there is an error in the ajax request.
+    */
+   function getSourceEarliestSensorData(source, callback, errorHandler) {
+     var xhr = createXmlHttpRequest();
+     var setting = createGetAjaxSetting(serverUrl + "wattdepot/admin/depository/power/value/?sensor=" + source + "&earliest=true");	
+     ajaxSend(xhr, setting, callback, errorHandler);
+   }
+   
   /*
    * Get the latest sensordata for a specific source from the WattDepot server 
    * with a callback function.
@@ -355,7 +369,7 @@ org.WattDepot.Client = function(url) {
    */
   function getSourceLatestSensorData(source, callback, errorHandler) {
     var xhr = createXmlHttpRequest();
-    var setting = createGetAjaxSetting(serverUrl + "wattdepot/admin/sensors/" + source + "/sensordata/latest");	
+    var setting = createGetAjaxSetting(serverUrl + "wattdepot/admin/depository/power/value/?sensor=" + source + "&latest=true");	
     ajaxSend(xhr, setting, callback, errorHandler);
   }
   
@@ -462,7 +476,9 @@ org.WattDepot.Client = function(url) {
     getSourceSensorData : getSourceSensorData,
   
     getSourceLatestSensorData : getSourceLatestSensorData,
-	
+
+    getSourceEarliestSensorData : getSourceEarliestSensorData,
+
     getServerHealth : getServerHealth,
 	
     getSourceDetail : getSourceDetail,

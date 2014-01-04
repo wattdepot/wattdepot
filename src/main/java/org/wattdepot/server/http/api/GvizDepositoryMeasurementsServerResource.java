@@ -23,10 +23,10 @@ import org.wattdepot.common.http.api.GvizDepositoryMeasurementsResource;
 import org.wattdepot.common.util.GvizHelper;
 
 /**
- * DepositoryMeasurementsServerResource - Handles the Depository measurements
- * HTTP API ("/wattdepot/{group_id}/depository/{depository_id}/measurements/").
+ * GvizDepositoryMeasurementsServerResource - Handles the Depository measurements
+ * HTTP API ("/wattdepot/{org-id}/depository/{depository-id}/measurements/gviz").
  * 
- * @author Cam Moore
+ * @author Yongwen Xu
  * 
  */
 public class GvizDepositoryMeasurementsServerResource extends DepositoryMeasurementsServer implements
@@ -52,7 +52,7 @@ public class GvizDepositoryMeasurementsServerResource extends DepositoryMeasurem
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.restlet.DepositoryMeasurementsResource#retrieve()
+   * @see org.wattdepot.restlet.GvizDepositoryMeasurementsResource#retrieve()
    */
   @Override
   public String retrieve() {

@@ -38,9 +38,10 @@ public class UserPassword {
   private StrongPasswordEncryptor passwordEncryptor;
 
   static {
-    String password = System.getenv(ADMIN_USER_PASSWORD);
+    String password = System.getProperty(ADMIN_USER_PASSWORD);
     if (password != null) {
       ADMIN.setPassword(password);
+      ADMIN.setPlainText(password);
     }
   }
 

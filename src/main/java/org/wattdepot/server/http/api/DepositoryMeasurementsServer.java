@@ -1,5 +1,5 @@
 /**
- * DepositoryMeasurementsServerResource.java This file is part of WattDepot.
+ * DepositoryMeasurementsServer.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -35,10 +35,11 @@ import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.util.DateConvert;
 
 /**
- * DepositoryMeasurementsServerResource - Handles the Depository measurements
- * HTTP API ("/wattdepot/{group_id}/depository/{depository_id}/measurements/").
+ * DepositoryMeasurementsServer - Base class for handling the Depository measurements
+ * HTTP API ("/wattdepot/{org-id}/depository/{depository-id}/measurements/").
  * 
  * @author Cam Moore
+ *         Yongwen Xu
  * 
  */
 public class DepositoryMeasurementsServer extends WattDepotServerResource {
@@ -67,21 +68,22 @@ public class DepositoryMeasurementsServer extends WattDepotServerResource {
    * @return measurement list. 
    */
   public MeasurementList doRetrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + groupId + "}/depository/{" + depositoryId
+    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId
         + "}/measurements/?sensor={" + sensorId + "}&start={" + start + "}&end={" + end + "}");
+    
     if (start != null && end != null) {
       MeasurementList ret = new MeasurementList();
       try {
-        Depository depository = depot.getWattDeposiory(depositoryId, groupId);
+        Depository depository = depot.getWattDeposiory(depositoryId, orgId);
         if (depository != null) {
-          Sensor sensor = depot.getSensor(sensorId, groupId);
-          if (sensor != null) {
+          Sensor sensor = depot.getSensor(sensorId, orgId);
+          if (sensor != null) {            
             Date startDate = DateConvert.parseCalStringToDate(start);
             Date endDate = DateConvert.parseCalStringToDate(end);
             if (startDate != null && endDate != null) {
               for (Measurement meas : depository.getMeasurements(sensor, startDate, endDate)) {
                 ret.getMeasurements().add(meas);
-              }
+              }              
             }
             else {
               setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Start date and/or end date missing.");

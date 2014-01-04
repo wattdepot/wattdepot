@@ -22,15 +22,14 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.SensorGroup;
-import org.wattdepot.common.domainmodel.UserGroup;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.MissMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.SensorGroupPutResource;
 
 /**
- * SensorGroupServerResource - Handles the SensorGroup HTTP API
- * ("/wattdepot/{group_id}/sensorgroup/",
- * "/wattdepot/{group_id}/sensorgroup/{sensorgroup_id}").
+ * SensorGroupPutServerResource - Handles the SensorGroup HTTP API
+ * ("/wattdepot/{org-id}/sensor-group/").
  * 
  * @author Cam Moore
  * 
@@ -47,10 +46,10 @@ public class SensorGroupPutServerResource extends WattDepotServerResource implem
   @Override
   public void store(SensorGroup sensorgroup) {
     getLogger()
-        .log(Level.INFO, "PUT /wattdepot/{" + groupId + "}/sensorgroup/ with " + sensorgroup);
-    UserGroup owner = depot.getUserGroup(groupId);
+        .log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/sensor-group/ with " + sensorgroup);
+    Organization owner = depot.getOrganization(orgId);
     if (owner != null) {
-      if (!depot.getSensorGroupIds(groupId).contains(sensorgroup.getId())) {
+      if (!depot.getSensorGroupIds(orgId).contains(sensorgroup.getId())) {
         try {
           depot.defineSensorGroup(sensorgroup.getName(), sensorgroup.getSensors(), owner);
         }
@@ -66,7 +65,7 @@ public class SensorGroupPutServerResource extends WattDepotServerResource implem
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, groupId + " does not exist.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
   }
 }
