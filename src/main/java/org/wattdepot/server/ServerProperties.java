@@ -70,6 +70,8 @@ public class ServerProperties {
    * True for production.
    */
   public static final String ENABLE_LOGGING_KEY = "wattdepot-server.enable.logging";
+  /** Check the Session opens vs close. */
+  public static final String CHECK_SESSIONS = "wattdepot-server.check.sessions";
   /** The logging level key. */
   public static final String LOGGING_LEVEL_KEY = "wattdepot-server.logging.level";
   /** The WattDepot implementation class during testing. */
@@ -236,6 +238,7 @@ public class ServerProperties {
     properties.setProperty(DB_SHOW_SQL, "false");
     properties.setProperty(DB_TABLE_UPDATE, "create");
     properties.setProperty(ENABLE_LOGGING_KEY, TRUE);
+    properties.setProperty(CHECK_SESSIONS, FALSE);
     properties.setProperty(LOGGING_LEVEL_KEY, "INFO");
     properties.setProperty(CONTEXT_ROOT_KEY, "wattdepot");
     properties.setProperty(TEST_PORT_KEY, defaultTestPort);

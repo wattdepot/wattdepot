@@ -25,6 +25,7 @@ import org.restlet.security.MemoryRealm;
 import org.restlet.security.Role;
 import org.restlet.security.User;
 import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.OrganizationPutResource;
 
@@ -71,17 +72,25 @@ public class OrganizationPutServerResource extends WattDepotServerResource imple
       catch (UniqueIdException e) {
         setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
       }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");
+      }
     }
     else {
-      depot.updateOrganization(usergroup);
-      // update the Realm
-      WattDepotApplication app = (WattDepotApplication) getApplication();
-      // create the new Role for the group
-      String roleName = usergroup.getSlug();
-      Role role = app.getRole(roleName);
-      MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
-      for (String userId : usergroup.getUsers()) {
-        realm.map(getUser(userId), role);
+      try {
+        depot.updateOrganization(usergroup);
+        // update the Realm
+        WattDepotApplication app = (WattDepotApplication) getApplication();
+        // create the new Role for the group
+        String roleName = usergroup.getSlug();
+        Role role = app.getRole(roleName);
+        MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
+        for (String userId : usergroup.getUsers()) {
+          realm.map(getUser(userId), role);
+        }
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
     }
 

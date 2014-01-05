@@ -24,7 +24,6 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Sensor;
-import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.SensorResource;
@@ -84,6 +83,9 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
     catch (MisMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
     }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Sensor " + sensorId + " is not defined.");
+    }
     if (sensor == null) {
       setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Sensor " + sensorId + " is not defined.");
     }
@@ -101,22 +103,27 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
   public void update(Sensor sensor) {
     getLogger().log(Level.INFO,
         "POST /wattdepot/{" + orgId + "}/sensor/{" + sensorId + "} with " + sensor);
-    Organization owner = depot.getOrganization(orgId);
-    if (owner != null) {
-      if (sensorId.equals(sensor.getSlug())) {
-        if (depot.getSensorIds(orgId).contains(sensor.getSlug())) {
+    try {
+      depot.getOrganization(orgId);
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+    }
+    if (sensorId.equals(sensor.getSlug())) {
+      if (depot.getSensorIds(orgId).contains(sensor.getSlug())) {
+        try {
           depot.updateSensor(sensor);
         }
-        else {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, sensor.getName() + " is not defined.");
+        catch (IdNotFoundException e) {
+          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
         }
       }
       else {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Ids do not match.");
+        setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, sensor.getName() + " is not defined.");
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Ids do not match.");
     }
   }
 

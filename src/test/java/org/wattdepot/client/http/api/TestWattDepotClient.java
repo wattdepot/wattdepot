@@ -575,6 +575,7 @@ public class TestWattDepotClient {
         addSensorLocation();
         addSensorModel();
         addSensor();
+        addDepository();
         test.putCollectorProcessDefinition(data);
       }
     }
@@ -784,6 +785,17 @@ public class TestWattDepotClient {
     }
     catch (IdNotFoundException e) {
       // didn't exist so we're done.
+    }
+  }
+  
+  private void addDepository() {
+    Depository depot = InstanceFactory.getDepository();
+    try {
+      test.getDepository(depot.getSlug());
+    }
+    catch (IdNotFoundException e) {
+      // doesn't exist so we can add it.
+      test.putDepository(depot);
     }
   }
 }

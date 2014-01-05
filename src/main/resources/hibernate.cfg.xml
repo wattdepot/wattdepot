@@ -37,10 +37,8 @@
         <!-- Drop and re-create the database schema on startup -->
         <property name="hbm2ddl.auto">create</property>
 
-        <mapping resource="org/wattdepot/common/domainmodel/Depository.hbm.xml" />
         <mapping
             resource="org/wattdepot/server/depository/impl/hibernate/DepositoryImpl.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/Measurement.hbm.xml" />
         <mapping
             resource="org/wattdepot/server/depository/impl/hibernate/MeasurementImpl.hbm.xml" />
         <mapping resource="org/wattdepot/common/domainmodel/MeasurementType.hbm.xml" />

@@ -89,8 +89,10 @@ public class TestWattDepotPersistenceImpl {
    */
   @Before
   public void setUp() throws UniqueIdException {
-    Organization testO = impl.getOrganization(testOrg.getSlug());
-    if (testO == null) {
+    try {
+      impl.getOrganization(testOrg.getSlug());
+    }
+    catch (IdNotFoundException e) {
       impl.defineOrganization(testOrg.getSlug(), testOrg.getUsers());
     }
     UserInfo testU = impl.getUser(testUser.getUid(), testUser.getOrganizationId());
@@ -155,6 +157,8 @@ public class TestWattDepotPersistenceImpl {
       // This is expected.
       try {
         addSensor();
+        addMeasurementType();
+        addDepository();
       }
       catch (MisMatchedOwnerException e1) {
         e1.printStackTrace();
@@ -223,7 +227,7 @@ public class TestWattDepotPersistenceImpl {
       assertTrue(defined.hashCode() == updated.hashCode());
       assertFalse(updated.hashCode() == cpd.hashCode());
     }
-    catch (MisMatchedOwnerException e) {
+    catch (IdNotFoundException e) {
       e.printStackTrace();
       fail("should not happen");
     }
@@ -271,13 +275,13 @@ public class TestWattDepotPersistenceImpl {
   @Test
   public void testDepositories() {
     // get the depositories.
-    List<Depository> list = impl.getWattDepositories(testOrg.getSlug());
+    List<Depository> list = impl.getDepositories(testOrg.getSlug());
     int numDepository = list.size();
     assertTrue(numDepository >= 0);
     // Create a new instance
     Depository dep = InstanceFactory.getDepository();
     try {
-      impl.defineWattDepository(dep.getName(), dep.getMeasurementType(), dep.getOwnerId());
+      impl.defineDepository(dep.getName(), dep.getMeasurementType(), dep.getOwnerId());
     }
     catch (UniqueIdException e) {
       e.printStackTrace();
@@ -293,40 +297,51 @@ public class TestWattDepotPersistenceImpl {
         fail("should not happen");
       }
     }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen");
+    }
     try {
-      impl.defineWattDepository(dep.getName(), dep.getMeasurementType(), dep.getOwnerId());
-      list = impl.getWattDepositories(testOrg.getSlug());
+      impl.defineDepository(dep.getName(), dep.getMeasurementType(), dep.getOwnerId());
+      list = impl.getDepositories(testOrg.getSlug());
       assertTrue(numDepository + 1 == list.size());
-      List<String> ids = impl.getWattDepositoryIds(testOrg.getSlug());
+      List<String> ids = impl.getDepositoryIds(testOrg.getSlug());
       assertTrue(list.size() == ids.size());
     }
     catch (UniqueIdException e) {
       e.printStackTrace();
-      fail("should not happen");
+      fail(e.getMessage() + " should not happen");
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen");
     }
     // try to define it again.
     try {
-      impl.defineWattDepository(dep.getName(), dep.getMeasurementType(), dep.getOwnerId());
+      impl.defineDepository(dep.getName(), dep.getMeasurementType(), dep.getOwnerId());
       fail("Should not be able to define second depository with same name.");
     }
     catch (UniqueIdException e2) {
       // expected result
     }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen");
+    }
     try {
-      Depository defined = impl.getWattDepository(dep.getSlug(), dep.getOwnerId());
+      Depository defined = impl.getDepository(dep.getSlug(), dep.getOwnerId());
       assertNotNull(defined);
       assertTrue(defined.equals(dep));
       assertTrue(defined.toString().equals(dep.toString()));
-      assertTrue(defined.hashCode() == dep.hashCode());
-      Depository copy = impl.getWattDepository(dep.getSlug(), dep.getOwnerId());
+      Depository copy = impl.getDepository(dep.getSlug(), dep.getOwnerId());
       assertTrue(copy.equals(defined));
     }
-    catch (MisMatchedOwnerException e) {
+    catch (IdNotFoundException e) {
       e.printStackTrace();
       fail("should not happen");
     }
     try {
-      impl.deleteWattDepository("bogus-depository-3258", dep.getOwnerId());
+      impl.deleteDepository("bogus-depository-3258", dep.getOwnerId());
       fail("Shouldn't be able to delete bogus-depository-3258");
     }
     catch (IdNotFoundException e1) {
@@ -337,7 +352,7 @@ public class TestWattDepotPersistenceImpl {
       fail("should not happen");
     }
     try {
-      impl.deleteWattDepository(dep.getSlug(), dep.getOwnerId());
+      impl.deleteDepository(dep.getSlug(), dep.getOwnerId());
     }
     catch (IdNotFoundException e) {
       e.printStackTrace();
@@ -347,7 +362,7 @@ public class TestWattDepotPersistenceImpl {
       e.printStackTrace();
       fail("should not happen");
     }
-    list = impl.getWattDepositories(testOrg.getSlug());
+    list = impl.getDepositories(testOrg.getSlug());
     assertTrue(numDepository == list.size());
     try {
       deleteMeasurementType();
@@ -374,8 +389,8 @@ public class TestWattDepotPersistenceImpl {
     Depository dep = InstanceFactory.getDepository();
     String sensorId = null;
     try {
-      impl.defineWattDepository(dep.getName(), dep.getMeasurementType(), dep.getOwnerId());
-      Depository d = impl.getWattDepository(dep.getSlug(), dep.getOwnerId());
+      impl.defineDepository(dep.getName(), dep.getMeasurementType(), dep.getOwnerId());
+      Depository d = impl.getDepository(dep.getSlug(), dep.getOwnerId());
       MeasurementType type = d.getMeasurementType();
       assertTrue(type.equals(InstanceFactory.getMeasurementType()));
       Measurement m1 = InstanceFactory.getMeasurementOne();
@@ -509,7 +524,7 @@ public class TestWattDepotPersistenceImpl {
       d.deleteMeasurement(m1);
       d.deleteMeasurement(m2);
       d.deleteMeasurement(m3);
-      impl.deleteWattDepository(dep.getSlug(), dep.getOwnerId());
+      impl.deleteDepository(dep.getSlug(), dep.getOwnerId());
     }
     catch (UniqueIdException e) {
       e.printStackTrace();
@@ -544,17 +559,17 @@ public class TestWattDepotPersistenceImpl {
   @Test
   public void testSensorLocations() {
     // get the list of locations.
-    List<SensorLocation> list = impl.getLocations(testOrg.getSlug());
+    List<SensorLocation> list = impl.getSensorLocations(testOrg.getSlug());
     int numLocations = list.size();
     assertTrue(numLocations >= 0);
     // create a new SensorLocation.
     SensorLocation loc = InstanceFactory.getLocation();
     try {
-      impl.defineLocation(loc.getName(), loc.getLatitude(), loc.getLongitude(), loc.getAltitude(),
-          loc.getDescription(), loc.getOwnerId());
-      list = impl.getLocations(testOrg.getSlug());
+      impl.defineSensorLocation(loc.getName(), loc.getLatitude(), loc.getLongitude(),
+          loc.getAltitude(), loc.getDescription(), loc.getOwnerId());
+      list = impl.getSensorLocations(testOrg.getSlug());
       assertTrue(numLocations + 1 == list.size());
-      List<String> ids = impl.getLocationIds(testOrg.getSlug());
+      List<String> ids = impl.getSensorLocationIds(testOrg.getSlug());
       assertTrue(list.size() == ids.size());
     }
     catch (UniqueIdException e) {
@@ -566,23 +581,22 @@ public class TestWattDepotPersistenceImpl {
       fail("should not happen.");
     }
     try {
-      SensorLocation defined = impl.getLocation(loc.getSlug(), loc.getOwnerId());
+      SensorLocation defined = impl.getSensorLocation(loc.getSlug(), loc.getOwnerId());
       assertTrue(defined.equals(loc));
       assertTrue(loc.equals(defined));
       assertTrue(defined.toString().equals(loc.toString()));
-      assertTrue(defined.hashCode() == loc.hashCode());
       defined.setName("New Name");
-      impl.updateLocation(defined);
-      SensorLocation updated = impl.getLocation(loc.getSlug(), loc.getOwnerId());
+      impl.updateSensorLocation(defined);
+      SensorLocation updated = impl.getSensorLocation(loc.getSlug(), loc.getOwnerId());
       assertFalse(loc.equals(updated));
     }
-    catch (MisMatchedOwnerException e) {
+    catch (IdNotFoundException e) {
       e.printStackTrace();
       fail("should not happen");
     }
     // delete
     try {
-      impl.deleteLocation("bogus-location-5432", loc.getOwnerId());
+      impl.deleteSensorLocation("bogus-location-5432", loc.getOwnerId());
     }
     catch (IdNotFoundException e1) {
       // expected result.
@@ -592,8 +606,8 @@ public class TestWattDepotPersistenceImpl {
       fail("should not happen");
     }
     try {
-      impl.deleteLocation(loc.getSlug(), loc.getOwnerId());
-      list = impl.getLocations(testOrg.getSlug());
+      impl.deleteSensorLocation(loc.getSlug(), loc.getOwnerId());
+      list = impl.getSensorLocations(testOrg.getSlug());
       assertTrue(numLocations == list.size());
     }
     catch (IdNotFoundException e) {
@@ -690,7 +704,11 @@ public class TestWattDepotPersistenceImpl {
     }
     catch (UniqueIdException e) {
       e.printStackTrace();
-      fail("should not happen");
+      fail(e.getMessage() + " should not happen");
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen.");
     }
     try {
       impl.deleteOrganization("bogus-organization-9491");
@@ -734,7 +752,7 @@ public class TestWattDepotPersistenceImpl {
         addSensorLocation();
         addSensorModel();
       }
-      catch (MisMatchedOwnerException e1) {
+      catch (IdNotFoundException e1) {
         e1.printStackTrace();
         fail(e1.getMessage() + " should not happen");
       }
@@ -754,13 +772,11 @@ public class TestWattDepotPersistenceImpl {
       assertNotNull(defined);
       assertTrue(defined.equals(sens));
       assertTrue(defined.toString().equals(sens.toString()));
-      assertTrue(defined.hashCode() == sens.hashCode());
       defined.setName("New Name");
       impl.updateSensor(defined);
       Sensor updated = impl.getSensor(sens.getSlug(), sens.getOwnerId());
       assertFalse(updated.equals(sens));
       assertFalse(updated.toString().equals(sens.toString()));
-      assertFalse(updated.hashCode() == sens.hashCode());
       list = impl.getSensors(testOrg.getSlug());
       assertTrue(numSensors + 1 == list.size());
     }
@@ -853,8 +869,10 @@ public class TestWattDepotPersistenceImpl {
    */
   @Test
   public void testSensorGroups() {
-    List<SensorGroup> list = impl.getSensorGroups(testOrg.getSlug());
-    int numGroups = list.size();
+    List<SensorGroup> list;
+    int numGroups = 0;
+    list = impl.getSensorGroups(testOrg.getSlug());
+    numGroups = list.size();
     assertTrue(numGroups >= 0);
     SensorGroup group = InstanceFactory.getSensorGroup();
     try {
@@ -896,7 +914,6 @@ public class TestWattDepotPersistenceImpl {
       assertNotNull(defined);
       assertTrue(defined.equals(group));
       assertTrue(defined.toString().equals(group.toString()));
-      assertTrue(defined.hashCode() == group.hashCode());
       defined.setName("New Name");
       impl.updateSensorGroup(defined);
       list = impl.getSensorGroups(testOrg.getSlug());
@@ -965,7 +982,6 @@ public class TestWattDepotPersistenceImpl {
       assertNotNull(defined);
       assertTrue(defined.equals(model));
       assertTrue(defined.toString().equals(model.toString()));
-      assertTrue(defined.hashCode() == model.hashCode());
       defined.setName("New Name");
       impl.updateSensorModel(defined);
       list = impl.getSensorModels();
@@ -1094,22 +1110,19 @@ public class TestWattDepotPersistenceImpl {
   }
 
   /**
-   * @throws MisMatchedOwnerException
+   * @throws IdNotFoundException
    *           if there is a mismatch in the ownership.
    * @throws UniqueIdException
    *           if the Location is already defined.
    */
-  private void addSensorLocation() throws MisMatchedOwnerException, UniqueIdException {
+  private void addSensorLocation() throws UniqueIdException, IdNotFoundException {
     SensorLocation loc = InstanceFactory.getLocation();
-    SensorLocation defined = impl.getLocation(loc.getSlug(), loc.getOwnerId());
-    if (defined == null) {
-      try {
-        impl.defineLocation(loc.getSlug(), loc.getLatitude(), loc.getLongitude(), loc.getAltitude(),
-            loc.getDescription(), loc.getOwnerId());
-      }
-      catch (IdNotFoundException e) {
-        e.printStackTrace();
-      }
+    try {
+      impl.getSensorLocation(loc.getSlug(), loc.getOwnerId());
+    }
+    catch (IdNotFoundException e1) {
+      impl.defineSensorLocation(loc.getSlug(), loc.getLatitude(), loc.getLongitude(),
+          loc.getAltitude(), loc.getDescription(), loc.getOwnerId());
     }
   }
 
@@ -1121,9 +1134,9 @@ public class TestWattDepotPersistenceImpl {
    */
   private void deleteSensorLocation() throws MisMatchedOwnerException, IdNotFoundException {
     SensorLocation loc = InstanceFactory.getLocation();
-    SensorLocation defined = impl.getLocation(loc.getSlug(), loc.getOwnerId());
+    SensorLocation defined = impl.getSensorLocation(loc.getSlug(), loc.getOwnerId());
     if (defined != null) {
-      impl.deleteLocation(loc.getSlug(), loc.getOwnerId());
+      impl.deleteSensorLocation(loc.getSlug(), loc.getOwnerId());
     }
   }
 
@@ -1164,8 +1177,10 @@ public class TestWattDepotPersistenceImpl {
     addSensorLocation();
     addSensorModel();
     Sensor sensor = InstanceFactory.getSensor();
-    Sensor defined = impl.getSensor(sensor.getSlug(), sensor.getOwnerId());
-    if (defined == null) {
+    try {
+      impl.getSensor(sensor.getSlug(), sensor.getOwnerId());
+    }
+    catch (IdNotFoundException e) {
       impl.defineSensor(sensor.getName(), sensor.getUri(), sensor.getSensorLocationId(),
           sensor.getModelId(), sensor.getOwnerId());
     }
@@ -1184,6 +1199,21 @@ public class TestWattDepotPersistenceImpl {
     Sensor defined = impl.getSensor(sensor.getSlug(), sensor.getOwnerId());
     if (defined != null) {
       impl.deleteSensor(sensor.getSlug(), sensor.getOwnerId());
+    }
+  }
+
+  /**
+   * @throws UniqueIdException
+   *           if there is already a Depository defined.
+   * @throws IdNotFoundException
+   */
+  private void addDepository() throws UniqueIdException, IdNotFoundException {
+    Depository depot = InstanceFactory.getDepository();
+    try {
+      impl.getDepository(depot.getSlug(), depot.getOwnerId());
+    }
+    catch (IdNotFoundException e) {
+      impl.defineDepository(depot.getName(), depot.getMeasurementType(), depot.getOwnerId());
     }
   }
 

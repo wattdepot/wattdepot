@@ -3,7 +3,7 @@
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Oct 29, 2013 12:06:15 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping default-lazy="false">
-    <class name="org.wattdepot.server.depository.impl.hibernate.OrganizationImpl" table="ORGANIZATIONIMPL">
+    <class name="org.wattdepot.server.depository.impl.hibernate.OrganizationImpl" table="ORGANIZATION_IMPL">
         <id name="pk" type="java.lang.Long">
             <column name="PK" />
             <generator class="increment" />

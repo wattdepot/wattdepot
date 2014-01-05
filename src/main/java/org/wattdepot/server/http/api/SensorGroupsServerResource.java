@@ -20,8 +20,10 @@ package org.wattdepot.server.http.api;
 
 import java.util.logging.Level;
 
+import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.domainmodel.SensorGroupList;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.http.api.SensorGroupsResource;
 
 /**
@@ -43,8 +45,13 @@ public class SensorGroupsServerResource extends WattDepotServerResource implemen
   public SensorGroupList retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/sensor-groups/");
     SensorGroupList ret = new SensorGroupList();
-    for (SensorGroup sg : depot.getSensorGroups(orgId)) {
-      ret.getGroups().add(sg);
+    try {
+      for (SensorGroup sg : depot.getSensorGroups(orgId)) {
+        ret.getGroups().add(sg);
+      }
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
     return ret;
   }

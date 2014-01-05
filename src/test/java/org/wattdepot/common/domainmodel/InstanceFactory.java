@@ -239,7 +239,7 @@ public class InstanceFactory {
    */
   public static CollectorProcessDefinition getCollectorProcessDefinition() {
     return new CollectorProcessDefinition("Test Collector Process Defintion", getSensor().getSlug(), 10L,
-        "test_depository", getOrganization().getSlug());
+        getDepository().getSlug(), getOrganization().getSlug());
   }
 
   /**

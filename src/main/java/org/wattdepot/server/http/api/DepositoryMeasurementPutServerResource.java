@@ -26,6 +26,7 @@ import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.DepositoryMeasurementPutResource;
@@ -64,7 +65,7 @@ public class DepositoryMeasurementPutServerResource extends WattDepotServerResou
     getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/depository/{" + depositoryId
         + "}/measurement/ with " + meas);
     try {
-      Depository depository = depot.getWattDepository(depositoryId, orgId);
+      Depository depository = depot.getDepository(depositoryId, orgId);
       if (depository != null) {
         Sensor sensor = depot.getSensor(meas.getSensorId(), orgId);
         if (sensor != null) {
@@ -83,6 +84,9 @@ public class DepositoryMeasurementPutServerResource extends WattDepotServerResou
     }
     catch (MeasurementTypeException e) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
     }
   }
 }

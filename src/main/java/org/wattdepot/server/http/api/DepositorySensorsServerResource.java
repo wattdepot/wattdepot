@@ -26,6 +26,7 @@ import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorList;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.DepositorySensorsResource;
 
@@ -63,7 +64,7 @@ public class DepositorySensorsServerResource extends WattDepotServerResource imp
     Depository depository;
     SensorList ret = null;
     try {
-      depository = depot.getWattDepository(depositoryId, orgId);
+      depository = depot.getDepository(depositoryId, orgId);
       if (depository != null) {
         ret = new SensorList();
         for (String sid : depository.listSensors()) {
@@ -77,6 +78,9 @@ public class DepositorySensorsServerResource extends WattDepotServerResource imp
     }
     catch (MisMatchedOwnerException e) {
       setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " not defined.");
     }
     return ret;
   }

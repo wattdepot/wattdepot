@@ -22,7 +22,6 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
-import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
@@ -50,37 +49,37 @@ public class CollectorProcessDefinitionPutServerResource extends WattDepotServer
   public void store(CollectorProcessDefinition definition) {
     getLogger().log(Level.INFO,
         "PUT /wattdepot/{" + orgId + "}/collector-process-definition/ with " + definition);
-    Organization owner = depot.getOrganization(orgId);
-    if (owner != null) {
-      if (!depot.getCollectorProcessDefinitionIds(orgId).contains(definition.getSlug())) {
-        try {
-          Sensor s = depot.getSensor(definition.getSensorId(), orgId);
-          if (s != null) {
-            depot.defineCollectorProcessDefinition(definition.getName(), s.getSlug(),
-                definition.getPollingInterval(), definition.getDepositoryId(), owner.getSlug());
-          }
-          else {
-            setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "Sensor " + definition.getSensorId()
-                + " is not defined.");
-          }
+    try {
+      depot.getOrganization(orgId);
+    }
+    catch (IdNotFoundException e1) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");
+    }
+    if (!depot.getCollectorProcessDefinitionIds(orgId).contains(definition.getSlug())) {
+      try {
+        Sensor s = depot.getSensor(definition.getSensorId(), orgId);
+        if (s != null) {
+          depot.defineCollectorProcessDefinition(definition.getName(), s.getSlug(),
+              definition.getPollingInterval(), definition.getDepositoryId(), orgId);
         }
-        catch (UniqueIdException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-        }
-        catch (MisMatchedOwnerException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-        }
-        catch (IdNotFoundException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+        else {
+          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "Sensor " + definition.getSensorId()
+              + " is not defined.");
         }
       }
-      else {
-        setStatus(Status.CLIENT_ERROR_CONFLICT, "CollectorProcessDefinition " + definition.getName()
-            + " is already defined.");
+      catch (UniqueIdException e) {
+        setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      }
+      catch (MisMatchedOwnerException e) {
+        setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+      setStatus(Status.CLIENT_ERROR_CONFLICT, "CollectorProcessDefinition " + definition.getName()
+          + " is already defined.");
     }
   }
 }

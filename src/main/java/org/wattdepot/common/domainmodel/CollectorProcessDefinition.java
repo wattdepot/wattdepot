@@ -104,6 +104,9 @@ public class CollectorProcessDefinition implements IDomainModel {
         && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
+    if (obj.getClass().equals(Object.class)) {
+      return false;
+    }
     CollectorProcessDefinition other = (CollectorProcessDefinition) obj;
     if (depositoryId == null) {
       if (other.depositoryId != null) {

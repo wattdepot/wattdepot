@@ -37,7 +37,8 @@ import org.wattdepot.common.http.api.OrganizationResource;
  * @author Cam Moore
  * 
  */
-public class OrganizationServerResource extends WattDepotServerResource implements OrganizationResource {
+public class OrganizationServerResource extends WattDepotServerResource implements
+    OrganizationResource {
 
   private String userGroupId;
 
@@ -59,9 +60,15 @@ public class OrganizationServerResource extends WattDepotServerResource implemen
    */
   @Override
   public Organization retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/organization/{" + userGroupId + "}");
+    getLogger()
+        .log(Level.INFO, "GET /wattdepot/{" + orgId + "}/organization/{" + userGroupId + "}");
     Organization group = null;
-    group = depot.getOrganization(userGroupId);
+    try {
+      group = depot.getOrganization(userGroupId);
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");
+    }
     return group;
   }
 
@@ -72,7 +79,8 @@ public class OrganizationServerResource extends WattDepotServerResource implemen
    */
   @Override
   public void remove() {
-    getLogger().log(Level.INFO, "DEL /wattdepot/{" + orgId + "}/organization/{" + userGroupId + "}");
+    getLogger()
+        .log(Level.INFO, "DEL /wattdepot/{" + orgId + "}/organization/{" + userGroupId + "}");
     try {
       depot.deleteOrganization(userGroupId);
       WattDepotApplication app = (WattDepotApplication) getApplication();
@@ -106,20 +114,29 @@ public class OrganizationServerResource extends WattDepotServerResource implemen
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see org.wattdepot.common.http.api.OrganizationResource#update(org.wattdepot.common.domainmodel.Organization)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.common.http.api.OrganizationResource#update(org.wattdepot
+   * .common.domainmodel.Organization)
    */
   @Override
   public void update(Organization organization) {
-    depot.updateOrganization(organization);
-    // update the Realm
-    WattDepotApplication app = (WattDepotApplication) getApplication();
-    // create the new Role for the group
-    String roleName = organization.getSlug();
-    Role role = app.getRole(roleName);
-    MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
-    for (String userId : organization.getUsers()) {
-      realm.map(getUser(userId), role);
+    try {
+      depot.updateOrganization(organization);
+      // update the Realm
+      WattDepotApplication app = (WattDepotApplication) getApplication();
+      // create the new Role for the group
+      String roleName = organization.getSlug();
+      Role role = app.getRole(roleName);
+      MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
+      for (String userId : organization.getUsers()) {
+        realm.map(getUser(userId), role);
+      }
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, organization + " isn't a defined Organization.");
     }
   }
 }

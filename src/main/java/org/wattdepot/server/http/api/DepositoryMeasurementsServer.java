@@ -31,6 +31,7 @@ import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementList;
 import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.util.DateConvert;
 
@@ -77,7 +78,7 @@ public class DepositoryMeasurementsServer extends WattDepotServerResource {
     if (start != null && end != null) {
       MeasurementList ret = new MeasurementList();
       try {
-        Depository depository = depot.getWattDepository(depositoryId, orgId);
+        Depository depository = depot.getDepository(depositoryId, orgId);
         if (depository != null) {
           Sensor sensor = depot.getSensor(sensorId, orgId);
           if (sensor != null) {
@@ -104,14 +105,17 @@ public class DepositoryMeasurementsServer extends WattDepotServerResource {
               + " is not defined.");
         }
       }
-      catch (MisMatchedOwnerException e) {
-        setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
       catch (ParseException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
       catch (DatatypeConfigurationException e) {
         setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+      }
+      catch (MisMatchedOwnerException e) {
+        setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
       }
       getLogger().info(ret.toString());
       return ret;

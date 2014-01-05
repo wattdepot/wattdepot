@@ -24,7 +24,6 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.SensorLocation;
-import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.SensorLocationResource;
@@ -62,13 +61,16 @@ public class SensorLocationServerResource extends WattDepotServerResource implem
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/location/{" + locationId + "}");
     SensorLocation loc = null;
     try {
-      loc = depot.getLocation(locationId, orgId);
+      depot.getOrganization(orgId);
     }
-    catch (MisMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
+    catch (IdNotFoundException e1) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
-    if (loc == null) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Location " + locationId
+    try {
+      loc = depot.getSensorLocation(locationId, orgId);
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "SensorLocation " + locationId
           + " is not defined.");
     }
     return loc;
@@ -82,19 +84,18 @@ public class SensorLocationServerResource extends WattDepotServerResource implem
    */
   @Override
   public void update(SensorLocation sensorLocation) {
-    getLogger().log(Level.INFO,
-        "POST /wattdepot/{" + orgId + "}/location/ with " + sensorLocation);
-    Organization owner = depot.getOrganization(orgId);
-    if (owner != null) {
-      if (depot.getLocationIds(orgId).contains(sensorLocation.getSlug())) {
-        depot.updateLocation(sensorLocation);
-      }
-      else {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensorLocation.getName() + " is not defined.");
-      }
+    getLogger().log(Level.INFO, "POST /wattdepot/{" + orgId + "}/location/ with " + sensorLocation);
+    try {
+      depot.getOrganization(orgId);
     }
-    else {
+    catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+    }
+    try {
+      depot.updateSensorLocation(sensorLocation);
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensorLocation.getName() + " is not defined.");
     }
   }
 
@@ -107,7 +108,7 @@ public class SensorLocationServerResource extends WattDepotServerResource implem
   public void remove() {
     getLogger().log(Level.INFO, "DEL /wattdepot/{" + orgId + "}/location/{" + locationId + "}");
     try {
-      depot.deleteLocation(locationId, orgId);
+      depot.deleteSensorLocation(locationId, orgId);
     }
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());

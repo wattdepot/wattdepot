@@ -49,9 +49,9 @@ public class Manager {
            */
           .addClass(
               org.wattdepot.server.depository.impl.hibernate.CollectorProcessDefinitionImpl.class)
-          .addClass(org.wattdepot.common.domainmodel.Depository.class)
+          /*.addClass(org.wattdepot.common.domainmodel.Depository.class)*/
           .addClass(org.wattdepot.server.depository.impl.hibernate.DepositoryImpl.class)
-          .addClass(org.wattdepot.common.domainmodel.Measurement.class)
+          /*.addClass(org.wattdepot.common.domainmodel.Measurement.class)*/
           .addClass(org.wattdepot.server.depository.impl.hibernate.MeasurementImpl.class)
           .addClass(org.wattdepot.common.domainmodel.MeasurementType.class)
           .addClass(org.wattdepot.common.domainmodel.Property.class)

@@ -22,7 +22,6 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.Sensor;
-import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
@@ -45,29 +44,34 @@ public class SensorPutServerResource extends WattDepotServerResource implements 
   @Override
   public void store(Sensor sensor) {
     getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/sensor/ with " + sensor);
-    Organization owner = depot.getOrganization(orgId);
-    if (owner != null) {
-      if (!depot.getSensorIds(orgId).contains(sensor.getSlug())) {
-        try {
-          depot.defineSensor(sensor.getName(), sensor.getUri(), sensor.getSensorLocationId(),
-              sensor.getModelId(), orgId);
-        }
-        catch (UniqueIdException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-        }
-        catch (MisMatchedOwnerException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-        }
-        catch (IdNotFoundException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-        }
+    try {
+      depot.getOrganization(orgId);
+    }
+    catch (IdNotFoundException e1) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+    }
+    if (!depot.getSensorIds(orgId).contains(sensor.getSlug())) {
+      try {
+        depot.defineSensor(sensor.getName(), sensor.getUri(), sensor.getSensorLocationId(),
+            sensor.getModelId(), orgId);
       }
-      else {
-        depot.updateSensor(sensor);
+      catch (UniqueIdException e) {
+        setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      }
+      catch (MisMatchedOwnerException e) {
+        setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+      try {
+        depot.updateSensor(sensor);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      }
     }
   }
 }

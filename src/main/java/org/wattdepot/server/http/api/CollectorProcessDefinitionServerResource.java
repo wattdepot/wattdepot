@@ -24,7 +24,6 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.CollectorProcessDefinitionResource;
@@ -68,7 +67,7 @@ public class CollectorProcessDefinitionServerResource extends WattDepotServerRes
     try {
       process = depot.getCollectorProcessDefinition(definitionId, orgId);
     }
-    catch (MisMatchedOwnerException e) {
+    catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
     }
     if (process == null) {
@@ -111,19 +110,24 @@ public class CollectorProcessDefinitionServerResource extends WattDepotServerRes
         Level.INFO,
         "POST /wattdepot/{" + orgId + "}/collector-process-definition/{" + definitionId + "} with "
             + definition);
-    Organization owner = depot.getOrganization(orgId);
-    if (owner != null) {
-      if (definition.getSlug().equals(definitionId)) {
-        if (depot.getCollectorProcessDefinitionIds(orgId).contains(definition.getSlug())) {
+    try {
+      depot.getOrganization(orgId);
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+    }
+    if (definition.getSlug().equals(definitionId)) {
+      if (depot.getCollectorProcessDefinitionIds(orgId).contains(definition.getSlug())) {
+        try {
           depot.updateCollectorProcessDefinition(definition);
         }
-      }
-      else {
-        setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "Ids do not match.");
+        catch (IdNotFoundException e) {
+          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "Ids do not match.");
+        }
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "Ids do not match.");
     }
   }
 

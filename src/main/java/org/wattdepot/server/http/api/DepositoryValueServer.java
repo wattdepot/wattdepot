@@ -29,6 +29,7 @@ import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.MeasuredValue;
 import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementGapException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.NoMeasurementException;
@@ -84,7 +85,7 @@ public class DepositoryValueServer extends WattDepotServerResource {
             + end + "}&timestamp={" + timestamp + "}&latest={" + latest
             + "}&earliest={" + earliest + "}&gap={" + gapSeconds + "}");
     try {
-      DepositoryImpl deposit = (DepositoryImpl) depot.getWattDepository(
+      DepositoryImpl deposit = (DepositoryImpl) depot.getDepository(
           depositoryId, orgId);
       if (deposit != null) {
         Sensor sensor = depot.getSensor(sensorId, orgId);
@@ -160,6 +161,9 @@ public class DepositoryValueServer extends WattDepotServerResource {
     }
     catch (DatatypeConfigurationException e) {
       setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
     }
     return null;
   }

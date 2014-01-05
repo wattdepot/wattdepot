@@ -39,53 +39,13 @@ import org.wattdepot.server.ServerProperties;
  * @author Cam Moore
  * 
  */
+@SuppressWarnings("PMD.UselessOverridingMethod")
 public class DepositoryImpl extends Depository {
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see java.lang.Object#hashCode()
-   */
-  @Override
-  public int hashCode() {
-    int result = super.hashCode();
-    return result;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
-    }
-    if (this == obj) {
-      return true;
-    }
-    if (obj.getClass().equals(Depository.class)) {
-      return super.equals(obj);
-    }
-    if (!super.equals(obj)) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    DepositoryImpl other = (DepositoryImpl) obj;
-    if (serverProperties == null) {
-      if (other.serverProperties != null) {
-        return false;
-      }
-    }
-    else if (!serverProperties.equals(other.serverProperties)) {
-      return false;
-    }
-    return true;
-  }
-
+  /** Database primary key. */
+  private Long pk;
+  /** Owner's foreign key. */
+  private Long ownerFk;
   private ServerProperties serverProperties;
 
   /**
@@ -138,6 +98,116 @@ public class DepositoryImpl extends Depository {
   /*
    * (non-Javadoc)
    * 
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (this == obj) {
+      return true;
+    }
+    if (obj.getClass().equals(Depository.class)) {
+      return super.equals(obj);
+    }
+    if (!super.equals(obj)) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    DepositoryImpl other = (DepositoryImpl) obj;
+    if (serverProperties == null) {
+      if (other.serverProperties != null) {
+        return false;
+      }
+    }
+    else if (!serverProperties.equals(other.serverProperties)) {
+      return false;
+    }
+    if (pk == null) {
+      if (other.pk != null) {
+        return false;
+      }
+    }
+    else if (!pk.equals(other.pk)) {
+      return false;
+    }
+    if (ownerFk == null) {
+      if (other.ownerFk != null) {
+        return false;
+      }
+    }
+    else if (!ownerFk.equals(other.ownerFk)) {
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * @param sensorId
+   *          The id of the Sensor making the measurements.
+   * @return The earliest measurement Value
+   * @throws NoMeasurementException
+   *           If there aren't any measurements around the time.
+   */
+  @Override
+  public MeasuredValue getEarliestMeasuredValue(String sensorId) throws NoMeasurementException {
+    MeasuredValue value = null;
+    Session session = Manager.getFactory(serverProperties).openSession();
+    MeasurementType type = getMeasurementType();
+
+    @SuppressWarnings("unchecked")
+    List<MeasurementImpl> result = (List<MeasurementImpl>) session
+        .createQuery(
+            "FROM MeasurementImpl WHERE depositoryId = :name AND sensorId = :sensorId "
+                + "AND date IN (SELECT min(date) FROM MeasurementImpl WHERE "
+                + "depositoryId = :name AND sensorId = :sensorId)").setParameter("name", getSlug())
+        .setParameter("sensorId", sensorId).list();
+    if (result.size() > 0) {
+      MeasurementImpl meas = result.get(0);
+      value = new MeasuredValue(sensorId, meas.getValue(), type);
+      value.setDate(meas.getDate());
+    }
+
+    session.close();
+    return value;
+  }
+
+  /**
+   * @param sensorId
+   *          The id of the Sensor making the measurements.
+   * @return The latest measurement Value
+   * @throws NoMeasurementException
+   *           If there aren't any measurements around the time.
+   */
+  @Override
+  public MeasuredValue getLatestMeasuredValue(String sensorId) throws NoMeasurementException {
+    MeasuredValue value = null;
+    Session session = Manager.getFactory(serverProperties).openSession();
+    MeasurementType type = getMeasurementType();
+
+    @SuppressWarnings("unchecked")
+    List<MeasurementImpl> result = (List<MeasurementImpl>) session
+        .createQuery(
+            "FROM MeasurementImpl WHERE depositoryId = :name AND sensorId = :sensor "
+                + "AND date IN (SELECT max(date) FROM MeasurementImpl WHERE "
+                + "depositoryId = :name AND sensorId = :sensor)").setParameter("name", getSlug())
+        .setParameter("sensor", sensorId).list();
+    if (result.size() > 0) {
+      MeasurementImpl meas = result.get(0);
+      value = new MeasuredValue(sensorId, meas.getValue(), type);
+      value.setDate(meas.getDate());
+    }
+
+    session.close();
+    return value;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.wattdepot.datamodel.Depository#getMeasurement(java.lang.String)
    */
   @Override
@@ -156,6 +226,28 @@ public class DepositoryImpl extends Depository {
     session.getTransaction().commit();
     session.close();
     return ret;
+  }
+
+  /**
+   * @param session
+   *          The session with an open transaction.
+   * @param sensorId
+   *          The id of the Sensor.
+   * @return A List of the Measurements made by the sensor.
+   */
+  public List<Measurement> getMeasurements(Session session, String sensorId) {
+    List<Measurement> ret = new ArrayList<Measurement>();
+    @SuppressWarnings("unchecked")
+    List<MeasurementImpl> measurements = (List<MeasurementImpl>) session
+        .createQuery("FROM MeasurementImpl WHERE depositoryId = :depository")
+        .setParameter("depository", getSlug()).list();
+    for (MeasurementImpl meas : measurements) {
+      if (meas.getSensorId().equals(sensorId)) {
+        ret.add(meas);
+      }
+    }
+    return ret;
+
   }
 
   /*
@@ -191,9 +283,9 @@ public class DepositoryImpl extends Depository {
     @SuppressWarnings("unchecked")
     List<MeasurementImpl> measurements = (List<MeasurementImpl>) session
         .createQuery(
-            "FROM MeasurementImpl WHERE date >= :start AND date <= :end AND depository = :depository")
-        .setParameter("start", start).setParameter("end", end).setParameter("depository", this)
-        .list();
+            "FROM MeasurementImpl WHERE date >= :start AND date <= :end AND depositoryId = :depository")
+        .setParameter("start", start).setParameter("end", end)
+        .setParameter("depository", getSlug()).list();
     for (MeasurementImpl meas : measurements) {
       if (meas.getSensorId().equals(sensorId)) {
         ret.add(meas);
@@ -205,92 +297,17 @@ public class DepositoryImpl extends Depository {
   }
 
   /**
-   * @param session
-   *          The session with an open transaction.
-   * @param sensorId
-   *          The id of the Sensor.
-   * @return A List of the Measurements made by the sensor.
+   * @return the ownerFk
    */
-  public List<Measurement> getMeasurements(Session session, String sensorId) {
-    List<Measurement> ret = new ArrayList<Measurement>();
-    @SuppressWarnings("unchecked")
-    List<MeasurementImpl> measurements = (List<MeasurementImpl>) session
-        .createQuery("FROM MeasurementImpl WHERE depository = :depository")
-        .setParameter("depository", this).list();
-    for (MeasurementImpl meas : measurements) {
-      if (meas.getSensorId().equals(sensorId)) {
-        ret.add(meas);
-      }
-    }
-    return ret;
-
+  public Long getOwnerFk() {
+    return ownerFk;
   }
 
   /**
-   * @return the serverProperties
+   * @return the pk
    */
-  public ServerProperties serverProperties() {
-    return serverProperties;
-  }
-
-  /**
-   * @param sensorId
-   *          The id of the Sensor making the measurements.
-   * @return The latest measurement Value
-   * @throws NoMeasurementException
-   *           If there aren't any measurements around the time.
-   */
-  @Override
-  public MeasuredValue getLatestMeasuredValue(String sensorId) throws NoMeasurementException {
-    MeasuredValue value = null;
-    Session session = Manager.getFactory(serverProperties).openSession();
-    MeasurementType type = getMeasurementType();
-
-    @SuppressWarnings("unchecked")
-    List<MeasurementImpl> result = (List<MeasurementImpl>) session
-        .createQuery(
-            "FROM MeasurementImpl WHERE depository = :name AND sensor = :sensor "
-                + "AND date IN (SELECT max(date) FROM MeasurementImpl WHERE "
-                + "depository = :name AND sensor = :sensor)").setParameter("name", this)
-        .setParameter("sensor", sensorId).list();
-    if (result.size() > 0) {
-      MeasurementImpl meas = result.get(0);
-      value = new MeasuredValue(sensorId, meas.getValue(), type);
-      value.setDate(meas.getDate());
-    }
-
-    session.close();
-    return value;
-  }
-
-  /**
-   * @param sensorId
-   *          The id of the Sensor making the measurements.
-   * @return The earliest measurement Value
-   * @throws NoMeasurementException
-   *           If there aren't any measurements around the time.
-   */
-  @Override
-  public MeasuredValue getEarliestMeasuredValue(String sensorId) throws NoMeasurementException {
-    MeasuredValue value = null;
-    Session session = Manager.getFactory(serverProperties).openSession();
-    MeasurementType type = getMeasurementType();
-
-    @SuppressWarnings("unchecked")
-    List<MeasurementImpl> result = (List<MeasurementImpl>) session
-        .createQuery(
-            "FROM MeasurementImpl WHERE depository = :name AND sensorId = :sensorId "
-                + "AND date IN (SELECT min(date) FROM MeasurementImpl WHERE "
-                + "depository = :name AND sensorId = :sensorId)").setParameter("name", this)
-        .setParameter("sensorId", sensorId).list();
-    if (result.size() > 0) {
-      MeasurementImpl meas = result.get(0);
-      value = new MeasuredValue(sensorId, meas.getValue(), type);
-      value.setDate(meas.getDate());
-    }
-
-    session.close();
-    return value;
+  public Long getPk() {
+    return pk;
   }
 
   /**
@@ -313,8 +330,8 @@ public class DepositoryImpl extends Depository {
     List<MeasurementImpl> result = (List<MeasurementImpl>) session
         .createQuery(
             "FROM MeasurementImpl WHERE date = :time AND measurementType = :measType"
-                + " AND depository = :name").setParameter("time", timestamp)
-        .setParameter("measType", getMeasurementType().getUnits()).setParameter("name", this)
+                + " AND depositoryId = :name").setParameter("time", timestamp)
+        .setParameter("measType", getMeasurementType().getUnits()).setParameter("name", getSlug())
         .list();
     if (result.size() > 0) {
       for (MeasurementImpl meas : result) {
@@ -329,16 +346,16 @@ public class DepositoryImpl extends Depository {
       List<MeasurementImpl> before = (List<MeasurementImpl>) session
           .createQuery(
               "FROM MeasurementImpl WHERE date <= :time AND measurementType = :measType"
-                  + " AND depository = :name").setParameter("time", timestamp)
-          .setParameter("measType", getMeasurementType().getUnits()).setParameter("name", this)
-          .list();
+                  + " AND depositoryId = :name").setParameter("time", timestamp)
+          .setParameter("measType", getMeasurementType().getUnits())
+          .setParameter("name", getSlug()).list();
       @SuppressWarnings("unchecked")
       List<MeasurementImpl> after = (List<MeasurementImpl>) session
           .createQuery(
               "FROM MeasurementImpl WHERE date >= :time AND measurementType = :measType"
-                  + " AND depository = :name").setParameter("time", timestamp)
-          .setParameter("measType", getMeasurementType().getUnits()).setParameter("name", this)
-          .list();
+                  + " AND depositoryId = :name").setParameter("time", timestamp)
+          .setParameter("measType", getMeasurementType().getUnits())
+          .setParameter("name", getSlug()).list();
       MeasurementImpl justBefore = null;
       for (MeasurementImpl b : before) {
         if (b.getSensorId().equals(sensorId)) {
@@ -463,8 +480,8 @@ public class DepositoryImpl extends Depository {
     List<MeasurementImpl> result = (List<MeasurementImpl>) session
         .createQuery(
             "FROM MeasurementImpl WHERE date = :time AND measurementType = :measType"
-                + " AND depository = :name").setParameter("time", timestamp)
-        .setParameter("measType", getMeasurementType().getUnits()).setParameter("name", this)
+                + " AND depositoryId = :name").setParameter("time", timestamp)
+        .setParameter("measType", getMeasurementType().getUnits()).setParameter("name", getSlug())
         .list();
     if (result.size() > 0) {
       for (MeasurementImpl meas : result) {
@@ -479,16 +496,16 @@ public class DepositoryImpl extends Depository {
       List<MeasurementImpl> before = (List<MeasurementImpl>) session
           .createQuery(
               "FROM MeasurementImpl WHERE date <= :time AND measurementType = :measType"
-                  + " AND depository = :name").setParameter("time", timestamp)
-          .setParameter("measType", getMeasurementType().getUnits()).setParameter("name", this)
-          .list();
+                  + " AND depositoryId = :name").setParameter("time", timestamp)
+          .setParameter("measType", getMeasurementType().getUnits())
+          .setParameter("name", getSlug()).list();
       @SuppressWarnings("unchecked")
       List<MeasurementImpl> after = (List<MeasurementImpl>) session
           .createQuery(
               "FROM MeasurementImpl WHERE date >= :time AND measurementType = :measType"
-                  + " AND depository = :name").setParameter("time", timestamp)
-          .setParameter("measType", getMeasurementType().getUnits()).setParameter("name", this)
-          .list();
+                  + " AND depositoryId = :name").setParameter("time", timestamp)
+          .setParameter("measType", getMeasurementType().getUnits())
+          .setParameter("name", getSlug()).list();
       MeasurementImpl justBefore = null;
       for (MeasurementImpl b : before) {
         if (b.getSensorId().equals(sensorId)) {
@@ -546,6 +563,20 @@ public class DepositoryImpl extends Depository {
   /*
    * (non-Javadoc)
    * 
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = super.hashCode();
+    result = prime * result + ((pk == null) ? 0 : pk.hashCode());
+    result = prime * result + ((ownerFk == null) ? 0 : ownerFk.hashCode());
+    return result;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.wattdepot.datamodel.Depository#getSensors()
    */
   @Override
@@ -554,8 +585,8 @@ public class DepositoryImpl extends Depository {
     session.beginTransaction();
     @SuppressWarnings("unchecked")
     List<MeasurementImpl> result = (List<MeasurementImpl>) session
-        .createQuery("FROM MeasurementImpl WHERE depository = :name").setParameter("name", this)
-        .list();
+        .createQuery("FROM MeasurementImpl WHERE depositoryId = :name")
+        .setParameter("name", getSlug()).list();
     ArrayList<String> sensorIds = new ArrayList<String>();
     for (Measurement meas : result) {
       if (!sensorIds.contains(meas.getSensorId())) {
@@ -565,6 +596,25 @@ public class DepositoryImpl extends Depository {
     session.getTransaction().commit();
     session.close();
     return sensorIds;
+  }
+
+  /**
+   * @param session
+   *          The Session with an open transaction.
+   * @return A List of Sensors contributing measurements to this depository.
+   */
+  public List<String> listSensors(Session session) {
+    @SuppressWarnings("unchecked")
+    List<MeasurementImpl> result = (List<MeasurementImpl>) session
+        .createQuery("FROM MeasurementImpl WHERE depositoryId = :name")
+        .setParameter("name", getSlug()).list();
+    ArrayList<String> sensors = new ArrayList<String>();
+    for (Measurement meas : result) {
+      if (!sensors.contains(meas.getSensorId())) {
+        sensors.add(meas.getSensorId());
+      }
+    }
+    return sensors;
   }
 
   /**
@@ -585,10 +635,17 @@ public class DepositoryImpl extends Depository {
     session.beginTransaction();
     // check the sensor
     MeasurementImpl mImpl = new MeasurementImpl(meas);
-    mImpl.setDepository(this);
+    mImpl.setDepositoryId(getSlug());
     session.saveOrUpdate(mImpl);
     session.getTransaction().commit();
     session.close();
+  }
+
+  /**
+   * @return the serverProperties
+   */
+  public ServerProperties serverProperties() {
+    return serverProperties;
   }
 
   /**
@@ -600,22 +657,19 @@ public class DepositoryImpl extends Depository {
   }
 
   /**
-   * @param session
-   *          The Session with an open transaction.
-   * @return A List of Sensors contributing measurements to this depository.
+   * @param ownerFk
+   *          the ownerFk to set
    */
-  public List<String> listSensors(Session session) {
-    @SuppressWarnings("unchecked")
-    List<MeasurementImpl> result = (List<MeasurementImpl>) session
-        .createQuery("FROM MeasurementImpl WHERE depository = :name").setParameter("name", this)
-        .list();
-    ArrayList<String> sensors = new ArrayList<String>();
-    for (Measurement meas : result) {
-      if (!sensors.contains(meas.getSensorId())) {
-        sensors.add(meas.getSensorId());
-      }
-    }
-    return sensors;
+  public void setOwnerFk(Long ownerFk) {
+    this.ownerFk = ownerFk;
+  }
+
+  /**
+   * @param pk
+   *          the pk to set
+   */
+  public void setPk(Long pk) {
+    this.pk = pk;
   }
 
 }

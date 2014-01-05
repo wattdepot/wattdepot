@@ -2,13 +2,35 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Nov 7, 2013 11:36:01 AM by Hibernate Tools 3.4.0.CR1 -->
-<hibernate-mapping>
-    <joined-subclass name="org.wattdepot.server.depository.impl.hibernate.MeasurementImpl" extends="org.wattdepot.common.domainmodel.Measurement" table="MEASUREMENTIMPL" lazy="false">
-        <key>
-            <column name="ID" />
-        </key>
-        <many-to-one name="depository" class="org.wattdepot.common.domainmodel.Depository" fetch="join">
-            <column name="DEPOSITORY" />
-        </many-to-one>
-    </joined-subclass>
+<hibernate-mapping default-lazy="false">
+    <class name="org.wattdepot.server.depository.impl.hibernate.MeasurementImpl" table="MEASUREMENT_IMPL">
+        <id name="pk" type="java.lang.Long">
+            <column name="PK" />
+            <generator class="increment" />
+        </id>
+        <property name="slug" type="java.lang.String">
+            <column name="SLUG" />
+        </property>
+        <property name="sensorId" type = "java.lang.String">
+            <column name="SENSOR_ID" />
+        </property>
+        <property name="sensorFk" type = "java.lang.Long">
+            <column name="SENSOR_FK" />
+        </property>
+        <property name="date" type="java.util.Date">
+            <column name="DATE" />
+        </property>
+        <property name="value" type="java.lang.Double">
+            <column name="VALUE" />
+        </property>
+        <property name="measurementType" type="java.lang.String">
+            <column name="MEASUREMENT_TYPE" />
+        </property>
+        <property name="depositoryId" type="java.lang.String">
+            <column name="DEPOSITORY_ID" />
+        </property>
+        <property name="depositoryFk" type="java.lang.Long">
+            <column name="DEPOSITORY_FK" />
+        </property>
+    </class>
 </hibernate-mapping>

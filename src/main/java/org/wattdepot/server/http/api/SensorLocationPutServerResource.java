@@ -22,14 +22,13 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.SensorLocation;
-import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.SensorLocationPutResource;
 
 /**
- * SensorLocationPutResource - WattDepot Location Resource handles the Location HTTP
- * API ("/wattdepot/{org-id}/location/").
+ * SensorLocationPutResource - WattDepot Location Resource handles the Location
+ * HTTP API ("/wattdepot/{org-id}/location/").
  * 
  * @author Cam Moore
  * 
@@ -45,13 +44,12 @@ public class SensorLocationPutServerResource extends WattDepotServerResource imp
    */
   @Override
   public void store(SensorLocation sensorLocation) {
-    getLogger()
-        .log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/location/ with " + sensorLocation);
-    Organization owner = depot.getOrganization(orgId);
-    if (owner != null) {
-      if (!depot.getLocationIds(orgId).contains(sensorLocation.getSlug())) {
+    getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/location/ with " + sensorLocation);
+    try {
+      depot.getOrganization(orgId);
+      if (!depot.getSensorLocationIds(orgId).contains(sensorLocation.getSlug())) {
         try {
-          depot.defineLocation(sensorLocation.getName(), sensorLocation.getLatitude(),
+          depot.defineSensorLocation(sensorLocation.getName(), sensorLocation.getLatitude(),
               sensorLocation.getLongitude(), sensorLocation.getAltitude(),
               sensorLocation.getDescription(), orgId);
         }
@@ -63,11 +61,16 @@ public class SensorLocationPutServerResource extends WattDepotServerResource imp
         }
       }
       else {
-        depot.updateLocation(sensorLocation);
+        try {
+          depot.updateSensorLocation(sensorLocation);
+        }
+        catch (IdNotFoundException e) {
+          setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
+        }
       }
     }
-    else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+    catch (IdNotFoundException e1) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");
     }
   }
 

@@ -45,11 +45,17 @@ public class SensorLocationImpl extends SensorLocation {
 
   /**
    * @param name
+   *          The name of the SensorLocation.
    * @param latitude
+   *          Its decimal Latitude.
    * @param longitude
+   *          Its decimal Longitude.
    * @param altitude
+   *          Its altitude in meters.
    * @param description
+   *          A description of the location.
    * @param ownerId
+   *          the id of the Owner.
    */
   public SensorLocationImpl(String name, Double latitude, Double longitude, Double altitude,
       String description, String ownerId) {
@@ -256,7 +262,8 @@ public class SensorLocationImpl extends SensorLocation {
   }
 
   /**
-   * @param ownerFk the ownerFk to set
+   * @param ownerFk
+   *          the ownerFk to set
    */
   public void setOwnerFk(Long ownerFk) {
     this.ownerFk = ownerFk;

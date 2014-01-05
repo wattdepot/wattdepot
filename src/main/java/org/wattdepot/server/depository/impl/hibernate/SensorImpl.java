@@ -30,6 +30,7 @@ import org.wattdepot.common.domainmodel.Sensor;
  * @author Cam Moore
  * 
  */
+@SuppressWarnings("PMD.UselessOverridingMethod")
 public class SensorImpl extends Sensor {
 
   /** The database primary key. */

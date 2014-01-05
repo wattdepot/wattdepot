@@ -42,7 +42,7 @@ public class SensorLocationsServerResource extends WattDepotServerResource imple
   public SensorLocationList retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/locations/");
     SensorLocationList list = new SensorLocationList();
-    for (SensorLocation l : depot.getLocations(orgId)) {
+    for (SensorLocation l : depot.getSensorLocations(orgId)) {
       list.getLocations().add(l);
     }
     return list;

@@ -2,10 +2,26 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <!-- Generated Nov 10, 2013 11:18:42 AM by Hibernate Tools 3.4.0.CR1 -->
-<hibernate-mapping>
-    <joined-subclass name="org.wattdepot.server.depository.impl.hibernate.DepositoryImpl" extends="org.wattdepot.common.domainmodel.Depository" table="DEPOSITORYIMPL" lazy="false">
-        <key>
-            <column name="NAME"/>
-        </key>
-    </joined-subclass>
+<hibernate-mapping default-lazy="false">
+     <class name="org.wattdepot.server.depository.impl.hibernate.DepositoryImpl" table="DEPOSITORY_IMPL">
+        <id name="pk" type="java.lang.Long">
+            <column name="PK" />
+            <generator class="increment" />
+        </id>
+        <property name="slug" type="java.lang.String">
+            <column name="SLUG" />
+        </property>
+        <property name="name" type = "java.lang.String">
+            <column name="NAME" />
+        </property>
+        <many-to-one name="measurementType" class="org.wattdepot.common.domainmodel.MeasurementType" fetch="join">
+            <column name="MEASUREMENTTYPE" />
+        </many-to-one>
+        <property name="ownerId" type="java.lang.String">
+            <column name="OWNERID" />
+        </property>
+  <property generated="never" lazy="false" name="ownerFk" type="java.lang.Long">
+   <column name="OWNER_FK"/>
+  </property>
+    </class>
 </hibernate-mapping>

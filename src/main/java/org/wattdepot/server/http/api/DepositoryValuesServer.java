@@ -33,6 +33,7 @@ import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.MeasuredValue;
 import org.wattdepot.common.domainmodel.MeasuredValueList;
 import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.DateConvert;
@@ -80,7 +81,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
     if (start != null && end != null && interval != null) {
       MeasuredValueList ret = new MeasuredValueList();
       try {
-        Depository depository = depot.getWattDepository(depositoryId, orgId);
+        Depository depository = depot.getDepository(depositoryId, orgId);
         if (depository != null) {
           Sensor sensor = depot.getSensor(sensorId, orgId);
           if (sensor != null) {
@@ -130,6 +131,9 @@ public class DepositoryValuesServer extends WattDepotServerResource {
       } 
       catch (NoMeasurementException e) {
         setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
       getLogger().info(ret.toString());
       return ret;

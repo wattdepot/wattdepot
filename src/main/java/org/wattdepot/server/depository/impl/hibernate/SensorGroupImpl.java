@@ -24,7 +24,8 @@ import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.exception.BadSlugException;
 
 /**
- * SensorGroupImpl
+ * SensorGroupImpl - Hibernate implementation of the SensorGroup. Includes pk
+ * and foreign keys.
  * 
  * @author Cam Moore
  * 
@@ -177,7 +178,8 @@ public class SensorGroupImpl extends SensorGroup {
   }
 
   /**
-   * @param ownerFk the ownerFk to set
+   * @param ownerFk
+   *          the ownerFk to set
    */
   public void setOwnerFk(Long ownerFk) {
     this.ownerFk = ownerFk;

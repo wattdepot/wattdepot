@@ -34,12 +34,13 @@ import org.restlet.security.User;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.MeasurementType;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.domainmodel.SensorLocation;
 import org.wattdepot.common.domainmodel.SensorModel;
-import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl;
 
 /**
@@ -68,37 +69,39 @@ public class AdminServerResource extends WattDepotServerResource {
         setStatus(Status.CLIENT_ERROR_FORBIDDEN);
       }
     }
-    Map<String, Object> dataModel = new HashMap<String, Object>();
-    // get some stuff from the database
-    List<UserInfo> users = depot.getUsers("admin");
-    List<Organization> groups = depot.getOrganizations();
-    List<Depository> depos = depot.getWattDepositories(orgId);
-    List<SensorLocation> locs = depot.getLocations(orgId);
-    List<Sensor> sensors = depot.getSensors(orgId);
-    List<SensorModel> sensorModels = depot.getSensorModels();
-    List<SensorGroup> sensorGroups = depot.getSensorGroups(orgId);
-    List<CollectorProcessDefinition> sensorProcesses = depot.getCollectorProcessDefinitions(orgId);
-    List<MeasurementType> measurementTypes = depot.getMeasurementTypes();
-    dataModel.put("users", users);
-    dataModel.put("groups", groups);
-    dataModel.put("groupId", orgId);
-    dataModel.put("depositories", depos);
-    dataModel.put("locations", locs);
-    dataModel.put("sensors", sensors);
-    dataModel.put("sensorgroups", sensorGroups);
-    dataModel.put("sensormodels", sensorModels);
-    dataModel.put("sensorprocesses", sensorProcesses);
-    dataModel.put("measurementtypes", measurementTypes);
-    dataModel.put("opens", ((WattDepotPersistenceImpl) depot).getSessionOpen());
-    dataModel.put("closes", ((WattDepotPersistenceImpl) depot).getSessionClose());
     try {
-    Representation rep = new ClientResource(LocalReference.createClapReference(getClass()
-        .getPackage()) + "/Admin.ftl").get();
-    TemplateRepresentation template = new TemplateRepresentation(rep, dataModel, MediaType.TEXT_HTML);
-    return template;
+      Map<String, Object> dataModel = new HashMap<String, Object>();
+      // get some stuff from the database
+      List<UserInfo> users = depot.getUsers("admin");
+      List<Organization> groups = depot.getOrganizations();
+      List<Depository> depos = depot.getDepositories(orgId);
+      List<SensorLocation> locs = depot.getSensorLocations(orgId);
+      List<Sensor> sensors = depot.getSensors(orgId);
+      List<SensorModel> sensorModels = depot.getSensorModels();
+      List<SensorGroup> sensorGroups = depot.getSensorGroups(orgId);
+      List<CollectorProcessDefinition> sensorProcesses = depot
+          .getCollectorProcessDefinitions(orgId);
+      List<MeasurementType> measurementTypes = depot.getMeasurementTypes();
+      dataModel.put("users", users);
+      dataModel.put("groups", groups);
+      dataModel.put("groupId", orgId);
+      dataModel.put("depositories", depos);
+      dataModel.put("locations", locs);
+      dataModel.put("sensors", sensors);
+      dataModel.put("sensorgroups", sensorGroups);
+      dataModel.put("sensormodels", sensorModels);
+      dataModel.put("sensorprocesses", sensorProcesses);
+      dataModel.put("measurementtypes", measurementTypes);
+      dataModel.put("opens", ((WattDepotPersistenceImpl) depot).getSessionOpen());
+      dataModel.put("closes", ((WattDepotPersistenceImpl) depot).getSessionClose());
+      Representation rep = new ClientResource(LocalReference.createClapReference(getClass()
+          .getPackage()) + "/Admin.ftl").get();
+      TemplateRepresentation template = new TemplateRepresentation(rep, dataModel,
+          MediaType.TEXT_HTML);
+      return template;
     }
-    catch (Exception e) {
-      e.printStackTrace();
+    catch (IdNotFoundException e) {  // NOPMD
+      // not sure what to do here.
     }
     return null;
   }

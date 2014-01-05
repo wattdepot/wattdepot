@@ -82,11 +82,11 @@ public class Depository implements IDomainModel {
    */
   @Override
   public boolean equals(Object obj) {
-    if (this == obj) {
-      return true;
-    }
     if (obj == null) {
       return false;
+    }
+    if (this == obj) {
+      return true;
     }
     if (!getClass().isAssignableFrom(obj.getClass())
         && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
