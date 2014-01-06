@@ -63,9 +63,7 @@ public class Organization {
    *          The name of the Organization.
    */
   public Organization(String name) {
-    this.slug = Slug.slugify(name);
-    this.name = name;
-    this.users = new HashSet<String>();
+    this(Slug.slugify(name), name, new HashSet<String>());
   }
 
   /**
@@ -75,7 +73,19 @@ public class Organization {
    *          The Users in the organization.
    */
   public Organization(String name, Set<String> users) {
-    this.slug = Slug.slugify(name);
+    this(Slug.slugify(name), name, users);
+  }
+
+  /**
+   * @param slug
+   *          The unique slug.
+   * @param name
+   *          The name of the organization.
+   * @param users
+   *          The Users in the organization.
+   */
+  public Organization(String slug, String name, Set<String> users) {
+    this.slug = slug;
     this.name = name;
     this.users = users;
   }

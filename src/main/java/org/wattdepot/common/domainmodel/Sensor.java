@@ -64,13 +64,36 @@ public class Sensor implements IDomainModel {
    * @param ownerId
    *          the id of the owner of the sensor.
    */
-  public Sensor(String name, String uri, String locationId, String modelId, String ownerId) {
-    this.slug = Slug.slugify(name);
+  public Sensor(String name, String uri, String locationId, String modelId,
+      String ownerId) {
+    this(Slug.slugify(name), name, uri, locationId, modelId, new HashSet<Property>(),
+        ownerId);
+  }
+
+  /**
+   * @param slug
+   *          The unique slug.
+   * @param name
+   *          The name.
+   * @param uri
+   *          The URI to the meter.
+   * @param locationId
+   *          The id of the meter's location.
+   * @param modelId
+   *          The id of the meter's model.
+   * @param properties
+   *          The properties associated with this Sensor.
+   * @param ownerId
+   *          the id of the owner of the sensor.
+   */
+  public Sensor(String slug, String name, String uri, String locationId,
+      String modelId, Set<Property> properties, String ownerId) {
+    this.slug = slug;
     this.name = name;
     this.uri = uri;
     this.locationId = locationId;
     this.modelId = modelId;
-    this.properties = new HashSet<Property>();
+    this.properties = properties;
     this.ownerId = ownerId;
   }
 
@@ -98,7 +121,8 @@ public class Sensor implements IDomainModel {
       return false;
     }
     if (!getClass().isAssignableFrom(obj.getClass())
-        && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
+        && !obj.getClass().isAssignableFrom(getClass())
+        && getClass() != obj.getClass()) {
       return false;
     }
     Sensor other = (Sensor) obj;
@@ -235,10 +259,12 @@ public class Sensor implements IDomainModel {
     int result = 1;
     result = prime * result + ((slug == null) ? 0 : slug.hashCode());
     result = prime * result + ((name == null) ? 0 : name.hashCode());
-    result = prime * result + ((locationId == null) ? 0 : locationId.hashCode());
+    result = prime * result
+        + ((locationId == null) ? 0 : locationId.hashCode());
     result = prime * result + ((modelId == null) ? 0 : modelId.hashCode());
     result = prime * result + ((ownerId == null) ? 0 : ownerId.hashCode());
-    result = prime * result + ((properties == null) ? 0 : properties.hashCode());
+    result = prime * result
+        + ((properties == null) ? 0 : properties.hashCode());
     result = prime * result + ((uri == null) ? 0 : uri.hashCode());
     return result;
   }
@@ -253,7 +279,8 @@ public class Sensor implements IDomainModel {
    */
   public boolean isOwner(Organization group) {
     if (ownerId != null
-        && (ownerId.equals(group.getSlug()) || group.equals(Organization.ADMIN_GROUP))) {
+        && (ownerId.equals(group.getSlug()) || group
+            .equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;
@@ -335,8 +362,9 @@ public class Sensor implements IDomainModel {
    */
   @Override
   public String toString() {
-    return "Sensor [slug=" + slug + ", name=" + name + ", uri=" + uri + ", locationId="
-        + locationId + ", modelId=" + modelId + ", properties=" + properties + "]";
+    return "Sensor [slug=" + slug + ", name=" + name + ", uri=" + uri
+        + ", locationId=" + locationId + ", modelId=" + modelId
+        + ", properties=" + properties + "]";
   }
 
 }

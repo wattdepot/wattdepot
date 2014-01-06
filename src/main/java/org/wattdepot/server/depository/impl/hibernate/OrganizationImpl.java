@@ -69,6 +69,18 @@ public class OrganizationImpl extends Organization {
     super(name, users);
   }
 
+  /**
+   * @param slug
+   *          The unique slug for the OrganizationImpl.
+   * @param name
+   *          The name of the organization.
+   * @param users
+   *          The Users in the organization.
+   */
+  public OrganizationImpl(String slug, String name, Set<String> users) {
+    super(slug, name, users);
+  }
+
   /*
    * (non-Javadoc)
    * 

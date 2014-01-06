@@ -32,7 +32,7 @@ import org.wattdepot.common.util.Slug;
  * 
  */
 public class CollectorProcessDefinition implements IDomainModel {
-  /** A unique id for the CollectorProcessDefinitionData. */
+  /** A unique id for the CollectorProcessDefinition. */
   private String slug;
   /** The human readable name. */
   private String name;
@@ -56,7 +56,7 @@ public class CollectorProcessDefinition implements IDomainModel {
 
   /**
    * @param name
-   *          The name of the CollectorProcessDefinitionData.
+   *          The name of the CollectorProcessDefinition.
    * @param sensorId
    *          The id of the sensor that measures the environment.
    * @param poll
@@ -68,12 +68,33 @@ public class CollectorProcessDefinition implements IDomainModel {
    */
   public CollectorProcessDefinition(String name, String sensorId, Long poll,
       String depositoryId, String ownerId) {
-    this.slug = Slug.slugify(name);
+    this(Slug.slugify(name), name, sensorId, poll, depositoryId, new HashSet<Property>(), ownerId);
+  }
+
+  /**
+   * @param slug
+   *          The unique slug for the CollectorProcessDefinition.
+   * @param name
+   *          The name of the CollectorProcessDefinition.
+   * @param sensorId
+   *          The id of the sensor that measures the environment.
+   * @param poll
+   *          The number of seconds between polls.
+   * @param depositoryId
+   *          The depository_id where measurements are stored.
+   * @param properties
+   *          The properties associated with this CollectorProcessDefinition.
+   * @param ownerId
+   *          the id of the owner of the collector.
+   */
+  public CollectorProcessDefinition(String slug, String name, String sensorId,
+      Long poll, String depositoryId, Set<Property> properties, String ownerId) {
+    this.slug = slug;
     this.name = name;
     this.sensorId = sensorId;
     this.pollingInterval = poll;
     this.depositoryId = depositoryId;
-    this.properties = new HashSet<Property>();
+    this.properties = properties;
     this.ownerId = ownerId;
   }
 
@@ -101,7 +122,8 @@ public class CollectorProcessDefinition implements IDomainModel {
       return false;
     }
     if (!getClass().isAssignableFrom(obj.getClass())
-        && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
+        && !obj.getClass().isAssignableFrom(getClass())
+        && getClass() != obj.getClass()) {
       return false;
     }
     if (obj.getClass().equals(Object.class)) {
@@ -338,7 +360,7 @@ public class CollectorProcessDefinition implements IDomainModel {
    */
   public void setSlug(String slug) throws BadSlugException {
     if (Slug.validateSlug(slug)) {
-      this.slug = slug;      
+      this.slug = slug;
     }
     else {
       throw new BadSlugException(slug + " is not a valid slug.");

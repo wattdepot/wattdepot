@@ -22,6 +22,7 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.exception.BadSlugException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
@@ -34,8 +35,8 @@ import org.wattdepot.common.http.api.SensorGroupPutResource;
  * @author Cam Moore
  * 
  */
-public class SensorGroupPutServerResource extends WattDepotServerResource implements
-    SensorGroupPutResource {
+public class SensorGroupPutServerResource extends WattDepotServerResource
+    implements SensorGroupPutResource {
 
   /*
    * (non-Javadoc)
@@ -45,35 +46,39 @@ public class SensorGroupPutServerResource extends WattDepotServerResource implem
    */
   @Override
   public void store(SensorGroup sensorgroup) {
-    getLogger()
-        .log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/sensor-group/ with " + sensorgroup);
+    getLogger().log(Level.INFO,
+        "PUT /wattdepot/{" + orgId + "}/sensor-group/ with " + sensorgroup);
     try {
       depot.getOrganization(orgId);
     }
     catch (IdNotFoundException e1) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
-      try {
-        if (!depot.getSensorGroupIds(orgId).contains(sensorgroup.getSlug())) {
-          try {
-            depot.defineSensorGroup(sensorgroup.getName(), sensorgroup.getSensors(), orgId);
-          }
-          catch (UniqueIdException e) {
-            setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-          }
-          catch (MisMatchedOwnerException e) {
-            setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-          }
-          catch (IdNotFoundException e) {
-            setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-          }
+    try {
+      if (!depot.getSensorGroupIds(orgId).contains(sensorgroup.getSlug())) {
+        try {
+          depot.defineSensorGroup(sensorgroup.getSlug(), sensorgroup.getName(),
+              sensorgroup.getSensors(), orgId);
         }
-        else {
-          depot.updateSensorGroup(sensorgroup);
+        catch (UniqueIdException e) {
+          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+        }
+        catch (MisMatchedOwnerException e) {
+          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+        }
+        catch (IdNotFoundException e) {
+          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+        }
+        catch (BadSlugException e) {
+          setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
         }
       }
-      catch (IdNotFoundException e) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+      else {
+        depot.updateSensorGroup(sensorgroup);
       }
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+    }
   }
 }

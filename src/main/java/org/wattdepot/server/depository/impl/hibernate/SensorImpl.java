@@ -61,8 +61,30 @@ public class SensorImpl extends Sensor {
    * @param ownerId
    *          the id of the owner.
    */
-  public SensorImpl(String name, String uri, String locationId, String modelId, String ownerId) {
+  public SensorImpl(String name, String uri, String locationId, String modelId,
+      String ownerId) {
     super(name, uri, locationId, modelId, ownerId);
+  }
+
+  /**
+   * @param slug
+   *          The unique slug for the SensorImpl.
+   * @param name
+   *          the name of the Sensor.
+   * @param uri
+   *          the URI for getting measurements.
+   * @param locationId
+   *          the SensorLocation slug.
+   * @param modelId
+   *          the SensorModel slug.
+   * @param properties
+   *          the properties associated with this SensorImpl.
+   * @param ownerId
+   *          the id of the owner.
+   */
+  public SensorImpl(String slug, String name, String uri, String locationId,
+      String modelId, Set<Property> properties, String ownerId) {
+    super(slug, name, uri, locationId, modelId, properties, ownerId);
   }
 
   /**
@@ -142,7 +164,8 @@ public class SensorImpl extends Sensor {
   public int hashCode() {
     final int prime = 31;
     int result = super.hashCode();
-    result = prime * result + ((locationFk == null) ? 0 : locationFk.hashCode());
+    result = prime * result
+        + ((locationFk == null) ? 0 : locationFk.hashCode());
     result = prime * result + ((modelFk == null) ? 0 : modelFk.hashCode());
     result = prime * result + ((ownerFk == null) ? 0 : ownerFk.hashCode());
     result = prime * result + ((pk == null) ? 0 : pk.hashCode());

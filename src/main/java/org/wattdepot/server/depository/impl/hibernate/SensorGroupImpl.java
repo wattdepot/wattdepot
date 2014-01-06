@@ -57,6 +57,21 @@ public class SensorGroupImpl extends SensorGroup {
     super(name, sensors, ownerId);
   }
 
+  /**
+   * @param slug
+   *          The unique slug for the SensorGroupImpl.
+   * @param name
+   *          the name of the Sensor Group.
+   * @param sensors
+   *          the Sensor ids of the members of the Sensor Group.
+   * @param ownerId
+   *          the Organziation id that owns the Sensor Group.
+   */
+  public SensorGroupImpl(String slug, String name, Set<String> sensors,
+      String ownerId) {
+    super(slug, name, sensors, ownerId);
+  }
+
   /*
    * (non-Javadoc)
    * 

@@ -22,6 +22,7 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.SensorLocation;
+import org.wattdepot.common.exception.BadSlugException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.SensorLocationPutResource;
@@ -33,8 +34,8 @@ import org.wattdepot.common.http.api.SensorLocationPutResource;
  * @author Cam Moore
  * 
  */
-public class SensorLocationPutServerResource extends WattDepotServerResource implements
-    SensorLocationPutResource {
+public class SensorLocationPutServerResource extends WattDepotServerResource
+    implements SensorLocationPutResource {
 
   /*
    * (non-Javadoc)
@@ -44,12 +45,14 @@ public class SensorLocationPutServerResource extends WattDepotServerResource imp
    */
   @Override
   public void store(SensorLocation sensorLocation) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/location/ with " + sensorLocation);
+    getLogger().log(Level.INFO,
+        "PUT /wattdepot/{" + orgId + "}/location/ with " + sensorLocation);
     try {
       depot.getOrganization(orgId);
       if (!depot.getSensorLocationIds(orgId).contains(sensorLocation.getSlug())) {
         try {
-          depot.defineSensorLocation(sensorLocation.getName(), sensorLocation.getLatitude(),
+          depot.defineSensorLocation(sensorLocation.getSlug(),
+              sensorLocation.getName(), sensorLocation.getLatitude(),
               sensorLocation.getLongitude(), sensorLocation.getAltitude(),
               sensorLocation.getDescription(), orgId);
         }
@@ -57,6 +60,9 @@ public class SensorLocationPutServerResource extends WattDepotServerResource imp
           setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
         }
         catch (IdNotFoundException e) {
+          setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
+        }
+        catch (BadSlugException e) {
           setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
         }
       }
@@ -70,7 +76,8 @@ public class SensorLocationPutServerResource extends WattDepotServerResource imp
       }
     }
     catch (IdNotFoundException e1) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId
+          + " is not a defined Organization.");
     }
   }
 

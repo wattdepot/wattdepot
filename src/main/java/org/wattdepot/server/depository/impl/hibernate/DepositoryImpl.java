@@ -77,6 +77,20 @@ public class DepositoryImpl extends Depository {
     super(name, measurementType, ownerId);
   }
 
+  /**
+   * @param slug
+   *          The unique slug for the CollectorProcessDefinitionImpl.
+   * @param name
+   *          The name of the depository.
+   * @param measurementType
+   *          The type of the measurement.
+   * @param ownerId
+   *          The owner.
+   */
+  public DepositoryImpl(String slug, String name, MeasurementType measurementType, String ownerId) {
+    super(slug, name, measurementType, ownerId);
+  }
+
   /*
    * (non-Javadoc)
    * 

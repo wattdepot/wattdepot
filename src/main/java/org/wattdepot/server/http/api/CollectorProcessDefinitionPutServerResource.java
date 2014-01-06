@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.exception.BadSlugException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
@@ -36,8 +37,8 @@ import org.wattdepot.common.http.api.CollectorProcessDefinitionPutResource;
  * @author Cam Moore
  * 
  */
-public class CollectorProcessDefinitionPutServerResource extends WattDepotServerResource implements
-    CollectorProcessDefinitionPutResource {
+public class CollectorProcessDefinitionPutServerResource extends
+    WattDepotServerResource implements CollectorProcessDefinitionPutResource {
   /*
    * (non-Javadoc)
    * 
@@ -47,24 +48,30 @@ public class CollectorProcessDefinitionPutServerResource extends WattDepotServer
    */
   @Override
   public void store(CollectorProcessDefinition definition) {
-    getLogger().log(Level.INFO,
-        "PUT /wattdepot/{" + orgId + "}/collector-process-definition/ with " + definition);
+    getLogger().log(
+        Level.INFO,
+        "PUT /wattdepot/{" + orgId + "}/collector-process-definition/ with "
+            + definition);
     try {
       depot.getOrganization(orgId);
     }
     catch (IdNotFoundException e1) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId
+          + " is not a defined Organization.");
     }
-    if (!depot.getCollectorProcessDefinitionIds(orgId).contains(definition.getSlug())) {
+    if (!depot.getCollectorProcessDefinitionIds(orgId).contains(
+        definition.getSlug())) {
       try {
         Sensor s = depot.getSensor(definition.getSensorId(), orgId);
         if (s != null) {
-          depot.defineCollectorProcessDefinition(definition.getName(), s.getSlug(),
-              definition.getPollingInterval(), definition.getDepositoryId(), orgId);
+          depot.defineCollectorProcessDefinition(definition.getSlug(),
+              definition.getName(), s.getSlug(),
+              definition.getPollingInterval(), definition.getDepositoryId(),
+              definition.getProperties(), orgId);
         }
         else {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "Sensor " + definition.getSensorId()
-              + " is not defined.");
+          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "Sensor "
+              + definition.getSensorId() + " is not defined.");
         }
       }
       catch (UniqueIdException e) {
@@ -76,10 +83,13 @@ public class CollectorProcessDefinitionPutServerResource extends WattDepotServer
       catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
       }
+      catch (BadSlugException e) {
+        setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
+      }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_CONFLICT, "CollectorProcessDefinition " + definition.getName()
-          + " is already defined.");
+      setStatus(Status.CLIENT_ERROR_CONFLICT, "CollectorProcessDefinition "
+          + definition.getName() + " is already defined.");
     }
   }
 }

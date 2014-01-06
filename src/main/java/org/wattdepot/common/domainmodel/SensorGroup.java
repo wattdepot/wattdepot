@@ -58,7 +58,23 @@ public class SensorGroup implements IDomainModel {
    *          the id of the owner of the SensorGroup.
    */
   public SensorGroup(String name, Set<String> sensors, String ownerId) {
-    this.slug = Slug.slugify(name);
+    this(Slug.slugify(name), name, sensors, ownerId);
+  }
+
+  /**
+   * Create a new SensorGroup with the given unique id.
+   * 
+   * @param slug
+   *          The unique slug.
+   * @param name
+   *          The name.
+   * @param sensors
+   *          The set of sensors in the group.
+   * @param ownerId
+   *          the id of the owner of the SensorGroup.
+   */
+  public SensorGroup(String slug, String name, Set<String> sensors, String ownerId) {
+    this.slug = slug;
     this.name = name;
     this.sensors = sensors;
     this.ownerId = ownerId;

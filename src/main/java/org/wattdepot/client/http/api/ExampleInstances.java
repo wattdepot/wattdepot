@@ -52,15 +52,17 @@ public class ExampleInstances {
    */
   public ExampleInstances() {
     ClientProperties props = new ClientProperties();
-    String serverURL = "http://" + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
+    String serverURL = "http://"
+        + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
         + props.get(ClientProperties.PORT_KEY) + "/";
     try {
-      admin = new WattDepotAdminClient(serverURL, props.get(ClientProperties.USER_NAME),
-          Organization.ADMIN_GROUP_NAME, props.get(ClientProperties.USER_PASSWORD));
+      admin = new WattDepotAdminClient(serverURL,
+          props.get(ClientProperties.USER_NAME), Organization.ADMIN_GROUP_NAME,
+          props.get(ClientProperties.USER_PASSWORD));
     }
     catch (Exception e) {
-      System.out.println("Failed with " + props.get(ClientProperties.USER_NAME) + " and "
-          + props.get(ClientProperties.USER_PASSWORD));
+      System.out.println("Failed with " + props.get(ClientProperties.USER_NAME)
+          + " and " + props.get(ClientProperties.USER_PASSWORD));
     }
     if (admin != null) {
       setUpOrganization();
@@ -84,22 +86,21 @@ public class ExampleInstances {
    * organziation.
    */
   private void setUpOrganization() {
-    Organization org = new Organization("University of Hawaii, Manoa");
-    org.setSlug("uh");
-    UserInfo user1 = new UserInfo("cmoore", "Cam", "Moore", "cmoore@hawaii.edu", org.getSlug(),
-        new HashSet<Property>());
-    UserInfo user2 = new UserInfo("johnson", "Philip", "Johnson", "philipmjohnson@gmail.com",
-        org.getSlug(), new HashSet<Property>());
+    Organization org = new Organization("uh", "University of Hawaii, Manoa", new HashSet<String>());
+    UserInfo user1 = new UserInfo("cmoore", "Cam", "Moore",
+        "cmoore@hawaii.edu", org.getSlug(), new HashSet<Property>());
+    UserInfo user2 = new UserInfo("johnson", "Philip", "Johnson",
+        "philipmjohnson@gmail.com", org.getSlug(), new HashSet<Property>());
     org.getUsers().add(user1.getUid());
     org.getUsers().add(user2.getUid());
     // check to see if the instances are defined in WattDepot
     try {
       Organization defined = admin.getOrganization(org.getSlug());
       if (defined == null) {
-        admin
-            .putUserPassword(new UserPassword(user1.getUid(), user1.getOrganizationId(), "secret1"));
-        admin
-            .putUserPassword(new UserPassword(user2.getUid(), user2.getOrganizationId(), "secret2"));
+        admin.putUserPassword(new UserPassword(user1.getUid(), user1
+            .getOrganizationId(), "secret1"));
+        admin.putUserPassword(new UserPassword(user2.getUid(), user2
+            .getOrganizationId(), "secret2"));
         admin.putUser(user1);
         admin.putUser(user2);
         admin.putOrganization(org);
@@ -107,8 +108,10 @@ public class ExampleInstances {
     }
     catch (IdNotFoundException e) {
       // not defined so put it.
-      admin.putUserPassword(new UserPassword(user1.getUid(), user1.getOrganizationId(), "secret"));
-      admin.putUserPassword(new UserPassword(user2.getUid(), user2.getOrganizationId(), "secret"));
+      admin.putUserPassword(new UserPassword(user1.getUid(), user1
+          .getOrganizationId(), "secret"));
+      admin.putUserPassword(new UserPassword(user2.getUid(), user2
+          .getOrganizationId(), "secret"));
       admin.putUser(user1);
       admin.putUser(user2);
       admin.putOrganization(org);
@@ -120,24 +123,25 @@ public class ExampleInstances {
    * two CollectorProcessDefinitions.
    */
   private void setUpItems() {
-    SensorLocation loc = new SensorLocation("Ilima 6th floor", new Double(21.294642), new Double(
-        -157.812727), new Double(30), "Hale Aloha Ilima residence hall 6th floor", "uh");
+    SensorLocation loc = new SensorLocation("Ilima 6th floor", new Double(
+        21.294642), new Double(-157.812727), new Double(30),
+        "Hale Aloha Ilima residence hall 6th floor", "uh");
     try {
       cmoore.getLocation(loc.getSlug());
     }
     catch (IdNotFoundException e) {
       cmoore.putLocation(loc);
     }
-    Sensor telco = new Sensor("Ilima 6th telco", "http://telco", loc.getSlug(), "shark",
-        loc.getOwnerId());
+    Sensor telco = new Sensor("Ilima 6th telco", "http://telco", loc.getSlug(),
+        "shark", loc.getOwnerId());
     try {
       cmoore.getSensor(telco.getSlug());
     }
     catch (IdNotFoundException e) {
       johnson.putSensor(telco);
     }
-    Sensor elect = new Sensor("Ilima 6th electrical", "http://elect", loc.getSlug(), "shark",
-        loc.getOwnerId());
+    Sensor elect = new Sensor("Ilima 6th electrical", "http://elect",
+        loc.getSlug(), "shark", loc.getOwnerId());
     try {
       johnson.getSensor(elect.getSlug());
     }
@@ -174,9 +178,11 @@ public class ExampleInstances {
         johnson.putDepository(energy);
       }
       CollectorProcessDefinition energyCPD1 = new CollectorProcessDefinition(
-          "Ilima 6th telco energy", telco.getSlug(), 10L, energy.getSlug(), energy.getOwnerId());
+          "Ilima 6th telco energy", telco.getSlug(), 10L, energy.getSlug(),
+          energy.getOwnerId());
       CollectorProcessDefinition energyCPD2 = new CollectorProcessDefinition(
-          "Ilima 6th elect energy", elect.getSlug(), 10L, energy.getSlug(), energy.getOwnerId());
+          "Ilima 6th elect energy", elect.getSlug(), 10L, energy.getSlug(),
+          energy.getOwnerId());
       try {
         cmoore.getCollectorProcessDefinition(energyCPD2.getSlug());
       }

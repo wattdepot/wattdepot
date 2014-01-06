@@ -22,6 +22,7 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.exception.BadSlugException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
@@ -34,7 +35,8 @@ import org.wattdepot.common.http.api.SensorPutResource;
  * @author Cam Moore
  * 
  */
-public class SensorPutServerResource extends WattDepotServerResource implements SensorPutResource {
+public class SensorPutServerResource extends WattDepotServerResource implements
+    SensorPutResource {
   /*
    * (non-Javadoc)
    * 
@@ -43,7 +45,8 @@ public class SensorPutServerResource extends WattDepotServerResource implements 
    */
   @Override
   public void store(Sensor sensor) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/sensor/ with " + sensor);
+    getLogger().log(Level.INFO,
+        "PUT /wattdepot/{" + orgId + "}/sensor/ with " + sensor);
     try {
       depot.getOrganization(orgId);
     }
@@ -52,8 +55,9 @@ public class SensorPutServerResource extends WattDepotServerResource implements 
     }
     if (!depot.getSensorIds(orgId).contains(sensor.getSlug())) {
       try {
-        depot.defineSensor(sensor.getName(), sensor.getUri(), sensor.getSensorLocationId(),
-            sensor.getModelId(), orgId);
+        depot.defineSensor(sensor.getSlug(), sensor.getName(), sensor.getUri(),
+            sensor.getSensorLocationId(), sensor.getModelId(),
+            sensor.getProperties(), orgId);
       }
       catch (UniqueIdException e) {
         setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
@@ -63,6 +67,9 @@ public class SensorPutServerResource extends WattDepotServerResource implements 
       }
       catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      }
+      catch (BadSlugException e) {
+        setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
       }
     }
     else {

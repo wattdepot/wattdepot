@@ -61,8 +61,25 @@ public class Depository implements IDomainModel {
    *          the id of the owner of the location.
    */
   public Depository(String name, MeasurementType measurementType, String ownerId) {
+    this(Slug.slugify(name), name, measurementType, ownerId);
+  }
+
+  /**
+   * Create a new Depository.
+   * 
+   * @param slug
+   *          The unique slug.
+   * @param name
+   *          The name of the Depository.
+   * @param measurementType
+   *          The type of the measurements this Depository accepts.
+   * @param ownerId
+   *          the id of the owner of the location.
+   */
+  public Depository(String slug, String name, MeasurementType measurementType,
+      String ownerId) {
     this.name = name;
-    this.slug = Slug.slugify(name);
+    this.slug = slug;
     this.measurementType = measurementType;
     this.ownerId = ownerId;
   }
@@ -89,7 +106,8 @@ public class Depository implements IDomainModel {
       return true;
     }
     if (!getClass().isAssignableFrom(obj.getClass())
-        && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
+        && !obj.getClass().isAssignableFrom(getClass())
+        && getClass() != obj.getClass()) {
       return false;
     }
     try {
@@ -124,7 +142,8 @@ public class Depository implements IDomainModel {
    * @throws NoMeasurementException
    *           If there aren't any measurements around the time.
    */
-  public MeasuredValue getEarliestMeasuredValue(String sensorId) throws NoMeasurementException {
+  public MeasuredValue getEarliestMeasuredValue(String sensorId)
+      throws NoMeasurementException {
     throw new RuntimeException("Not implemented");
   }
 
@@ -135,7 +154,8 @@ public class Depository implements IDomainModel {
    * @throws NoMeasurementException
    *           If there aren't any measurements around the time.
    */
-  public MeasuredValue getLatestMeasuredValue(String sensorId) throws NoMeasurementException {
+  public MeasuredValue getLatestMeasuredValue(String sensorId)
+      throws NoMeasurementException {
     throw new RuntimeException("Not implemented");
   }
 
@@ -208,7 +228,8 @@ public class Depository implements IDomainModel {
    * @throws NoMeasurementException
    *           If there aren't any measurements around the time.
    */
-  public Double getValue(String sensorId, Date timestamp) throws NoMeasurementException {
+  public Double getValue(String sensorId, Date timestamp)
+      throws NoMeasurementException {
     throw new RuntimeException("Not implemented.");
   }
 
@@ -224,7 +245,8 @@ public class Depository implements IDomainModel {
    * @throws NoMeasurementException
    *           if there are no measurements around the start or end time.
    */
-  public Double getValue(String sensorId, Date start, Date end) throws NoMeasurementException {
+  public Double getValue(String sensorId, Date start, Date end)
+      throws NoMeasurementException {
     throw new RuntimeException("Not implemented.");
   }
 
@@ -279,7 +301,8 @@ public class Depository implements IDomainModel {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((measurementType == null) ? 0 : measurementType.hashCode());
+    result = prime * result
+        + ((measurementType == null) ? 0 : measurementType.hashCode());
     result = prime * result + ((name == null) ? 0 : name.hashCode());
     return result;
   }
@@ -294,7 +317,8 @@ public class Depository implements IDomainModel {
    */
   public boolean isOwner(Organization group) {
     if (ownerId != null
-        && (ownerId.equals(group.getSlug()) || group.equals(Organization.ADMIN_GROUP))) {
+        && (ownerId.equals(group.getSlug()) || group
+            .equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;
@@ -361,8 +385,8 @@ public class Depository implements IDomainModel {
    */
   @Override
   public String toString() {
-    return "Depository [name=" + name + ", slug=" + slug + ", measurementType=" + measurementType
-        + "]";
+    return "Depository [name=" + name + ", slug=" + slug + ", measurementType="
+        + measurementType + "]";
   }
 
 }

@@ -56,8 +56,22 @@ public class MeasurementType {
    *          the units of measurement.
    */
   public MeasurementType(String name, Unit<?> unit) {
+    this(Slug.slugify(name), name, unit);
+  }
+
+  /**
+   * Creates a new MeasurementType.
+   * 
+   * @param slug
+   *          The unique slug.
+   * @param name
+   *          the name of the type.
+   * @param unit
+   *          the units of measurement.
+   */
+  public MeasurementType(String slug, String name, Unit<?> unit) {
+    this.slug = slug;
     this.name = name;
-    this.slug = Slug.slugify(name);
     this.unit = unit;
     this.units = this.unit.toString();
   }

@@ -788,6 +788,9 @@ public class TestWattDepotClient {
     }
   }
   
+  /**
+   * Adds the test Depository to WattDepotServer if it isn't defined.
+   */
   private void addDepository() {
     Depository depot = InstanceFactory.getDepository();
     try {

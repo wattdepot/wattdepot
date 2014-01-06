@@ -57,9 +57,30 @@ public class SensorLocationImpl extends SensorLocation {
    * @param ownerId
    *          the id of the Owner.
    */
-  public SensorLocationImpl(String name, Double latitude, Double longitude, Double altitude,
-      String description, String ownerId) {
+  public SensorLocationImpl(String name, Double latitude, Double longitude,
+      Double altitude, String description, String ownerId) {
     super(name, latitude, longitude, altitude, description, ownerId);
+  }
+
+  /**
+   * @param slug
+   *          the unique slug for this SensorLocationImpl.
+   * @param name
+   *          The name of the SensorLocation.
+   * @param latitude
+   *          Its decimal Latitude.
+   * @param longitude
+   *          Its decimal Longitude.
+   * @param altitude
+   *          Its altitude in meters.
+   * @param description
+   *          A description of the location.
+   * @param ownerId
+   *          the id of the Owner.
+   */
+  public SensorLocationImpl(String slug, String name, Double latitude,
+      Double longitude, Double altitude, String description, String ownerId) {
+    super(slug, name, latitude, longitude, altitude, description, ownerId);
   }
 
   /*

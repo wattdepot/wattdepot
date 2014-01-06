@@ -57,7 +57,23 @@ public class SensorModel {
    *          The version the sensor is using.
    */
   public SensorModel(String name, String protocol, String type, String version) {
-    this.slug = Slug.slugify(name);
+    this(Slug.slugify(name), name, protocol, type, version);
+  }
+
+  /**
+   * @param slug
+   *          The unique slug.
+   * @param name
+   *          The name.
+   * @param protocol
+   *          The protocol used by a sensor.
+   * @param type
+   *          The type of the sensor.
+   * @param version
+   *          The version the sensor is using.
+   */
+  public SensorModel(String slug, String name, String protocol, String type, String version) {
+    this.slug = slug;
     this.name = name;
     this.protocol = protocol;
     this.type = type;

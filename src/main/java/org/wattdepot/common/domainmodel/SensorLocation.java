@@ -66,8 +66,29 @@ public class SensorLocation implements IDomainModel {
    */
   public SensorLocation(String name, Double latitude, Double longitude, Double altitude,
       String description, String ownerId) {
+    this(Slug.slugify(name), name, latitude, longitude, altitude, description, ownerId);
+  }
+
+  /**
+   * @param slug
+   *          The unique slug.
+   * @param name
+   *          The name.
+   * @param latitude
+   *          The decimal Latitude.
+   * @param longitude
+   *          The decimal Longitude.
+   * @param altitude
+   *          The altitude in meters w.r.t. MSL.
+   * @param description
+   *          A String description of the Location.
+   * @param ownerId
+   *          the id of the owner of the location.
+   */
+  public SensorLocation(String slug, String name, Double latitude, Double longitude, Double altitude,
+      String description, String ownerId) {
+    this.slug = slug;
     this.name = name;
-    this.slug = Slug.slugify(this.name);
     this.latitude = latitude;
     this.longitude = longitude;
     this.altitude = altitude;

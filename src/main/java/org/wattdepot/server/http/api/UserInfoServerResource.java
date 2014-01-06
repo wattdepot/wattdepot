@@ -60,7 +60,7 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
     if (user == null) {
       setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "User " + userId + " is not defined.");
     }
-    return user;
+    return ((UserInfo) user);
   }
 
   /*

@@ -51,6 +51,27 @@ public class CollectorProcessDefinitionImpl extends CollectorProcessDefinition {
   }
 
   /**
+   * @param slug
+   *          The unique slug for the CollectorProcessDefinitionImpl.
+   * @param name
+   *          The name of the CollectorProcessDefinitionImpl.
+   * @param sensorId
+   *          The id of the sensor that measures the environment.
+   * @param poll
+   *          The number of seconds between polls.
+   * @param depositoryId
+   *          The depository_id where measurements are stored.
+   * @param properties
+   *          The properties associated with this CollectorProcessDefinitionImpl.
+   * @param ownerId
+   *          the id of the owner of the collector.
+   */
+  public CollectorProcessDefinitionImpl(String slug, String name, String sensorId,
+      Long poll, String depositoryId, Set<Property> properties, String ownerId) {
+    super(slug, name, sensorId, poll, depositoryId, properties, ownerId);
+  }
+
+  /**
    * Converter constructor.
    * 
    * @param cpd
