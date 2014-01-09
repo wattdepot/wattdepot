@@ -22,13 +22,13 @@ import java.util.ArrayList;
 
 /**
  * DepositoryList - Attempt at getting a list across the wire.
- *
+ * 
  * @author Cam Moore
- *
+ * 
  */
 public class DepositoryList {
   private ArrayList<Depository> depositories;
-  
+
   /**
    * Default Constructor.
    */
@@ -49,6 +49,5 @@ public class DepositoryList {
   public void setDepositories(ArrayList<Depository> depositories) {
     this.depositories = depositories;
   }
-  
-  
+
 }

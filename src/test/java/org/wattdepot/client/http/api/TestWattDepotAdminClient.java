@@ -163,7 +163,7 @@ public class TestWattDepotAdminClient {
         + list.getOrganizations().size(), (numOrganizations + 3) == list
         .getOrganizations().size());
     try {
-      admin.deleteOrganization(three.getSlug());
+      admin.deleteOrganization(three.getId());
     }
     catch (IdNotFoundException e) {
       e.printStackTrace();
@@ -175,7 +175,7 @@ public class TestWattDepotAdminClient {
     two.setName("New organization name");
     admin.updateOrganization(two);
     try {
-      Organization defined = admin.getOrganization(two.getSlug());
+      Organization defined = admin.getOrganization(two.getId());
       assertNotNull(defined);
       assertTrue(defined.equals(two));
     }
@@ -184,21 +184,21 @@ public class TestWattDepotAdminClient {
       fail(e.getMessage() + " should not happen");
     }
     // create two users with same id different organizations.
-    UserPassword up1 = new UserPassword("id", one.getSlug(), "secret1");
+    UserPassword up1 = new UserPassword("id", one.getId(), "secret1");
     admin.putUserPassword(up1);
     UserInfo u1 = new UserInfo("id", "firstName", "lastName", "email",
-        one.getSlug(), new HashSet<Property>());
+        one.getId(), new HashSet<Property>());
     admin.putUser(u1);
-    UserPassword up2 = new UserPassword("id", two.getSlug(), "secret2");
+    UserPassword up2 = new UserPassword("id", two.getId(), "secret2");
     admin.putUserPassword(up2);
     UserInfo u2 = new UserInfo("id", "firstName", "lastName", "email",
-        two.getSlug(), new HashSet<Property>());
+        two.getId(), new HashSet<Property>());
     admin.putUser(u2);
-    UserInfoList ulist = admin.getUsers(one.getSlug());
+    UserInfoList ulist = admin.getUsers(one.getId());
     assertNotNull(ulist);
     assertTrue("Expecting 1 got " + ulist.getUsers().size(), ulist.getUsers()
         .size() == 1);
-    ulist = admin.getUsers(two.getSlug());
+    ulist = admin.getUsers(two.getId());
     assertNotNull(ulist);
     assertTrue(ulist.getUsers().size() == 1);
   }

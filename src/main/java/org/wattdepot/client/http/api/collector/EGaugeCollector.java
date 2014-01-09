@@ -154,7 +154,7 @@ public class EGaugeCollector extends MultiThreadedCollector {
   public EGaugeCollector(String serverUri, String username, String orgId, String password,
       Sensor sensor, Long pollingInterval, Depository depository, boolean debug)
       throws BadCredentialException, BadSensorUriException, IdNotFoundException {
-    super(serverUri, username, orgId, password, sensor.getSlug(), pollingInterval, depository,
+    super(serverUri, username, orgId, password, sensor.getId(), pollingInterval, depository,
         debug);
     this.measType = depository.getMeasurementType();
     this.measUnit = Unit.valueOf(measType.getUnits());
@@ -203,7 +203,7 @@ public class EGaugeCollector extends MultiThreadedCollector {
       return false;
     }
     // validate that measType is power or energy.
-    if (!measType.getSlug().startsWith("power") && !measType.getSlug().startsWith("energy")) {
+    if (!measType.getId().startsWith("power") && !measType.getId().startsWith("energy")) {
       return false;
     }
 
@@ -305,7 +305,7 @@ public class EGaugeCollector extends MultiThreadedCollector {
    * @return true if the depository stores power measurements.
    */
   private boolean isPower() {
-    return measType.getSlug().startsWith("power");
+    return measType.getId().startsWith("power");
   }
 
   /**
@@ -362,7 +362,7 @@ public class EGaugeCollector extends MultiThreadedCollector {
       organizationId = cmd.getOptionValue("o");
     }
     else {
-      organizationId = Organization.ADMIN_GROUP.getSlug();
+      organizationId = Organization.ADMIN_GROUP.getId();
     }
     if (cmd.hasOption("p")) {
       password = cmd.getOptionValue("p");

@@ -78,7 +78,7 @@ public class SensorModelServerResource extends WattDepotServerResource implement
   public void update(SensorModel sensormodel) {
     getLogger().log(Level.INFO,
         "POST /wattdepot/sensormodel/{" + sensorModelId + "} with " + sensormodel);
-    if (depot.getSensorModelIds().contains(sensormodel.getSlug())) {
+    if (depot.getSensorModelIds().contains(sensormodel.getId())) {
       depot.updateSensorModel(sensormodel);
     }
     else {

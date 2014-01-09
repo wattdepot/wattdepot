@@ -246,8 +246,8 @@ public class SensorImpl extends Sensor {
    * @see org.wattdepot.common.domainmodel.Sensor#getSlug()
    */
   @Override
-  public String getSlug() {
-    return super.getSlug();
+  public String getId() {
+    return super.getId();
   }
 
   /*
@@ -350,8 +350,8 @@ public class SensorImpl extends Sensor {
    * @see org.wattdepot.common.domainmodel.Sensor#setSlug(java.lang.String)
    */
   @Override
-  public void setSlug(String id) {
-    super.setSlug(id);
+  public void setId(String id) {
+    super.setId(id);
   }
 
   /*

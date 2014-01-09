@@ -63,7 +63,7 @@ public class AdminServerResource extends WattDepotServerResource {
       UserInfo info = depot.getUser(user.getIdentifier(), orgId);
       Organization group = depot.getUsersGroup(info);
       if (group != null) {
-        redirectPermanent("/wattdepot/" + group.getSlug() + "/");
+        redirectPermanent("/wattdepot/" + group.getId() + "/");
       }
       else {
         setStatus(Status.CLIENT_ERROR_FORBIDDEN);

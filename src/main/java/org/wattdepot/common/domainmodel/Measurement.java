@@ -52,14 +52,10 @@ public class Measurement {
   }
 
   /**
-   * @param sensorId
-   *          The id of the sensor that made the measurement.
-   * @param timestamp
-   *          The time of the measurement.
-   * @param value
-   *          The value measured.
-   * @param units
-   *          The type of the measurement.
+   * @param sensorId The id of the sensor that made the measurement.
+   * @param timestamp The time of the measurement.
+   * @param value The value measured.
+   * @param units The type of the measurement.
    */
   public Measurement(String sensorId, Date timestamp, Double value, Unit<?> units) {
     // Can a sensor create two measurements at the same time with the same type?
@@ -125,8 +121,7 @@ public class Measurement {
   }
 
   /**
-   * @param value
-   *          a MeasuredValue
+   * @param value a MeasuredValue
    * @return true if this Measurement has the same sensorId, time,
    *         MeasurementType, and value as the MeasuredValue.
    */
@@ -199,8 +194,7 @@ public class Measurement {
   }
 
   /**
-   * @param timestamp
-   *          the timestamp to set
+   * @param timestamp the timestamp to set
    */
   public void setDate(Date timestamp) {
     this.timestamp = new Date(timestamp.getTime());
@@ -213,8 +207,7 @@ public class Measurement {
    * @see http://jscience.org/api/javax/measure/unit/NonSI.html or
    *      http://jscience.org/api/javax/measure/unit/SI.html
    * 
-   * @param measurementType
-   *          the measurementType to set
+   * @param measurementType the measurementType to set
    */
   public void setMeasurementType(String measurementType) {
     this.units = Unit.valueOf(measurementType);
@@ -222,18 +215,15 @@ public class Measurement {
   }
 
   /**
-   * @param sensorId
-   *          the id of the sensor to set
+   * @param sensorId the id of the sensor to set
    */
   public void setSensorId(String sensorId) {
     this.sensorId = sensorId;
   }
 
   /**
-   * @param slug
-   *          the slug to set
-   * @exception BadSlugException
-   *              if the slug is not valid.
+   * @param slug the slug to set
+   * @exception BadSlugException if the slug is not valid.
    */
   public void setSlug(String slug) throws BadSlugException {
     if (Slug.validateSlug(slug)) {
@@ -245,8 +235,7 @@ public class Measurement {
   }
 
   /**
-   * @param value
-   *          the value to set
+   * @param value the value to set
    */
   public void setValue(Double value) {
     this.value = value;

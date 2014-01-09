@@ -30,8 +30,8 @@ import org.wattdepot.common.util.Slug;
 public class SensorLocation implements IDomainModel {
   /** The name for the Location. */
   private String name;
-  /** The unique slug for the locations used in URIs. */
-  private String slug;
+  /** The unique id for the locations used in URIs. */
+  private String id;
   /** The Location's decimal Latitude. */
   private Double latitude;
   /** The Location's decimal Longitude. */
@@ -51,18 +51,12 @@ public class SensorLocation implements IDomainModel {
   }
 
   /**
-   * @param name
-   *          The name.
-   * @param latitude
-   *          The decimal Latitude.
-   * @param longitude
-   *          The decimal Longitude.
-   * @param altitude
-   *          The altitude in meters w.r.t. MSL.
-   * @param description
-   *          A String description of the Location.
-   * @param ownerId
-   *          the id of the owner of the location.
+   * @param name The name.
+   * @param latitude The decimal Latitude.
+   * @param longitude The decimal Longitude.
+   * @param altitude The altitude in meters w.r.t. MSL.
+   * @param description A String description of the Location.
+   * @param ownerId the id of the owner of the location.
    */
   public SensorLocation(String name, Double latitude, Double longitude, Double altitude,
       String description, String ownerId) {
@@ -70,24 +64,17 @@ public class SensorLocation implements IDomainModel {
   }
 
   /**
-   * @param slug
-   *          The unique slug.
-   * @param name
-   *          The name.
-   * @param latitude
-   *          The decimal Latitude.
-   * @param longitude
-   *          The decimal Longitude.
-   * @param altitude
-   *          The altitude in meters w.r.t. MSL.
-   * @param description
-   *          A String description of the Location.
-   * @param ownerId
-   *          the id of the owner of the location.
+   * @param id The unique id.
+   * @param name The name.
+   * @param latitude The decimal Latitude.
+   * @param longitude The decimal Longitude.
+   * @param altitude The altitude in meters w.r.t. MSL.
+   * @param description A String description of the Location.
+   * @param ownerId the id of the owner of the location.
    */
-  public SensorLocation(String slug, String name, Double latitude, Double longitude, Double altitude,
+  public SensorLocation(String id, String name, Double latitude, Double longitude, Double altitude,
       String description, String ownerId) {
-    this.slug = slug;
+    this.id = id;
     this.name = name;
     this.latitude = latitude;
     this.longitude = longitude;
@@ -174,8 +161,8 @@ public class SensorLocation implements IDomainModel {
   /**
    * @return the id
    */
-  public String getSlug() {
-    return slug;
+  public String getId() {
+    return id;
   }
 
   /**
@@ -226,80 +213,71 @@ public class SensorLocation implements IDomainModel {
   /**
    * Determines if the given group is the owner of this location.
    * 
-   * @param group
-   *          the UserGroup to check.
+   * @param group the UserGroup to check.
    * @return True if the group owns the Location or the group is the
    *         ADMIN_GROUP.
    */
   public boolean isOwner(Organization group) {
     if (ownerId != null
-        && (ownerId.equals(group.getSlug()) || group.equals(Organization.ADMIN_GROUP))) {
+        && (ownerId.equals(group.getId()) || group.equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;
   }
 
   /**
-   * @param altitude
-   *          the altitude to set
+   * @param altitude the altitude to set
    */
   public void setAltitude(Double altitude) {
     this.altitude = altitude;
   }
 
   /**
-   * @param description
-   *          the description to set
+   * @param description the description to set
    */
   public void setDescription(String description) {
     this.description = description;
   }
 
   /**
-   * @param slug
-   *          the slug to set
-   * @exception BadSlugException
-   *              if the slug isn't valid.
+   * @param id the id to set
+   * @exception BadSlugException if the id isn't valid.
    */
-  public void setSlug(String slug) throws BadSlugException {
-    if (Slug.validateSlug(slug)) {
-      this.slug = slug;
+  public void setId(String id) throws BadSlugException {
+    if (Slug.validateSlug(id)) {
+      this.id = id;
     }
     else {
-      throw new BadSlugException(slug + " is not a valid slug.");
+      throw new BadSlugException(id + " is not a valid slug.");
     }
   }
 
   /**
-   * @param latitude
-   *          the latitude to set
+   * @param latitude the latitude to set
    */
   public void setLatitude(Double latitude) {
     this.latitude = latitude;
   }
 
   /**
-   * @param longitude
-   *          the longitude to set
+   * @param longitude the longitude to set
    */
   public void setLongitude(Double longitude) {
     this.longitude = longitude;
   }
 
   /**
-   * @param name
-   *          the name to set
+   * @param name the name to set
    */
   public void setName(String name) {
     this.name = name;
-    if (this.slug == null) {
-      this.slug = Slug.slugify(name);
+    if (this.id == null) {
+      this.id = Slug.slugify(name);
     }
   }
 
   /**
-   * @param ownerId
-   *          the id of the owner to set
+   * @param ownerId the id of the owner to set
    */
   public void setOwnerId(String ownerId) {
     this.ownerId = ownerId;
@@ -312,7 +290,7 @@ public class SensorLocation implements IDomainModel {
    */
   @Override
   public String toString() {
-    return "Location [slug=" + slug + ", name=" + name + ", latitude=" + latitude + ", longitude="
+    return "Location [id=" + id + ", name=" + name + ", latitude=" + latitude + ", longitude="
         + longitude + ", altitude=" + altitude + ", description=" + description + ", ownerId="
         + ownerId + "]";
   }

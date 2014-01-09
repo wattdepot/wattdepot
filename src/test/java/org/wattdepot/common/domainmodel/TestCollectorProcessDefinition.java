@@ -43,7 +43,7 @@ public class TestCollectorProcessDefinition {
         "sensorId", 10L, "depositoryId", "ownerId");
     assertNotNull(cpd);
     assertTrue("Name 1".equals(cpd.getName()));
-    assertTrue("name-1".equals(cpd.getSlug()));
+    assertTrue("name-1".equals(cpd.getId()));
     assertTrue("sensorId".equals(cpd.getSensorId()));
     assertTrue(10 == cpd.getPollingInterval());
     assertTrue("depositoryId".equals(cpd.getDepositoryId()));
@@ -68,7 +68,7 @@ public class TestCollectorProcessDefinition {
     assertFalse(cpd1.equals(null));
     assertFalse(cpd1.equals(new Object()));
     cpd1.setName(cpd2.getName());
-    assertTrue(cpd1.getSlug().equals("name-1"));
+    assertTrue(cpd1.getId().equals("name-1"));
   }
 
 }

@@ -50,15 +50,15 @@ public class OrganizationPutServerResource extends WattDepotServerResource
   public void store(Organization usergroup) {
     getLogger().log(Level.INFO,
         "PUT /wattdepot/{" + orgId + "}/organization/ with " + usergroup);
-    if (!depot.getOrganizationIds().contains(usergroup.getSlug())) {
+    if (!depot.getOrganizationIds().contains(usergroup.getId())) {
       try {
-        Organization defined = depot.defineOrganization(usergroup.getSlug(),
+        Organization defined = depot.defineOrganization(usergroup.getId(),
             usergroup.getName(), usergroup.getUsers());
-        defined.setSlug(usergroup.getSlug());
+        defined.setId(usergroup.getId());
         depot.updateOrganization(defined);
         WattDepotApplication app = (WattDepotApplication) getApplication();
         // create the new Role for the group
-        String roleName = defined.getSlug();
+        String roleName = defined.getId();
         Role role = new Role(roleName);
         app.getRoles().add(role);
         MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm(
@@ -90,7 +90,7 @@ public class OrganizationPutServerResource extends WattDepotServerResource
         // update the Realm
         WattDepotApplication app = (WattDepotApplication) getApplication();
         // create the new Role for the group
-        String roleName = usergroup.getSlug();
+        String roleName = usergroup.getId();
         Role role = app.getRole(roleName);
         MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm(
             "WattDepot Security");

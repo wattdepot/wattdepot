@@ -42,7 +42,7 @@ public class InstanceFactory {
    * @return A Depository instance for testing.
    */
   public static Depository getDepository() {
-    return new Depository("Test Depository", getMeasurementType(), getOrganization().getSlug());
+    return new Depository("Test Depository", getMeasurementType(), getOrganization().getId());
   }
 
   /**
@@ -51,7 +51,7 @@ public class InstanceFactory {
   public static SensorLocation getLocation() {
     return new SensorLocation("Test Location Ilima 6th", new Double(21.294642), new Double(
         -157.812727), new Double(30), "Hale Aloha Ilima residence hall 6th floor",
-        getOrganization().getSlug());
+        getOrganization().getId());
   }
 
   /**
@@ -61,7 +61,7 @@ public class InstanceFactory {
     try {
       Date measTime = DateConvert.parseCalStringToDate("2013-11-20T14:35:27.925-1000");
       Double value = 100.0;
-      return new Measurement(getSensor().getSlug(), measTime, value, getMeasurementType().unit());
+      return new Measurement(getSensor().getId(), measTime, value, getMeasurementType().unit());
     }
     catch (ParseException e) {
       // TODO Auto-generated catch block
@@ -153,7 +153,7 @@ public class InstanceFactory {
     try {
       Date measTime = DateConvert.parseCalStringToDate("2013-11-20T14:45:37.925-1000");
       Double value = 100.0;
-      return new Measurement(getSensor().getSlug(), measTime, value, getMeasurementType().unit());
+      return new Measurement(getSensor().getId(), measTime, value, getMeasurementType().unit());
     }
     catch (ParseException e) {
       // TODO Auto-generated catch block
@@ -173,7 +173,7 @@ public class InstanceFactory {
     try {
       Date measTime = DateConvert.parseCalStringToDate("2013-11-20T14:35:37.925-1000");
       Double value = 100.0;
-      return new Measurement(getSensor().getSlug(), measTime, value, getMeasurementType().unit());
+      return new Measurement(getSensor().getId(), measTime, value, getMeasurementType().unit());
     }
     catch (ParseException e) {
       // TODO Auto-generated catch block
@@ -213,8 +213,8 @@ public class InstanceFactory {
    * @return A Sensor instance for testing.
    */
   public static Sensor getSensor() {
-    return new Sensor("Test Sensor", "test_sensor_uri", getLocation().getSlug(), getSensorModel()
-        .getSlug(), getOrganization().getSlug());
+    return new Sensor("Test Sensor", "test_sensor_uri", getLocation().getId(), getSensorModel()
+        .getId(), getOrganization().getId());
   }
 
   /**
@@ -222,8 +222,8 @@ public class InstanceFactory {
    */
   public static SensorGroup getSensorGroup() {
     Set<String> sensors = new HashSet<String>();
-    sensors.add(getSensor().getSlug());
-    return new SensorGroup("Test Sensor Group", sensors, getOrganization().getSlug());
+    sensors.add(getSensor().getId());
+    return new SensorGroup("Test Sensor Group", sensors, getOrganization().getId());
   }
 
   /**
@@ -238,8 +238,8 @@ public class InstanceFactory {
    * @return A CollectorProcessDefinition instance for testing.
    */
   public static CollectorProcessDefinition getCollectorProcessDefinition() {
-    return new CollectorProcessDefinition("Test Collector Process Defintion", getSensor().getSlug(), 10L,
-        getDepository().getSlug(), getOrganization().getSlug());
+    return new CollectorProcessDefinition("Test Collector Process Defintion", getSensor().getId(), 10L,
+        getDepository().getId(), getOrganization().getId());
   }
 
   /**

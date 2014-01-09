@@ -40,8 +40,8 @@ public class Organization {
   /** The public user group. All groups can see publicly owned objects. */
   public static final Organization PUBLIC_GROUP = new Organization(Labels.PUBLIC);
 
-  /** A slug usable in URLs. */
-  protected String slug;
+  /** Unique id that is also a slug usable in URLs. */
+  protected String id;
   /** The name of the group. */
   protected String name;
   /** The ids of the users in this group. */
@@ -85,7 +85,7 @@ public class Organization {
    *          The Users in the organization.
    */
   public Organization(String slug, String name, Set<String> users) {
-    this.slug = slug;
+    this.id = slug;
     this.name = name;
     this.users = users;
   }
@@ -128,12 +128,12 @@ public class Organization {
       return false;
     }
     Organization other = (Organization) obj;
-    if (slug == null) {
-      if (other.slug != null) {
+    if (id == null) {
+      if (other.id != null) {
         return false;
       }
     }
-    else if (!slug.equals(other.slug)) {
+    else if (!id.equals(other.id)) {
       return false;
     }
     if (name == null) {
@@ -156,10 +156,10 @@ public class Organization {
   }
 
   /**
-   * @return The unique slug for the Organization.
+   * @return The unique id for the Organization.
    */
-  public String getSlug() {
-    return slug;
+  public String getId() {
+    return id;
   }
 
   /**
@@ -185,7 +185,7 @@ public class Organization {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((slug == null) ? 0 : slug.hashCode());
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
     result = prime * result + ((name == null) ? 0 : name.hashCode());
     result = prime * result + ((users == null) ? 0 : users.hashCode());
     return result;
@@ -202,11 +202,11 @@ public class Organization {
   }
 
   /**
-   * @param slug
+   * @param id
    *          the id to set
    */
-  public void setSlug(String slug) {
-    this.slug = slug;
+  public void setId(String id) {
+    this.id = id;
   }
 
   /**
@@ -215,8 +215,8 @@ public class Organization {
    */
   public void setName(String name) {
     this.name = name;
-    if (this.slug == null) {
-      this.slug = Slug.slugify(name);
+    if (this.id == null) {
+      this.id = Slug.slugify(name);
     }
   }
 
@@ -235,7 +235,7 @@ public class Organization {
    */
   @Override
   public String toString() {
-    return "Organization [id=" + slug + ", name=" + name + ", users=" + users + "]";
+    return "Organization [id=" + id + ", name=" + name + ", users=" + users + "]";
   }
 
 }

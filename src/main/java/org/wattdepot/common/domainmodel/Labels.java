@@ -35,7 +35,8 @@ public class Labels {
   public static final String COLLECTOR_PROCESS_DEFINITION_ID = "collector-process-definition-id";
 
   /** The label for the CollectorProcessDefinitionData id variable. */
-  public static final String COLLECTOR_PROCESS_DEFINITION_ID_VAR = "{" + COLLECTOR_PROCESS_DEFINITION_ID + "}";
+  public static final String COLLECTOR_PROCESS_DEFINITION_ID_VAR = "{"
+      + COLLECTOR_PROCESS_DEFINITION_ID + "}";
 
   /** The label for all CollectorProcessDefinitionDatas. */
   public static final String COLLECTOR_PROCESS_DEFINITIONS = "collector-process-definitions";
@@ -51,22 +52,22 @@ public class Labels {
 
   /** Label for the depository id. */
   public static final String DEPOSITORY_ID_VAR = "{" + DEPOSITORY_ID + "}";
-  
+
   /** The label for the earliest time. */
   public static final String EARLIEST = "earliest";
 
   /** The label for the end timestamp. */
   public static final String END = "end";
-  
+
   /** The label for gap. */
   public static final String GAP = "gap";
-  
+
   /** The label for google visualization. */
   public static final String GVIZ = "gviz";
-  
+
   /** The label for the latest time. */
   public static final String LATEST = "latest";
-  
+
   /** The label for a given Location. */
   public static final String LOCATION = "location";
 
@@ -105,7 +106,7 @@ public class Labels {
 
   /** The label/group for public objects. */
   public static final String PUBLIC = "public";
-  
+
   /** The label for a given Sensor. */
   public static final String SENSOR = "sensor";
 
@@ -142,12 +143,12 @@ public class Labels {
   /** The label for all Sensors. */
   public static final String SENSORS = "sensors";
 
-  /** The label for the start timestamp.  */
+  /** The label for the start timestamp. */
   public static final String START = "start";
-  
+
   /** The label for the timestamp. */
   public static final String TIMESTAMP = "timestamp";
-  
+
   /** The URI for manipulating a given UserInfo. */
   public static final String USER = "user";
 
@@ -192,7 +193,7 @@ public class Labels {
 
   /** The label for 'measured' values. */
   public static final String VALUES = "values";
-  
+
   /** The base label used for WattDepot. */
   public static final String WATTDEPOT = "wattdepot";
 

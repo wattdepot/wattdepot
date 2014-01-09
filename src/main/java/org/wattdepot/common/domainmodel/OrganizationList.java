@@ -22,13 +22,13 @@ import java.util.ArrayList;
 
 /**
  * OrganizationList - a list of organizations.
- *
+ * 
  * @author Cam Moore
- *
+ * 
  */
 public class OrganizationList {
   private ArrayList<Organization> organizations;
-  
+
   /**
    * Default Constructor.
    */
@@ -50,7 +50,9 @@ public class OrganizationList {
     this.organizations = organizations;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.Object#toString()
    */
   @Override

@@ -79,9 +79,9 @@ public class UserPasswordServerResource extends WattDepotServerResource implemen
   @Override
   public void store(UserPassword user) {
     getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/user-password/ with " + user);
-    if (!depot.getUserIds(orgId).contains(user.getId())) {
+    if (!depot.getUserIds(orgId).contains(user.getUid())) {
       try {
-        depot.defineUserPassword(user.getId(), orgId, user.getPlainText());
+        depot.defineUserPassword(user.getUid(), orgId, user.getPlainText());
       }
       catch (UniqueIdException e) {
         setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());

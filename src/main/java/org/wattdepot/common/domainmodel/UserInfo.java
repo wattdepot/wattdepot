@@ -65,18 +65,12 @@ public class UserInfo {
   /**
    * Creates a new UserInfo with the given information.
    * 
-   * @param id
-   *          The unique id.
-   * @param firstName
-   *          The user's name.
-   * @param lastName
-   *          The user's last name.
-   * @param email
-   *          The user's email address.
-   * @param orgId
-   *          The id of the organization this user belongs to.
-   * @param properties
-   *          The additional properties for the user.
+   * @param id The unique id.
+   * @param firstName The user's name.
+   * @param lastName The user's last name.
+   * @param email The user's email address.
+   * @param orgId The id of the organization this user belongs to.
+   * @param properties The additional properties for the user.
    */
   public UserInfo(String id, String firstName, String lastName, String email, String orgId,
       Set<Property> properties) {
@@ -89,8 +83,7 @@ public class UserInfo {
   }
 
   /**
-   * @param e
-   *          The Property to add.
+   * @param e The Property to add.
    * @return true if added.
    * @see java.util.List#add(java.lang.Object)
    */
@@ -186,8 +179,7 @@ public class UserInfo {
   }
 
   /**
-   * @param key
-   *          The key.
+   * @param key The key.
    * @return The value of associated with the key.
    */
   public Property getProperty(String key) {
@@ -210,14 +202,12 @@ public class UserInfo {
     int result = 1;
     result = prime * result + ((uid == null) ? 0 : uid.hashCode());
     result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
-    result = prime * result
-        + ((properties == null) ? 0 : properties.hashCode());
+    result = prime * result + ((properties == null) ? 0 : properties.hashCode());
     return result;
   }
 
   /**
-   * @param o
-   *          The Property to remove.
+   * @param o The Property to remove.
    * @return true if removed.
    * @see java.util.List#remove(java.lang.Object)
    */
@@ -226,32 +216,28 @@ public class UserInfo {
   }
 
   /**
-   * @param email
-   *          the email to set
+   * @param email the email to set
    */
   public void setEmail(String email) {
     this.email = email;
   }
 
   /**
-   * @param firstName
-   *          the firstName to set
+   * @param firstName the firstName to set
    */
   public void setFirstName(String firstName) {
     this.firstName = firstName;
   }
 
   /**
-   * @param id
-   *          the id to set
+   * @param id the id to set
    */
   public void setUid(String id) {
     this.uid = id;
   }
 
   /**
-   * @param lastName
-   *          the lastName to set
+   * @param lastName the lastName to set
    */
   public void setLastName(String lastName) {
     this.lastName = lastName;
@@ -265,8 +251,7 @@ public class UserInfo {
   }
 
   /**
-   * @param properties
-   *          the properties to set
+   * @param properties the properties to set
    */
   public void setProperties(Set<Property> properties) {
     this.properties = properties;
@@ -279,9 +264,8 @@ public class UserInfo {
    */
   @Override
   public String toString() {
-    return "User {\"id\"=\"" + uid + "\", \"firstname\"=\"" + firstName
-        + "\", \"lastname\"=\"" + lastName + "\", \"email\"=\"" + email
-        + "\", \"properties\"=" + properties + "}";
+    return "User [uid=" + uid + ", firstname=" + firstName + ", lastname=" + lastName + ", email="
+        + email + ", properties=" + properties + "]";
   }
 
 }

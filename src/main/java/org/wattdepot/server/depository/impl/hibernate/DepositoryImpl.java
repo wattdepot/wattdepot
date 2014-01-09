@@ -177,7 +177,7 @@ public class DepositoryImpl extends Depository {
         .createQuery(
             "FROM MeasurementImpl WHERE depositoryId = :name AND sensorId = :sensorId "
                 + "AND date IN (SELECT min(date) FROM MeasurementImpl WHERE "
-                + "depositoryId = :name AND sensorId = :sensorId)").setParameter("name", getSlug())
+                + "depositoryId = :name AND sensorId = :sensorId)").setParameter("name", getId())
         .setParameter("sensorId", sensorId).list();
     if (result.size() > 0) {
       MeasurementImpl meas = result.get(0);
@@ -207,7 +207,7 @@ public class DepositoryImpl extends Depository {
         .createQuery(
             "FROM MeasurementImpl WHERE depositoryId = :name AND sensorId = :sensor "
                 + "AND date IN (SELECT max(date) FROM MeasurementImpl WHERE "
-                + "depositoryId = :name AND sensorId = :sensor)").setParameter("name", getSlug())
+                + "depositoryId = :name AND sensorId = :sensor)").setParameter("name", getId())
         .setParameter("sensor", sensorId).list();
     if (result.size() > 0) {
       MeasurementImpl meas = result.get(0);
@@ -254,7 +254,7 @@ public class DepositoryImpl extends Depository {
     @SuppressWarnings("unchecked")
     List<MeasurementImpl> measurements = (List<MeasurementImpl>) session
         .createQuery("FROM MeasurementImpl WHERE depositoryId = :depository")
-        .setParameter("depository", getSlug()).list();
+        .setParameter("depository", getId()).list();
     for (MeasurementImpl meas : measurements) {
       if (meas.getSensorId().equals(sensorId)) {
         ret.add(meas);
@@ -299,7 +299,7 @@ public class DepositoryImpl extends Depository {
         .createQuery(
             "FROM MeasurementImpl WHERE date >= :start AND date <= :end AND depositoryId = :depository")
         .setParameter("start", start).setParameter("end", end)
-        .setParameter("depository", getSlug()).list();
+        .setParameter("depository", getId()).list();
     for (MeasurementImpl meas : measurements) {
       if (meas.getSensorId().equals(sensorId)) {
         ret.add(meas);
@@ -345,7 +345,7 @@ public class DepositoryImpl extends Depository {
         .createQuery(
             "FROM MeasurementImpl WHERE date = :time AND measurementType = :measType"
                 + " AND depositoryId = :name").setParameter("time", timestamp)
-        .setParameter("measType", getMeasurementType().getUnits()).setParameter("name", getSlug())
+        .setParameter("measType", getMeasurementType().getUnits()).setParameter("name", getId())
         .list();
     if (result.size() > 0) {
       for (MeasurementImpl meas : result) {
@@ -362,14 +362,14 @@ public class DepositoryImpl extends Depository {
               "FROM MeasurementImpl WHERE date <= :time AND measurementType = :measType"
                   + " AND depositoryId = :name").setParameter("time", timestamp)
           .setParameter("measType", getMeasurementType().getUnits())
-          .setParameter("name", getSlug()).list();
+          .setParameter("name", getId()).list();
       @SuppressWarnings("unchecked")
       List<MeasurementImpl> after = (List<MeasurementImpl>) session
           .createQuery(
               "FROM MeasurementImpl WHERE date >= :time AND measurementType = :measType"
                   + " AND depositoryId = :name").setParameter("time", timestamp)
           .setParameter("measType", getMeasurementType().getUnits())
-          .setParameter("name", getSlug()).list();
+          .setParameter("name", getId()).list();
       MeasurementImpl justBefore = null;
       for (MeasurementImpl b : before) {
         if (b.getSensorId().equals(sensorId)) {
@@ -495,7 +495,7 @@ public class DepositoryImpl extends Depository {
         .createQuery(
             "FROM MeasurementImpl WHERE date = :time AND measurementType = :measType"
                 + " AND depositoryId = :name").setParameter("time", timestamp)
-        .setParameter("measType", getMeasurementType().getUnits()).setParameter("name", getSlug())
+        .setParameter("measType", getMeasurementType().getUnits()).setParameter("name", getId())
         .list();
     if (result.size() > 0) {
       for (MeasurementImpl meas : result) {
@@ -512,14 +512,14 @@ public class DepositoryImpl extends Depository {
               "FROM MeasurementImpl WHERE date <= :time AND measurementType = :measType"
                   + " AND depositoryId = :name").setParameter("time", timestamp)
           .setParameter("measType", getMeasurementType().getUnits())
-          .setParameter("name", getSlug()).list();
+          .setParameter("name", getId()).list();
       @SuppressWarnings("unchecked")
       List<MeasurementImpl> after = (List<MeasurementImpl>) session
           .createQuery(
               "FROM MeasurementImpl WHERE date >= :time AND measurementType = :measType"
                   + " AND depositoryId = :name").setParameter("time", timestamp)
           .setParameter("measType", getMeasurementType().getUnits())
-          .setParameter("name", getSlug()).list();
+          .setParameter("name", getId()).list();
       MeasurementImpl justBefore = null;
       for (MeasurementImpl b : before) {
         if (b.getSensorId().equals(sensorId)) {
@@ -600,7 +600,7 @@ public class DepositoryImpl extends Depository {
     @SuppressWarnings("unchecked")
     List<MeasurementImpl> result = (List<MeasurementImpl>) session
         .createQuery("FROM MeasurementImpl WHERE depositoryId = :name")
-        .setParameter("name", getSlug()).list();
+        .setParameter("name", getId()).list();
     ArrayList<String> sensorIds = new ArrayList<String>();
     for (Measurement meas : result) {
       if (!sensorIds.contains(meas.getSensorId())) {
@@ -621,7 +621,7 @@ public class DepositoryImpl extends Depository {
     @SuppressWarnings("unchecked")
     List<MeasurementImpl> result = (List<MeasurementImpl>) session
         .createQuery("FROM MeasurementImpl WHERE depositoryId = :name")
-        .setParameter("name", getSlug()).list();
+        .setParameter("name", getId()).list();
     ArrayList<String> sensors = new ArrayList<String>();
     for (Measurement meas : result) {
       if (!sensors.contains(meas.getSensorId())) {
@@ -649,7 +649,7 @@ public class DepositoryImpl extends Depository {
     session.beginTransaction();
     // check the sensor
     MeasurementImpl mImpl = new MeasurementImpl(meas);
-    mImpl.setDepositoryId(getSlug());
+    mImpl.setDepositoryId(getId());
     session.saveOrUpdate(mImpl);
     session.getTransaction().commit();
     session.close();

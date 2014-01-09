@@ -88,14 +88,14 @@ public class ExampleInstances {
   private void setUpOrganization() {
     Organization org = new Organization("uh", "University of Hawaii, Manoa", new HashSet<String>());
     UserInfo user1 = new UserInfo("cmoore", "Cam", "Moore",
-        "cmoore@hawaii.edu", org.getSlug(), new HashSet<Property>());
+        "cmoore@hawaii.edu", org.getId(), new HashSet<Property>());
     UserInfo user2 = new UserInfo("johnson", "Philip", "Johnson",
-        "philipmjohnson@gmail.com", org.getSlug(), new HashSet<Property>());
+        "philipmjohnson@gmail.com", org.getId(), new HashSet<Property>());
     org.getUsers().add(user1.getUid());
     org.getUsers().add(user2.getUid());
     // check to see if the instances are defined in WattDepot
     try {
-      Organization defined = admin.getOrganization(org.getSlug());
+      Organization defined = admin.getOrganization(org.getId());
       if (defined == null) {
         admin.putUserPassword(new UserPassword(user1.getUid(), user1
             .getOrganizationId(), "secret1"));
@@ -127,33 +127,33 @@ public class ExampleInstances {
         21.294642), new Double(-157.812727), new Double(30),
         "Hale Aloha Ilima residence hall 6th floor", "uh");
     try {
-      cmoore.getLocation(loc.getSlug());
+      cmoore.getLocation(loc.getId());
     }
     catch (IdNotFoundException e) {
       cmoore.putLocation(loc);
     }
-    Sensor telco = new Sensor("Ilima 6th telco", "http://telco", loc.getSlug(),
+    Sensor telco = new Sensor("Ilima 6th telco", "http://telco", loc.getId(),
         "shark", loc.getOwnerId());
     try {
-      cmoore.getSensor(telco.getSlug());
+      cmoore.getSensor(telco.getId());
     }
     catch (IdNotFoundException e) {
       johnson.putSensor(telco);
     }
     Sensor elect = new Sensor("Ilima 6th electrical", "http://elect",
-        loc.getSlug(), "shark", loc.getOwnerId());
+        loc.getId(), "shark", loc.getOwnerId());
     try {
-      johnson.getSensor(elect.getSlug());
+      johnson.getSensor(elect.getId());
     }
     catch (IdNotFoundException e) {
       cmoore.putSensor(elect);
     }
     Set<String> sensors = new HashSet<String>();
-    sensors.add(telco.getSlug());
-    sensors.add(elect.getSlug());
+    sensors.add(telco.getId());
+    sensors.add(elect.getId());
     SensorGroup ilima6 = new SensorGroup("Ilima 6th", sensors, loc.getOwnerId());
     try {
-      cmoore.getSensorGroup(ilima6.getSlug());
+      cmoore.getSensorGroup(ilima6.getId());
     }
     catch (IdNotFoundException e) {
       johnson.putSensorGroup(ilima6);
@@ -172,25 +172,25 @@ public class ExampleInstances {
     if (e != null) {
       energy = new Depository("Ilima Energy", e, loc.getOwnerId());
       try {
-        cmoore.getDepository(energy.getSlug());
+        cmoore.getDepository(energy.getId());
       }
       catch (IdNotFoundException e1) {
         johnson.putDepository(energy);
       }
       CollectorProcessDefinition energyCPD1 = new CollectorProcessDefinition(
-          "Ilima 6th telco energy", telco.getSlug(), 10L, energy.getSlug(),
+          "Ilima 6th telco energy", telco.getId(), 10L, energy.getId(),
           energy.getOwnerId());
       CollectorProcessDefinition energyCPD2 = new CollectorProcessDefinition(
-          "Ilima 6th elect energy", elect.getSlug(), 10L, energy.getSlug(),
+          "Ilima 6th elect energy", elect.getId(), 10L, energy.getId(),
           energy.getOwnerId());
       try {
-        cmoore.getCollectorProcessDefinition(energyCPD2.getSlug());
+        cmoore.getCollectorProcessDefinition(energyCPD2.getId());
       }
       catch (IdNotFoundException e1) {
         cmoore.putCollectorProcessDefinition(energyCPD2);
       }
       try {
-        cmoore.getCollectorProcessDefinition(energyCPD1.getSlug());
+        cmoore.getCollectorProcessDefinition(energyCPD1.getId());
       }
       catch (IdNotFoundException e1) {
         cmoore.putCollectorProcessDefinition(energyCPD1);
@@ -200,7 +200,7 @@ public class ExampleInstances {
     if (p != null) {
       Depository power = new Depository("Ilima Power", p, loc.getOwnerId());
       try {
-        johnson.getDepository(power.getSlug());
+        johnson.getDepository(power.getId());
       }
       catch (IdNotFoundException e1) {
         johnson.putDepository(power);

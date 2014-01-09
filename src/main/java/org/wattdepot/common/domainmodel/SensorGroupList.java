@@ -22,13 +22,13 @@ import java.util.ArrayList;
 
 /**
  * SensorGroupList - Attempt at getting a list across the wire.
- *
+ * 
  * @author Cam Moore
- *
+ * 
  */
 public class SensorGroupList {
   private ArrayList<SensorGroup> groups;
-  
+
   /**
    * Default Constructor.
    */

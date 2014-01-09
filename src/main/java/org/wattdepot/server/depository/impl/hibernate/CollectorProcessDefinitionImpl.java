@@ -264,9 +264,9 @@ public class CollectorProcessDefinitionImpl extends CollectorProcessDefinition {
    * @see org.wattdepot.common.domainmodel.CollectorProcessDefinition#getSlug()
    */
   @Override
-  public String getSlug() {
+  public String getId() {
     // TODO Auto-generated method stub
-    return super.getSlug();
+    return super.getId();
   }
 
   /*
@@ -403,9 +403,9 @@ public class CollectorProcessDefinitionImpl extends CollectorProcessDefinition {
    * .lang.String)
    */
   @Override
-  public void setSlug(String slug) throws BadSlugException {
+  public void setId(String slug) throws BadSlugException {
     // TODO Auto-generated method stub
-    super.setSlug(slug);
+    super.setId(slug);
   }
 
 }

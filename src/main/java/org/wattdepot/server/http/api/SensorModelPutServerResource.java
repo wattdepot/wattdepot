@@ -46,9 +46,9 @@ public class SensorModelPutServerResource extends WattDepotServerResource
   public void store(SensorModel sensormodel) {
     getLogger().log(Level.INFO,
         "PUT /wattdepot/sensormodel/ with " + sensormodel);
-    if (!depot.getSensorModelIds().contains(sensormodel.getSlug())) {
+    if (!depot.getSensorModelIds().contains(sensormodel.getId())) {
       try {
-        depot.defineSensorModel(sensormodel.getSlug(), sensormodel.getName(),
+        depot.defineSensorModel(sensormodel.getId(), sensormodel.getName(),
             sensormodel.getProtocol(), sensormodel.getType(),
             sensormodel.getVersion());
       }

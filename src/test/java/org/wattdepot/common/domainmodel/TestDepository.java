@@ -42,7 +42,7 @@ public class TestDepository {
     Depository depo = InstanceFactory.getDepository();
     assertNotNull(depo);
     assertTrue("Test Depository".equals(depo.getName()));
-    assertTrue("test-depository".equals(depo.getSlug()));
+    assertTrue("test-depository".equals(depo.getId()));
     assertTrue("test-user-group".equals(depo.getOwnerId()));
   }
 
@@ -63,7 +63,7 @@ public class TestDepository {
     assertFalse(depo1.equals(null));
     assertFalse(depo1.equals(new Object()));
     depo1.setName(depo2.getName());
-    assertTrue(depo1.getSlug().equals("test-depository"));
+    assertTrue(depo1.getId().equals("test-depository"));
   }
 
 }

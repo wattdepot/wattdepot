@@ -51,15 +51,11 @@ public class MeasuredValue {
   /**
    * Creates a new MeasuredValue.
    * 
-   * @param sensorId
-   *          The id of the sensor that made the measurement.
-   * @param value
-   *          The value of the measurement.
-   * @param measurementType
-   *          The type of the measurement.
+   * @param sensorId The id of the sensor that made the measurement.
+   * @param value The value of the measurement.
+   * @param measurementType The type of the measurement.
    */
-  public MeasuredValue(String sensorId, Double value,
-      MeasurementType measurementType) {
+  public MeasuredValue(String sensorId, Double value, MeasurementType measurementType) {
     this.sensorId = sensorId;
     this.value = value;
     this.measurementType = measurementType;
@@ -118,8 +114,7 @@ public class MeasuredValue {
   }
 
   /**
-   * @param meas
-   *          a Measurement
+   * @param meas a Measurement
    * @return true if this MeasuredValue has the same sensorId, time,
    *         MeasurementType, and value as the Measurement.
    */
@@ -138,7 +133,7 @@ public class MeasuredValue {
     }
     return true;
   }
-  
+
   /**
    * @return the date
    */
@@ -177,40 +172,35 @@ public class MeasuredValue {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((date == null) ? 0 : date.hashCode());
-    result = prime * result
-        + ((measurementType == null) ? 0 : measurementType.hashCode());
+    result = prime * result + ((measurementType == null) ? 0 : measurementType.hashCode());
     result = prime * result + ((sensorId == null) ? 0 : sensorId.hashCode());
     result = prime * result + ((value == null) ? 0 : value.hashCode());
     return result;
   }
 
   /**
-   * @param date
-   *          the date to set
+   * @param date the date to set
    */
   public void setDate(Date date) {
     this.date = new Date(date.getTime());
   }
 
   /**
-   * @param measurementType
-   *          the measurementType to set
+   * @param measurementType the measurementType to set
    */
   public void setMeasurementType(MeasurementType measurementType) {
     this.measurementType = measurementType;
   }
 
   /**
-   * @param sensorId
-   *          the sensorId to set
+   * @param sensorId the sensorId to set
    */
   public void setSensorId(String sensorId) {
     this.sensorId = sensorId;
   }
 
   /**
-   * @param value
-   *          the value to set
+   * @param value the value to set
    */
   public void setValue(Double value) {
     this.value = value;
@@ -224,16 +214,15 @@ public class MeasuredValue {
   @Override
   public String toString() {
     try {
-      return "MeasuredValue [sensorId=" + sensorId + ", value=" + value
-          + ", measurementType=" + measurementType + ", date="
-          + DateConvert.convertDate(date) + "]";
+      return "MeasuredValue [sensorId=" + sensorId + ", value=" + value + ", measurementType="
+          + measurementType + ", date=" + DateConvert.convertDate(date) + "]";
     }
     catch (DatatypeConfigurationException e) {
       // shouldn't happen
       e.printStackTrace();
     }
-    return "MeasuredValue [sensorId=" + sensorId + ", value=" + value
-        + ", measurementType=" + measurementType + ", date=" + date + "]";
+    return "MeasuredValue [sensorId=" + sensorId + ", value=" + value + ", measurementType="
+        + measurementType + ", date=" + date + "]";
   }
 
 }

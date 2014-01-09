@@ -33,7 +33,7 @@ import org.wattdepot.common.util.Slug;
  */
 public class CollectorProcessDefinition implements IDomainModel {
   /** A unique id for the CollectorProcessDefinition. */
-  private String slug;
+  private String id;
   /** The human readable name. */
   private String name;
   /** The id of the sensor making the measurements. */
@@ -55,41 +55,30 @@ public class CollectorProcessDefinition implements IDomainModel {
   }
 
   /**
-   * @param name
-   *          The name of the CollectorProcessDefinition.
-   * @param sensorId
-   *          The id of the sensor that measures the environment.
-   * @param poll
-   *          The number of seconds between polls.
-   * @param depositoryId
-   *          The depository_id where measurements are stored.
-   * @param ownerId
-   *          the id of the owner of the collector.
+   * @param name The name of the CollectorProcessDefinition.
+   * @param sensorId The id of the sensor that measures the environment.
+   * @param poll The number of seconds between polls.
+   * @param depositoryId The depository_id where measurements are stored.
+   * @param ownerId the id of the owner of the collector.
    */
-  public CollectorProcessDefinition(String name, String sensorId, Long poll,
-      String depositoryId, String ownerId) {
+  public CollectorProcessDefinition(String name, String sensorId, Long poll, String depositoryId,
+      String ownerId) {
     this(Slug.slugify(name), name, sensorId, poll, depositoryId, new HashSet<Property>(), ownerId);
   }
 
   /**
-   * @param slug
-   *          The unique slug for the CollectorProcessDefinition.
-   * @param name
-   *          The name of the CollectorProcessDefinition.
-   * @param sensorId
-   *          The id of the sensor that measures the environment.
-   * @param poll
-   *          The number of seconds between polls.
-   * @param depositoryId
-   *          The depository_id where measurements are stored.
-   * @param properties
-   *          The properties associated with this CollectorProcessDefinition.
-   * @param ownerId
-   *          the id of the owner of the collector.
+   * @param slug The unique slug for the CollectorProcessDefinition.
+   * @param name The name of the CollectorProcessDefinition.
+   * @param sensorId The id of the sensor that measures the environment.
+   * @param poll The number of seconds between polls.
+   * @param depositoryId The depository_id where measurements are stored.
+   * @param properties The properties associated with this
+   *        CollectorProcessDefinition.
+   * @param ownerId the id of the owner of the collector.
    */
-  public CollectorProcessDefinition(String slug, String name, String sensorId,
-      Long poll, String depositoryId, Set<Property> properties, String ownerId) {
-    this.slug = slug;
+  public CollectorProcessDefinition(String slug, String name, String sensorId, Long poll,
+      String depositoryId, Set<Property> properties, String ownerId) {
+    this.id = slug;
     this.name = name;
     this.sensorId = sensorId;
     this.pollingInterval = poll;
@@ -99,8 +88,7 @@ public class CollectorProcessDefinition implements IDomainModel {
   }
 
   /**
-   * @param e
-   *          The Property to add.
+   * @param e The Property to add.
    * @return true if added.
    * @see java.util.List#add(java.lang.Object)
    */
@@ -122,8 +110,7 @@ public class CollectorProcessDefinition implements IDomainModel {
       return false;
     }
     if (!getClass().isAssignableFrom(obj.getClass())
-        && !obj.getClass().isAssignableFrom(getClass())
-        && getClass() != obj.getClass()) {
+        && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
     if (obj.getClass().equals(Object.class)) {
@@ -138,12 +125,12 @@ public class CollectorProcessDefinition implements IDomainModel {
     else if (!depositoryId.equals(other.depositoryId)) {
       return false;
     }
-    if (slug == null) {
-      if (other.slug != null) {
+    if (id == null) {
+      if (other.id != null) {
         return false;
       }
     }
-    else if (!slug.equals(other.slug)) {
+    else if (!id.equals(other.id)) {
       return false;
     }
     if (ownerId == null) {
@@ -197,6 +184,13 @@ public class CollectorProcessDefinition implements IDomainModel {
   }
 
   /**
+   * @return the slug
+   */
+  public String getId() {
+    return id;
+  }
+
+  /**
    * @return the name
    */
   public String getName() {
@@ -225,8 +219,7 @@ public class CollectorProcessDefinition implements IDomainModel {
   }
 
   /**
-   * @param key
-   *          The key.
+   * @param key The key.
    * @return The value of associated with the key.
    */
   public Property getProperty(String key) {
@@ -245,13 +238,6 @@ public class CollectorProcessDefinition implements IDomainModel {
     return sensorId;
   }
 
-  /**
-   * @return the slug
-   */
-  public String getSlug() {
-    return slug;
-  }
-
   /*
    * (non-Javadoc)
    * 
@@ -261,14 +247,11 @@ public class CollectorProcessDefinition implements IDomainModel {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result
-        + ((depositoryId == null) ? 0 : depositoryId.hashCode());
-    result = prime * result + ((slug == null) ? 0 : slug.hashCode());
+    result = prime * result + ((depositoryId == null) ? 0 : depositoryId.hashCode());
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
     result = prime * result + ((ownerId == null) ? 0 : ownerId.hashCode());
-    result = prime * result
-        + ((pollingInterval == null) ? 0 : pollingInterval.hashCode());
-    result = prime * result
-        + ((properties == null) ? 0 : properties.hashCode());
+    result = prime * result + ((pollingInterval == null) ? 0 : pollingInterval.hashCode());
+    result = prime * result + ((properties == null) ? 0 : properties.hashCode());
     result = prime * result + ((sensorId == null) ? 0 : sensorId.hashCode());
     result = prime * result + ((name == null) ? 0 : name.hashCode());
     return result;
@@ -277,23 +260,20 @@ public class CollectorProcessDefinition implements IDomainModel {
   /**
    * Determines if the given group is the owner of this location.
    * 
-   * @param group
-   *          the UserGroup to check.
+   * @param group the UserGroup to check.
    * @return True if the group owns the Location or the group is the
    *         ADMIN_GROUP.
    */
   public boolean isOwner(Organization group) {
     if (ownerId != null
-        && (ownerId.equals(group.getSlug()) || group
-            .equals(Organization.ADMIN_GROUP))) {
+        && (ownerId.equals(group.getId()) || group.equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;
   }
 
   /**
-   * @param o
-   *          The Property to remove.
+   * @param o The Property to remove.
    * @return true if removed.
    * @see java.util.List#remove(java.lang.Object)
    */
@@ -302,69 +282,61 @@ public class CollectorProcessDefinition implements IDomainModel {
   }
 
   /**
-   * @param depositoryId
-   *          the depositoryId to set
+   * @param depositoryId the depositoryId to set
    */
   public void setDepositoryId(String depositoryId) {
     this.depositoryId = depositoryId;
   }
 
   /**
-   * @param name
-   *          the name to set
+   * @param slug the id to set
+   * @exception BadSlugException if the slug is not a valid slug.
    */
-  public void setName(String name) {
-    this.name = name;
-    if (this.slug == null) {
-      this.slug = Slug.slugify(name);
+  public void setId(String slug) throws BadSlugException {
+    if (Slug.validateSlug(slug)) {
+      this.id = slug;
+    }
+    else {
+      throw new BadSlugException(slug + " is not a valid slug.");
     }
   }
 
   /**
-   * @param ownerId
-   *          the id of the owner to set
+   * @param name the name to set
+   */
+  public void setName(String name) {
+    this.name = name;
+    if (this.id == null) {
+      this.id = Slug.slugify(name);
+    }
+  }
+
+  /**
+   * @param ownerId the id of the owner to set
    */
   public void setOwnerId(String ownerId) {
     this.ownerId = ownerId;
   }
 
   /**
-   * @param pollingInterval
-   *          the pollingInterval to set
+   * @param pollingInterval the pollingInterval to set
    */
   public void setPollingInterval(Long pollingInterval) {
     this.pollingInterval = pollingInterval;
   }
 
   /**
-   * @param properties
-   *          the properties to set
+   * @param properties the properties to set
    */
   public void setProperties(Set<Property> properties) {
     this.properties = properties;
   }
 
   /**
-   * @param sensorId
-   *          the id of the sensor to set
+   * @param sensorId the id of the sensor to set
    */
   public void setSensorId(String sensorId) {
     this.sensorId = sensorId;
-  }
-
-  /**
-   * @param slug
-   *          the id to set
-   * @exception BadSlugException
-   *              if the slug is not a valid slug.
-   */
-  public void setSlug(String slug) throws BadSlugException {
-    if (Slug.validateSlug(slug)) {
-      this.slug = slug;
-    }
-    else {
-      throw new BadSlugException(slug + " is not a valid slug.");
-    }
   }
 
   /*
@@ -374,10 +346,9 @@ public class CollectorProcessDefinition implements IDomainModel {
    */
   @Override
   public String toString() {
-    return "CollectorProcessDefinition [name=" + name + ", slug=" + slug
-        + ", sensorId=" + sensorId + ", pollingInterval=" + pollingInterval
-        + ", depositoryId=" + depositoryId + ", properties=" + properties
-        + ", ownerId=" + ownerId + "]";
+    return "CollectorProcessDefinition [id=" + id + ", name=" + name + ", sensorId=" + sensorId
+        + ", pollingInterval=" + pollingInterval + ", depositoryId=" + depositoryId
+        + ", properties=" + properties + ", ownerId=" + ownerId + "]";
   }
 
 }

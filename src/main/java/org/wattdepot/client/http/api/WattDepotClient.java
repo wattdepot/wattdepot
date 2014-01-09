@@ -168,7 +168,7 @@ public class WattDepotClient implements WattDepotInterface {
   public void deleteCollectorProcessDefinition(CollectorProcessDefinition process)
       throws IdNotFoundException {
     ClientResource client = makeClient(this.organizationId + "/" + Labels.COLLECTOR_PROCESS_DEFINITION
-        + "/" + process.getSlug());
+        + "/" + process.getId());
     CollectorProcessDefinitionResource resource = client
         .wrap(CollectorProcessDefinitionResource.class);
     try {
@@ -191,7 +191,7 @@ public class WattDepotClient implements WattDepotInterface {
   @Override
   public void deleteDepository(Depository depository) throws IdNotFoundException {
     ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
-        + depository.getSlug());
+        + depository.getId());
     DepositoryResource resource = client.wrap(DepositoryResource.class);
     try {
       resource.remove();
@@ -213,7 +213,7 @@ public class WattDepotClient implements WattDepotInterface {
   @Override
   public void deleteLocation(SensorLocation sensorLocation) throws IdNotFoundException {
     ClientResource client = makeClient(this.organizationId + "/" + Labels.LOCATION + "/"
-        + sensorLocation.getSlug());
+        + sensorLocation.getId());
     SensorLocationResource resource = client.wrap(SensorLocationResource.class);
     try {
       resource.remove();
@@ -237,7 +237,7 @@ public class WattDepotClient implements WattDepotInterface {
   public void deleteMeasurement(Depository depository, Measurement measurement)
       throws IdNotFoundException {
     ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
-        + depository.getSlug() + "/" + Labels.MEASUREMENT + "/" + measurement.getSlug());
+        + depository.getId() + "/" + Labels.MEASUREMENT + "/" + measurement.getSlug());
     DepositoryMeasurementResource resource = client.wrap(DepositoryMeasurementResource.class);
     try {
       resource.remove();
@@ -258,7 +258,7 @@ public class WattDepotClient implements WattDepotInterface {
   @Override
   public void deleteMeasurementType(MeasurementType type) throws IdNotFoundException {
     ClientResource client = makeClient(Labels.PUBLIC + "/" + Labels.MEASUREMENT_TYPE + "/"
-        + type.getSlug());
+        + type.getId());
     MeasurementTypeResource resource = client.wrap(MeasurementTypeResource.class);
     try {
       resource.remove();
@@ -278,7 +278,7 @@ public class WattDepotClient implements WattDepotInterface {
    */
   @Override
   public void deleteSensor(Sensor sensor) throws IdNotFoundException {
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.SENSOR + "/" + sensor.getSlug());
+    ClientResource client = makeClient(this.organizationId + "/" + Labels.SENSOR + "/" + sensor.getId());
     SensorResource resource = client.wrap(SensorResource.class);
     try {
       resource.remove();
@@ -299,7 +299,7 @@ public class WattDepotClient implements WattDepotInterface {
   @Override
   public void deleteSensorGroup(SensorGroup group) throws IdNotFoundException {
     ClientResource client = makeClient(this.organizationId + "/" + Labels.SENSOR_GROUP + "/"
-        + group.getSlug());
+        + group.getId());
     SensorGroupResource resource = client.wrap(SensorGroupResource.class);
     try {
       resource.remove();
@@ -322,7 +322,7 @@ public class WattDepotClient implements WattDepotInterface {
   @Override
   public void deleteSensorModel(SensorModel model) throws IdNotFoundException {
     ClientResource client = makeClient(Labels.PUBLIC + "/" + Labels.SENSOR_MODEL + "/"
-        + model.getSlug());
+        + model.getId());
     SensorModelResource resource = client.wrap(SensorModelResource.class);
     try {
       resource.remove();
@@ -477,7 +477,7 @@ public class WattDepotClient implements WattDepotInterface {
   public MeasurementList getMeasurements(Depository depository, Sensor sensor, Date start, Date end) {
     try {
       ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
-          + depository.getSlug() + "/" + Labels.MEASUREMENTS + "/" + "?sensor=" + sensor.getSlug()
+          + depository.getId() + "/" + Labels.MEASUREMENTS + "/" + "?sensor=" + sensor.getId()
           + "&start=" + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end));
       DepositoryMeasurementsResource resource = client.wrap(DepositoryMeasurementsResource.class);
       MeasurementList ret = resource.retrieve();
@@ -659,8 +659,8 @@ public class WattDepotClient implements WattDepotInterface {
       throws NoMeasurementException {
     ClientResource client = null;
     try {
-      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getSlug() + "/"
-          + Labels.VALUE + "/" + "?sensor=" + sensor.getSlug() + "&timestamp="
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId() + "/"
+          + Labels.VALUE + "/" + "?sensor=" + sensor.getId() + "&timestamp="
           + DateConvert.convertDate(timestamp));
       DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
       MeasuredValue ret = resource.retrieve();
@@ -688,8 +688,8 @@ public class WattDepotClient implements WattDepotInterface {
       throws NoMeasurementException {
     ClientResource client = null;
     try {
-      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getSlug() + "/"
-          + Labels.VALUE + "/" + "?sensor=" + sensor.getSlug() + "&start="
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId() + "/"
+          + Labels.VALUE + "/" + "?sensor=" + sensor.getId() + "&start="
           + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end));
       DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
       MeasuredValue ret = resource.retrieve();
@@ -715,8 +715,8 @@ public class WattDepotClient implements WattDepotInterface {
       throws NoMeasurementException, MeasurementGapException {
     ClientResource client = null;
     try {
-      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getSlug() + "/"
-          + Labels.VALUE + "/" + "?sensor=" + sensor.getSlug() + "&start="
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId() + "/"
+          + Labels.VALUE + "/" + "?sensor=" + sensor.getId() + "&start="
           + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&gap="
           + gapSeconds);
       DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
@@ -743,8 +743,8 @@ public class WattDepotClient implements WattDepotInterface {
       throws NoMeasurementException, MeasurementGapException {
     ClientResource client = null;
     try {
-      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getSlug() + "/"
-          + Labels.VALUE + "/" + "?sensor=" + sensor.getSlug() + "&timestamp="
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId() + "/"
+          + Labels.VALUE + "/" + "?sensor=" + sensor.getId() + "&timestamp="
           + DateConvert.convertDate(timestamp) + "&gap=" + gapSeconds);
       DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
       MeasuredValue ret = resource.retrieve();
@@ -867,7 +867,7 @@ public class WattDepotClient implements WattDepotInterface {
           + depository.getMeasurementType() + " not " + measurement.getMeasurementType());
     }
     ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
-        + depository.getSlug() + "/" + Labels.MEASUREMENT + "/");
+        + depository.getId() + "/" + Labels.MEASUREMENT + "/");
     DepositoryMeasurementPutResource resource = client.wrap(DepositoryMeasurementPutResource.class);
     try {
       resource.store(measurement);
@@ -961,7 +961,7 @@ public class WattDepotClient implements WattDepotInterface {
   @Override
   public void updateCollectorProcessDefinition(CollectorProcessDefinition process) {
     ClientResource client = makeClient(this.organizationId + "/" + Labels.COLLECTOR_PROCESS_DEFINITION
-        + "/" + process.getSlug());
+        + "/" + process.getId());
     CollectorProcessDefinitionResource resource = client
         .wrap(CollectorProcessDefinitionResource.class);
     try {
@@ -992,7 +992,7 @@ public class WattDepotClient implements WattDepotInterface {
   @Override
   public void updateLocation(SensorLocation sensorLocation) {
     ClientResource client = makeClient(this.organizationId + "/" + Labels.LOCATION + "/"
-        + sensorLocation.getSlug());
+        + sensorLocation.getId());
     SensorLocationResource resource = client.wrap(SensorLocationResource.class);
     try {
       resource.update(sensorLocation);
@@ -1012,7 +1012,7 @@ public class WattDepotClient implements WattDepotInterface {
   @Override
   public void updateMeasurementType(MeasurementType type) {
     ClientResource client = makeClient(Labels.PUBLIC + "/" + Labels.MEASUREMENT_TYPE + "/"
-        + type.getSlug());
+        + type.getId());
     MeasurementTypeResource resource = client.wrap(MeasurementTypeResource.class);
     try {
       resource.update(type);
@@ -1031,7 +1031,7 @@ public class WattDepotClient implements WattDepotInterface {
    */
   @Override
   public void updateSensor(Sensor sensor) {
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.SENSOR + "/" + sensor.getSlug());
+    ClientResource client = makeClient(this.organizationId + "/" + Labels.SENSOR + "/" + sensor.getId());
     SensorResource resource = client.wrap(SensorResource.class);
     try {
       resource.update(sensor);
@@ -1051,7 +1051,7 @@ public class WattDepotClient implements WattDepotInterface {
   @Override
   public void updateSensorGroup(SensorGroup group) {
     ClientResource client = makeClient(this.organizationId + "/" + Labels.SENSOR_GROUP + "/"
-        + group.getSlug());
+        + group.getId());
     SensorGroupResource resource = client.wrap(SensorGroupResource.class);
     try {
       resource.update(group);
@@ -1071,7 +1071,7 @@ public class WattDepotClient implements WattDepotInterface {
   @Override
   public void updateSensorModel(SensorModel model) {
     ClientResource client = makeClient(Labels.PUBLIC + "/" + Labels.SENSOR_MODEL + "/"
-        + model.getSlug());
+        + model.getId());
     SensorModelResource resource = client.wrap(SensorModelResource.class);
     try {
       resource.update(model);

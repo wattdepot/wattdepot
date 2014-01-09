@@ -86,9 +86,9 @@ public class WattDepotComponent extends Component {
     realm.setName("WattDepot Security");
     getRealms().add(realm);
     for (Organization group : app.getDepot().getOrganizations()) {
-      app.getRoles().add(new Role(group.getSlug()));
+      app.getRoles().add(new Role(group.getId()));
       for (String userId : group.getUsers()) {
-        UserPassword up = app.getDepot().getUserPassword(userId, group.getSlug());
+        UserPassword up = app.getDepot().getUserPassword(userId, group.getId());
         User user = null;
         if (userId.equals(UserInfo.ROOT.getUid())) {
           // There isn't a UserInfo stored in persistence for ROOT.
@@ -97,12 +97,12 @@ public class WattDepotComponent extends Component {
               UserInfo.ROOT.getEmail());
         }
         else {
-          UserInfo info = app.getDepot().getUser(userId, group.getSlug());
+          UserInfo info = app.getDepot().getUser(userId, group.getId());
           user = new User(info.getUid(), up.getPlainText(),
               info.getFirstName(), info.getLastName(), info.getEmail());
         }
         realm.getUsers().add(user);
-        realm.map(user, app.getRole(group.getSlug()));
+        realm.map(user, app.getRole(group.getId()));
       }
     }
 

@@ -49,9 +49,9 @@ public class SensorLocationPutServerResource extends WattDepotServerResource
         "PUT /wattdepot/{" + orgId + "}/location/ with " + sensorLocation);
     try {
       depot.getOrganization(orgId);
-      if (!depot.getSensorLocationIds(orgId).contains(sensorLocation.getSlug())) {
+      if (!depot.getSensorLocationIds(orgId).contains(sensorLocation.getId())) {
         try {
-          depot.defineSensorLocation(sensorLocation.getSlug(),
+          depot.defineSensorLocation(sensorLocation.getId(),
               sensorLocation.getName(), sensorLocation.getLatitude(),
               sensorLocation.getLongitude(), sensorLocation.getAltitude(),
               sensorLocation.getDescription(), orgId);

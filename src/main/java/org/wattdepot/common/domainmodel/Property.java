@@ -24,8 +24,6 @@ package org.wattdepot.common.domainmodel;
  * @author Cam Moore
  */
 public class Property {
-  /** persistence id. */
-  private Long id;
   /** The key. */
   private String key;
   /** The value. */
@@ -41,10 +39,8 @@ public class Property {
   /**
    * Creates a new Property with the given key and value.
    * 
-   * @param key
-   *          The key.
-   * @param value
-   *          The value.
+   * @param key The key.
+   * @param value The value.
    */
   public Property(String key, String value) {
     super();
@@ -117,16 +113,14 @@ public class Property {
   }
 
   /**
-   * @param key
-   *          the key to set
+   * @param key the key to set
    */
   public void setKey(String key) {
     this.key = key;
   }
 
   /**
-   * @param value
-   *          the value to set
+   * @param value the value to set
    */
   public void setValue(String value) {
     this.value = value;
@@ -141,19 +135,4 @@ public class Property {
   public String toString() {
     return "Property [key=" + key + ", value=" + value + "]";
   }
-
-  /**
-   * @return the id
-   */
-  public Long getId() {
-    return id;
-  }
-
-  /**
-   * @param id the id to set
-   */
-  public void setId(Long id) {
-    this.id = id;
-  }
-  
 }

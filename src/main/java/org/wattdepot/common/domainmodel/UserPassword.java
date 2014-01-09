@@ -36,7 +36,7 @@ public class UserPassword {
   /** The password for the admin user. */
   public static final UserPassword ADMIN = new UserPassword(UserInfo.ROOT.getUid(),
       UserInfo.ROOT.getOrganizationId(), "admin");
-  private String id;
+  private String uid;
   private String encryptedPassword;
   private String plainText;
   private String orgId;
@@ -68,7 +68,7 @@ public class UserPassword {
    *          The plain text password.
    */
   public UserPassword(String id, String orgId, String plainTextPassword) {
-    this.id = id;
+    this.uid = id;
     this.plainText = plainTextPassword;
     this.encryptedPassword = passwordEncryptor.encryptPassword(plainTextPassword);
     this.orgId = orgId;
@@ -111,12 +111,12 @@ public class UserPassword {
     else if (!plainText.equals(other.plainText)) {
       return false;
     }
-    if (id == null) {
-      if (other.id != null) {
+    if (uid == null) {
+      if (other.uid != null) {
         return false;
       }
     }
-    else if (!id.equals(other.id)) {
+    else if (!uid.equals(other.uid)) {
       return false;
     }
     if (orgId == null) {
@@ -140,8 +140,8 @@ public class UserPassword {
   /**
    * @return the id
    */
-  public String getId() {
-    return id;
+  public String getUid() {
+    return uid;
   }
 
   /**
@@ -168,7 +168,7 @@ public class UserPassword {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((plainText == null) ? 0 : plainText.hashCode());
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((uid == null) ? 0 : uid.hashCode());
     result = prime * result + ((orgId == null) ? 0 : orgId.hashCode());
     return result;
   }
@@ -185,8 +185,8 @@ public class UserPassword {
    * @param id
    *          the id to set
    */
-  public void setId(String id) {
-    this.id = id;
+  public void setUid(String id) {
+    this.uid = id;
   }
 
   /**
@@ -222,6 +222,6 @@ public class UserPassword {
    */
   @Override
   public String toString() {
-    return "UserPassword [id=" + id + ", orgId=" + orgId + ", encryptedPassword=" + encryptedPassword + "]";
+    return "UserPassword [id=" + uid + ", orgId=" + orgId + ", encryptedPassword=" + encryptedPassword + "]";
   }
 }

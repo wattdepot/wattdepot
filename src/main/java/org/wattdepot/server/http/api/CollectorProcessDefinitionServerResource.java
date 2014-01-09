@@ -116,8 +116,8 @@ public class CollectorProcessDefinitionServerResource extends WattDepotServerRes
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
-    if (definition.getSlug().equals(definitionId)) {
-      if (depot.getCollectorProcessDefinitionIds(orgId).contains(definition.getSlug())) {
+    if (definition.getId().equals(definitionId)) {
+      if (depot.getCollectorProcessDefinitionIds(orgId).contains(definition.getId())) {
         try {
           depot.updateCollectorProcessDefinition(definition);
         }

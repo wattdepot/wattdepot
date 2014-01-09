@@ -104,22 +104,22 @@ public class DepositoryValueServer extends WattDepotServerResource {
           else if (timestamp != null) {
             time = DateConvert.parseCalStringToDate(timestamp);
             if (gapSeconds != null) {
-              value = deposit.getValue(sensor.getSlug(), time,
+              value = deposit.getValue(sensor.getId(), time,
                   Long.parseLong(gapSeconds));
             }
             else {
-              value = deposit.getValue(sensor.getSlug(), time);
+              value = deposit.getValue(sensor.getId(), time);
             }
           }
           else if (start != null && end != null) {
             startDate = DateConvert.parseCalStringToDate(start);
             endDate = DateConvert.parseCalStringToDate(end);
             if (gapSeconds != null) {
-              value = deposit.getValue(sensor.getSlug(), startDate, endDate,
+              value = deposit.getValue(sensor.getId(), startDate, endDate,
                   Long.parseLong(gapSeconds));
             }
             else {
-              value = deposit.getValue(sensor.getSlug(), startDate, endDate);
+              value = deposit.getValue(sensor.getId(), startDate, endDate);
             }
           }
 

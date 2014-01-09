@@ -59,7 +59,7 @@ public class UserPasswordImpl extends UserPassword {
    *          The UserPassword to clone.
    */
   public UserPasswordImpl(UserPassword password) {
-    super(password.getId(), password.getOrganizationId(), password
+    super(password.getUid(), password.getOrganizationId(), password
         .getPlainText());
   }
 
@@ -114,9 +114,9 @@ public class UserPasswordImpl extends UserPassword {
    * @see org.wattdepot.common.domainmodel.UserPassword#getId()
    */
   @Override
-  public String getId() {
+  public String getUid() {
     // TODO Auto-generated method stub
-    return super.getId();
+    return super.getUid();
   }
 
   /*
@@ -180,9 +180,9 @@ public class UserPasswordImpl extends UserPassword {
    * @see org.wattdepot.common.domainmodel.UserPassword#setId(java.lang.String)
    */
   @Override
-  public void setId(String id) {
+  public void setUid(String id) {
     // TODO Auto-generated method stub
-    super.setId(id);
+    super.setUid(id);
   }
 
   /*
@@ -238,7 +238,7 @@ public class UserPasswordImpl extends UserPassword {
    */
   @Override
   public String toString() {
-    return "UserPasswordImpl [pk=" + pk + ", id=" + getId() + ", orgId="
+    return "UserPasswordImpl [pk=" + pk + ", id=" + getUid() + ", orgId="
         + getOrganizationId() + ", encryptedPassword=" + getEncryptedPassword()
         + "]";
   }

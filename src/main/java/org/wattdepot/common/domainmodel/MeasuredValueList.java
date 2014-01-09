@@ -22,13 +22,13 @@ import java.util.ArrayList;
 
 /**
  * MeasuredValueList - a list of measured values.
- *
+ * 
  * @author Yongwen Xu
- *
+ * 
  */
 public class MeasuredValueList {
   private ArrayList<MeasuredValue> measuredValues;
-  
+
   /**
    * Default Constructor.
    */
@@ -50,7 +50,9 @@ public class MeasuredValueList {
     this.measuredValues = measuredValues;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.Object#toString()
    */
   @Override

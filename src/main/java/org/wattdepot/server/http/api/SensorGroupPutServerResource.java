@@ -55,9 +55,9 @@ public class SensorGroupPutServerResource extends WattDepotServerResource
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
     try {
-      if (!depot.getSensorGroupIds(orgId).contains(sensorgroup.getSlug())) {
+      if (!depot.getSensorGroupIds(orgId).contains(sensorgroup.getId())) {
         try {
-          depot.defineSensorGroup(sensorgroup.getSlug(), sensorgroup.getName(),
+          depot.defineSensorGroup(sensorgroup.getId(), sensorgroup.getName(),
               sensorgroup.getSensors(), orgId);
         }
         catch (UniqueIdException e) {

@@ -21,14 +21,14 @@ package org.wattdepot.common.domainmodel;
 import java.util.ArrayList;
 
 /**
- * LocationList - Attempt at getting a list across the wire.
- *
+ * LocationList - List of SensorLocations. 
+ * 
  * @author Cam Moore
- *
+ * 
  */
 public class SensorLocationList {
   private ArrayList<SensorLocation> sensorLocations;
-  
+
   /**
    * Default Constructor.
    */

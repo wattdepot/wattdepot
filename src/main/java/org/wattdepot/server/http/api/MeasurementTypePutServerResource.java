@@ -48,10 +48,10 @@ public class MeasurementTypePutServerResource extends WattDepotServerResource
     getLogger().log(Level.INFO,
         "PUT /wattdepot/measurement-type/ with " + measurementType);
     if (isInRole("admin")) {
-      MeasurementType mt = depot.getMeasurementType(measurementType.getSlug());
+      MeasurementType mt = depot.getMeasurementType(measurementType.getId());
       if (mt == null) {
         try {
-          depot.defineMeasurementType(measurementType.getSlug(),
+          depot.defineMeasurementType(measurementType.getId(),
               measurementType.getName(), measurementType.getUnits());
         }
         catch (UniqueIdException e) {

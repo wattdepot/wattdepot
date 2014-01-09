@@ -54,7 +54,7 @@ public class DepositoryPutServerResource extends WattDepotServerResource
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
     try {
-      depot.defineDepository(depository.getSlug(), depository.getName(),
+      depot.defineDepository(depository.getId(), depository.getName(),
           depository.getMeasurementType(), orgId);
     }
     catch (UniqueIdException e) {

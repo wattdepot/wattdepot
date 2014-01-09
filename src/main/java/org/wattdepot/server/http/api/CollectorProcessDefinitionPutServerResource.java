@@ -60,12 +60,12 @@ public class CollectorProcessDefinitionPutServerResource extends
           + " is not a defined Organization.");
     }
     if (!depot.getCollectorProcessDefinitionIds(orgId).contains(
-        definition.getSlug())) {
+        definition.getId())) {
       try {
         Sensor s = depot.getSensor(definition.getSensorId(), orgId);
         if (s != null) {
-          depot.defineCollectorProcessDefinition(definition.getSlug(),
-              definition.getName(), s.getSlug(),
+          depot.defineCollectorProcessDefinition(definition.getId(),
+              definition.getName(), s.getId(),
               definition.getPollingInterval(), definition.getDepositoryId(),
               definition.getProperties(), orgId);
         }

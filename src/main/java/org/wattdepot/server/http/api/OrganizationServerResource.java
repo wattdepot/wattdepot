@@ -128,7 +128,7 @@ public class OrganizationServerResource extends WattDepotServerResource implemen
       // update the Realm
       WattDepotApplication app = (WattDepotApplication) getApplication();
       // create the new Role for the group
-      String roleName = organization.getSlug();
+      String roleName = organization.getId();
       Role role = app.getRole(roleName);
       MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
       for (String userId : organization.getUsers()) {

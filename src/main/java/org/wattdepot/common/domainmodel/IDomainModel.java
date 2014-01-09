@@ -44,32 +44,28 @@ public interface IDomainModel {
    * 
    * @return The slug for this instance.
    */
-  public String getSlug();
+  public String getId();
 
   /**
    * Sets the name of the instance. If the slug is not set it sets the slug as
    * well.
    * 
-   * @param name
-   *          the name of the instance.
+   * @param name the name of the instance.
    */
   public void setName(String name);
 
   /**
    * Sets the id of the owner of this instance.
    * 
-   * @param ownerId
-   *          the id of the owner.
+   * @param ownerId the id of the owner.
    */
   public void setOwnerId(String ownerId);
 
   /**
    * Sets the instance's slug.
    * 
-   * @param slug
-   *          the new slug.
-   * @throws BadSlugException
-   *           if the slug is not a valid slug.
+   * @param id the new slug.
+   * @throws BadSlugException if the id is not a valid slug.
    */
-  public void setSlug(String slug) throws BadSlugException;
+  public void setId(String id) throws BadSlugException;
 }

@@ -241,7 +241,7 @@ public class SharkCollector extends MultiThreadedCollector {
       organizationId = cmd.getOptionValue("o");
     }
     else {
-      organizationId = Organization.ADMIN_GROUP.getSlug();
+      organizationId = Organization.ADMIN_GROUP.getId();
     }
     if (cmd.hasOption("p")) {
       password = cmd.getOptionValue("p");
@@ -495,7 +495,7 @@ public class SharkCollector extends MultiThreadedCollector {
    * @return true if the depository stores power measurements.
    */
   private boolean isPower() {
-    return measType.getSlug().startsWith("power");
+    return measType.getId().startsWith("power");
   }
 
   /**
@@ -595,7 +595,7 @@ public class SharkCollector extends MultiThreadedCollector {
     else {
       value = energy.to(measUnit).getEstimatedValue();
     }
-    meas = new Measurement(sensor.getSlug(), timestamp, value, measUnit);
+    meas = new Measurement(sensor.getId(), timestamp, value, measUnit);
     return meas;
   }
 

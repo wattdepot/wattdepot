@@ -138,8 +138,8 @@ public class OrganizationImpl extends Organization {
    * @see org.wattdepot.common.domainmodel.Organization#getSlug()
    */
   @Override
-  public String getSlug() {
-    return super.getSlug();
+  public String getId() {
+    return super.getId();
   }
 
   /*
@@ -191,8 +191,8 @@ public class OrganizationImpl extends Organization {
    * org.wattdepot.common.domainmodel.Organization#setSlug(java.lang.String)
    */
   @Override
-  public void setSlug(String slug) {
-    super.setSlug(slug);
+  public void setId(String slug) {
+    super.setId(slug);
   }
 
   /*

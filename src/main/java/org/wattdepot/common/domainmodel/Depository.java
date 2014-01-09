@@ -36,8 +36,8 @@ import org.wattdepot.common.util.Slug;
 public class Depository implements IDomainModel {
   /** Name of the Depository. */
   protected String name;
-  /** The slug used in URIs. */
-  protected String slug;
+  /** The unique id it is also a slug used in URIs. */
+  protected String id;
   /** Type of measurements stored in the Depository. */
   protected MeasurementType measurementType;
   /** The id of the owner of this depository. */
@@ -53,12 +53,10 @@ public class Depository implements IDomainModel {
   /**
    * Create a new Depository.
    * 
-   * @param name
-   *          The name of the Depository.
-   * @param measurementType
-   *          The type of the measurements this Depository accepts.
-   * @param ownerId
-   *          the id of the owner of the location.
+   * @param name The name of the Depository.
+   * @param measurementType The type of the measurements this Depository
+   *        accepts.
+   * @param ownerId the id of the owner of the location.
    */
   public Depository(String name, MeasurementType measurementType, String ownerId) {
     this(Slug.slugify(name), name, measurementType, ownerId);
@@ -67,26 +65,21 @@ public class Depository implements IDomainModel {
   /**
    * Create a new Depository.
    * 
-   * @param slug
-   *          The unique slug.
-   * @param name
-   *          The name of the Depository.
-   * @param measurementType
-   *          The type of the measurements this Depository accepts.
-   * @param ownerId
-   *          the id of the owner of the location.
+   * @param slug The unique slug.
+   * @param name The name of the Depository.
+   * @param measurementType The type of the measurements this Depository
+   *        accepts.
+   * @param ownerId the id of the owner of the location.
    */
-  public Depository(String slug, String name, MeasurementType measurementType,
-      String ownerId) {
+  public Depository(String slug, String name, MeasurementType measurementType, String ownerId) {
     this.name = name;
-    this.slug = slug;
+    this.id = slug;
     this.measurementType = measurementType;
     this.ownerId = ownerId;
   }
 
   /**
-   * @param meas
-   *          The measurement to delete.
+   * @param meas The measurement to delete.
    */
   public void deleteMeasurement(Measurement meas) {
     throw new RuntimeException("Not implemented.");
@@ -106,8 +99,7 @@ public class Depository implements IDomainModel {
       return true;
     }
     if (!getClass().isAssignableFrom(obj.getClass())
-        && !obj.getClass().isAssignableFrom(getClass())
-        && getClass() != obj.getClass()) {
+        && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
     try {
@@ -136,32 +128,34 @@ public class Depository implements IDomainModel {
   }
 
   /**
-   * @param sensorId
-   *          The id of the Sensor making the measurements.
+   * @param sensorId The id of the Sensor making the measurements.
    * @return The earliest measurement Value
-   * @throws NoMeasurementException
-   *           If there aren't any measurements around the time.
+   * @throws NoMeasurementException If there aren't any measurements around the
+   *         time.
    */
-  public MeasuredValue getEarliestMeasuredValue(String sensorId)
-      throws NoMeasurementException {
+  public MeasuredValue getEarliestMeasuredValue(String sensorId) throws NoMeasurementException {
     throw new RuntimeException("Not implemented");
   }
 
   /**
-   * @param sensorId
-   *          The id of the Sensor making the measurements.
+   * @return the id.
+   */
+  public String getId() {
+    return id;
+  }
+
+  /**
+   * @param sensorId The id of the Sensor making the measurements.
    * @return The latest measurement Value
-   * @throws NoMeasurementException
-   *           If there aren't any measurements around the time.
+   * @throws NoMeasurementException If there aren't any measurements around the
+   *         time.
    */
-  public MeasuredValue getLatestMeasuredValue(String sensorId)
-      throws NoMeasurementException {
+  public MeasuredValue getLatestMeasuredValue(String sensorId) throws NoMeasurementException {
     throw new RuntimeException("Not implemented");
   }
 
   /**
-   * @param measId
-   *          The measurement id.
+   * @param measId The measurement id.
    * @return The Measurement with the given id or null.
    */
   public Measurement getMeasurement(String measId) {
@@ -169,8 +163,7 @@ public class Depository implements IDomainModel {
   }
 
   /**
-   * @param sensorId
-   *          the id of the Sensor.
+   * @param sensorId the id of the Sensor.
    * @return A list of all the measurements made by the Sensor.
    */
   public List<Measurement> getMeasurements(String sensorId) {
@@ -178,12 +171,9 @@ public class Depository implements IDomainModel {
   }
 
   /**
-   * @param sensorId
-   *          The id of the Sensor.
-   * @param start
-   *          The start of the interval.
-   * @param end
-   *          The end of the interval.
+   * @param sensorId The id of the Sensor.
+   * @param start The start of the interval.
+   * @param end The end of the interval.
    * @return A list of the measurements in the interval.
    */
   public List<Measurement> getMeasurements(String sensorId, Date start, Date end) {
@@ -212,60 +202,42 @@ public class Depository implements IDomainModel {
   }
 
   /**
-   * @return the slug
-   */
-  public String getSlug() {
-    return slug;
-  }
-
-  /**
-   * @param sensorId
-   *          The id of the Sensor making the measurements.
-   * @param timestamp
-   *          The time of the value.
+   * @param sensorId The id of the Sensor making the measurements.
+   * @param timestamp The time of the value.
    * @return The Value 'measured' at the given time, most likely an interpolated
    *         value.
-   * @throws NoMeasurementException
-   *           If there aren't any measurements around the time.
+   * @throws NoMeasurementException If there aren't any measurements around the
+   *         time.
    */
-  public Double getValue(String sensorId, Date timestamp)
-      throws NoMeasurementException {
+  public Double getValue(String sensorId, Date timestamp) throws NoMeasurementException {
     throw new RuntimeException("Not implemented.");
   }
 
   /**
-   * @param sensorId
-   *          The id of the Sensor making the measurements.
-   * @param start
-   *          The start of the period.
-   * @param end
-   *          The end of the period.
+   * @param sensorId The id of the Sensor making the measurements.
+   * @param start The start of the period.
+   * @param end The end of the period.
    * @return The value measured the difference between the end value and the
    *         start value.
-   * @throws NoMeasurementException
-   *           if there are no measurements around the start or end time.
+   * @throws NoMeasurementException if there are no measurements around the
+   *         start or end time.
    */
-  public Double getValue(String sensorId, Date start, Date end)
-      throws NoMeasurementException {
+  public Double getValue(String sensorId, Date start, Date end) throws NoMeasurementException {
     throw new RuntimeException("Not implemented.");
   }
 
   /**
-   * @param sensorId
-   *          The id of the Sensor making the measurements.
-   * @param start
-   *          The start of the interval.
-   * @param end
-   *          The end of the interval
-   * @param gapSeconds
-   *          The maximum number of seconds that measurements need to be within
-   *          the start and end.
+   * @param sensorId The id of the Sensor making the measurements.
+   * @param start The start of the interval.
+   * @param end The end of the interval
+   * @param gapSeconds The maximum number of seconds that measurements need to
+   *        be within the start and end.
    * @return The value measured the difference between the end value and the
    *         start value.
-   * @throws NoMeasurementException
-   *           if there are no measurements around the start or end time.
-   * @throws MeasurementGapException
-   *           if the measurements around start or end are too far apart.
+   * @throws NoMeasurementException if there are no measurements around the
+   *         start or end time.
+   * @throws MeasurementGapException if the measurements around start or end are
+   *         too far apart.
    */
   public Double getValue(String sensorId, Date start, Date end, Long gapSeconds)
       throws NoMeasurementException, MeasurementGapException {
@@ -273,19 +245,16 @@ public class Depository implements IDomainModel {
   }
 
   /**
-   * @param sensorId
-   *          The id of the Sensor making the measurements.
-   * @param timestamp
-   *          The time of the value.
-   * @param gapSeconds
-   *          The maximum number of seconds that measurements need to be within
-   *          the start and end.
+   * @param sensorId The id of the Sensor making the measurements.
+   * @param timestamp The time of the value.
+   * @param gapSeconds The maximum number of seconds that measurements need to
+   *        be within the start and end.
    * @return The Value 'measured' at the given time, most likely an interpolated
    *         value.
-   * @throws NoMeasurementException
-   *           If there aren't any measurements around the time.
-   * @throws MeasurementGapException
-   *           if the measurements around timestamp are too far apart.
+   * @throws NoMeasurementException If there aren't any measurements around the
+   *         time.
+   * @throws MeasurementGapException if the measurements around timestamp are
+   *         too far apart.
    */
   public Double getValue(String sensorId, Date timestamp, Long gapSeconds)
       throws NoMeasurementException, MeasurementGapException {
@@ -301,8 +270,7 @@ public class Depository implements IDomainModel {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result
-        + ((measurementType == null) ? 0 : measurementType.hashCode());
+    result = prime * result + ((measurementType == null) ? 0 : measurementType.hashCode());
     result = prime * result + ((name == null) ? 0 : name.hashCode());
     return result;
   }
@@ -310,15 +278,13 @@ public class Depository implements IDomainModel {
   /**
    * Determines if the given group is the owner of this location.
    * 
-   * @param group
-   *          the UserGroup to check.
+   * @param group the UserGroup to check.
    * @return True if the group owns the Location or the group is the
    *         ADMIN_GROUP.
    */
   public boolean isOwner(Organization group) {
     if (ownerId != null
-        && (ownerId.equals(group.getSlug()) || group
-            .equals(Organization.ADMIN_GROUP))) {
+        && (ownerId.equals(group.getId()) || group.equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;
@@ -333,49 +299,43 @@ public class Depository implements IDomainModel {
   }
 
   /**
-   * @param meas
-   *          The measurement to store.
-   * @throws MeasurementTypeException
-   *           if the type of the measurement doesn't match the Depository
-   *           measurement type.
+   * @param meas The measurement to store.
+   * @throws MeasurementTypeException if the type of the measurement doesn't
+   *         match the Depository measurement type.
    */
   public void putMeasurement(Measurement meas) throws MeasurementTypeException {
     throw new RuntimeException("Not implemented.");
   }
 
   /**
-   * @param measurementType
-   *          the measurementType to set
+   * @param id the id to set
+   */
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  /**
+   * @param measurementType the measurementType to set
    */
   public void setMeasurementType(MeasurementType measurementType) {
     this.measurementType = measurementType;
   }
 
   /**
-   * @param name
-   *          the name to set.
+   * @param name the name to set.
    */
   public void setName(String name) {
     this.name = name;
-    if (this.slug == null) {
-      this.slug = Slug.slugify(name);
+    if (this.id == null) {
+      this.id = Slug.slugify(name);
     }
   }
 
   /**
-   * @param ownerId
-   *          the id of the owner.
+   * @param ownerId the id of the owner.
    */
   public void setOwnerId(String ownerId) {
     this.ownerId = ownerId;
-  }
-
-  /**
-   * @param slug
-   *          the slug to set
-   */
-  public void setSlug(String slug) {
-    this.slug = slug;
   }
 
   /*
@@ -385,8 +345,7 @@ public class Depository implements IDomainModel {
    */
   @Override
   public String toString() {
-    return "Depository [name=" + name + ", slug=" + slug + ", measurementType="
-        + measurementType + "]";
+    return "Depository [id=" + id + ", name=" + name + ", measurementType=" + measurementType + "]";
   }
 
 }

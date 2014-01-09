@@ -183,7 +183,7 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
   @Override
   public void putUserPassword(UserPassword password) {
     ClientResource client = makeClient(password.getOrganizationId() + "/" + Labels.USER_PASSWORD
-        + "/" + password.getId());
+        + "/" + password.getUid());
     UserPasswordResource resource = client.wrap(UserPasswordResource.class);
     resource.store(password);
     client.release();
@@ -198,7 +198,7 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    */
   @Override
   public void updateOrganization(Organization org) {
-    ClientResource client = makeClient("admin/" + Labels.ORGANIZATION + "/" + org.getSlug());
+    ClientResource client = makeClient("admin/" + Labels.ORGANIZATION + "/" + org.getId());
     OrganizationResource resource = client.wrap(OrganizationResource.class);
     try {
       resource.update(org);

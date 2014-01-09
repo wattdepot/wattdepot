@@ -30,8 +30,8 @@ import org.wattdepot.common.util.Slug;
  * 
  */
 public class Sensor implements IDomainModel {
-  /** A unique slug for the Sensor usable in URLs. */
-  private String slug;
+  /** A unique id for the Sensor usable in URLs. */
+  private String id;
   /** The name of the Sensor. */
   private String name;
   /** The URI to the sensor. */
@@ -53,42 +53,28 @@ public class Sensor implements IDomainModel {
   }
 
   /**
-   * @param name
-   *          The name.
-   * @param uri
-   *          The URI to the meter.
-   * @param locationId
-   *          The id of the meter's location.
-   * @param modelId
-   *          The id of the meter's model.
-   * @param ownerId
-   *          the id of the owner of the sensor.
+   * @param name The name.
+   * @param uri The URI to the meter.
+   * @param locationId The id of the meter's location.
+   * @param modelId The id of the meter's model.
+   * @param ownerId the id of the owner of the sensor.
    */
-  public Sensor(String name, String uri, String locationId, String modelId,
-      String ownerId) {
-    this(Slug.slugify(name), name, uri, locationId, modelId, new HashSet<Property>(),
-        ownerId);
+  public Sensor(String name, String uri, String locationId, String modelId, String ownerId) {
+    this(Slug.slugify(name), name, uri, locationId, modelId, new HashSet<Property>(), ownerId);
   }
 
   /**
-   * @param slug
-   *          The unique slug.
-   * @param name
-   *          The name.
-   * @param uri
-   *          The URI to the meter.
-   * @param locationId
-   *          The id of the meter's location.
-   * @param modelId
-   *          The id of the meter's model.
-   * @param properties
-   *          The properties associated with this Sensor.
-   * @param ownerId
-   *          the id of the owner of the sensor.
+   * @param id The unique id.
+   * @param name The name.
+   * @param uri The URI to the meter.
+   * @param locationId The id of the meter's location.
+   * @param modelId The id of the meter's model.
+   * @param properties The properties associated with this Sensor.
+   * @param ownerId the id of the owner of the sensor.
    */
-  public Sensor(String slug, String name, String uri, String locationId,
-      String modelId, Set<Property> properties, String ownerId) {
-    this.slug = slug;
+  public Sensor(String id, String name, String uri, String locationId, String modelId,
+      Set<Property> properties, String ownerId) {
+    this.id = id;
     this.name = name;
     this.uri = uri;
     this.locationId = locationId;
@@ -98,8 +84,7 @@ public class Sensor implements IDomainModel {
   }
 
   /**
-   * @param e
-   *          The Property to add.
+   * @param e The Property to add.
    * @return true if added.
    * @see java.util.List#add(java.lang.Object)
    */
@@ -121,17 +106,16 @@ public class Sensor implements IDomainModel {
       return false;
     }
     if (!getClass().isAssignableFrom(obj.getClass())
-        && !obj.getClass().isAssignableFrom(getClass())
-        && getClass() != obj.getClass()) {
+        && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
     Sensor other = (Sensor) obj;
-    if (slug == null) {
-      if (other.slug != null) {
+    if (id == null) {
+      if (other.id != null) {
         return false;
       }
     }
-    else if (!slug.equals(other.slug)) {
+    else if (!id.equals(other.id)) {
       return false;
     }
     if (name == null) {
@@ -188,8 +172,8 @@ public class Sensor implements IDomainModel {
   /**
    * @return the id
    */
-  public String getSlug() {
-    return slug;
+  public String getId() {
+    return id;
   }
 
   /**
@@ -221,8 +205,7 @@ public class Sensor implements IDomainModel {
   }
 
   /**
-   * @param key
-   *          The key.
+   * @param key The key.
    * @return The value of associated with the key.
    */
   public Property getProperty(String key) {
@@ -257,14 +240,12 @@ public class Sensor implements IDomainModel {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((slug == null) ? 0 : slug.hashCode());
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
     result = prime * result + ((name == null) ? 0 : name.hashCode());
-    result = prime * result
-        + ((locationId == null) ? 0 : locationId.hashCode());
+    result = prime * result + ((locationId == null) ? 0 : locationId.hashCode());
     result = prime * result + ((modelId == null) ? 0 : modelId.hashCode());
     result = prime * result + ((ownerId == null) ? 0 : ownerId.hashCode());
-    result = prime * result
-        + ((properties == null) ? 0 : properties.hashCode());
+    result = prime * result + ((properties == null) ? 0 : properties.hashCode());
     result = prime * result + ((uri == null) ? 0 : uri.hashCode());
     return result;
   }
@@ -272,23 +253,20 @@ public class Sensor implements IDomainModel {
   /**
    * Determines if the given group is the owner of this location.
    * 
-   * @param group
-   *          the UserGroup to check.
+   * @param group the UserGroup to check.
    * @return True if the group owns the Location or the group is the
    *         ADMIN_GROUP.
    */
   public boolean isOwner(Organization group) {
     if (ownerId != null
-        && (ownerId.equals(group.getSlug()) || group
-            .equals(Organization.ADMIN_GROUP))) {
+        && (ownerId.equals(group.getId()) || group.equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;
   }
 
   /**
-   * @param o
-   *          The Property to remove.
+   * @param o The Property to remove.
    * @return true if removed.
    * @see java.util.List#remove(java.lang.Object)
    */
@@ -297,59 +275,52 @@ public class Sensor implements IDomainModel {
   }
 
   /**
-   * @param id
-   *          the id to set
+   * @param id the id to set
    */
-  public void setSlug(String id) {
-    this.slug = id;
+  public void setId(String id) {
+    this.id = id;
   }
 
   /**
-   * @param model
-   *          the id of the model to set
+   * @param model the id of the model to set
    */
   public void setModelId(String model) {
     this.modelId = model;
   }
 
   /**
-   * @param name
-   *          the name to set
+   * @param name the name to set
    */
   public void setName(String name) {
     this.name = name;
-    if (this.slug == null) {
-      this.slug = Slug.slugify(name);
+    if (this.id == null) {
+      this.id = Slug.slugify(name);
     }
   }
 
   /**
-   * @param ownerId
-   *          the id of the owner to set
+   * @param ownerId the id of the owner to set
    */
   public void setOwnerId(String ownerId) {
     this.ownerId = ownerId;
   }
 
   /**
-   * @param properties
-   *          the properties to set
+   * @param properties the properties to set
    */
   public void setProperties(Set<Property> properties) {
     this.properties = properties;
   }
 
   /**
-   * @param sensorLocation
-   *          the sensorLocation to set
+   * @param sensorLocation the sensorLocation to set
    */
   public void setSensorLocationId(String sensorLocation) {
     this.locationId = sensorLocation;
   }
 
   /**
-   * @param uri
-   *          the uri to set
+   * @param uri the uri to set
    */
   public void setUri(String uri) {
     this.uri = uri;
@@ -362,9 +333,8 @@ public class Sensor implements IDomainModel {
    */
   @Override
   public String toString() {
-    return "Sensor [slug=" + slug + ", name=" + name + ", uri=" + uri
-        + ", locationId=" + locationId + ", modelId=" + modelId
-        + ", properties=" + properties + "]";
+    return "Sensor [id=" + id + ", name=" + name + ", uri=" + uri + ", locationId=" + locationId
+        + ", modelId=" + modelId + ", properties=" + properties + "]";
   }
 
 }

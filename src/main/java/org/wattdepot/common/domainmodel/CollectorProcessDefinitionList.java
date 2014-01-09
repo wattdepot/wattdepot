@@ -45,8 +45,7 @@ public class CollectorProcessDefinitionList {
   }
 
   /**
-   * @param definitions
-   *          the collector process definitions to set
+   * @param definitions the collector process definitions to set
    */
   public void setDefinitions(ArrayList<CollectorProcessDefinition> definitions) {
     this.definitions = definitions;

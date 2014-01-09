@@ -53,9 +53,9 @@ public class SensorPutServerResource extends WattDepotServerResource implements
     catch (IdNotFoundException e1) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
-    if (!depot.getSensorIds(orgId).contains(sensor.getSlug())) {
+    if (!depot.getSensorIds(orgId).contains(sensor.getId())) {
       try {
-        depot.defineSensor(sensor.getSlug(), sensor.getName(), sensor.getUri(),
+        depot.defineSensor(sensor.getId(), sensor.getName(), sensor.getUri(),
             sensor.getSensorLocationId(), sensor.getModelId(),
             sensor.getProperties(), orgId);
       }

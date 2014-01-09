@@ -22,13 +22,13 @@ import java.util.ArrayList;
 
 /**
  * UserInfoList - A list of UserInfo instances.
- *
+ * 
  * @author Cam Moore
- *
+ * 
  */
 public class UserInfoList {
   private ArrayList<UserInfo> users;
-  
+
   /**
    * Default Constructor.
    */

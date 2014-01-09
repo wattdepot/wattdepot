@@ -134,8 +134,8 @@ public class SensorModelImpl extends SensorModel {
    * @see org.wattdepot.common.domainmodel.SensorModel#getSlug()
    */
   @Override
-  public String getSlug() {
-    return super.getSlug();
+  public String getId() {
+    return super.getId();
   }
 
   /*
@@ -193,8 +193,8 @@ public class SensorModelImpl extends SensorModel {
    * @see org.wattdepot.common.domainmodel.SensorModel#setSlug(java.lang.String)
    */
   @Override
-  public void setSlug(String slug) throws BadSlugException {
-    super.setSlug(slug);
+  public void setId(String slug) throws BadSlugException {
+    super.setId(slug);
   }
 
   /*
