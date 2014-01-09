@@ -9,12 +9,8 @@ One of the important tasks of a WattDepot administrator is to define the set of 
 various values (admin name, admin password, server host name, etc.) are available in the System properties object.
 
 ```java
-/**
- * Create an organization called "uh" and two users. 
- */
 import java.util.HashSet;
 import java.util.Properties;
-
 import org.wattdepot.client.ClientProperties;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Property;
@@ -124,7 +120,6 @@ In addition, it assumes that data has been sent to the server.
 ```java
 import java.util.Date;
 import java.util.Properties;
-
 import org.wattdepot.client.ClientProperties;
 import org.wattdepot.client.http.api.WattDepotClient;
 import org.wattdepot.common.domainmodel.Depository;
