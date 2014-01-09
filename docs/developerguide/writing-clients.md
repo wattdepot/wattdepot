@@ -1,20 +1,18 @@
 # Writing clients
 
-Documents how to write clients.  Could base this on [previous documentation](https://code.google.com/p/wattdepot/wiki/WritingWattDepotClients).
+WattDepot clients can be written in any language that supports HTTP communication.  This page provides example code 
+illustrating common types of client operations using Java. 
 
-Here are some examples of Java clients accessing an WattDepot server:
+## Defining organizations and users
+
+One of the important tasks of a WattDepot administrator is to define the set of organizations and users in a server. While this can be accomplished through the web interface, it is also possible programmatically.  The code assumes that 
+various values (admin name, admin password, server host name, etc.) are available in the System properties object.
+
+(Changes from Yongwen's version:  (a) admin user name specified in properties (defaults to root, but is not hardwired as root; WattDepotAdminClient and no org-level admins; admin adds orgs and users.)
 
 ```java
 /**
- * WattDepotSysAdmin - Demo usage of WattDepotSysAdminClient for doing system administration
- *  of WattDepot. 
- *  
- *  The system administration can only be done via the built-in sys admin user called "admin".
- *  The password is specified by the WattDepot server configuration.
- *  
- *  The system administration includes:
- *    1. create or delete organizations
- *    2. create or delete organization users (admin or non-admin)
+ * Create an organization called "uh" and two users. 
  */
 import java.util.HashSet;
 import java.util.Properties;
@@ -23,70 +21,46 @@ import org.wattdepot.client.ClientProperties;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Property;
 
-public class WattDepotSysAdmin {
+public class DefineUhOrganization {
 
-  public void main() throws Exception {
+  // Get server details from System properties object.
+  private Properties props = System.getProperties();
+  private String serverURL = "http://" + props.get("wattdepot.server") + ":" + props.get("wattdepot.port") + "/";
+  private String adminUser = props.get("wattdepot.admin.name");
+  private String adminPassword = props.get("wattdepot.admin.password");
 
-    // get server url, username, passwor from system properties
-    Properties props = System.getProperties();
-    
-    String serverURL = "http://"
-        + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
-        + props.get(ClientProperties.PORT_KEY) + "/";
-    
-    // PROP 1: create a property called SYS_ADMIN_PASSWORD
-    String sysAdminPassword = (String)props.get(ClientProperties.SYS_ADMIN_PASSWORD);
-        
-    // 1. get an sys admin client connecting to a wattdepot server
-    // PROP 2: rename WattDepotAdminClient to WattDepotSysAdminClient
-    // PROP 3: since we only have one system admin (root) account, simply the WattDepotAdminClient
-    //   constructor to include only serverURL and sysAdminPassword
-    WattDepotSysAdminClient admin = new WattDepotSysAdminClient(serverURL, sysAdminPassword);    
-    
-    // 2. create an organization
-    // PROP 4: specify slug with the name and slug in the Organization constructor
-    Organization org = new Organization("University of Hawaii, Manoa", "uh");
-    admin.putOrganization(org);
+  // Note that various subclasses of WattDepotException will be thrown if calls fail.
+  public void main() throws WattDepotException {
 
-    // 3. create an organization admin user
-    // PROP 5: encapsulate user password into an User object, the restlet could return the
-    //    UserInfo object instead.
-    // PROP 6: introduce org admin user with the flag isAdmin
-    User uhAdmin = new User("uh_admin", "secret1", "UH", "Admin", "uh_admin@example.com", true,
-        new HashSet<Property>());
+    // Create an sys admin client connecting to a wattdepot server
+    WattDepotAdminClient admin = new WattDepotAdminClient(serverURL, adminUser, adminPassword);    
+    
+    // Create an organizational representation.
+    String uhID = "uh";
+    Organization uhOrg = new Organization(uhID, "University of Hawaii, Manoa");
 
-    // 4. create an organization non-admin user
-    User uhUser = new User("uh_user", "secret2", "UH", "User", "uh_user@example.com", false,
-        new HashSet<Property>());
-    
-    // 5. add the users to the organization
-    // PROP 7: use addUser() instead of org.getUsers().add() then admin.putUser()
-    org.addUser(uhAdmin);
-    org.addUser(uhUser);
-    
+    // Put the organization to the server.
+    admin.putOrganization(uhOrg);
+
+    // Create two users representations
+    User user1 = new User(uhID, "yxu", "password1");
+    User user2 = new User(uhID, "johnson", "password2");
+
+    // Put the users to the server.
+    admin.putUser(user1);
+    admin.putUser(user2);
   }
 }
 ```
 
-```java
-/**
- * WattDepotOrgAdmin - Demo usage of WattDepotClient for doing organization level administration
- *  of WattDepot. 
- *  
- *  The organization administration can only be done by the org admin user created by the sys admin.
- *  
- *  The org administration includes:
- *  1. create or delete Locations
- *  2. create or delete Sensors
- *  3. create or delete SensorGroups
- *  4. create or delete Depositories
- *  5. create or delete CollectorProcessDefinitions
- */
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
+##  Defining an organizational domain model
 
-import org.wattdepot.client.ClientProperties;
+Once the admin has defined at least one organization and one user, then that user can set up their
+organization's domain model.  Here is sample code for creating a simple domain model. 
+The username and password are provided through System properties. 
+
+```java
+import java.util.Properties;
 import org.wattdepot.client.http.api.WattDepotClient;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
@@ -95,61 +69,41 @@ import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.domainmodel.SensorLocation;
 
-public class WattDepotOrgAdmin {
+public class DefineUhDomainModel {
+
+  private Properties props = System.getProperties();
+  private String serverURL = "http://" + props.get("wattdepot.server") + ":" + props.get("wattdepot.port") + "/";
+  private String userName = System.getProperties().get("wattdepot.user.name");
+  private String userPassword = System.getProperties().get("wattdepot.user.password");
 
   public void main() throws Exception {
-
-    // get server url, username, passwor from system properties
-    Properties props = System.getProperties();
     
-    String serverURL = "http://"
-        + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
-        + props.get(ClientProperties.PORT_KEY) + "/";
-    String userName = (String)props.get(ClientProperties.USER_NAME);
-    String userPassword = (String)props.get(ClientProperties.USER_PASSWORD);
-    
-    // 1. get a client connect to the wattdepot server
-    // PROP 1: remove orgId from the wattdepotclient constructor since the system should know the
-    //   user's orgid.
-    WattDepotClient client = new WattDepotClient(serverURL, userName, userPassword);
+    // Create a client connection.
+    WattDepotClient client = new WattDepotClient(serverURL, "uh", userName, userPassword);
 
-    // PROP 1.1 The following org admin operations can only be done by org admin. 
-    
-    // 2. create a sensor location
-    // PROP 2: remove the "ownerID" from the API. It could be deferred from the client
-    SensorLocation loc = new SensorLocation("Location 1", new Double(21.294642), new Double(
-        -157.812727), new Double(30), "Demo Location");
-    client.putLocation(loc);
+    // Create a sensor location for the POST Building, Room 307.
+    SensorLocation post307Loc = new SensorLocation("post307", new Double(21.294642), new Double(-157.812727), new Double(30), "POST Room 307");
+    client.putLocation(post307Loc);
 
-    // 3. create sensors
-    // PROP 3: use "location" object instead of slug, remove ownerID from API
-    Sensor sensor1 = new Sensor("Sensor 1", "http://sensor1.example.com", loc, "shark");
-    client.putSensor(sensor1);
+    // 3. create two energy sensors for the two rooms in POST 307
+    Sensor post307A = new Sensor("post307A", "http://sensor1.example.com", post307Loc, "shark");
+    client.putSensor(post307A);
+    Sensor post307B = new Sensor("post307B", "http://sensor1.example.com", post307Loc, "shark");
+    client.putSensor(post307B);
 
-    Sensor sensor2 = new Sensor("Sensor 2", "http://sensor2.example.com", loc, "shark");
-    client.putSensor(sensor2);
+    // 4. create sensor group representing the total energy for POST 307
+    // Use varArgs facility in Java
+    SensorGroup post307 = new SensorGroup("post307", "post307A", "post307B");
+    client.putSensorGroup(post307);
 
-    // 4. create sensor group with the two sensors
-    // PROP4: use the sensor object instead of sensor slug, remove ownerID from API
-    Set<Sensor> sensors = new HashSet<Sensor>();
-    sensors.add(sensor1);
-    sensors.add(sensor2);
-    SensorGroup group = new SensorGroup("My Sensor Group", sensors);
-    client.putSensorGroup(group);
-
-    // 5. create an energy depository for the location
-    // PROP 5: remove owerID from API
+    // 5. create an energy depository for the organization.
     MeasurementType type = client.getMeasurementType("energy-wh");
-    Depository energy = new Depository("Location 1 Energy", type);
+    Depository energy = new Depository("energy", type);
     client.putDepository(energy);
       
     // 6. create the collector process definition for the two sensors energy
-    // PROP 5: use the objects as parameters instead their slugs, remove ownerID from API
-    CollectorProcessDefinition energyCPD1 = new CollectorProcessDefinition(
-          "Location Sensor 1 energy", sensor1, 10L, energy);
-    CollectorProcessDefinition energyCPD2 = new CollectorProcessDefinition(
-        "Location Sensor 2 energy", sensor2, 10L, energy);
-
+    CollectorProcessDefinition energyCPD1 = new CollectorProcessDefinition("post307A-energy", "post307A", 10L, energy);
+    CollectorProcessDefinition energyCPD2 = new CollectorProcessDefinition("post307B-energy", "post307B", 10L, energy);
     client.putCollectorProcessDefinition(energyCPD1);
     client.putCollectorProcessDefinition(energyCPD2);
     
@@ -157,11 +111,19 @@ public class WattDepotOrgAdmin {
 }
 ```
 
+## Sending measurements to a server
+
+This next sample program shows how data is sent to a server. Normally, this is done by a collector process, but this sample program sends
+some static data simply to illustrate how the API works. 
+
+(Program to be supplied).
+
+## Data queries
+
+This next sample program shows how to retrieve data from a server. Again, it assumes that a user and organization have been defined. 
+In addition, it assumes that data has been sent to the server.
+
 ```java
-/**
- * WattDepotDataQuery.java
- *
- */
 import java.util.Date;
 import java.util.Properties;
 
@@ -175,68 +137,62 @@ import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.domainmodel.SensorGroupList;
 import org.wattdepot.common.domainmodel.SensorList;
 
-/**
- * WattDepotDataQuery - Demo usage of WattDepotClient for doing data queries from WattDepot server. 
- *     
- *  The data queries include:
- *  1. check server health
- *  2. list of depositories and a specific depository info
- *  3. list of sensors and a specific sensor
- *  4. list of sensorgroups and a specifc sensorgroup
- *  5. measurements
- *  6. values
- */
 public class WattDepotDataQuery {
+
+  private Properties props = System.getProperties();
+  private String serverURL = "http://" + props.get("wattdepot.server") + ":" + props.get("wattdepot.port") + "/";
+  private String userName = System.getProperties().get("wattdepot.user.name");
+  private String userPassword = System.getProperties().get("wattdepot.user.password");
 
   public void main() throws Exception {
 
-    // get server url, username, passwor from system properties
-    Properties props = System.getProperties();
+    // Create a client instance.
+    WattDepotClient client = new WattDepotClient(serverURL, "uh", userName, userPassword);
     
-    String serverURL = "http://"
-        + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
-        + props.get(ClientProperties.PORT_KEY) + "/";
-    String userName = (String)props.get(ClientProperties.USER_NAME);
-    String userPassword = (String)props.get(ClientProperties.USER_PASSWORD);
-    
-    // 0. get a client connect to the wattdepot server
-    // PROP 1: remove orgId from the wattdepotclient constructor since the system should know the
-    //   user's orgid.
-    WattDepotClient client = new WattDepotClient(serverURL, userName, userPassword);
-    
-    // 1. check system health
+    // Check system health
     Boolean status = client.isHealthy();
     
-    // 2.1. get all my depository
+    // Get a list of depositories.
     DepositoryList dlist = client.getDepositories();
     
-    // 2.2. get a specific depository. 
+    // Get a specific depository.
     Depository dep = client.getDepository("Location 1 Energy");
     
-    // 3.1. get all my sensors
+    // Get all sensors.
     SensorList slist = client.getSensors();
     
-    // 3.2. get all my sensor groups
+    // Get all sensor groups.
     SensorGroupList sglist = client.getSensorGroups();
     
-    // 3.3. get specific sensor group
+    // Get a specific sensor group.
     SensorGroup group = client.getSensorGroup("My Sensor Group");
     
-    // 4.1. get the latest measurement
+    // Get the latest measurement.
     Measurement m = client.getLatestMeasurement(dep, group);
     
-    // 4.2. get the measurements of a specific time range
+    // Get measurements within a specific time range
     Date start = new Date();
     Date end = new Date();
     MeasurementList mlist = client.getMeasurements(dep, group, start, end);
     
-    // 5.1. get a calculated value for a timestamp
+    // Get a calculated value for a timestamp
     Date timestamp = new Date();
     Double value = client.getValue(dep, group, timestamp);
     
-    // 5.2. get the latest value
+    // Get the latest value
     value = client.getLatestValue(dep, group);
-    
   }
 }
 ```
+
+## WattDepot 2 Client Programs
+
+For comparison, [this page](https://code.google.com/p/wattdepot/wiki/WritingWattDepotClients) provides examples of how to write clients in WattDepot 2. 
+
+
+
+      
+      
+      
+
+      
