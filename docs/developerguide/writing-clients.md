@@ -8,8 +8,6 @@ illustrating common types of client operations using Java.
 One of the important tasks of a WattDepot administrator is to define the set of organizations and users in a server. While this can be accomplished through the web interface, it is also possible programmatically.  The code assumes that 
 various values (admin name, admin password, server host name, etc.) are available in the System properties object.
 
-(Changes from Yongwen's version:  (a) admin user name specified in properties (defaults to root, but is not hardwired as root; WattDepotAdminClient and no org-level admins; admin adds orgs and users.)
-
 ```java
 /**
  * Create an organization called "uh" and two users. 
