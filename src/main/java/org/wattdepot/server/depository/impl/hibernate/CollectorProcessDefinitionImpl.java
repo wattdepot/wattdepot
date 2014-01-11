@@ -18,11 +18,18 @@
  */
 package org.wattdepot.server.depository.impl.hibernate;
 
+import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Property;
-import org.wattdepot.common.exception.BadSlugException;
 
 /**
  * CollectorProcessDefinitionImpl - Hibernate implementation of
@@ -31,17 +38,32 @@ import org.wattdepot.common.exception.BadSlugException;
  * @author Cam Moore
  * 
  */
-@SuppressWarnings("PMD.UselessOverridingMethod")
-public class CollectorProcessDefinitionImpl extends CollectorProcessDefinition {
+@Entity
+@Table(name = "DEFINITIONS")
+public class CollectorProcessDefinitionImpl {
 
   /** Database primary key. */
+  @Id
+  @GeneratedValue
   private Long pk;
-  /** Foreign key of the sensor. */
-  private Long sensorFk;
-  /** Foreign key of the depository. */
-  private Long depositoryFk;
-  /** Foreign key of the owner. */
-  private Long ownerFk;
+  /** A unique id for the CollectorProcessDefinition. */
+  private String id;
+  /** The human readable name. */
+  private String name;
+  /** The sensor making the measurements. */
+  @ManyToOne
+  private SensorImpl sensor;
+  /** The number of seconds between polls. */
+  private Long pollingInterval;
+  /** The depository to store the measurements in. */
+  @ManyToOne  
+  private DepositoryImpl depository;
+  /** Additional properties for the Collector. */
+  @OneToMany
+  private Set<PropertyImpl> properties;
+  /** The cpd's organization. */
+  @ManyToOne
+  private OrganizationImpl org;
 
   /**
    * Default constructor.
@@ -51,52 +73,24 @@ public class CollectorProcessDefinitionImpl extends CollectorProcessDefinition {
   }
 
   /**
-   * @param slug
-   *          The unique slug for the CollectorProcessDefinitionImpl.
-   * @param name
-   *          The name of the CollectorProcessDefinitionImpl.
-   * @param sensorId
-   *          The id of the sensor that measures the environment.
-   * @param poll
-   *          The number of seconds between polls.
-   * @param depositoryId
-   *          The depository_id where measurements are stored.
-   * @param properties
-   *          The properties associated with this CollectorProcessDefinitionImpl.
-   * @param ownerId
-   *          the id of the owner of the collector.
+   * @param id the id.
+   * @param name the name.
+   * @param sensor the sensor.
+   * @param pollingInterval the polling interval.
+   * @param depository the depository.
+   * @param properties the properties
+   * @param org the orgainzation.
    */
-  public CollectorProcessDefinitionImpl(String slug, String name, String sensorId,
-      Long poll, String depositoryId, Set<Property> properties, String ownerId) {
-    super(slug, name, sensorId, poll, depositoryId, properties, ownerId);
-  }
-
-  /**
-   * Converter constructor.
-   * 
-   * @param cpd
-   *          the CollectorProcessDefinition to clone.
-   */
-  public CollectorProcessDefinitionImpl(CollectorProcessDefinition cpd) {
-    super(cpd.getName(), cpd.getSensorId(), cpd.getPollingInterval(), cpd.getDepositoryId(), cpd
-        .getOwnerId());
-  }
-
-  /**
-   * @param name
-   *          The name of the CollectorProcessDefinitionData.
-   * @param sensorId
-   *          The id of the sensor that measures the environment.
-   * @param poll
-   *          The number of seconds between polls.
-   * @param depositoryId
-   *          The depository_id where measurements are stored.
-   * @param ownerId
-   *          the id of the owner of the collector.
-   */
-  public CollectorProcessDefinitionImpl(String name, String sensorId, Long poll,
-      String depositoryId, String ownerId) {
-    super(name, sensorId, poll, depositoryId, ownerId);
+  public CollectorProcessDefinitionImpl(String id, String name, SensorImpl sensor,
+      Long pollingInterval, DepositoryImpl depository, Set<PropertyImpl> properties,
+      OrganizationImpl org) {
+    this.id = id;
+    this.name = name;
+    this.sensor = sensor;
+    this.pollingInterval = pollingInterval;
+    this.depository = depository;
+    this.properties = properties;
+    this.org = org;
   }
 
   /*
@@ -106,36 +100,46 @@ public class CollectorProcessDefinitionImpl extends CollectorProcessDefinition {
    */
   @Override
   public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
-    }
     if (this == obj) {
       return true;
     }
-    if (obj.getClass().equals(CollectorProcessDefinition.class)) {
-      return super.equals(obj);
-    }
-    if (!super.equals(obj)) {
+    if (obj == null) {
       return false;
     }
     if (getClass() != obj.getClass()) {
       return false;
     }
     CollectorProcessDefinitionImpl other = (CollectorProcessDefinitionImpl) obj;
-    if (depositoryFk == null) {
-      if (other.depositoryFk != null) {
+    if (depository == null) {
+      if (other.depository != null) {
         return false;
       }
     }
-    else if (!depositoryFk.equals(other.depositoryFk)) {
+    else if (!depository.equals(other.depository)) {
       return false;
     }
-    if (ownerFk == null) {
-      if (other.ownerFk != null) {
+    if (id == null) {
+      if (other.id != null) {
         return false;
       }
     }
-    else if (!ownerFk.equals(other.ownerFk)) {
+    else if (!id.equals(other.id)) {
+      return false;
+    }
+    if (name == null) {
+      if (other.name != null) {
+        return false;
+      }
+    }
+    else if (!name.equals(other.name)) {
+      return false;
+    }
+    if (org == null) {
+      if (other.org != null) {
+        return false;
+      }
+    }
+    else if (!org.equals(other.org)) {
       return false;
     }
     if (pk == null) {
@@ -146,65 +150,59 @@ public class CollectorProcessDefinitionImpl extends CollectorProcessDefinition {
     else if (!pk.equals(other.pk)) {
       return false;
     }
-    if (sensorFk == null) {
-      if (other.sensorFk != null) {
+    if (pollingInterval == null) {
+      if (other.pollingInterval != null) {
         return false;
       }
     }
-    else if (!sensorFk.equals(other.sensorFk)) {
+    else if (!pollingInterval.equals(other.pollingInterval)) {
+      return false;
+    }
+    if (properties == null) {
+      if (other.properties != null) {
+        return false;
+      }
+    }
+    else if (!properties.equals(other.properties)) {
+      return false;
+    }
+    if (sensor == null) {
+      if (other.sensor != null) {
+        return false;
+      }
+    }
+    else if (!sensor.equals(other.sensor)) {
       return false;
     }
     return true;
   }
 
   /**
-   * @return the depositoryFk
+   * @return the depository
    */
-  public Long getDepositoryFk() {
-    return depositoryFk;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.CollectorProcessDefinition#getDepositoryId
-   * ()
-   */
-  @Override
-  public String getDepositoryId() {
-    // TODO Auto-generated method stub
-    return super.getDepositoryId();
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.CollectorProcessDefinition#getName()
-   */
-  @Override
-  public String getName() {
-    // TODO Auto-generated method stub
-    return super.getName();
+  public DepositoryImpl getDepository() {
+    return depository;
   }
 
   /**
-   * @return the ownerFk
+   * @return the id
    */
-  public Long getOwnerFk() {
-    return ownerFk;
+  public String getId() {
+    return id;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.CollectorProcessDefinition#getOwnerId()
+  /**
+   * @return the name
    */
-  @Override
-  public String getOwnerId() {
-    // TODO Auto-generated method stub
-    return super.getOwnerId();
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * @return the org
+   */
+  public OrganizationImpl getOrg() {
+    return org;
   }
 
   /**
@@ -214,59 +212,26 @@ public class CollectorProcessDefinitionImpl extends CollectorProcessDefinition {
     return pk;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.CollectorProcessDefinition#getPollingInterval
-   * ()
+  /**
+   * @return the pollingInterval
    */
-  @Override
   public Long getPollingInterval() {
-    // TODO Auto-generated method stub
-    return super.getPollingInterval();
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.CollectorProcessDefinition#getProperties()
-   */
-  @Override
-  public Set<Property> getProperties() {
-    // TODO Auto-generated method stub
-    return super.getProperties();
+    return pollingInterval;
   }
 
   /**
-   * @return the sensorFk
+   * @return the properties
    */
-  public Long getSensorFk() {
-    return sensorFk;
+  @OneToMany
+  public Set<PropertyImpl> getProperties() {
+    return properties;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.CollectorProcessDefinition#getSensorId()
+  /**
+   * @return the sensor
    */
-  @Override
-  public String getSensorId() {
-    // TODO Auto-generated method stub
-    return super.getSensorId();
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.CollectorProcessDefinition#getSlug()
-   */
-  @Override
-  public String getId() {
-    // TODO Auto-generated method stub
-    return super.getId();
+  public SensorImpl getSensor() {
+    return sensor;
   }
 
   /*
@@ -277,135 +242,95 @@ public class CollectorProcessDefinitionImpl extends CollectorProcessDefinition {
   @Override
   public int hashCode() {
     final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + ((depositoryFk == null) ? 0 : depositoryFk.hashCode());
-    result = prime * result + ((ownerFk == null) ? 0 : ownerFk.hashCode());
+    int result = 1;
+    result = prime * result + ((depository == null) ? 0 : depository.hashCode());
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
+    result = prime * result + ((org == null) ? 0 : org.hashCode());
     result = prime * result + ((pk == null) ? 0 : pk.hashCode());
-    result = prime * result + ((sensorFk == null) ? 0 : sensorFk.hashCode());
+    result = prime * result + ((pollingInterval == null) ? 0 : pollingInterval.hashCode());
+    result = prime * result + ((properties == null) ? 0 : properties.hashCode());
+    result = prime * result + ((sensor == null) ? 0 : sensor.hashCode());
     return result;
   }
 
   /**
-   * @param depositoryFk
-   *          the depositoryFk to set
+   * @param depository the depository to set
    */
-  public void setDepositoryFk(Long depositoryFk) {
-    this.depositoryFk = depositoryFk;
+  public void setDepository(DepositoryImpl depository) {
+    this.depository = depository;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.CollectorProcessDefinition#setDepositoryId
-   * (java.lang.String)
+  /**
+   * @param id the id to set
    */
-  @Override
-  public void setDepositoryId(String depositoryId) {
-    // TODO Auto-generated method stub
-    super.setDepositoryId(depositoryId);
+  public void setId(String id) {
+    this.id = id;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.CollectorProcessDefinition#setName(java
-   * .lang.String)
+  /**
+   * @param name the name to set
    */
-  @Override
   public void setName(String name) {
-    // TODO Auto-generated method stub
-    super.setName(name);
+    this.name = name;
   }
 
   /**
-   * @param ownerFk
-   *          the ownerFk to set
+   * @param org the org to set
    */
-  public void setOwnerFk(Long ownerFk) {
-    this.ownerFk = ownerFk;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.CollectorProcessDefinition#setOwnerId(
-   * java.lang.String)
-   */
-  @Override
-  public void setOwnerId(String ownerId) {
-    // TODO Auto-generated method stub
-    super.setOwnerId(ownerId);
+  public void setOrg(OrganizationImpl org) {
+    this.org = org;
   }
 
   /**
-   * @param pk
-   *          the pk to set
+   * @param pk the pk to set
    */
-  public void setPk(Long pk) {
+  @SuppressWarnings("unused")
+  private void setPk(Long pk) {
     this.pk = pk;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.CollectorProcessDefinition#setPollingInterval
-   * (java.lang.Long)
+  /**
+   * @param pollingInterval the pollingInterval to set
    */
-  @Override
   public void setPollingInterval(Long pollingInterval) {
-    // TODO Auto-generated method stub
-    super.setPollingInterval(pollingInterval);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.CollectorProcessDefinition#setProperties
-   * (java.util.Set)
-   */
-  @Override
-  public void setProperties(Set<Property> properties) {
-    // TODO Auto-generated method stub
-    super.setProperties(properties);
+    this.pollingInterval = pollingInterval;
   }
 
   /**
-   * @param sensorFk
-   *          the sensorFk to set
+   * @param properties the properties to set
    */
-  public void setSensorFk(Long sensorFk) {
-    this.sensorFk = sensorFk;
+  public void setProperties(Set<PropertyImpl> properties) {
+    this.properties = properties;
+  }
+
+  /**
+   * @param sensor the sensor to set
+   */
+  public void setSensor(SensorImpl sensor) {
+    this.sensor = sensor;
+  }
+
+  public CollectorProcessDefinition toCPD() {
+    Set<Property> props = new HashSet<Property>();
+    for (PropertyImpl p : properties) {
+      props.add(p.toProperty());
+    }
+    CollectorProcessDefinition cpd = new CollectorProcessDefinition(id, name, sensor.getId(),
+        pollingInterval, depository.getId(), props, org.getId());
+    return cpd;
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * org.wattdepot.common.domainmodel.CollectorProcessDefinition#setSensorId
-   * (java.lang.String)
+   * @see java.lang.Object#toString()
    */
   @Override
-  public void setSensorId(String sensorId) {
-    // TODO Auto-generated method stub
-    super.setSensorId(sensorId);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.CollectorProcessDefinition#setSlug(java
-   * .lang.String)
-   */
-  @Override
-  public void setId(String slug) throws BadSlugException {
-    // TODO Auto-generated method stub
-    super.setId(slug);
+  public String toString() {
+    return "CollectorProcessDefinitionImpl [pk=" + pk + ", id=" + id + ", name=" + name
+        + ", sensor=" + sensor + ", pollingInterval=" + pollingInterval + ", depository="
+        + depository + ", properties=" + properties + ", org=" + org + "]";
   }
 
 }

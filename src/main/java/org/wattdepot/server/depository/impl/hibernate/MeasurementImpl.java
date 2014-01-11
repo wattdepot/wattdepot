@@ -18,12 +18,19 @@
  */
 package org.wattdepot.server.depository.impl.hibernate;
 
-import java.sql.Date;
+import java.util.Date;
 
 import javax.measure.unit.Unit;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.wattdepot.common.domainmodel.Measurement;
-import org.wattdepot.common.exception.BadSlugException;
 
 /**
  * MeasurementImpl - Hibernate persistant version of Measurement. It is 'stored'
@@ -32,46 +39,33 @@ import org.wattdepot.common.exception.BadSlugException;
  * @author Cam Moore
  * 
  */
-@SuppressWarnings("PMD.UselessOverridingMethod")
-public class MeasurementImpl extends Measurement {
+@Entity
+@Table(name = "MEASUREMENTS")
+public class MeasurementImpl {
   /** Database primary key. */
+  @Id
+  @GeneratedValue
   private Long pk;
-  /** Foreign key of the sensor. */
-  private Long sensorFk;
-  /** Foreign key of the depository. */
-  private Long depositoryFk;
-  /** The id of the depository storing this measurement. */
-  private String depositoryId;
+  /** The unique id. Can be used in URIs. */
+  private String id;
+  /** The sensor that made the measurement. */
+  @ManyToOne
+  private SensorImpl sensor;
+  /** The time of the measurement. */
+  private Date timestamp;
+  /** The value of the measurement. */
+  private Double value;
+  /** The units of the measurement. */
+  private String units;
+  /** The Depository storing the measurement. */
+  @ManyToOne
+  private DepositoryImpl depository;
 
   /**
    * Default constructor.
    */
   public MeasurementImpl() {
     super();
-  }
-
-  /**
-   * Creates a new MeasurementImpl from the Measurement.
-   * 
-   * @param meas
-   *          the Measurement to clone.
-   */
-  public MeasurementImpl(Measurement meas) {
-    super(meas.getSensorId(), meas.getDate(), meas.getValue(), meas.units());
-  }
-
-  /**
-   * @param sensorId
-   *          The id of the sensor that made the measurement.
-   * @param timestamp
-   *          The time of the measurement.
-   * @param value
-   *          The value measured.
-   * @param units
-   *          The type of the measurement.
-   */
-  public MeasurementImpl(String sensorId, Date timestamp, Double value, Unit<?> units) {
-    super(sensorId, timestamp, value, units);
   }
 
   /*
@@ -81,36 +75,22 @@ public class MeasurementImpl extends Measurement {
    */
   @Override
   public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
-    }
     if (this == obj) {
       return true;
     }
-    if (obj.getClass().equals(Measurement.class)) {
-      return super.equals(obj);
-    }
-    if (!super.equals(obj)) {
+    if (obj == null) {
       return false;
     }
     if (getClass() != obj.getClass()) {
       return false;
     }
     MeasurementImpl other = (MeasurementImpl) obj;
-    if (depositoryFk == null) {
-      if (other.depositoryFk != null) {
+    if (id == null) {
+      if (other.id != null) {
         return false;
       }
     }
-    else if (!depositoryFk.equals(other.depositoryFk)) {
-      return false;
-    }
-    if (depositoryId == null) {
-      if (other.depositoryId != null) {
-        return false;
-      }
-    }
-    else if (!depositoryId.equals(other.depositoryId)) {
+    else if (!id.equals(other.id)) {
       return false;
     }
     if (pk == null) {
@@ -121,49 +101,53 @@ public class MeasurementImpl extends Measurement {
     else if (!pk.equals(other.pk)) {
       return false;
     }
-    if (sensorFk == null) {
-      if (other.sensorFk != null) {
+    if (sensor == null) {
+      if (other.sensor != null) {
         return false;
       }
     }
-    else if (!sensorFk.equals(other.sensorFk)) {
+    else if (!sensor.equals(other.sensor)) {
+      return false;
+    }
+    if (timestamp == null) {
+      if (other.timestamp != null) {
+        return false;
+      }
+    }
+    else if (!timestamp.equals(other.timestamp)) {
+      return false;
+    }
+    if (units == null) {
+      if (other.units != null) {
+        return false;
+      }
+    }
+    else if (!units.equals(other.units)) {
+      return false;
+    }
+    if (value == null) {
+      if (other.value != null) {
+        return false;
+      }
+    }
+    else if (!value.equals(other.value)) {
       return false;
     }
     return true;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.Measurement#getDate()
+  /**
+   * @return the depository
    */
-  @Override
-  public java.util.Date getDate() {
-    return super.getDate();
+  public DepositoryImpl getDepository() {
+    return depository;
   }
 
   /**
-   * @return the depositoryFk
+   * @return the id
    */
-  public Long getDepositoryFk() {
-    return depositoryFk;
-  }
-
-  /**
-   * @return the depositoryId
-   */
-  public String getDepositoryId() {
-    return depositoryId;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.Measurement#getMeasurementType()
-   */
-  @Override
-  public String getMeasurementType() {
-    return super.getMeasurementType();
+  public String getId() {
+    return id;
   }
 
   /**
@@ -174,40 +158,33 @@ public class MeasurementImpl extends Measurement {
   }
 
   /**
-   * @return the sensorFk
+   * @return the sensor
    */
-  public Long getSensorFk() {
-    return sensorFk;
+  public SensorImpl getSensor() {
+    return sensor;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.Measurement#getSensorId()
+  /**
+   * @return the timestamp
    */
-  @Override
-  public String getSensorId() {
-    return super.getSensorId();
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "MEASUREMENT_DATE")
+  public Date getTimestamp() {
+    return timestamp;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.Measurement#getSlug()
+  /**
+   * @return the units
    */
-  @Override
-  public String getSlug() {
-    return super.getSlug();
+  public String getUnits() {
+    return units;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.Measurement#getValue()
+  /**
+   * @return the value
    */
-  @Override
   public Double getValue() {
-    return super.getValue();
+    return value;
   }
 
   /*
@@ -218,101 +195,83 @@ public class MeasurementImpl extends Measurement {
   @Override
   public int hashCode() {
     final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + ((depositoryFk == null) ? 0 : depositoryFk.hashCode());
-    result = prime * result + ((depositoryId == null) ? 0 : depositoryId.hashCode());
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
     result = prime * result + ((pk == null) ? 0 : pk.hashCode());
-    result = prime * result + ((sensorFk == null) ? 0 : sensorFk.hashCode());
+    result = prime * result + ((sensor == null) ? 0 : sensor.hashCode());
+    result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
+    result = prime * result + ((units == null) ? 0 : units.hashCode());
+    result = prime * result + ((value == null) ? 0 : value.hashCode());
     return result;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.Measurement#setDate(java.util.Date)
+  /**
+   * @param depository the depository to set
    */
-  @Override
-  public void setDate(java.util.Date timestamp) {
-    super.setDate(timestamp);
+  public void setDepository(DepositoryImpl depository) {
+    this.depository = depository;
   }
 
   /**
-   * @param depositoryFk
-   *          the depositoryFk to set
+   * @param id the id to set
    */
-  public void setDepositoryFk(Long depositoryFk) {
-    this.depositoryFk = depositoryFk;
+  public void setId(String id) {
+    this.id = id;
   }
 
   /**
-   * @param depositoryId
-   *          the depositoryId to set
+   * @param pk the pk to set
    */
-  public void setDepositoryId(String depositoryId) {
-    this.depositoryId = depositoryId;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.Measurement#setMeasurementType(org.wattdepot
-   * .common.domainmodel.String)
-   */
-  @Override
-  public void setMeasurementType(String measurementType) {
-    super.setMeasurementType(measurementType);
-  }
-
-  /**
-   * @param pk
-   *          the pk to set
-   */
-  public void setPk(Long pk) {
+  @SuppressWarnings("unused")
+  private void setPk(Long pk) {
     this.pk = pk;
   }
 
   /**
-   * @param sensorFk
-   *          the sensorFk to set
+   * @param sensor the sensor to set
    */
-  public void setSensorFk(Long sensorFk) {
-    this.sensorFk = sensorFk;
+  public void setSensor(SensorImpl sensor) {
+    this.sensor = sensor;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.Measurement#setSensorId(org.wattdepot.
-   * common.domainmodel.String)
+  /**
+   * @param timestamp the timestamp to set
    */
-  @Override
-  public void setSensorId(String sensorId) {
-    super.setSensorId(sensorId);
+  public void setTimestamp(Date timestamp) {
+    this.timestamp = timestamp;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.Measurement#setSlug(org.wattdepot.common
-   * .domainmodel.String)
+  /**
+   * @param units the units to set
    */
-  @Override
-  public void setSlug(String slug) throws BadSlugException {
-    super.setSlug(slug);
+  public void setUnits(String units) {
+    this.units = units;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.Measurement#setValue(java.lang.Double)
+
+  /**
+   * @param value the value to set
    */
-  @Override
   public void setValue(Double value) {
-    super.setValue(value);
+    this.value = value;
+  }
+
+  /**
+   * @return The domainmodel Measurement that is equivalent to this
+   *         MeasurementImpl.
+   */
+  public Measurement toMeasurement() {
+    Measurement ret = new Measurement(sensor.getId(), timestamp, value, Unit.valueOf(units));
+    return ret;
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    return "MeasurementImpl [pk=" + pk + ", id=" + id + ", sensor=" + sensor + ", timestamp="
+        + timestamp + ", value=" + value + ", units=" + units + ", depository=" + depository + "]";
   }
 
 }

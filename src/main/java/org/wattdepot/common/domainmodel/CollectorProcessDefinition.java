@@ -67,7 +67,7 @@ public class CollectorProcessDefinition implements IDomainModel {
   }
 
   /**
-   * @param slug The unique slug for the CollectorProcessDefinition.
+   * @param id The unique id for the CollectorProcessDefinition.
    * @param name The name of the CollectorProcessDefinition.
    * @param sensorId The id of the sensor that measures the environment.
    * @param poll The number of seconds between polls.
@@ -76,9 +76,9 @@ public class CollectorProcessDefinition implements IDomainModel {
    *        CollectorProcessDefinition.
    * @param ownerId the id of the owner of the collector.
    */
-  public CollectorProcessDefinition(String slug, String name, String sensorId, Long poll,
+  public CollectorProcessDefinition(String id, String name, String sensorId, Long poll,
       String depositoryId, Set<Property> properties, String ownerId) {
-    this.id = slug;
+    this.id = id;
     this.name = name;
     this.sensorId = sensorId;
     this.pollingInterval = poll;

@@ -18,7 +18,14 @@
  */
 package org.wattdepot.server.depository.impl.hibernate;
 
+import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.wattdepot.common.domainmodel.Organization;
 
@@ -29,11 +36,19 @@ import org.wattdepot.common.domainmodel.Organization;
  * @author Cam Moore
  * 
  */
-@SuppressWarnings("PMD.UselessOverridingMethod")
-public class OrganizationImpl extends Organization {
+@Entity
+@Table(name = "ORGANIZATIONS")
+public class OrganizationImpl {
 
   /** Database primary key. */
+  @Id
+  @GeneratedValue
   private Long pk;
+  /** Unique id that is also a slug usable in URLs. */
+  private String id;
+  private String name;
+  @OneToMany
+  private Set<UserInfoImpl> users;
 
   /**
    * Default constructor.
@@ -43,42 +58,14 @@ public class OrganizationImpl extends Organization {
   }
 
   /**
-   * 
-   * @param org
-   *          The Organization to clone.
+   * @param id the id of the organization.
+   * @param name the name of the organization.
+   * @param users the users in the organization.
    */
-  public OrganizationImpl(Organization org) {
-    super(org.getName(), org.getUsers());
-  }
-
-  /**
-   * @param name
-   *          The name of the Organization.
-   */
-  public OrganizationImpl(String name) {
-    super(name);
-  }
-
-  /**
-   * @param name
-   *          The name of the organization.
-   * @param users
-   *          The Users in the organization.
-   */
-  public OrganizationImpl(String name, Set<String> users) {
-    super(name, users);
-  }
-
-  /**
-   * @param slug
-   *          The unique slug for the OrganizationImpl.
-   * @param name
-   *          The name of the organization.
-   * @param users
-   *          The Users in the organization.
-   */
-  public OrganizationImpl(String slug, String name, Set<String> users) {
-    super(slug, name, users);
+  public OrganizationImpl(String id, String name, Set<UserInfoImpl> users) {
+    this.id = id;
+    this.name = name;
+    this.users = users;
   }
 
   /*
@@ -88,41 +75,52 @@ public class OrganizationImpl extends Organization {
    */
   @Override
   public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
-    }
-    if (this == obj) {
+    if (this == obj)
       return true;
-    }
-    if (obj.getClass().equals(Organization.class)) {
-      return super.equals(obj);
-    }
-    if (!super.equals(obj)) {
+    if (obj == null)
       return false;
-    }
-    if (getClass() != obj.getClass()) {
+    if (getClass() != obj.getClass())
       return false;
-    }
     OrganizationImpl other = (OrganizationImpl) obj;
-    if (pk == null) {
-      if (other.pk != null) {
+    if (id == null) {
+      if (other.id != null)
         return false;
-      }
     }
-    else if (!pk.equals(other.pk)) {
+    else if (!id.equals(other.id))
       return false;
+    if (name == null) {
+      if (other.name != null)
+        return false;
     }
+    else if (!name.equals(other.name))
+      return false;
+    if (pk == null) {
+      if (other.pk != null)
+        return false;
+    }
+    else if (!pk.equals(other.pk))
+      return false;
+    if (users == null) {
+      if (other.users != null)
+        return false;
+    }
+    else if (!users.equals(other.users))
+      return false;
     return true;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.Organization#getName()
+  /**
+   * @return the id
    */
-  @Override
+  public String getId() {
+    return id;
+  }
+
+  /**
+   * @return the name
+   */
   public String getName() {
-    return super.getName();
+    return name;
   }
 
   /**
@@ -132,24 +130,12 @@ public class OrganizationImpl extends Organization {
     return pk;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.Organization#getSlug()
+  /**
+   * @return the users
    */
-  @Override
-  public String getId() {
-    return super.getId();
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.Organization#getUsers()
-   */
-  @Override
-  public Set<String> getUsers() {
-    return super.getUsers();
+  @OneToMany
+  public Set<UserInfoImpl> getUsers() {
+    return users;
   }
 
   /*
@@ -160,49 +146,64 @@ public class OrganizationImpl extends Organization {
   @Override
   public int hashCode() {
     final int prime = 31;
-    int result = super.hashCode();
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
     result = prime * result + ((pk == null) ? 0 : pk.hashCode());
+    result = prime * result + ((users == null) ? 0 : users.hashCode());
     return result;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.Organization#setName(java.lang.String)
+  /**
+   * @param id the id to set
    */
-  @Override
-  public void setName(String name) {
-    super.setName(name);
+  public void setId(String id) {
+    this.id = id;
   }
 
   /**
-   * @param pk
-   *          the pk to set
+   * @param name the name to set
    */
-  public void setPk(Long pk) {
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  /**
+   * @param pk the pk to set
+   */
+  @SuppressWarnings("unused")
+  private void setPk(Long pk) {
     this.pk = pk;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.Organization#setSlug(java.lang.String)
+  /**
+   * @param users the users to set
    */
-  @Override
-  public void setId(String slug) {
-    super.setId(slug);
+  public void setUsers(Set<UserInfoImpl> users) {
+    this.users = users;
+  }
+
+  /**
+   * @return The Organization equivalent to this.
+   */
+  public Organization toOrganization() {
+    Set<String> u = new HashSet<String>();
+    for (UserInfoImpl i : users) {
+      u.add(i.getUid());
+    }
+    Organization ret = new Organization(id, name, u);
+    return ret;
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.common.domainmodel.Organization#setUsers(java.util.Set)
+   * @see java.lang.Object#toString()
    */
   @Override
-  public void setUsers(Set<String> users) {
-    super.setUsers(users);
+  public String toString() {
+    return "OrganizationImpl [pk=" + pk + ", id=" + id + ", name=" + name + ", users=" + users
+        + "]";
   }
 
 }

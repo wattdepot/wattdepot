@@ -23,8 +23,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.measure.unit.Unit;
-
 import org.hibernate.Session;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
@@ -34,7 +32,6 @@ import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Property;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
-import org.wattdepot.common.domainmodel.SensorLocation;
 import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
@@ -62,39 +59,13 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   /**
    * Creates a new WattDepotImpl instance with the given ServerProperties.
    * 
-   * @param properties
-   *          The ServerProperties.
+   * @param properties The ServerProperties.
    */
   public WattDepotPersistenceImpl(ServerProperties properties) {
     super();
     setServerProperties(properties);
-    this.checkSession = properties.get(ServerProperties.CHECK_SESSIONS).equals(
-        "true");
-    UserPasswordImpl adminPassword = (UserPasswordImpl) getUserPassword(
-        UserInfo.ROOT.getUid(), UserInfo.ROOT.getOrganizationId());
-    if (checkSession && getSessionClose() != getSessionOpen()) {
-      throw new RuntimeException("opens and closed mismatched.");
-    }
-    if (adminPassword == null) {
-      try {
-        defineUserPassword(UserPassword.ADMIN.getUid(),
-            UserPassword.ADMIN.getOrganizationId(),
-            UserPassword.ADMIN.getPlainText());
-        if (checkSession && getSessionClose() != getSessionOpen()) {
-          throw new RuntimeException("opens and closed mismatched.");
-        }
-      }
-      catch (UniqueIdException e1) {
-        // what do we do here?
-        e1.printStackTrace();
-      }
-    }
-    else {
-      updateUserPassword(adminPassword);
-      if (checkSession && getSessionClose() != getSessionOpen()) {
-        throw new RuntimeException("opens and closed mismatched.");
-      }
-    }
+    this.checkSession = properties.get(ServerProperties.CHECK_SESSIONS).equals("true");
+    // Start with the Organizations
     Organization pub = null;
     try {
       pub = getOrganization(Organization.PUBLIC_GROUP.getId());
@@ -104,8 +75,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     }
     if (pub == null) {
       try {
-        defineOrganization(Organization.PUBLIC_GROUP.getId(),
-            Organization.PUBLIC_GROUP.getName(), new HashSet<String>());
+        defineOrganization(Organization.PUBLIC_GROUP.getId(), Organization.PUBLIC_GROUP.getName(),
+            new HashSet<String>());
         if (checkSession && getSessionClose() != getSessionOpen()) {
           throw new RuntimeException("opens and closed mismatched.");
         }
@@ -146,8 +117,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     }
     if (admin == null) {
       try {
-        defineOrganization(Organization.ADMIN_GROUP.getId(),
-            Organization.ADMIN_GROUP.getName(),
+        defineOrganization(Organization.ADMIN_GROUP.getId(), Organization.ADMIN_GROUP.getName(),
             Organization.ADMIN_GROUP.getUsers());
         if (checkSession && getSessionClose() != getSessionOpen()) {
           throw new RuntimeException("opens and closed mismatched.");
@@ -201,6 +171,32 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     // throw new RuntimeException("opens and closed mismatched.");
     // }
     // }
+//    
+//    UserPassword adminPassword;
+//    try {
+//      adminPassword = getUserPassword(UserInfo.ROOT.getUid(), UserInfo.ROOT.getOrganizationId());
+//      updateUserPassword(adminPassword);
+//      if (checkSession && getSessionClose() != getSessionOpen()) {
+//        throw new RuntimeException("opens and closed mismatched.");
+//      }
+//    }
+//    catch (IdNotFoundException e2) {
+//      // adminPassword no defined.
+//      try {
+//        defineUserPassword(UserPassword.ADMIN.getUid(), UserPassword.ADMIN.getOrganizationId(),
+//            UserPassword.ADMIN.getPlainText(), UserPassword.ADMIN.getEncryptedPassword());
+//        if (checkSession && getSessionClose() != getSessionOpen()) {
+//          throw new RuntimeException("opens and closed mismatched.");
+//        }
+//      }
+//      catch (UniqueIdException e1) {
+//        // what do we do here?
+//        e1.printStackTrace();
+//      }
+//    }
+//    if (checkSession && getSessionClose() != getSessionOpen()) {
+//      throw new RuntimeException("opens and closed mismatched.");
+//    }
   }
 
   /*
@@ -212,28 +208,20 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * java.lang.String)
    */
   @Override
-  public CollectorProcessDefinition defineCollectorProcessDefinition(
-      String slug, String name, String sensorId, Long pollingInterval,
-      String depositoryId, Set<Property> properties, String ownerId)
-      throws UniqueIdException, MisMatchedOwnerException, IdNotFoundException,
+  public CollectorProcessDefinition defineCollectorProcessDefinition(String id, String name,
+      String sensorId, Long pollingInterval, String depositoryId, Set<Property> properties,
+      String ownerId) throws UniqueIdException, MisMatchedOwnerException, IdNotFoundException,
       BadSlugException {
-    // really need the Impls
-    OrganizationImpl owner = (OrganizationImpl) getOrganization(ownerId);
-    SensorImpl sensor = (SensorImpl) getSensor(sensorId, ownerId);
-    DepositoryImpl depo = (DepositoryImpl) getDepository(depositoryId, ownerId);
-    if (!ownerId.equals(sensor.getOwnerId())) {
-      throw new MisMatchedOwnerException(ownerId + " does not own the sensor "
-          + sensorId);
-    }
-    if (!Slug.validateSlug(slug)) {
-      throw new BadSlugException(slug + " is not a valid slug.");
+    getOrganization(ownerId);
+    getSensor(sensorId, ownerId);
+    getDepository(depositoryId, ownerId);
+    if (!Slug.validateSlug(id)) {
+      throw new BadSlugException(id + " is not a valid slug.");
     }
     try {
-      CollectorProcessDefinition cpd = getCollectorProcessDefinition(slug,
-          owner.getId());
+      CollectorProcessDefinition cpd = getCollectorProcessDefinition(id, ownerId);
       if (cpd != null) {
-        throw new UniqueIdException(slug
-            + " is already a CollectorProcessDefinition id.");
+        throw new UniqueIdException(id + " is already a CollectorProcessDefinition id.");
       }
     }
     catch (IdNotFoundException e) { // NOPMD
@@ -242,17 +230,20 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    CollectorProcessDefinitionImpl impl = new CollectorProcessDefinitionImpl(
-        slug, name, sensorId, pollingInterval, depositoryId, properties,
-        ownerId);
-    impl.setSensorFk(sensor.getPk());
-    impl.setDepositoryFk(depo.getPk());
-    impl.setOwnerFk(owner.getPk());
+    OrganizationImpl org = retrieveOrganization(session, ownerId);
+    SensorImpl sensor = retrieveSensor(session, sensorId, ownerId);
+    DepositoryImpl depot = retrieveDepository(session, depositoryId, ownerId);
+    Set<PropertyImpl> props = new HashSet<PropertyImpl>();
+    for (Property p : properties) {
+      props.add(new PropertyImpl(p));
+    }
+    CollectorProcessDefinitionImpl impl = new CollectorProcessDefinitionImpl(id, name, sensor,
+        pollingInterval, depot, props, org);
     storeCollectorProcessDefinition(session, impl);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-    return impl;
+    return impl.toCPD();
   }
 
   /*
@@ -262,16 +253,15 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * java.lang.String, java.lang.String, org.wattdepot.datamodel.Organization)
    */
   @Override
-  public Depository defineDepository(String slug, String name,
-      MeasurementType measurementType, String ownerId)
-      throws UniqueIdException, IdNotFoundException, BadSlugException {
-    if (!Slug.validateSlug(slug)) {
-      throw new BadSlugException(slug + " is not a valid slug.");
+  public Depository defineDepository(String id, String name, MeasurementType measurementType,
+      String ownerId) throws UniqueIdException, IdNotFoundException, BadSlugException {
+    if (!Slug.validateSlug(id)) {
+      throw new BadSlugException(id + " is not a valid id.");
     }
-    OrganizationImpl owner = (OrganizationImpl) getOrganization(ownerId);
+    getOrganization(ownerId);
     Depository d = null;
     try {
-      d = getDepository(slug, owner.getId());
+      d = getDepository(id, ownerId);
       if (d != null) {
         throw new UniqueIdException(name + " is already a Depository name.");
       }
@@ -282,10 +272,10 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    DepositoryImpl impl = new DepositoryImpl(slug, name, measurementType,
-        ownerId);
-    impl.setOwnerFk(owner.getPk());
-    session.saveOrUpdate(impl);
+    OrganizationImpl org = retrieveOrganization(session, ownerId);
+    MeasurementTypeImpl type = retrieveMeasurementType(session, measurementType.getId());
+    DepositoryImpl impl = new DepositoryImpl(id, name, type, org);
+    session.save(impl);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
@@ -299,22 +289,26 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * java.lang.String)
    */
   @Override
-  public MeasurementType defineMeasurementType(String slug, String name,
-      String units) throws UniqueIdException, BadSlugException {
-    if (!Slug.validateSlug(slug)) {
-      throw new BadSlugException(slug + " is not a valid slug.");
+  public MeasurementType defineMeasurementType(String id, String name, String units)
+      throws UniqueIdException, BadSlugException {
+    if (!Slug.validateSlug(id)) {
+      throw new BadSlugException(id + " is not a valid slug.");
     }
     MeasurementType mt = null;
-    mt = getMeasurementType(slug);
-    if (mt != null) {
-      throw new UniqueIdException(slug + " is already a MeasurementType id.");
+    try {
+      mt = getMeasurementType(id);
+      if (mt != null) {
+        throw new UniqueIdException(id + " is already a MeasurementType id.");
+      }
+    }
+    catch (IdNotFoundException e) { // NOPMD
+      // expected.
     }
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    Unit<?> unit = Unit.valueOf(units);
-    mt = new MeasurementType(slug, name, unit);
-    session.save(mt);
+    MeasurementTypeImpl impl = new MeasurementTypeImpl(id, name, units);
+    session.save(impl);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
@@ -328,16 +322,16 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * java.util.Set<String>)
    */
   @Override
-  public Organization defineOrganization(String slug, String name,
-      Set<String> users) throws UniqueIdException, BadSlugException {
-    if (!Slug.validateSlug(slug)) {
-      throw new BadSlugException(slug + " is not a valid slug.");
+  public Organization defineOrganization(String id, String name, Set<String> users)
+      throws UniqueIdException, BadSlugException {
+    if (!Slug.validateSlug(id)) {
+      throw new BadSlugException(id + " is not a valid slug.");
     }
-    OrganizationImpl g;
+    Organization g;
     try {
-      g = (OrganizationImpl) getOrganization(slug);
+      g = getOrganization(id);
       if (g != null) {
-        throw new UniqueIdException(slug + " is already a Organization id.");
+        throw new UniqueIdException(id + " is already a Organization id.");
       }
     }
     catch (IdNotFoundException e) { // NOPMD
@@ -346,12 +340,16 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    g = new OrganizationImpl(slug, name, users);
-    session.saveOrUpdate(g);
+    Set<UserInfoImpl> u = new HashSet<UserInfoImpl>();
+    for (String uid : users) {
+      u.add(retrieveUser(session, uid, id));
+    }
+    OrganizationImpl impl = new OrganizationImpl(id, name, u);
+    session.save(impl);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-    return g;
+    return impl.toOrganization();
   }
 
   /*
@@ -361,43 +359,37 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * java.lang.String, java.lang.String, java.lang.String, java.lang.String)
    */
   @Override
-  public Sensor defineSensor(String slug, String name, String uri,
-      String locationId, String modelId, Set<Property> properties,
-      String ownerId) throws UniqueIdException, MisMatchedOwnerException,
+  public Sensor defineSensor(String slug, String name, String uri, String modelId,
+      Set<Property> properties, String ownerId) throws UniqueIdException, MisMatchedOwnerException,
       IdNotFoundException, BadSlugException {
     if (!Slug.validateSlug(slug)) {
       throw new BadSlugException(slug + " is not a valid slug.");
     }
-    SensorLocationImpl loc = (SensorLocationImpl) getSensorLocation(locationId,
-        ownerId);
-    SensorModelImpl model = (SensorModelImpl) getSensorModel(modelId);
-    if (model == null) {
-      throw new IdNotFoundException(modelId
-          + " is not a defined SensorModel id.");
-    }
-    OrganizationImpl org = (OrganizationImpl) getOrganization(ownerId);
-    if (!ownerId.equals(loc.getOwnerId())) {
-      throw new MisMatchedOwnerException(ownerId
-          + " does not match location's.");
+    getOrganization(ownerId);
+    SensorModel m = getSensorModel(modelId);
+    if (m == null) {
+      throw new IdNotFoundException(modelId + " is not a defined SensorModel id.");
     }
     Sensor s = null;
     try {
-      s = getSensor(slug, org.getId());
+      s = getSensor(slug, ownerId);
+      if (s != null) {
+        throw new UniqueIdException(slug + " is already a defined Sensor.");
+      }
     }
     catch (IdNotFoundException e) { // NOPMD
       // this is expected.
     }
-    if (s != null) {
-      throw new UniqueIdException(slug + " is already a defined Sensor.");
-    }
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    SensorImpl impl = new SensorImpl(slug, name, uri, locationId, modelId,
-        properties, ownerId);
-    impl.setLocationFk(loc.getPk());
-    impl.setModelFk(model.getPk());
-    impl.setOwnerFk(org.getPk());
+    OrganizationImpl org = retrieveOrganization(session, ownerId);
+    SensorModelImpl model = retrieveSensorModel(session, modelId);
+    Set<PropertyImpl> prop = new HashSet<PropertyImpl>();
+    for (Property p : properties) {
+      prop.add(new PropertyImpl(p));
+    }
+    SensorImpl impl = new SensorImpl(slug, name, uri, model, prop, org);
     storeSensor(session, impl);
     session.getTransaction().commit();
     session.close();
@@ -412,25 +404,23 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * java.util.List, org.wattdepot.datamodel.Organization)
    */
   @Override
-  public SensorGroup defineSensorGroup(String slug, String name,
-      Set<String> sensorIds, String ownerId) throws UniqueIdException,
-      MisMatchedOwnerException, IdNotFoundException, BadSlugException {
-    if (!Slug.validateSlug(slug)) {
-      throw new BadSlugException(slug + " is not a valid slug.");
+  public SensorGroup defineSensorGroup(String id, String name, Set<String> sensorIds, String ownerId)
+      throws UniqueIdException, MisMatchedOwnerException, IdNotFoundException, BadSlugException {
+    if (!Slug.validateSlug(id)) {
+      throw new BadSlugException(id + " is not a valid slug.");
     }
-    OrganizationImpl owner = (OrganizationImpl) getOrganization(ownerId);
+    Organization owner = getOrganization(ownerId);
     for (String sensorId : sensorIds) {
       Sensor sensor = getSensor(sensorId, ownerId);
       if (!ownerId.equals(sensor.getOwnerId())) {
-        throw new MisMatchedOwnerException(ownerId
-            + " is not the owner of all the sensors.");
+        throw new MisMatchedOwnerException(ownerId + " is not the owner of all the sensors.");
       }
     }
     SensorGroup sg = null;
     try {
-      sg = getSensorGroup(slug, owner.getId());
+      sg = getSensorGroup(id, owner.getId());
       if (sg != null) {
-        throw new UniqueIdException(slug + " is already a SensorGroup id.");
+        throw new UniqueIdException(id + " is already a SensorGroup id.");
       }
     }
     catch (IdNotFoundException e) { // NOPMD
@@ -439,8 +429,12 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    SensorGroupImpl impl = new SensorGroupImpl(slug, name, sensorIds, ownerId);
-    impl.setOwnerFk(owner.getPk());
+    OrganizationImpl org = retrieveOrganization(session, ownerId);
+    Set<SensorImpl> sensors = new HashSet<SensorImpl>();
+    for (String sensorId : sensorIds) {
+      sensors.add(retrieveSensor(session, sensorId, ownerId));
+    }
+    SensorGroupImpl impl = new SensorGroupImpl(id, name, sensors, org);
     session.save(impl);
     session.getTransaction().commit();
     session.close();
@@ -451,63 +445,30 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.server.WattDepot#defineLocation(java.lang.String,
-   * java.lang.Double, java.lang.Double, java.lang.Double, java.lang.String,
-   * java.lang.String)
-   */
-  @Override
-  public SensorLocation defineSensorLocation(String slug, String name,
-      Double latitude, Double longitude, Double altitude, String description,
-      String ownerId) throws UniqueIdException, IdNotFoundException, BadSlugException {
-    if (!Slug.validateSlug(slug)) {
-      throw new BadSlugException(slug + " is not a valid slug.");
-    }
-    OrganizationImpl owner = (OrganizationImpl) getOrganization(ownerId);
-    SensorLocation l = null;
-    try {
-      l = getSensorLocation(slug, ownerId);
-    }
-    catch (IdNotFoundException e) { // NOPMD
-      // OK, since we are defining the SensorLocation.
-    }
-    if (l != null) {
-      throw new UniqueIdException(slug + " is already a SensorLocation id.");
-    }
-    Session session = Manager.getFactory(getServerProperties()).openSession();
-    sessionOpen++;
-    session.beginTransaction();
-    SensorLocationImpl impl = new SensorLocationImpl(slug, name, latitude, longitude,
-        altitude, description, ownerId);
-    impl.setOwnerFk(owner.getPk());
-    session.save(impl);
-    session.getTransaction().commit();
-    session.close();
-    sessionClose++;
-    return l;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see org.wattdepot.server.WattDepot#defineSensorModel(java.lang.String,
    * java.lang.String, java.lang.String, java.lang.String,
    * org.wattdepot.datamodel.Organization)
    */
   @Override
-  public SensorModel defineSensorModel(String slug, String name, String protocol,
-      String type, String version) throws UniqueIdException, BadSlugException {
-    if (!Slug.validateSlug(slug)) {
-      throw new BadSlugException(slug + " is not a valid slug.");
+  public SensorModel defineSensorModel(String id, String name, String protocol, String type,
+      String version) throws UniqueIdException, BadSlugException {
+    if (!Slug.validateSlug(id)) {
+      throw new BadSlugException(id + " is not a valid id.");
     }
     SensorModel sm = null;
-    sm = getSensorModel(slug);
-    if (sm != null) {
-      throw new UniqueIdException(slug + " is already a SensorModel id.");
+    try {
+      sm = getSensorModel(id);
+      if (sm != null) {
+        throw new UniqueIdException(id + " is already a SensorModel id.");
+      }
+    }
+    catch (IdNotFoundException e) { // NOPMD
+      // expected.
     }
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    SensorModelImpl impl = new SensorModelImpl(name, protocol, type, version);
+    SensorModelImpl impl = new SensorModelImpl(id, name, protocol, type, version);
     session.save(impl);
     session.getTransaction().commit();
     session.close();
@@ -523,25 +484,35 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * java.lang.Boolean, java.util.Set)
    */
   @Override
-  public UserInfo defineUserInfo(String id, String firstName, String lastName,
-      String email, String orgId, Set<Property> properties)
-      throws UniqueIdException {
-    UserInfo u = getUser(id, orgId);
-    if (u != null) {
-      throw new UniqueIdException(id + " is already a UserInfo id.");
+  public UserInfo defineUserInfo(String id, String firstName, String lastName, String email,
+      String orgId, Set<Property> properties) throws UniqueIdException {
+    UserInfo u;
+    try {
+      u = getUser(id, orgId);
+      if (u != null) {
+        throw new UniqueIdException(id + " is already a UserInfo id.");
+      }
+    }
+    catch (IdNotFoundException e) { // NOPMD
+      // excpected since we are defining a new user.
     }
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    u = new UserInfoImpl(id, firstName, lastName, email, orgId, properties);
-    session.saveOrUpdate(u);
+    OrganizationImpl org = retrieveOrganization(session, orgId);
+    Set<PropertyImpl> props = new HashSet<PropertyImpl>();
+    for (Property p : properties) {
+      props.add(new PropertyImpl(p));
+    }
+    UserInfoImpl impl = new UserInfoImpl(id, firstName, lastName, email, props, org);
+    session.saveOrUpdate(impl);
     for (Property p : properties) {
       session.saveOrUpdate(p);
     }
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-    return u;
+    return impl.toUserInfo();
   }
 
   /*
@@ -551,17 +522,19 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * java.lang.String)
    */
   @Override
-  public UserPassword defineUserPassword(String id, String orgId,
-      String password) throws UniqueIdException {
+  public UserPassword defineUserPassword(String id, String orgId, String password, String encrypted)
+      throws UniqueIdException {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    UserPasswordImpl up = new UserPasswordImpl(id, orgId, password);
+    OrganizationImpl org = retrieveOrganization(session, orgId);
+    UserInfoImpl user = retrieveUser(session, id, orgId);
+    UserPasswordImpl up = new UserPasswordImpl(user, password, encrypted, org);
     session.saveOrUpdate(up);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-    return up;
+    return up.toUserPassword();
   }
 
   /*
@@ -574,12 +547,12 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public void deleteCollectorProcessDefinition(String id, String groupId)
       throws IdNotFoundException, MisMatchedOwnerException {
-    CollectorProcessDefinitionImpl s = (CollectorProcessDefinitionImpl) getCollectorProcessDefinition(
-        id, groupId);
+    getCollectorProcessDefinition(id, groupId);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    session.delete(s);
+    CollectorProcessDefinitionImpl impl = retrieveCollectorProcessDefinition(session, id, groupId);
+    session.delete(impl);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
@@ -592,13 +565,14 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * java.lang.String)
    */
   @Override
-  public void deleteDepository(String id, String groupId)
-      throws IdNotFoundException, MisMatchedOwnerException {
-    Depository d = getDepository(id, groupId);
+  public void deleteDepository(String id, String groupId) throws IdNotFoundException,
+      MisMatchedOwnerException {
+    getDepository(id, groupId);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    session.delete(d);
+    DepositoryImpl impl = retrieveDepository(session, id, groupId);
+    session.delete(impl);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
@@ -638,8 +612,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    for (CollectorProcessDefinition sp : retrieveCollectorProcessDefinitions(
-        session, id)) {
+    for (CollectorProcessDefinitionImpl sp : retrieveCollectorProcessDefinitions(session, id)) {
       session.delete(sp);
     }
     session.getTransaction().commit();
@@ -649,7 +622,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    for (SensorGroup sg : retrieveSensorGroups(session, id)) {
+    for (SensorGroupImpl sg : retrieveSensorGroups(session, id)) {
       session.delete(sg);
     }
     session.getTransaction().commit();
@@ -659,10 +632,10 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    for (Depository d : retrieveDepositories(session, id)) {
-      DepositoryImpl impl = new DepositoryImpl(d);
-      for (String sensorId : impl.listSensors(session)) {
-        for (Measurement m : impl.getMeasurements(session, sensorId)) {
+    for (DepositoryImpl d : retrieveDepositories(session, id)) {
+      for (String sensorId : d.listSensors(session)) {
+        for (Measurement m : d.getMeasurements(session, sensorId)) {
+          // not going to work need to get the MeasurementImpls.
           session.delete(m);
         }
       }
@@ -684,7 +657,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     for (DepositoryImpl d : depositories) {
       session.delete(d);
     }
-    for (Sensor s : retrieveSensors(session, id)) {
+    for (SensorImpl s : retrieveSensors(session, id)) {
       session.delete(s);
     }
     session.getTransaction().commit();
@@ -694,20 +667,10 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    for (SensorModel sm : retrieveSensorModels(session)) {
+    for (SensorModelImpl sm : retrieveSensorModels(session)) {
       if (!SensorModelHelper.models.containsKey(sm.getName())) {
         session.delete(sm);
       }
-    }
-    session.getTransaction().commit();
-    session.close();
-    sessionClose++;
-    // Remove Organization owned SensorLocations
-    session = Manager.getFactory(getServerProperties()).openSession();
-    sessionOpen++;
-    session.beginTransaction();
-    for (SensorLocation l : retrieveSensorLocations(session, id)) {
-      session.delete(l);
     }
     session.getTransaction().commit();
     session.close();
@@ -749,8 +712,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * java.lang.String)
    */
   @Override
-  public void deleteSensor(String id, String groupId)
-      throws IdNotFoundException, MisMatchedOwnerException {
+  public void deleteSensor(String id, String groupId) throws IdNotFoundException,
+      MisMatchedOwnerException {
     Sensor s = getSensor(id, groupId);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
@@ -768,8 +731,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * java.lang.String)
    */
   @Override
-  public void deleteSensorGroup(String id, String groupId)
-      throws IdNotFoundException, MisMatchedOwnerException {
+  public void deleteSensorGroup(String id, String groupId) throws IdNotFoundException,
+      MisMatchedOwnerException {
     SensorGroup s = getSensorGroup(id, groupId);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
@@ -779,62 +742,6 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.close();
     sessionClose++;
   }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.server.WattDepot#deleteLocation(java.lang.String,
-   * java.lang.String)
-   */
-  @Override
-  public void deleteSensorLocation(String id, String groupId)
-      throws IdNotFoundException, MisMatchedOwnerException {
-    SensorLocationImpl l = (SensorLocationImpl) getSensorLocation(id, groupId);
-    Session session = Manager.getFactory(getServerProperties()).openSession();
-    sessionOpen++;
-    session.beginTransaction();
-    session.delete(l);
-    session.getTransaction().commit();
-    session.close();
-    sessionClose++;
-  }
-
-  // /**
-  // * Deletes all the objects that have group as their owner.
-  // *
-  // * @param session
-  // * The Session, a transaction must be in progress.
-  // * @param group
-  // * The Organization to delete.
-  // */
-  // private void deleteOrganization(Session session, Organization group) {
-  // for (CollectorProcessDefinition sp :
-  // getCollectorProcessDefinitions(session, group.getId()))
-  // {
-  // session.delete(sp);
-  // }
-  // for (SensorGroup sg : getSensorGroups(session, group.getId())) {
-  // session.delete(sg);
-  // }
-  // for (Depository d : getWattDepositories(session, group.getId())) {
-  // for (Sensor s : d.listSensors(session)) {
-  // for (Measurement m : d.getMeasurements(session, s)) {
-  // session.delete(m);
-  // }
-  // }
-  // session.delete(d);
-  // }
-  // for (Sensor s : getSensors(session, group.getId())) {
-  // session.delete(s);
-  // }
-  // for (SensorModel sm : getSensorModels(session, group.getId())) {
-  // session.delete(sm);
-  // }
-  // for (SensorLocation l : getLocations(session, group.getId())) {
-  // session.delete(l);
-  // }
-  // session.delete(group);
-  // }
 
   /*
    * (non-Javadoc)
@@ -866,14 +773,12 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    */
   @Override
   public void deleteUser(String id, String orgId) throws IdNotFoundException {
-    UserInfoImpl u = (UserInfoImpl) getUser(id, orgId);
-    if (u == null) {
-      throw new IdNotFoundException(id + " is not a defined user id.");
-    }
+    getUser(id, orgId);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    session.delete(u);
+    UserInfoImpl impl = retrieveUser(session, id, orgId);
+    session.delete(impl);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
@@ -885,17 +790,13 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * @see org.wattdepot.server.WattDepot#deleteUserPassword(java.lang.String)
    */
   @Override
-  public void deleteUserPassword(String userId, String orgId)
-      throws IdNotFoundException {
-    UserPasswordImpl up = (UserPasswordImpl) getUserPassword(userId, orgId);
-    if (up == null) {
-      throw new IdNotFoundException(userId
-          + " is not a defined user password id.");
-    }
+  public void deleteUserPassword(String userId, String orgId) throws IdNotFoundException {
+    getUserPassword(userId, orgId);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    session.delete(up);
+    UserPasswordImpl impl = retrieveUserPassword(session, userId, orgId);
+    session.delete(impl);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
@@ -909,22 +810,20 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * String, java.lang.String)
    */
   @Override
-  public CollectorProcessDefinition getCollectorProcessDefinition(String id,
-      String ownerId) throws IdNotFoundException {
+  public CollectorProcessDefinition getCollectorProcessDefinition(String id, String ownerId)
+      throws IdNotFoundException {
     getOrganization(ownerId);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    CollectorProcessDefinitionImpl ret = retrieveCollectorProcessDefinition(
-        session, id, ownerId);
+    CollectorProcessDefinitionImpl ret = retrieveCollectorProcessDefinition(session, id, ownerId);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
     if (ret == null) {
-      throw new IdNotFoundException(id
-          + " is not a defined CollectorProcessDefinition's id.");
+      throw new IdNotFoundException(id + " is not a defined CollectorProcessDefinition's id.");
     }
-    return ret;
+    return ret.toCPD();
   }
 
   /*
@@ -949,19 +848,17 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * .String)
    */
   @Override
-  public List<CollectorProcessDefinition> getCollectorProcessDefinitions(
-      String groupId) {
+  public List<CollectorProcessDefinition> getCollectorProcessDefinitions(String groupId) {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    List<CollectorProcessDefinitionImpl> r = retrieveCollectorProcessDefinitions(
-        session, groupId);
+    List<CollectorProcessDefinitionImpl> r = retrieveCollectorProcessDefinitions(session, groupId);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
     List<CollectorProcessDefinition> ret = new ArrayList<CollectorProcessDefinition>();
-    for (CollectorProcessDefinition cpd : r) {
-      ret.add(cpd);
+    for (CollectorProcessDefinitionImpl cpd : r) {
+      ret.add(cpd.toCPD());
     }
     return ret;
   }
@@ -982,7 +879,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     sessionClose++;
     List<Depository> ret = new ArrayList<Depository>();
     for (DepositoryImpl d : r) {
-      ret.add(d);
+      ret.add(d.toDepository());
     }
     return ret;
   }
@@ -994,8 +891,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * java.lang.String)
    */
   @Override
-  public Depository getDepository(String id, String ownerId)
-      throws IdNotFoundException {
+  public Depository getDepository(String id, String ownerId) throws IdNotFoundException {
     getOrganization(ownerId);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
@@ -1007,7 +903,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     if (ret == null) {
       throw new IdNotFoundException(id + " is not a defined Depository's id.");
     }
-    return ret;
+    return ret.toDepository();
   }
 
   /*
@@ -1030,15 +926,18 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * @see org.wattdepot.server.WattDepot#getMeasurementType(java.lang.String)
    */
   @Override
-  public MeasurementType getMeasurementType(String slug) {
+  public MeasurementType getMeasurementType(String id) throws IdNotFoundException {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    MeasurementType ret = retrieveMeasurementType(session, slug);
+    MeasurementTypeImpl ret = retrieveMeasurementType(session, id);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-    return ret;
+    if (ret == null) {
+      throw new IdNotFoundException(id + " is not a defined MeasurementType.");
+    }
+    return ret.toMeasurementType();
   }
 
   /*
@@ -1051,11 +950,15 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    List<MeasurementType> ret = retrieveMeasurementTypes(session);
+    List<MeasurementTypeImpl> ret = retrieveMeasurementTypes(session);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-    return ret;
+    List<MeasurementType> types = new ArrayList<MeasurementType>();
+    for (MeasurementTypeImpl i : ret) {
+      types.add(i.toMeasurementType());
+    }
+    return types;
   }
 
   /*
@@ -1065,7 +968,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    */
   @Override
   public Organization getOrganization(String id) throws IdNotFoundException {
-    Organization ret = null;
+    OrganizationImpl ret = null;
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
@@ -1076,7 +979,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     if (ret == null) {
       throw new IdNotFoundException(id + " isn't a defined Organization's id.");
     }
-    return ret;
+    return ret.toOrganization();
   }
 
   /*
@@ -1104,13 +1007,13 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     sessionOpen++;
     session.beginTransaction();
     List<OrganizationImpl> r = retrieveOrganizations(session);
+    List<Organization> ret = new ArrayList<Organization>();
+    for (OrganizationImpl o : r) {
+      ret.add(o.toOrganization());
+    }
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-    List<Organization> ret = new ArrayList<Organization>();
-    for (OrganizationImpl o : r) {
-      ret.add(o);
-    }
     return ret;
   }
 
@@ -1132,7 +1035,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     if (ret == null) {
       throw new IdNotFoundException(id + " is not a defined Sensor id.");
     }
-    return ret;
+    return ret.toSensor();
   }
 
   /*
@@ -1142,8 +1045,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * java.lang.String)
    */
   @Override
-  public SensorGroup getSensorGroup(String id, String ownerId)
-      throws IdNotFoundException {
+  public SensorGroup getSensorGroup(String id, String ownerId) throws IdNotFoundException {
     getOrganization(ownerId);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
@@ -1155,7 +1057,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     if (ret == null) {
       throw new IdNotFoundException(id + " is not a defined SensorGroup id.");
     }
-    return ret;
+    return ret.toSensorGroup();
   }
 
   /*
@@ -1164,8 +1066,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * @see org.wattdepot.server.WattDepot#getSensorGroupIds()
    */
   @Override
-  public List<String> getSensorGroupIds(String groupId)
-      throws IdNotFoundException {
+  public List<String> getSensorGroupIds(String groupId) throws IdNotFoundException {
     ArrayList<String> ret = new ArrayList<String>();
     for (SensorGroup s : getSensorGroups(groupId)) {
       ret.add(s.getId());
@@ -1189,7 +1090,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     sessionClose++;
     List<SensorGroup> ret = new ArrayList<SensorGroup>();
     for (SensorGroupImpl s : r) {
-      ret.add(s);
+      ret.add(s.toSensorGroup());
     }
     return ret;
   }
@@ -1211,69 +1112,11 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.server.WattDepot#getLocation(java.lang.String,
-   * java.lang.String)
-   */
-  @Override
-  public SensorLocation getSensorLocation(String id, String ownerId)
-      throws IdNotFoundException {
-    getOrganization(ownerId);
-    Session session = Manager.getFactory(getServerProperties()).openSession();
-    sessionOpen++;
-    session.beginTransaction();
-    SensorLocationImpl ret = retrieveSensorLocation(session, id, ownerId);
-    session.getTransaction().commit();
-    session.close();
-    sessionClose++;
-    if (ret == null) {
-      throw new IdNotFoundException(id + " is not a defined SensorLocation id.");
-    }
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.server.WattDepot#getLocationIds()
-   */
-  @Override
-  public List<String> getSensorLocationIds(String groupId) {
-    ArrayList<String> ret = new ArrayList<String>();
-    for (SensorLocation l : getSensorLocations(groupId)) {
-      ret.add(l.getId());
-    }
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.server.WattDepot#getLocations(java.lang.String)
-   */
-  @Override
-  public List<SensorLocation> getSensorLocations(String groupId) {
-    Session session = Manager.getFactory(getServerProperties()).openSession();
-    sessionOpen++;
-    session.beginTransaction();
-    List<SensorLocationImpl> r = retrieveSensorLocations(session, groupId);
-    session.getTransaction().commit();
-    session.close();
-    sessionClose++;
-    List<SensorLocation> ret = new ArrayList<SensorLocation>();
-    for (SensorLocationImpl l : r) {
-      ret.add(l);
-    }
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see org.wattdepot.server.WattDepot#getSensorModel(java.lang.String,
    * java.lang.String)
    */
   @Override
-  public SensorModel getSensorModel(String id) {
+  public SensorModel getSensorModel(String id) throws IdNotFoundException {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
@@ -1281,7 +1124,10 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-    return ret;
+    if (ret == null) {
+      throw new IdNotFoundException(id + " is not a valid SensorModel id.");
+    }
+    return ret.toSensorModel();
   }
 
   /*
@@ -1314,7 +1160,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     sessionClose++;
     List<SensorModel> ret = new ArrayList<SensorModel>();
     for (SensorModelImpl s : r) {
-      ret.add(s);
+      ret.add(s.toSensorModel());
     }
     return ret;
   }
@@ -1335,7 +1181,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     sessionClose++;
     List<Sensor> ret = new ArrayList<Sensor>();
     for (SensorImpl s : r) {
-      ret.add(s);
+      ret.add(s.toSensor());
     }
     return ret;
   }
@@ -1361,22 +1207,18 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    */
   @SuppressWarnings("unchecked")
   @Override
-  public UserInfo getUser(String id, String orgId) {
-    UserInfoImpl ret = null;
+  public UserInfo getUser(String id, String orgId) throws IdNotFoundException {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    @SuppressWarnings("rawtypes")
-    List result = session.createQuery("from UserInfoImpl").list();
+    UserInfoImpl user = retrieveUser(session, id, orgId);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-    for (UserInfoImpl u : (List<UserInfoImpl>) result) {
-      if (id.equals(u.getUid()) && orgId.equals(u.getOrganizationId())) {
-        ret = u;
-      }
+    if (user == null) {
+      throw new IdNotFoundException(id + " is not a defined user id.");
     }
-    return ret;
+    return user.toUserInfo();
   }
 
   /*
@@ -1399,23 +1241,18 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * @see org.wattdepot.server.WattDepot#getUserPassword(java.lang.String)
    */
   @Override
-  public UserPassword getUserPassword(String id, String orgId) {
-    UserPasswordImpl ret = null;
+  public UserPassword getUserPassword(String id, String orgId) throws IdNotFoundException {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    @SuppressWarnings("unchecked")
-    List<UserPasswordImpl> result = (List<UserPasswordImpl>) session
-        .createQuery("from UserPasswordImpl").list();
-    for (UserPasswordImpl up : result) {
-      if (up.getUid().equals(id)) {
-        ret = up;
-      }
-    }
+    UserPasswordImpl ret = retrieveUserPassword(session, id, orgId);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-    return ret;
+    if (ret == null) {
+      throw new IdNotFoundException(id + " is not a valid UserPassword id.");
+    }
+    return ret.toUserPassword();
   }
 
   /*
@@ -1429,16 +1266,13 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    @SuppressWarnings("rawtypes")
-    List result = session.createQuery("from UserInfoImpl").list();
+    List<UserInfoImpl> result = retrieveUsers(session, orgId);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
     ArrayList<UserInfo> ret = new ArrayList<UserInfo>();
-    for (UserInfoImpl u : (List<UserInfoImpl>) result) {
-      if (u.getOrganizationId().equals(orgId)) {
-        ret.add(u);
-      }
+    for (UserInfoImpl u : result) {
+      ret.add(u.toUserInfo());
     }
     return ret;
   }
@@ -1460,21 +1294,18 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   }
 
   /**
-   * @param session
-   *          The session with an open transaction.
-   * @param id
-   *          The CollectorProcessDefinition's id.
-   * @param ownerId
-   *          The owner Organization's id.
+   * @param session The session with an open transaction.
+   * @param id The CollectorProcessDefinition's id.
+   * @param ownerId The owner Organization's id.
    * @return the CollectorProcessDefinition if defined.
    */
   @SuppressWarnings("unchecked")
-  private CollectorProcessDefinitionImpl retrieveCollectorProcessDefinition(
-      Session session, String id, String ownerId) {
+  private CollectorProcessDefinitionImpl retrieveCollectorProcessDefinition(Session session,
+      String id, String ownerId) {
+    OrganizationImpl org = retrieveOrganization(session, ownerId);
     List<CollectorProcessDefinitionImpl> cpds = (List<CollectorProcessDefinitionImpl>) session
-        .createQuery(
-            "FROM CollectorProcessDefinitionImpl WHERE slug = :id AND ownerId = :owner")
-        .setParameter("id", id).setParameter("owner", ownerId).list();
+        .createQuery("FROM CollectorProcessDefinitionImpl WHERE id = :id AND org = :org")
+        .setParameter("id", id).setParameter("org", org).list();
     if (cpds.size() == 1) {
       return cpds.get(0);
     }
@@ -1484,41 +1315,32 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   }
 
   /**
-   * @param session
-   *          The session with an open transaction.
-   * @param ownerId
-   *          The owner's Organization id.
+   * @param session The session with an open transaction.
+   * @param ownerId The owner's Organization id.
    * @return a List of CollectorProcessDefinitions owned by ownerId.
    */
   @SuppressWarnings("unchecked")
-  private List<CollectorProcessDefinitionImpl> retrieveCollectorProcessDefinitions(
-      Session session, String ownerId) {
-    // probably want to get the owner OrganizationImpl and create the list using
-    // just a single session.createQuery() call with WHERE ownerFk ==
-    // org.getPk().
+  private List<CollectorProcessDefinitionImpl> retrieveCollectorProcessDefinitions(Session session,
+      String ownerId) {
+    OrganizationImpl org = retrieveOrganization(session, ownerId);
     List<CollectorProcessDefinitionImpl> ret = (List<CollectorProcessDefinitionImpl>) session
-        .createQuery(
-            "FROM CollectorProcessDefinitionImpl WHERE ownerId = :owner")
-        .setParameter("owner", ownerId).list();
+        .createQuery("FROM CollectorProcessDefinitionImpl WHERE org = :org")
+        .setParameter("org", org).list();
     return ret;
   }
 
   /**
-   * @param session
-   *          The session with an open transaction.
-   * @param id
-   *          the Depository's id.
-   * @param ownerId
-   *          The owner's Organization id.
+   * @param session The session with an open transaction.
+   * @param id the Depository's id.
+   * @param ownerId The owner's Organization id.
    * @return A List of the Depositories owned by groupId.
    */
   @SuppressWarnings("unchecked")
-  private DepositoryImpl retrieveDepository(Session session, String id,
-      String ownerId) {
+  private DepositoryImpl retrieveDepository(Session session, String id, String ownerId) {
+    OrganizationImpl org = retrieveOrganization(session, ownerId);
     List<DepositoryImpl> ret = (List<DepositoryImpl>) session
-        .createQuery(
-            "from DepositoryImpl WHERE slug = :id AND ownerId = :owner")
-        .setParameter("id", id).setParameter("owner", ownerId).list();
+        .createQuery("from DepositoryImpl WHERE id = :id AND org = :org").setParameter("id", id)
+        .setParameter("org", org).list();
     if (ret.size() == 1) {
       return ret.get(0);
     }
@@ -1526,33 +1348,27 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   }
 
   /**
-   * @param session
-   *          The session with an open transaction.
-   * @param ownerId
-   *          The owner's Organization id.
+   * @param session The session with an open transaction.
+   * @param ownerId The owner's Organization id.
    * @return A List of the Depositories owned by groupId.
    */
   @SuppressWarnings("unchecked")
-  private List<DepositoryImpl> retrieveDepositories(Session session,
-      String ownerId) {
+  private List<DepositoryImpl> retrieveDepositories(Session session, String ownerId) {
+    OrganizationImpl org = retrieveOrganization(session, ownerId);
     List<DepositoryImpl> ret = (List<DepositoryImpl>) session
-        .createQuery("from DepositoryImpl WHERE ownerId = :owner")
-        .setParameter("owner", ownerId).list();
+        .createQuery("from DepositoryImpl WHERE org = :org").setParameter("org", org).list();
     return ret;
   }
 
   /**
-   * @param session
-   *          A Session with an open transaction.
-   * @param id
-   *          The id of the MeasurementType.
+   * @param session A Session with an open transaction.
+   * @param id The id of the MeasurementType.
    * @return The MeasurementType with the given id.
    */
   @SuppressWarnings("unchecked")
-  private MeasurementType retrieveMeasurementType(Session session, String id) {
-    List<MeasurementType> ret = (List<MeasurementType>) session
-        .createQuery("FROM MeasurementType WHERE slug = :id")
-        .setParameter("id", id).list();
+  private MeasurementTypeImpl retrieveMeasurementType(Session session, String id) {
+    List<MeasurementTypeImpl> ret = (List<MeasurementTypeImpl>) session
+        .createQuery("FROM MeasurementTypeImpl WHERE id = :id").setParameter("id", id).list();
     if (ret.size() == 1) {
       return ret.get(0);
     }
@@ -1560,29 +1376,25 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   }
 
   /**
-   * @param session
-   *          A Session with an open transaction.
+   * @param session A Session with an open transaction.
    * @return The list of defined MeasurementTypes.
    */
   @SuppressWarnings("unchecked")
-  private List<MeasurementType> retrieveMeasurementTypes(Session session) {
-    List<MeasurementType> ret = (List<MeasurementType>) session.createQuery(
-        "FROM MeasurementType").list();
+  private List<MeasurementTypeImpl> retrieveMeasurementTypes(Session session) {
+    List<MeasurementTypeImpl> ret = (List<MeasurementTypeImpl>) session.createQuery(
+        "FROM MeasurementTypeImpl").list();
     return ret;
   }
 
   /**
-   * @param session
-   *          A Session with an open transaction.
-   * @param id
-   *          The id of the Organization.
+   * @param session A Session with an open transaction.
+   * @param id The id of the Organization.
    * @return The Organization with the given id.
    */
   @SuppressWarnings("unchecked")
   private OrganizationImpl retrieveOrganization(Session session, String id) {
     List<OrganizationImpl> ret = (List<OrganizationImpl>) session
-        .createQuery("from OrganizationImpl WHERE slug = :id")
-        .setParameter("id", id).list();
+        .createQuery("from OrganizationImpl WHERE id = :id").setParameter("id", id).list();
     if (ret.size() == 1) {
       return ret.get(0);
     }
@@ -1590,8 +1402,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   }
 
   /**
-   * @param session
-   *          A Session with an open transaction.
+   * @param session A Session with an open transaction.
    * @return The List of defined Organizations.
    */
   @SuppressWarnings("unchecked")
@@ -1603,19 +1414,17 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   }
 
   /**
-   * @param session
-   *          The session with an open transaction.
-   * @param id
-   *          the Sensor's id.
-   * @param ownerId
-   *          The owner's Organization id.
+   * @param session The session with an open transaction.
+   * @param id the Sensor's id.
+   * @param ownerId The owner's Organization id.
    * @return The Sensor with the given id and owned by ownerId.
    */
   @SuppressWarnings("unchecked")
   private SensorImpl retrieveSensor(Session session, String id, String ownerId) {
+    OrganizationImpl org = retrieveOrganization(session, ownerId);
     List<SensorImpl> ret = (List<SensorImpl>) session
-        .createQuery("FROM SensorImpl WHERE slug = :id AND ownerId = :owner")
-        .setParameter("id", id).setParameter("owner", ownerId).list();
+        .createQuery("FROM SensorImpl WHERE id = :id AND org = :org").setParameter("id", id)
+        .setParameter("org", org).list();
     if (ret.size() == 1) {
       return ret.get(0);
     }
@@ -1623,74 +1432,30 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   }
 
   /**
-   * @param session
-   *          The session with an open transaction.
-   * @param ownerId
-   *          The owner's Organization id.
+   * @param session The session with an open transaction.
+   * @param ownerId The owner's Organization id.
    * @return A List of the Sensors owned by ownerId.
    */
   @SuppressWarnings("unchecked")
   private List<SensorImpl> retrieveSensors(Session session, String ownerId) {
+    OrganizationImpl org = retrieveOrganization(session, ownerId);
     List<SensorImpl> ret = (List<SensorImpl>) session
-        .createQuery("FROM SensorImpl WHERE ownerId = :owner")
-        .setParameter("owner", ownerId).list();
+        .createQuery("FROM SensorImpl WHERE org = :org").setParameter("org", org).list();
     return ret;
   }
 
   /**
-   * @param session
-   *          The session with an open transaction.
-   * @param id
-   *          the SensorLocation's id.
-   * @param ownerId
-   *          The owner's Organization id.
-   * @return A List of the SensorLocations owned by ownerId.
-   */
-  @SuppressWarnings("unchecked")
-  private SensorLocationImpl retrieveSensorLocation(Session session, String id,
-      String ownerId) {
-    List<SensorLocationImpl> ret = (List<SensorLocationImpl>) session
-        .createQuery(
-            "FROM SensorLocationImpl WHERE slug = :id AND ownerId = :owner")
-        .setParameter("id", id).setParameter("owner", ownerId).list();
-    if (ret.size() == 1) {
-      return ret.get(0);
-    }
-    return null;
-  }
-
-  /**
-   * @param session
-   *          The session with an open transaction.
-   * @param ownerId
-   *          The owner's Organization id.
-   * @return A List of the SensorLocations owned by ownerId.
-   */
-  @SuppressWarnings("unchecked")
-  private List<SensorLocationImpl> retrieveSensorLocations(Session session,
-      String ownerId) {
-    List<SensorLocationImpl> ret = (List<SensorLocationImpl>) session
-        .createQuery("FROM SensorLocationImpl WHERE ownerId = :owner")
-        .setParameter("owner", ownerId).list();
-    return ret;
-  }
-
-  /**
-   * @param session
-   *          The session with an open transaction.
-   * @param id
-   *          the SensorGroup's id.
-   * @param ownerId
-   *          The owner's Organization id.
+   * @param session The session with an open transaction.
+   * @param id the SensorGroup's id.
+   * @param ownerId The owner's Organization id.
    * @return The SensorGroup with the given id, owned by ownerId.
    */
   @SuppressWarnings("unchecked")
-  private SensorGroupImpl retrieveSensorGroup(Session session, String id,
-      String ownerId) {
+  private SensorGroupImpl retrieveSensorGroup(Session session, String id, String ownerId) {
+    OrganizationImpl org = retrieveOrganization(session, ownerId);
     List<SensorGroupImpl> result = (List<SensorGroupImpl>) session
-        .createQuery(
-            "FROM SensorGroupImpl WHERE slug = :id AND ownerId = :owner")
-        .setParameter("id", id).setParameter("owner", ownerId).list();
+        .createQuery("FROM SensorGroupImpl WHERE id = :id AND org = :org").setParameter("id", id)
+        .setParameter("org", org).list();
     if (result.size() == 1) {
       return result.get(0);
     }
@@ -1698,33 +1463,27 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   }
 
   /**
-   * @param session
-   *          The session with an open transaction.
-   * @param ownerId
-   *          The owner's Organization id.
+   * @param session The session with an open transaction.
+   * @param ownerId The owner's Organization id.
    * @return a List of the SensorGroups owned by groupId.
    */
   @SuppressWarnings("unchecked")
-  private List<SensorGroupImpl> retrieveSensorGroups(Session session,
-      String ownerId) {
+  private List<SensorGroupImpl> retrieveSensorGroups(Session session, String ownerId) {
+    OrganizationImpl org = retrieveOrganization(session, ownerId);
     List<SensorGroupImpl> result = (List<SensorGroupImpl>) session
-        .createQuery("FROM SensorGroupImpl WHERE ownerId = :owner")
-        .setParameter("owner", ownerId).list();
+        .createQuery("FROM SensorGroupImpl WHERE org = :org").setParameter("org", org).list();
     return result;
   }
 
   /**
-   * @param session
-   *          The Session with an open transaction.
-   * @param id
-   *          the id of the SensorModel to retrieve.
+   * @param session The Session with an open transaction.
+   * @param id the id of the SensorModel to retrieve.
    * @return A List of the SensorModels owned by the groupId.
    */
   @SuppressWarnings("unchecked")
   private SensorModelImpl retrieveSensorModel(Session session, String id) {
     List<SensorModelImpl> result = (List<SensorModelImpl>) session
-        .createQuery("FROM SensorModelImpl WHERE slug = :id")
-        .setParameter("id", id).list();
+        .createQuery("FROM SensorModelImpl WHERE id = :id").setParameter("id", id).list();
     if (result.size() == 1) {
       return result.get(0);
     }
@@ -1732,69 +1491,88 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   }
 
   /**
-   * @param session
-   *          The Session with an open transaction.
+   * @param session The Session with an open transaction.
    * @return A List of the SensorModels owned by the groupId.
    */
   @SuppressWarnings("unchecked")
   private List<SensorModelImpl> retrieveSensorModels(Session session) {
-    List<SensorModelImpl> ret = (List<SensorModelImpl>) session.createQuery(
-        "from SensorModelImpl").list();
+    List<SensorModelImpl> ret = (List<SensorModelImpl>) session.createQuery("FROM SensorModelImpl")
+        .list();
     return ret;
   }
 
   /**
-   * @param session
-   *          The Session with an open transaction.
-   * @param orgId
-   *          The organization id.
+   * @param session The session with an open transaction.
+   * @param uid the User's id.
+   * @param orgId the Organziation's id.
+   * @return the UserInfoImpl.
+   */
+  @SuppressWarnings("unchecked")
+  private UserInfoImpl retrieveUser(Session session, String uid, String orgId) {
+    OrganizationImpl org = retrieveOrganization(session, orgId);
+    List<UserInfoImpl> result = (List<UserInfoImpl>) session
+        .createQuery("FROM UserInfoImpl WHERE uid = :uid AND org = :org").setParameter("uid", uid)
+        .setParameter("org", org).list();
+    if (result.size() == 1) {
+      return result.get(0);
+    }
+    return null;
+
+  }
+
+  /**
+   * @param session The Session with an open transaction.
+   * @param id the user's id.
+   * @param orgId the organization's id.
+   * @return the UserPasswordImpl.
+   */
+  @SuppressWarnings("unchecked")
+  private UserPasswordImpl retrieveUserPassword(Session session, String id, String orgId) {
+    OrganizationImpl org = retrieveOrganization(session, orgId);
+    UserInfoImpl user = retrieveUser(session, id, orgId);
+    List<UserPasswordImpl> result = (List<UserPasswordImpl>) session
+        .createQuery("FROM UserPasswordImpl WHERE user = :user AND org = :org")
+        .setParameter("user", user).setParameter("org", org).list();
+    if (result.size() == 1) {
+      return result.get(0);
+    }
+    return null;
+  }
+
+  /**
+   * @param session The Session with an open transaction.
+   * @param orgId The organization id.
    * @return a List of the user passwords in the given organization.
    */
   @SuppressWarnings("unchecked")
-  private List<UserPasswordImpl> retrieveUserPasswords(Session session,
-      String orgId) {
-    @SuppressWarnings("rawtypes")
-    List result = session.createQuery("from UserPasswordImpl").list();
-    ArrayList<UserPasswordImpl> ret = new ArrayList<UserPasswordImpl>();
-    for (UserPasswordImpl u : (List<UserPasswordImpl>) result) {
-      if (u.getOrganizationId() != null && u.getOrganizationId().equals(orgId)) {
-        ret.add(u);
-      }
-    }
-    return ret;
+  private List<UserPasswordImpl> retrieveUserPasswords(Session session, String orgId) {
+    OrganizationImpl org = retrieveOrganization(session, orgId);
+    List<UserPasswordImpl> result = (List<UserPasswordImpl>) session
+        .createQuery("FROM UserPasswordImpl WHERE org = :org").setParameter("org", org).list();
+    return result;
   }
 
   /**
-   * @param session
-   *          The Session with an open transaction.
-   * @param orgId
-   *          The organization id.
+   * @param session The Session with an open transaction.
+   * @param orgId The organization id.
    * @return a List of the users in the given organization.
    */
   @SuppressWarnings("unchecked")
   private List<UserInfoImpl> retrieveUsers(Session session, String orgId) {
-    @SuppressWarnings("rawtypes")
-    List result = session.createQuery("from UserInfoImpl").list();
-    ArrayList<UserInfoImpl> ret = new ArrayList<UserInfoImpl>();
-    for (UserInfoImpl u : (List<UserInfoImpl>) result) {
-      if (u.getOrganizationId().equals(orgId)) {
-        ret.add(u);
-      }
-    }
-    return ret;
+    OrganizationImpl org = retrieveOrganization(session, orgId);
+    List<UserInfoImpl> result = (List<UserInfoImpl>) session
+        .createQuery("FROM UserInfoImpl WHERE org = :org").setParameter("org", org).list();
+    return result;
   }
 
   /**
    * Use this method after beginning a transaction.
    * 
-   * @param session
-   *          The Session, a transaction must be in progress.
-   * @param cpd
-   *          The CollectorProcessDefinitionImpl to save.
+   * @param session The Session, a transaction must be in progress.
+   * @param cpd The CollectorProcessDefinitionImpl to save.
    */
-  private void storeCollectorProcessDefinition(Session session,
-      CollectorProcessDefinitionImpl cpd) {
-    for (Property p : cpd.getProperties()) {
+  private void storeCollectorProcessDefinition(Session session, CollectorProcessDefinitionImpl cpd) {
+    for (PropertyImpl p : cpd.getProperties()) {
       session.saveOrUpdate(p);
     }
     session.saveOrUpdate(cpd);
@@ -1804,13 +1582,11 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   /**
    * Use this method after beginning a transaction.
    * 
-   * @param session
-   *          The Session, a transaction must be in progress.
-   * @param sensor
-   *          The SensorImpl to save.
+   * @param session The Session, a transaction must be in progress.
+   * @param sensor The SensorImpl to save.
    */
   private void storeSensor(Session session, SensorImpl sensor) {
-    for (Property p : sensor.getProperties()) {
+    for (PropertyImpl p : sensor.getProperties()) {
       session.saveOrUpdate(p);
     }
     session.saveOrUpdate(sensor);
@@ -1826,25 +1602,25 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public CollectorProcessDefinition updateCollectorProcessDefinition(
       CollectorProcessDefinition process) throws IdNotFoundException {
-    try {
-      CollectorProcessDefinitionImpl cpd = (CollectorProcessDefinitionImpl) getCollectorProcessDefinition(
-          process.getId(), process.getOwnerId());
-      cpd.setId(process.getId());
-      cpd.setName(process.getName());
-      cpd.setSensorId(process.getSensorId());
-      Session session = Manager.getFactory(getServerProperties()).openSession();
-      sessionOpen++;
-      session.beginTransaction();
-      storeCollectorProcessDefinition(session, cpd);
-      session.getTransaction().commit();
-      session.close();
-      sessionClose++;
-    }
-    catch (BadSlugException e) {
-      // Shouldn't happen.
-      e.printStackTrace();
-    }
-    return process;
+    getCollectorProcessDefinition(process.getId(), process.getOwnerId());
+    getDepository(process.getDepositoryId(), process.getOwnerId());
+    getSensor(process.getSensorId(), process.getOwnerId());
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    sessionOpen++;
+    session.beginTransaction();
+    CollectorProcessDefinitionImpl impl = retrieveCollectorProcessDefinition(session,
+        process.getId(), process.getOwnerId());
+    impl.setId(process.getId());
+    impl.setName(process.getName());
+    impl.setPollingInterval(process.getPollingInterval());
+    impl.setDepository(retrieveDepository(session, process.getDepositoryId(), process.getOwnerId()));
+    impl.setSensor(retrieveSensor(session, process.getSensorId(), process.getOwnerId()));
+    impl.setOrg(retrieveOrganization(session, process.getOwnerId()));
+    storeCollectorProcessDefinition(session, impl);
+    session.getTransaction().commit();
+    session.close();
+    sessionClose++;
+    return impl.toCPD();
   }
 
   /*
@@ -1875,21 +1651,27 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * .Organization)
    */
   @Override
-  public Organization updateOrganization(Organization org)
-      throws IdNotFoundException {
-    OrganizationImpl impl = (OrganizationImpl) getOrganization(org.getId());
-    impl.setName(org.getName());
-    impl.setId(org.getId());
-    impl.setUsers(org.getUsers());
+  public Organization updateOrganization(Organization org) throws IdNotFoundException {
+    getOrganization(org.getId());
+    for (String s : org.getUsers()) {
+      getUser(s, org.getId());
+    }
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
+    OrganizationImpl impl = retrieveOrganization(session, org.getId());
+    impl.setId(org.getId());
+    impl.setName(org.getName());
+    Set<UserInfoImpl> users = new HashSet<UserInfoImpl>();
+    for (String s : org.getUsers()) {
+      users.add(retrieveUser(session, s, org.getId()));
+    }
+    impl.setUsers(users);
     session.saveOrUpdate(impl);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-
-    return org;
+    return impl.toOrganization();
   }
 
   /*
@@ -1901,35 +1683,26 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    */
   @Override
   public Sensor updateSensor(Sensor sensor) throws IdNotFoundException {
-    OrganizationImpl org = (OrganizationImpl) getOrganization(sensor
-        .getOwnerId());
-    SensorLocationImpl locImpl = (SensorLocationImpl) getSensorLocation(
-        sensor.getSensorLocationId(), org.getId());
-    SensorModelImpl modelImpl = (SensorModelImpl) getSensorModel(sensor
-        .getModelId());
-    SensorImpl impl = (SensorImpl) getSensor(sensor.getId(),
-        sensor.getOwnerId());
-    impl.setId(sensor.getId());
-    impl.setName(sensor.getName());
-    impl.setSensorLocationId(sensor.getSensorLocationId());
-    impl.setLocationFk(locImpl.getPk());
-    impl.setModelId(sensor.getModelId());
-    impl.setModelFk(modelImpl.getPk());
-    impl.setOwnerFk(org.getPk());
-    impl.setOwnerId(org.getId());
-    impl.setProperties(sensor.getProperties());
+    getOrganization(sensor.getOwnerId());
+    getSensorModel(sensor.getModelId());
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    session.saveOrUpdate(impl);
-    for (Property p : impl.getProperties()) {
-      session.saveOrUpdate(p);
+    SensorImpl impl = retrieveSensor(session, sensor.getId(), sensor.getOwnerId());
+    impl.setId(sensor.getId());
+    impl.setName(sensor.getName());
+    impl.setOrg(retrieveOrganization(session, sensor.getOwnerId()));
+    impl.setModel(retrieveSensorModel(session, sensor.getModelId()));
+    Set<PropertyImpl> props = new HashSet<PropertyImpl>();
+    for (Property p : sensor.getProperties()) {
+      props.add(new PropertyImpl(p));
     }
+    impl.setProperties(props);
+    storeSensor(session, impl);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-
-    return sensor;
+    return impl.toSensor();
   }
 
   /*
@@ -1940,73 +1713,31 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * .SensorGroup)
    */
   @Override
-  public SensorGroup updateSensorGroup(SensorGroup group)
-      throws IdNotFoundException {
-    OrganizationImpl org = (OrganizationImpl) getOrganization(group
-        .getOwnerId());
-    SensorGroupImpl impl = (SensorGroupImpl) getSensorGroup(group.getId(),
-        org.getId());
+  public SensorGroup updateSensorGroup(SensorGroup group) throws IdNotFoundException {
+    getOrganization(group.getOwnerId());
+    getSensorGroup(group.getId(), group.getOwnerId());
     // validate the list of sensor ids.
     for (String id : group.getSensors()) {
-      getSensor(id, org.getId());
+      getSensor(id, group.getOwnerId());
     }
-    try {
-      impl.setId(group.getId());
-      impl.setName(group.getName());
-      impl.setOwnerId(org.getId());
-      impl.setOwnerFk(org.getPk());
-      impl.setSensors(group.getSensors());
-      Session session = Manager.getFactory(getServerProperties()).openSession();
-      sessionOpen++;
-      session.beginTransaction();
-      session.saveOrUpdate(impl);
-      session.getTransaction().commit();
-      session.close();
-      sessionClose++;
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    sessionOpen++;
+    session.beginTransaction();
+    OrganizationImpl org = retrieveOrganization(session, group.getOwnerId());
+    SensorGroupImpl impl = retrieveSensorGroup(session, group.getId(), group.getOwnerId());
+    impl.setId(group.getId());
+    impl.setName(group.getName());
+    impl.setOrg(org);
+    Set<SensorImpl> sensors = new HashSet<SensorImpl>();
+    for (String s : group.getSensors()) {
+      sensors.add(retrieveSensor(session, s, group.getOwnerId()));
     }
-    catch (BadSlugException e) { // NOPMD
-      // not sure what to do here.
-    }
-
-    return group;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.server.WattDepot#updateLocation(org.wattdepot.datamodel
-   * .Location)
-   */
-  @Override
-  public SensorLocation updateSensorLocation(SensorLocation loc)
-      throws IdNotFoundException {
-    try {
-      OrganizationImpl org = (OrganizationImpl) getOrganization(loc
-          .getOwnerId());
-      SensorLocationImpl impl = (SensorLocationImpl) getSensorLocation(
-          loc.getId(), loc.getOwnerId());
-      impl.setId(loc.getId());
-      impl.setName(loc.getName());
-      impl.setDescription(loc.getDescription());
-      impl.setLatitude(loc.getLatitude());
-      impl.setLongitude(loc.getLongitude());
-      impl.setAltitude(loc.getAltitude());
-      impl.setOwnerId(loc.getOwnerId());
-      impl.setOwnerFk(org.getPk());
-      Session session = Manager.getFactory(getServerProperties()).openSession();
-      sessionOpen++;
-      session.beginTransaction();
-      session.saveOrUpdate(impl);
-      session.getTransaction().commit();
-      session.close();
-      sessionClose++;
-    }
-    catch (BadSlugException e) {
-      // Shouldn't happen
-      e.printStackTrace();
-    }
-
-    return loc;
+    impl.setSensors(sensors);
+    session.saveOrUpdate(impl);
+    session.getTransaction().commit();
+    session.close();
+    sessionClose++;
+    return impl.toSensorGroup();
   }
 
   /*
@@ -2017,26 +1748,22 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * .SensorModel)
    */
   @Override
-  public SensorModel updateSensorModel(SensorModel model) {
-    SensorModelImpl impl = (SensorModelImpl) getSensorModel(model.getId());
-    try {
-      impl.setName(model.getName());
-      impl.setProtocol(model.getProtocol());
-      impl.setId(model.getId());
-      impl.setType(model.getType());
-      impl.setVersion(model.getVersion());
-      Session session = Manager.getFactory(getServerProperties()).openSession();
-      sessionOpen++;
-      session.beginTransaction();
-      session.saveOrUpdate(impl);
-      session.getTransaction().commit();
-      session.close();
-      sessionClose++;
-    }
-    catch (BadSlugException e) { // NOPMD
-      // shouldn't happen.
-    }
-    return model;
+  public SensorModel updateSensorModel(SensorModel model) throws IdNotFoundException {
+    getSensorModel(model.getId());
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    sessionOpen++;
+    session.beginTransaction();
+    SensorModelImpl impl = retrieveSensorModel(session, model.getId());
+    impl.setName(model.getName());
+    impl.setProtocol(model.getProtocol());
+    impl.setId(model.getId());
+    impl.setType(model.getType());
+    impl.setVersion(model.getVersion());
+    session.saveOrUpdate(impl);
+    session.getTransaction().commit();
+    session.close();
+    sessionClose++;
+    return impl.toSensorModel();
   }
 
   /*
@@ -2046,26 +1773,27 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * .UserInfo)
    */
   @Override
-  public UserInfo updateUserInfo(UserInfo user) {
-    UserInfoImpl ui = (UserInfoImpl) getUser(user.getUid(),
-        user.getOrganizationId());
-    if (ui == null) {
-      ui = new UserInfoImpl();
-    }
-    ui.setUid(user.getUid());
-    ui.setFirstName(user.getFirstName());
-    ui.setLastName(user.getLastName());
-    ui.setEmail(user.getEmail());
-    ui.setOrganizationId(user.getOrganizationId());
-    ui.setProperties(user.getProperties());
+  public UserInfo updateUserInfo(UserInfo user) throws IdNotFoundException {
+    getUser(user.getUid(), user.getOrganizationId());
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    session.saveOrUpdate(ui);
+    UserInfoImpl impl = retrieveUser(session, user.getUid(), user.getOrganizationId());
+    impl.setUid(user.getUid());
+    impl.setFirstName(user.getFirstName());
+    impl.setLastName(user.getLastName());
+    impl.setEmail(user.getEmail());
+    Set<PropertyImpl> props = new HashSet<PropertyImpl>();
+    for (Property p : user.getProperties()) {
+      props.add(new PropertyImpl(p));
+    }
+    impl.setProperties(props);
+    impl.setOrg(retrieveOrganization(session, user.getOrganizationId()));
+    session.saveOrUpdate(impl);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-    return ui;
+    return impl.toUserInfo();
   }
 
   /*
@@ -2076,23 +1804,32 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * .UserPassword)
    */
   @Override
-  public UserPassword updateUserPassword(UserPassword password) {
-    UserPasswordImpl upi = (UserPasswordImpl) getUserPassword(password.getUid(),
-        password.getOrganizationId());
-    if (upi == null) {
-      upi = new UserPasswordImpl();
-    }
-    upi.setUid(password.getUid());
-    upi.setOrganizationId(password.getOrganizationId());
-    upi.setPlainText(password.getPlainText());
+  public UserPassword updateUserPassword(UserPassword password) throws IdNotFoundException {
+    getUserPassword(password.getUid(), password.getOrganizationId());
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    session.saveOrUpdate(upi);
+    UserPasswordImpl impl = retrieveUserPassword(session, password.getUid(),
+        password.getOrganizationId());
+    impl.setPlainText(password.getPlainText());
+    impl.setEncryptedPassword(password.getEncryptedPassword());
+    impl.setOrg(retrieveOrganization(session, password.getOrganizationId()));
+    impl.setUser(retrieveUser(session, password.getUid(), password.getOrganizationId()));
+    session.saveOrUpdate(impl);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-    return password;
+    return impl.toUserPassword();
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.server.WattDepotPersistence#stop()
+   */
+  @Override
+  public void stop() {
+    Manager.closeSession();
   }
 
 }

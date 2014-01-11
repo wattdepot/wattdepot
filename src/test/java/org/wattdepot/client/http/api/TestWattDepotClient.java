@@ -50,8 +50,6 @@ import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.domainmodel.SensorGroupList;
 import org.wattdepot.common.domainmodel.SensorList;
-import org.wattdepot.common.domainmodel.SensorLocation;
-import org.wattdepot.common.domainmodel.SensorLocationList;
 import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.domainmodel.SensorModelList;
 import org.wattdepot.common.domainmodel.Organization;
@@ -90,8 +88,7 @@ public class TestWattDepotClient {
   /**
    * Starts up a WattDepotServer to start the testing.
    * 
-   * @throws Exception
-   *           if there is a problem starting the server.
+   * @throws Exception if there is a problem starting the server.
    */
   @BeforeClass
   public static void setupServer() throws Exception {
@@ -101,8 +98,7 @@ public class TestWattDepotClient {
   /**
    * Shuts down the WattDepotServer.
    * 
-   * @throws Exception
-   *           if there is a problem.
+   * @throws Exception if there is a problem.
    */
   @AfterClass
   public static void stopServer() throws Exception {
@@ -144,8 +140,8 @@ public class TestWattDepotClient {
         e.printStackTrace();
       }
       if (test == null) {
-        test = new WattDepotClient(serverURL, testUser.getUid(),
-            testUser.getOrganizationId(), testPassword.getPlainText());
+        test = new WattDepotClient(serverURL, testUser.getUid(), testUser.getOrganizationId(),
+            testPassword.getPlainText());
       }
       test.isHealthy();
       test.getWattDepotUri();
@@ -156,8 +152,7 @@ public class TestWattDepotClient {
   }
 
   /**
-   * @throws java.lang.Exception
-   *           if there is a problem.
+   * @throws java.lang.Exception if there is a problem.
    */
   @After
   public void tearDown() throws Exception {
@@ -264,59 +259,6 @@ public class TestWattDepotClient {
   }
 
   /**
-   * Test method for Locations.
-   */
-  @Test
-  public void testLocation() {
-    SensorLocation loc = InstanceFactory.getLocation();
-    // Get list
-    SensorLocationList list = test.getLocations();
-    assertNotNull(list);
-    assertTrue(list.getLocations().size() == 0);
-    // Put new instance (CREATE)
-    test.putLocation(loc);
-    list = test.getLocations();
-    assertNotNull(list);
-    assertTrue(list.getLocations().size() == 1);
-    try {
-      // get instance (READ)
-      SensorLocation ret = test.getLocation(loc.getId());
-      assertEquals(loc, ret);
-      ret.setDescription("new description");
-      // update instance (UPDATE)
-      test.updateLocation(ret);
-      list = test.getLocations();
-      assertNotNull(list);
-      assertTrue(list.getLocations().size() == 1);
-      // delete instance (DELETE)
-      test.deleteLocation(loc);
-      list = test.getLocations();
-      assertNotNull(list);
-      assertTrue(list.getLocations().size() == 0);
-      try {
-        ret = test.getLocation(loc.getId());
-        assertNull(ret);
-      }
-      catch (IdNotFoundException e) {
-        // this is what we want.
-      }
-    }
-    catch (IdNotFoundException e) {
-      fail("Should have " + loc);
-    }
-    // error conditions
-    SensorLocation bogus = new SensorLocation("bogus", loc.getLatitude(), loc.getLongitude(),
-        loc.getAltitude(), loc.getDescription(), loc.getOwnerId());
-    try {
-      test.deleteLocation(bogus);
-      fail("Shouldn't be able to delete " + bogus);
-    }
-    catch (IdNotFoundException e) {
-      // this is what we want.
-    }
-  }
-
-  /**
    * Test method for MeasurementTypes.
    */
   @Test
@@ -404,7 +346,6 @@ public class TestWattDepotClient {
     }
     catch (ResourceException re) {
       if (re.getStatus().equals(Status.CLIENT_ERROR_FAILED_DEPENDENCY)) {
-        addSensorLocation();
         addSensorModel();
         test.putSensor(sensor);
       }
@@ -435,8 +376,7 @@ public class TestWattDepotClient {
       fail("Should have " + sensor);
     }
     // error conditions
-    Sensor bogus = new Sensor("bogus", sensor.getUri(), sensor.getSensorLocationId(),
-        sensor.getModelId(), sensor.getOwnerId());
+    Sensor bogus = new Sensor("bogus", sensor.getUri(), sensor.getModelId(), sensor.getOwnerId());
     try {
       test.deleteSensor(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -463,7 +403,6 @@ public class TestWattDepotClient {
     }
     catch (ResourceException e) {
       if (e.getStatus().equals(Status.CLIENT_ERROR_FAILED_DEPENDENCY)) {
-        addSensorLocation();
         addSensorModel();
         addSensor();
         test.putSensorGroup(group);
@@ -572,7 +511,6 @@ public class TestWattDepotClient {
     }
     catch (ResourceException e) {
       if (e.getStatus().equals(Status.CLIENT_ERROR_FAILED_DEPENDENCY)) {
-        addSensorLocation();
         addSensorModel();
         addSensor();
         addDepository();
@@ -632,7 +570,6 @@ public class TestWattDepotClient {
       }
       catch (ResourceException re) {
         if (re.getStatus().equals(Status.CLIENT_ERROR_FAILED_DEPENDENCY)) {
-          addSensorLocation();
           addSensorModel();
           addSensor();
           test.putMeasurement(depo, m1);
@@ -707,34 +644,6 @@ public class TestWattDepotClient {
   }
 
   /**
-   * Adds The test SensorLocation to the WattDepotServer if it isn't defined.
-   */
-  private void addSensorLocation() {
-    SensorLocation loc = InstanceFactory.getLocation();
-    try {
-      test.getLocation(loc.getId());
-    }
-    catch (IdNotFoundException e) {
-      // we can add the location.
-      test.putLocation(loc);
-    }
-  }
-
-  /**
-   * Deletes The test SensorLocation from the WattDepotServer if it isn't
-   * defined.
-   */
-  private void deleteSensorLocation() {
-    SensorLocation loc = InstanceFactory.getLocation();
-    try {
-      test.deleteLocation(loc);
-    }
-    catch (IdNotFoundException e) {
-      // doesn't exist so we don't have to do anything.
-    }
-  }
-
-  /**
    * Adds the test SensorModel to the WattDepotServer if it isn't defined.
    */
   private void addSensorModel() {
@@ -787,7 +696,7 @@ public class TestWattDepotClient {
       // didn't exist so we're done.
     }
   }
-  
+
   /**
    * Adds the test Depository to WattDepotServer if it isn't defined.
    */

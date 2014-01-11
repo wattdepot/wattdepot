@@ -18,6 +18,13 @@
  */
 package org.wattdepot.server.depository.impl.hibernate;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
 import org.wattdepot.common.domainmodel.UserPassword;
 
 /**
@@ -27,11 +34,23 @@ import org.wattdepot.common.domainmodel.UserPassword;
  * @author Cam Moore
  * 
  */
-@SuppressWarnings("PMD.UselessOverridingMethod")
-public class UserPasswordImpl extends UserPassword {
+@Entity
+@Table(name = "PASSWORDS")
+public class UserPasswordImpl {
 
   /** Database primary key. */
+  @Id
+  @GeneratedValue
   private Long pk;
+  /** The user assocated with this password. */
+  @OneToOne
+  private UserInfoImpl user;
+  private String encryptedPassword;
+  /** The plain text password. */
+  private String plainText;
+  /** The user's organization. */
+  @ManyToOne
+  private OrganizationImpl org;
 
   /**
    * Default constructor.
@@ -41,93 +60,30 @@ public class UserPasswordImpl extends UserPassword {
   }
 
   /**
-   * @param id
-   *          The unique user id.
-   * @param orgId
-   *          The user's organization id.
-   * @param plainTextPassword
-   *          the user's plain text password.
+   * @param user the user.
+   * @param plainText their plaintext password.
+   * @param encrypted their encrypted password.
+   * @param org their organization.
    */
-  public UserPasswordImpl(String id, String orgId, String plainTextPassword) {
-    super(id, orgId, plainTextPassword);
+  public UserPasswordImpl(UserInfoImpl user, String plainText, String encrypted, OrganizationImpl org) {
+    this.user = user;
+    this.plainText = plainText;
+    this.encryptedPassword = encrypted;
+    this.org = org;
   }
 
   /**
-   * Converter constructor.
-   * 
-   * @param password
-   *          The UserPassword to clone.
+   * @return the encryptedPassword
    */
-  public UserPasswordImpl(UserPassword password) {
-    super(password.getUid(), password.getOrganizationId(), password
-        .getPlainText());
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
-    }
-    if (this == obj) {
-      return true;
-    }
-    if (obj.getClass().equals(UserPassword.class)) {
-      return super.equals(obj);
-    }
-    if (!super.equals(obj)) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    UserPasswordImpl other = (UserPasswordImpl) obj;
-    if (pk == null) {
-      if (other.pk != null) {
-        return false;
-      }
-    }
-    else if (!pk.equals(other.pk)) {
-      return false;
-    }
-    return true;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.UserPassword#getEncryptedPassword()
-   */
-  @Override
   public String getEncryptedPassword() {
-    // TODO Auto-generated method stub
-    return super.getEncryptedPassword();
+    return encryptedPassword;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.UserPassword#getId()
+  /**
+   * @return the org
    */
-  @Override
-  public String getUid() {
-    // TODO Auto-generated method stub
-    return super.getUid();
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.UserPassword#getOrganizationId()
-   */
-  @Override
-  public String getOrganizationId() {
-    // TODO Auto-generated method stub
-    return super.getOrganizationId();
+  public OrganizationImpl getOrg() {
+    return org;
   }
 
   /**
@@ -137,110 +93,130 @@ public class UserPasswordImpl extends UserPassword {
     return pk;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.UserPassword#getPlainText()
+  /**
+   * @return the plainText
    */
-  @Override
   public String getPlainText() {
-    // TODO Auto-generated method stub
-    return super.getPlainText();
+    return plainText;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
+  /**
+   * @return the user
+   */
+  public UserInfoImpl getUser() {
+    return user;
+  }
+
+  /**
+   * @param encryptedPassword the encryptedPassword to set
+   */
+  public void setEncryptedPassword(String encryptedPassword) {
+    this.encryptedPassword = encryptedPassword;
+  }
+
+  /**
+   * @param org the org to set
+   */
+  public void setOrg(OrganizationImpl org) {
+    this.org = org;
+  }
+
+  /**
+   * @param pk the pk to set
+   */
+  @SuppressWarnings("unused")
+  private void setPk(Long pk) {
+    this.pk = pk;
+  }
+
+  /**
+   * @param plainText the plainText to set
+   */
+  public void setPlainText(String plainText) {
+    this.plainText = plainText;
+  }
+
+  /**
+   * @param user the user to set
+   */
+  public void setUser(UserInfoImpl user) {
+    this.user = user;
+  }
+
+  /* (non-Javadoc)
    * @see java.lang.Object#hashCode()
    */
   @Override
   public int hashCode() {
     final int prime = 31;
-    int result = super.hashCode();
+    int result = 1;
+    result = prime * result + ((encryptedPassword == null) ? 0 : encryptedPassword.hashCode());
+    result = prime * result + ((org == null) ? 0 : org.hashCode());
     result = prime * result + ((pk == null) ? 0 : pk.hashCode());
+    result = prime * result + ((plainText == null) ? 0 : plainText.hashCode());
+    result = prime * result + ((user == null) ? 0 : user.hashCode());
     return result;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.UserPassword#setEncryptedPassword(java
-   * .lang.String)
+  /* (non-Javadoc)
+   * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
-  public void setEncryptedPassword(String encryptedPassword) {
-    // TODO Auto-generated method stub
-    super.setEncryptedPassword(encryptedPassword);
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    UserPasswordImpl other = (UserPasswordImpl) obj;
+    if (encryptedPassword == null) {
+      if (other.encryptedPassword != null)
+        return false;
+    }
+    else if (!encryptedPassword.equals(other.encryptedPassword))
+      return false;
+    if (org == null) {
+      if (other.org != null)
+        return false;
+    }
+    else if (!org.equals(other.org))
+      return false;
+    if (pk == null) {
+      if (other.pk != null)
+        return false;
+    }
+    else if (!pk.equals(other.pk))
+      return false;
+    if (plainText == null) {
+      if (other.plainText != null)
+        return false;
+    }
+    else if (!plainText.equals(other.plainText))
+      return false;
+    if (user == null) {
+      if (other.user != null)
+        return false;
+    }
+    else if (!user.equals(other.user))
+      return false;
+    return true;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.UserPassword#setId(java.lang.String)
-   */
-  @Override
-  public void setUid(String id) {
-    // TODO Auto-generated method stub
-    super.setUid(id);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.UserPassword#setOrganizationId(java.lang
-   * .String)
-   */
-  @Override
-  public void setOrganizationId(String orgId) {
-    // TODO Auto-generated method stub
-    super.setOrganizationId(orgId);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.UserPassword#setPassword(java.lang.String)
-   */
-  @Override
-  public void setPassword(String plainText) {
-    // TODO Auto-generated method stub
-    super.setPassword(plainText);
-  }
-
-  /**
-   * @param pk
-   *          the pk to set
-   */
-  public void setPk(Long pk) {
-    this.pk = pk;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.UserPassword#setPlainText(java.lang.String
-   * )
-   */
-  @Override
-  public void setPlainText(String plainText) {
-    // TODO Auto-generated method stub
-    super.setPlainText(plainText);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
+  /* (non-Javadoc)
    * @see java.lang.Object#toString()
    */
   @Override
   public String toString() {
-    return "UserPasswordImpl [pk=" + pk + ", id=" + getUid() + ", orgId="
-        + getOrganizationId() + ", encryptedPassword=" + getEncryptedPassword()
-        + "]";
+    return "UserPasswordImpl [pk=" + pk + ", user=" + user + ", encryptedPassword="
+        + encryptedPassword + ", plainText=********, org=" + org + "]";
   }
 
+  /**
+   * @return the equivalent UserPassword.
+   */
+  public UserPassword toUserPassword() {
+    UserPassword ret = new UserPassword(user.getUid(), org.getId(), plainText);
+    return ret;
+  }
 }

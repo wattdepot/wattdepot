@@ -56,7 +56,7 @@ public class SensorPutServerResource extends WattDepotServerResource implements
     if (!depot.getSensorIds(orgId).contains(sensor.getId())) {
       try {
         depot.defineSensor(sensor.getId(), sensor.getName(), sensor.getUri(),
-            sensor.getSensorLocationId(), sensor.getModelId(),
+            sensor.getModelId(),
             sensor.getProperties(), orgId);
       }
       catch (UniqueIdException e) {

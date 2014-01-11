@@ -46,15 +46,6 @@ public class InstanceFactory {
   }
 
   /**
-   * @return A Location instance for testing.
-   */
-  public static SensorLocation getLocation() {
-    return new SensorLocation("Test Location Ilima 6th", new Double(21.294642), new Double(
-        -157.812727), new Double(30), "Hale Aloha Ilima residence hall 6th floor",
-        getOrganization().getId());
-  }
-
-  /**
    * @return A Measurement instance for testing.
    */
   public static Measurement getMeasurementOne() {
@@ -64,11 +55,9 @@ public class InstanceFactory {
       return new Measurement(getSensor().getId(), measTime, value, getMeasurementType().unit());
     }
     catch (ParseException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     catch (DatatypeConfigurationException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     return null;
@@ -82,11 +71,9 @@ public class InstanceFactory {
       return DateConvert.parseCalStringToDate("2013-11-20T14:45:47.925-1000");
     }
     catch (ParseException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     catch (DatatypeConfigurationException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     return null;
@@ -100,11 +87,9 @@ public class InstanceFactory {
       return DateConvert.parseCalStringToDate("2013-11-20T13:35:32.290-1000");
     }
     catch (ParseException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     catch (DatatypeConfigurationException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     return null;
@@ -118,11 +103,9 @@ public class InstanceFactory {
       return DateConvert.parseCalStringToDate("2013-11-20T14:35:32.290-1000");
     }
     catch (ParseException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     catch (DatatypeConfigurationException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     return null;
@@ -136,11 +119,9 @@ public class InstanceFactory {
       return DateConvert.parseCalStringToDate("2013-11-20T14:39:32.290-1000");
     }
     catch (ParseException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     catch (DatatypeConfigurationException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     return null;
@@ -156,11 +137,9 @@ public class InstanceFactory {
       return new Measurement(getSensor().getId(), measTime, value, getMeasurementType().unit());
     }
     catch (ParseException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     catch (DatatypeConfigurationException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     return null;
@@ -176,11 +155,9 @@ public class InstanceFactory {
       return new Measurement(getSensor().getId(), measTime, value, getMeasurementType().unit());
     }
     catch (ParseException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     catch (DatatypeConfigurationException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     return null;
@@ -213,8 +190,8 @@ public class InstanceFactory {
    * @return A Sensor instance for testing.
    */
   public static Sensor getSensor() {
-    return new Sensor("Test Sensor", "test_sensor_uri", getLocation().getId(), getSensorModel()
-        .getId(), getOrganization().getId());
+    return new Sensor("Test Sensor", "test_sensor_uri", getSensorModel().getId(), getOrganization()
+        .getId());
   }
 
   /**
@@ -238,8 +215,8 @@ public class InstanceFactory {
    * @return A CollectorProcessDefinition instance for testing.
    */
   public static CollectorProcessDefinition getCollectorProcessDefinition() {
-    return new CollectorProcessDefinition("Test Collector Process Defintion", getSensor().getId(), 10L,
-        getDepository().getId(), getOrganization().getId());
+    return new CollectorProcessDefinition("Test Collector Process Defintion", getSensor().getId(),
+        10L, getDepository().getId(), getOrganization().getId());
   }
 
   /**

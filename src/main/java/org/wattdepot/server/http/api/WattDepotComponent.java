@@ -32,6 +32,7 @@ import org.restlet.security.User;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.server.WattDepotPersistence;
 import org.wattdepot.server.depository.impl.hibernate.MeasurementImpl;
 
@@ -88,7 +89,13 @@ public class WattDepotComponent extends Component {
     for (Organization group : app.getDepot().getOrganizations()) {
       app.getRoles().add(new Role(group.getId()));
       for (String userId : group.getUsers()) {
-        UserPassword up = app.getDepot().getUserPassword(userId, group.getId());
+        UserPassword up = null;
+        try {
+          up = app.getDepot().getUserPassword(userId, group.getId());
+        }
+        catch (IdNotFoundException e) {
+          e.printStackTrace();
+        }
         User user = null;
         if (userId.equals(UserInfo.ROOT.getUid())) {
           // There isn't a UserInfo stored in persistence for ROOT.
@@ -97,9 +104,15 @@ public class WattDepotComponent extends Component {
               UserInfo.ROOT.getEmail());
         }
         else {
-          UserInfo info = app.getDepot().getUser(userId, group.getId());
-          user = new User(info.getUid(), up.getPlainText(),
-              info.getFirstName(), info.getLastName(), info.getEmail());
+          UserInfo info;
+          try {
+            info = app.getDepot().getUser(userId, group.getId());
+            user = new User(info.getUid(), up.getPlainText(),
+                info.getFirstName(), info.getLastName(), info.getEmail());
+          }
+          catch (IdNotFoundException e) {
+            e.printStackTrace();
+          }
         }
         realm.getUsers().add(user);
         realm.map(user, app.getRole(group.getId()));

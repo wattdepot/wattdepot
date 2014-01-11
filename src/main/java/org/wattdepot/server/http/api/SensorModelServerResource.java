@@ -60,8 +60,10 @@ public class SensorModelServerResource extends WattDepotServerResource implement
   public SensorModel retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/sensormodel/{" + sensorModelId + "}");
     SensorModel model = null;
-    model = depot.getSensorModel(sensorModelId);
-    if (model == null) {
+    try {
+      model = depot.getSensorModel(sensorModelId);
+    }
+    catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "SensorModel " + sensorModelId
           + " is not defined.");
     }
@@ -78,10 +80,10 @@ public class SensorModelServerResource extends WattDepotServerResource implement
   public void update(SensorModel sensormodel) {
     getLogger().log(Level.INFO,
         "POST /wattdepot/sensormodel/{" + sensorModelId + "} with " + sensormodel);
-    if (depot.getSensorModelIds().contains(sensormodel.getId())) {
+    try {
       depot.updateSensorModel(sensormodel);
     }
-    else {
+    catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_CONFLICT, "Can't update unknown SensorModel.");
     }
   }

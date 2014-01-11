@@ -18,10 +18,17 @@
  */
 package org.wattdepot.server.depository.impl.hibernate;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.wattdepot.common.domainmodel.SensorGroup;
-import org.wattdepot.common.exception.BadSlugException;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  * SensorGroupImpl - Hibernate implementation of the SensorGroup. Includes pk
@@ -30,13 +37,24 @@ import org.wattdepot.common.exception.BadSlugException;
  * @author Cam Moore
  * 
  */
-@SuppressWarnings("PMD.UselessOverridingMethod")
-public class SensorGroupImpl extends SensorGroup {
+@Entity
+@Table(name = "SENSOR_GROUPS")
+public class SensorGroupImpl {
 
   /** The database primary key. */
+  @Id
+  @GeneratedValue
   private Long pk;
-  /** Foreign key of the owner. */
-  private Long ownerFk;
+  /** The unique id for this group usable in URLs. */
+  private String id;
+  /** The name of the group. */
+  private String name;
+  /** Set of sensors that make up the group. */
+  @OneToMany
+  private Set<SensorImpl> sensors;
+  /** The group's organization. */
+  @ManyToOne
+  private OrganizationImpl org;
 
   /**
    * 
@@ -46,99 +64,16 @@ public class SensorGroupImpl extends SensorGroup {
   }
 
   /**
-   * @param name
-   *          the name of the Sensor Group.
-   * @param sensors
-   *          the Sensor ids of the members of the Sensor Group.
-   * @param ownerId
-   *          the Organziation id that owns the Sensor Group.
+   * @param id the group's id.
+   * @param name the group's name.
+   * @param sensors the sensors in the group.
+   * @param org the group's organization.
    */
-  public SensorGroupImpl(String name, Set<String> sensors, String ownerId) {
-    super(name, sensors, ownerId);
-  }
-
-  /**
-   * @param slug
-   *          The unique slug for the SensorGroupImpl.
-   * @param name
-   *          the name of the Sensor Group.
-   * @param sensors
-   *          the Sensor ids of the members of the Sensor Group.
-   * @param ownerId
-   *          the Organziation id that owns the Sensor Group.
-   */
-  public SensorGroupImpl(String slug, String name, Set<String> sensors,
-      String ownerId) {
-    super(slug, name, sensors, ownerId);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
-    }
-    if (this == obj) {
-      return true;
-    }
-    if (obj.getClass().equals(SensorGroup.class)) {
-      return super.equals(obj);
-    }
-    if (!super.equals(obj)) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    SensorGroupImpl other = (SensorGroupImpl) obj;
-    if (ownerFk == null) {
-      if (other.ownerFk != null) {
-        return false;
-      }
-    }
-    else if (!ownerFk.equals(other.ownerFk)) {
-      return false;
-    }
-    if (pk == null) {
-      if (other.pk != null) {
-        return false;
-      }
-    }
-    else if (!pk.equals(other.pk)) {
-      return false;
-    }
-    return true;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.SensorGroup#getName()
-   */
-  @Override
-  public String getName() {
-    return super.getName();
-  }
-
-  /**
-   * @return the ownerFk
-   */
-  public Long getOwnerFk() {
-    return ownerFk;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.SensorGroup#getOwnerId()
-   */
-  @Override
-  public String getOwnerId() {
-    return super.getOwnerId();
+  public SensorGroupImpl(String id, String name, Set<SensorImpl> sensors, OrganizationImpl org) {
+    this.id = id;
+    this.name = name;
+    this.sensors = sensors;
+    this.org = org;
   }
 
   /**
@@ -148,24 +83,67 @@ public class SensorGroupImpl extends SensorGroup {
     return pk;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.SensorGroup#getSensors()
+  /**
+   * @param pk the pk to set
    */
-  @Override
-  public Set<String> getSensors() {
-    return super.getSensors();
+  public void setPk(Long pk) {
+    this.pk = pk;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.SensorGroup#getSlug()
+  /**
+   * @return the id
    */
-  @Override
   public String getId() {
-    return super.getId();
+    return id;
+  }
+
+  /**
+   * @param id the id to set
+   */
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  /**
+   * @return the name
+   */
+  public String getName() {
+    return name;
+  }
+
+  /**
+   * @param name the name to set
+   */
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  /**
+   * @return the sensors
+   */
+  public Set<SensorImpl> getSensors() {
+    return sensors;
+  }
+
+  /**
+   * @param sensors the sensors to set
+   */
+  public void setSensors(Set<SensorImpl> sensors) {
+    this.sensors = sensors;
+  }
+
+  /**
+   * @return the org
+   */
+  public OrganizationImpl getOrg() {
+    return org;
+  }
+
+  /**
+   * @param org the org to set
+   */
+  public void setOrg(OrganizationImpl org) {
+    this.org = org;
   }
 
   /*
@@ -176,67 +154,96 @@ public class SensorGroupImpl extends SensorGroup {
   @Override
   public int hashCode() {
     final int prime = 31;
-    int result = super.hashCode();
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
+    result = prime * result + ((org == null) ? 0 : org.hashCode());
     result = prime * result + ((pk == null) ? 0 : pk.hashCode());
-    result = prime * result + ((ownerFk == null) ? 0 : ownerFk.hashCode());
+    result = prime * result + ((sensors == null) ? 0 : sensors.hashCode());
     return result;
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.common.domainmodel.SensorGroup#setName(java.lang.String)
+   * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
-  public void setName(String name) {
-    super.setName(name);
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    SensorGroupImpl other = (SensorGroupImpl) obj;
+    if (id == null) {
+      if (other.id != null) {
+        return false;
+      }
+    }
+    else if (!id.equals(other.id)) {
+      return false;
+    }
+    if (name == null) {
+      if (other.name != null) {
+        return false;
+      }
+    }
+    else if (!name.equals(other.name)) {
+      return false;
+    }
+    if (org == null) {
+      if (other.org != null) {
+        return false;
+      }
+    }
+    else if (!org.equals(other.org)) {
+      return false;
+    }
+    if (pk == null) {
+      if (other.pk != null) {
+        return false;
+      }
+    }
+    else if (!pk.equals(other.pk)) {
+      return false;
+    }
+    if (sensors == null) {
+      if (other.sensors != null) {
+        return false;
+      }
+    }
+    else if (!sensors.equals(other.sensors)) {
+      return false;
+    }
+    return true;
   }
 
   /**
-   * @param ownerFk
-   *          the ownerFk to set
+   * @return the equivalent SensorGroup to this.
    */
-  public void setOwnerFk(Long ownerFk) {
-    this.ownerFk = ownerFk;
+  public SensorGroup toSensorGroup() {
+    Set<String> sens = new HashSet<String>();
+    for (SensorImpl s : sensors) {
+      sens.add(s.getId());
+    }
+    SensorGroup ret = new SensorGroup(id, name, sens, org.getId());
+    return ret;
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * org.wattdepot.common.domainmodel.SensorGroup#setOwnerId(java.lang.String)
+   * @see java.lang.Object#toString()
    */
   @Override
-  public void setOwnerId(String owner) {
-    super.setOwnerId(owner);
-  }
-
-  /**
-   * @param pk
-   *          the pk to set
-   */
-  public void setPk(Long pk) {
-    this.pk = pk;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.SensorGroup#setSensors(java.util.Set)
-   */
-  @Override
-  public void setSensors(Set<String> sensors) {
-    super.setSensors(sensors);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.SensorGroup#setSlug(java.lang.String)
-   */
-  @Override
-  public void setId(String slug) throws BadSlugException {
-    super.setId(slug);
+  public String toString() {
+    return "SensorGroupImpl [pk=" + pk + ", id=" + id + ", name=" + name + ", sensors=" + sensors
+        + ", org=" + org + "]";
   }
 
 }

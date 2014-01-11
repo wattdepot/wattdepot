@@ -29,7 +29,6 @@ import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Property;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
-import org.wattdepot.common.domainmodel.SensorLocation;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.BadCredentialException;
@@ -52,17 +51,15 @@ public class ExampleInstances {
    */
   public ExampleInstances() {
     ClientProperties props = new ClientProperties();
-    String serverURL = "http://"
-        + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
+    String serverURL = "http://" + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
         + props.get(ClientProperties.PORT_KEY) + "/";
     try {
-      admin = new WattDepotAdminClient(serverURL,
-          props.get(ClientProperties.USER_NAME), Organization.ADMIN_GROUP_NAME,
-          props.get(ClientProperties.USER_PASSWORD));
+      admin = new WattDepotAdminClient(serverURL, props.get(ClientProperties.USER_NAME),
+          Organization.ADMIN_GROUP_NAME, props.get(ClientProperties.USER_PASSWORD));
     }
     catch (Exception e) {
-      System.out.println("Failed with " + props.get(ClientProperties.USER_NAME)
-          + " and " + props.get(ClientProperties.USER_PASSWORD));
+      System.out.println("Failed with " + props.get(ClientProperties.USER_NAME) + " and "
+          + props.get(ClientProperties.USER_PASSWORD));
     }
     if (admin != null) {
       setUpOrganization();
@@ -87,20 +84,20 @@ public class ExampleInstances {
    */
   private void setUpOrganization() {
     Organization org = new Organization("uh", "University of Hawaii, Manoa", new HashSet<String>());
-    UserInfo user1 = new UserInfo("cmoore", "Cam", "Moore",
-        "cmoore@hawaii.edu", org.getId(), new HashSet<Property>());
-    UserInfo user2 = new UserInfo("johnson", "Philip", "Johnson",
-        "philipmjohnson@gmail.com", org.getId(), new HashSet<Property>());
+    UserInfo user1 = new UserInfo("cmoore", "Cam", "Moore", "cmoore@hawaii.edu", org.getId(),
+        new HashSet<Property>());
+    UserInfo user2 = new UserInfo("johnson", "Philip", "Johnson", "philipmjohnson@gmail.com",
+        org.getId(), new HashSet<Property>());
     org.getUsers().add(user1.getUid());
     org.getUsers().add(user2.getUid());
     // check to see if the instances are defined in WattDepot
     try {
       Organization defined = admin.getOrganization(org.getId());
       if (defined == null) {
-        admin.putUserPassword(new UserPassword(user1.getUid(), user1
-            .getOrganizationId(), "secret1"));
-        admin.putUserPassword(new UserPassword(user2.getUid(), user2
-            .getOrganizationId(), "secret2"));
+        admin
+            .putUserPassword(new UserPassword(user1.getUid(), user1.getOrganizationId(), "secret1"));
+        admin
+            .putUserPassword(new UserPassword(user2.getUid(), user2.getOrganizationId(), "secret2"));
         admin.putUser(user1);
         admin.putUser(user2);
         admin.putOrganization(org);
@@ -108,10 +105,8 @@ public class ExampleInstances {
     }
     catch (IdNotFoundException e) {
       // not defined so put it.
-      admin.putUserPassword(new UserPassword(user1.getUid(), user1
-          .getOrganizationId(), "secret"));
-      admin.putUserPassword(new UserPassword(user2.getUid(), user2
-          .getOrganizationId(), "secret"));
+      admin.putUserPassword(new UserPassword(user1.getUid(), user1.getOrganizationId(), "secret"));
+      admin.putUserPassword(new UserPassword(user2.getUid(), user2.getOrganizationId(), "secret"));
       admin.putUser(user1);
       admin.putUser(user2);
       admin.putOrganization(org);
@@ -123,25 +118,16 @@ public class ExampleInstances {
    * two CollectorProcessDefinitions.
    */
   private void setUpItems() {
-    SensorLocation loc = new SensorLocation("Ilima 6th floor", new Double(
-        21.294642), new Double(-157.812727), new Double(30),
-        "Hale Aloha Ilima residence hall 6th floor", "uh");
-    try {
-      cmoore.getLocation(loc.getId());
-    }
-    catch (IdNotFoundException e) {
-      cmoore.putLocation(loc);
-    }
-    Sensor telco = new Sensor("Ilima 6th telco", "http://telco", loc.getId(),
-        "shark", loc.getOwnerId());
+    Sensor telco = new Sensor("Ilima 6th telco", "http://telco", "shark",
+        cmoore.getOrganizationId());
     try {
       cmoore.getSensor(telco.getId());
     }
     catch (IdNotFoundException e) {
       johnson.putSensor(telco);
     }
-    Sensor elect = new Sensor("Ilima 6th electrical", "http://elect",
-        loc.getId(), "shark", loc.getOwnerId());
+    Sensor elect = new Sensor("Ilima 6th electrical", "http://elect", "shark",
+        cmoore.getOrganizationId());
     try {
       johnson.getSensor(elect.getId());
     }
@@ -151,7 +137,7 @@ public class ExampleInstances {
     Set<String> sensors = new HashSet<String>();
     sensors.add(telco.getId());
     sensors.add(elect.getId());
-    SensorGroup ilima6 = new SensorGroup("Ilima 6th", sensors, loc.getOwnerId());
+    SensorGroup ilima6 = new SensorGroup("Ilima 6th", sensors, cmoore.getOrganizationId());
     try {
       cmoore.getSensorGroup(ilima6.getId());
     }
@@ -170,7 +156,7 @@ public class ExampleInstances {
     }
     Depository energy = null;
     if (e != null) {
-      energy = new Depository("Ilima Energy", e, loc.getOwnerId());
+      energy = new Depository("Ilima Energy", e, cmoore.getOrganizationId());
       try {
         cmoore.getDepository(energy.getId());
       }
@@ -178,11 +164,9 @@ public class ExampleInstances {
         johnson.putDepository(energy);
       }
       CollectorProcessDefinition energyCPD1 = new CollectorProcessDefinition(
-          "Ilima 6th telco energy", telco.getId(), 10L, energy.getId(),
-          energy.getOwnerId());
+          "Ilima 6th telco energy", telco.getId(), 10L, energy.getId(), energy.getOwnerId());
       CollectorProcessDefinition energyCPD2 = new CollectorProcessDefinition(
-          "Ilima 6th elect energy", elect.getId(), 10L, energy.getId(),
-          energy.getOwnerId());
+          "Ilima 6th elect energy", elect.getId(), 10L, energy.getId(), energy.getOwnerId());
       try {
         cmoore.getCollectorProcessDefinition(energyCPD2.getId());
       }
@@ -198,7 +182,7 @@ public class ExampleInstances {
 
     }
     if (p != null) {
-      Depository power = new Depository("Ilima Power", p, loc.getOwnerId());
+      Depository power = new Depository("Ilima Power", p, cmoore.getOrganizationId());
       try {
         johnson.getDepository(power.getId());
       }
@@ -209,8 +193,7 @@ public class ExampleInstances {
   }
 
   /**
-   * @param args
-   *          command line arguments.
+   * @param args command line arguments.
    */
   public static void main(String[] args) {
     ExampleInstances e = new ExampleInstances();

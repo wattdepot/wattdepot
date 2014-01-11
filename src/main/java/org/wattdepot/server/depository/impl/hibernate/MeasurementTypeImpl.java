@@ -1,5 +1,5 @@
 /**
- * SensorModelImpl.java This file is part of WattDepot.
+ * MeasurementTypeImpl.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
  *
@@ -18,58 +18,51 @@
  */
 package org.wattdepot.server.depository.impl.hibernate;
 
+import javax.measure.unit.Unit;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import org.wattdepot.common.domainmodel.SensorModel;
+import org.wattdepot.common.domainmodel.MeasurementType;
 
 /**
- * SensorModelImpl - Hibernate implementation of the SensorModel class. Has Long
- * primary key.
+ * MeasurementTypeImpl
  * 
  * @author Cam Moore
  * 
  */
 @Entity
-@Table(name = "MODELS")
-public class SensorModelImpl {
+@Table(name = "MEASUREMENT_TYPES")
+public class MeasurementTypeImpl {
 
-  /** The database primary key. */
+  /** Database primary key. */
   @Id
   @GeneratedValue
   private Long pk;
-  /** A unique id for the SensorModel, used for URLs. */
+  /** The unique id for the MeasurementType. */
   private String id;
-  /** The name for the SensorModel. */
+  /** The name of the MeasurementType. */
   private String name;
-  /** The protocol this sensor uses. */
-  protected String protocol;
-  /** The type of the sensor. */
-  protected String type;
-  /** The version of the sensor model. */
-  protected String version;
+  /** String property stored in persistence. */
+  private String units;
 
   /**
    * Default constructor.
    */
-  public SensorModelImpl() {
+  public MeasurementTypeImpl() {
+
   }
 
   /**
-   * @param id the model's id.
-   * @param name the model's name.
-   * @param protocol the model's protocol.
-   * @param type the model's type.
-   * @param version the model's version.
+   * @param id the id.
+   * @param name the name.
+   * @param units the units.
    */
-  public SensorModelImpl(String id, String name, String protocol, String type, String version) {
+  public MeasurementTypeImpl(String id, String name, String units) {
     this.id = id;
     this.name = name;
-    this.protocol = protocol;
-    this.type = type;
-    this.version = version;
+    this.units = units;
   }
 
   /*
@@ -88,7 +81,7 @@ public class SensorModelImpl {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    SensorModelImpl other = (SensorModelImpl) obj;
+    MeasurementTypeImpl other = (MeasurementTypeImpl) obj;
     if (id == null) {
       if (other.id != null) {
         return false;
@@ -113,28 +106,12 @@ public class SensorModelImpl {
     else if (!pk.equals(other.pk)) {
       return false;
     }
-    if (protocol == null) {
-      if (other.protocol != null) {
+    if (units == null) {
+      if (other.units != null) {
         return false;
       }
     }
-    else if (!protocol.equals(other.protocol)) {
-      return false;
-    }
-    if (type == null) {
-      if (other.type != null) {
-        return false;
-      }
-    }
-    else if (!type.equals(other.type)) {
-      return false;
-    }
-    if (version == null) {
-      if (other.version != null) {
-        return false;
-      }
-    }
-    else if (!version.equals(other.version)) {
+    else if (!units.equals(other.units)) {
       return false;
     }
     return true;
@@ -162,24 +139,10 @@ public class SensorModelImpl {
   }
 
   /**
-   * @return the protocol
+   * @return the units
    */
-  public String getProtocol() {
-    return protocol;
-  }
-
-  /**
-   * @return the type
-   */
-  public String getType() {
-    return type;
-  }
-
-  /**
-   * @return the version
-   */
-  public String getVersion() {
-    return version;
+  public String getUnits() {
+    return units;
   }
 
   /*
@@ -194,9 +157,7 @@ public class SensorModelImpl {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     result = prime * result + ((name == null) ? 0 : name.hashCode());
     result = prime * result + ((pk == null) ? 0 : pk.hashCode());
-    result = prime * result + ((protocol == null) ? 0 : protocol.hashCode());
-    result = prime * result + ((type == null) ? 0 : type.hashCode());
-    result = prime * result + ((version == null) ? 0 : version.hashCode());
+    result = prime * result + ((units == null) ? 0 : units.hashCode());
     return result;
   }
 
@@ -223,31 +184,18 @@ public class SensorModelImpl {
   }
 
   /**
-   * @param protocol the protocol to set
+   * @param units the units to set
    */
-  public void setProtocol(String protocol) {
-    this.protocol = protocol;
+  public void setUnits(String units) {
+    this.units = units;
   }
 
   /**
-   * @param type the type to set
+   * @return The domainmodel MeasurementType that is equivalent to this
+   *         MeasurementTypeImpl.
    */
-  public void setType(String type) {
-    this.type = type;
-  }
-
-  /**
-   * @param version the version to set
-   */
-  public void setVersion(String version) {
-    this.version = version;
-  }
-
-  /**
-   * @return the equivalent SensorModel to this.
-   */
-  public SensorModel toSensorModel() {
-    SensorModel ret = new SensorModel(id, name, protocol, type, version);
+  public MeasurementType toMeasurementType() {
+    MeasurementType ret = new MeasurementType(id, name, Unit.valueOf(getUnits()));
     return ret;
   }
 
@@ -258,8 +206,8 @@ public class SensorModelImpl {
    */
   @Override
   public String toString() {
-    return "SensorModelImpl [pk=" + pk + ", id=" + id + ", name=" + name + ", protocol=" + protocol
-        + ", type=" + type + ", version=" + version + "]";
+    return "MeasurementTypeImpl [pk=" + pk + ", id=" + id + ", name=" + name + ", units=" + units
+        + "]";
   }
 
 }

@@ -58,15 +58,17 @@ public class UserPasswordServerResource extends WattDepotServerResource implemen
   @Override
   public UserPassword retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/user-password/{" + userId + "}");
-    UserPassword user = depot.getUserPassword(userId, orgId);
-    if (user == null) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "User " + userId + " is not defined.");
-    }
-    else {
+    UserPassword user;
+    try {
+      user = depot.getUserPassword(userId, orgId);
       // don't return the plain text password.
       user.setPlainText("********");
+      return user;
     }
-    return user;
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "User " + userId + " is not defined.");
+    }
+    return null;
   }
 
   /*
@@ -81,14 +83,20 @@ public class UserPasswordServerResource extends WattDepotServerResource implemen
     getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/user-password/ with " + user);
     if (!depot.getUserIds(orgId).contains(user.getUid())) {
       try {
-        depot.defineUserPassword(user.getUid(), orgId, user.getPlainText());
+        depot.defineUserPassword(user.getUid(), orgId, user.getPlainText(),
+            user.getEncryptedPassword());
       }
       catch (UniqueIdException e) {
         setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
       }
     }
     else {
-      depot.updateUserPassword(user);
+      try {
+        depot.updateUserPassword(user);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, user + " isn't defined so can't update.");
+      }
     }
   }
 

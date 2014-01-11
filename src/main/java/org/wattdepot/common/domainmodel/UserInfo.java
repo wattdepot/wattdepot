@@ -32,7 +32,7 @@ public class UserInfo {
   public static final String ADMIN_USER_NAME = "wattdepot-server.admin.name";
 
   /** The admin user. */
-  public static final UserInfo ROOT = new UserInfo("root", "root", null, null, null,
+  public static final UserInfo ROOT = new UserInfo("root", "root", null, null, Organization.ADMIN_GROUP_NAME,
       new HashSet<Property>());
 
   /** A unique id for the User. */

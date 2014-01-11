@@ -44,8 +44,6 @@ import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.domainmodel.SensorGroupList;
 import org.wattdepot.common.domainmodel.SensorList;
-import org.wattdepot.common.domainmodel.SensorLocation;
-import org.wattdepot.common.domainmodel.SensorLocationList;
 import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.domainmodel.SensorModelList;
 import org.wattdepot.common.exception.BadCredentialException;
@@ -69,9 +67,6 @@ import org.wattdepot.common.http.api.MeasurementTypesResource;
 import org.wattdepot.common.http.api.SensorGroupPutResource;
 import org.wattdepot.common.http.api.SensorGroupResource;
 import org.wattdepot.common.http.api.SensorGroupsResource;
-import org.wattdepot.common.http.api.SensorLocationPutResource;
-import org.wattdepot.common.http.api.SensorLocationResource;
-import org.wattdepot.common.http.api.SensorLocationsResource;
 import org.wattdepot.common.http.api.SensorModelPutResource;
 import org.wattdepot.common.http.api.SensorModelResource;
 import org.wattdepot.common.http.api.SensorModelsResource;
@@ -207,28 +202,6 @@ public class WattDepotClient implements WattDepotInterface {
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.client.WattDepotInterface#deleteLocation(org.wattdepot.
-   * datamodel.Location)
-   */
-  @Override
-  public void deleteLocation(SensorLocation sensorLocation) throws IdNotFoundException {
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.LOCATION + "/"
-        + sensorLocation.getId());
-    SensorLocationResource resource = client.wrap(SensorLocationResource.class);
-    try {
-      resource.remove();
-    }
-    catch (ResourceException e) {
-      throw new IdNotFoundException(sensorLocation + " is not stored in WattDepot.");
-    }
-    finally {
-      client.release();
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see
    * org.wattdepot.client.WattDepotInterface#deleteMeasurement(org.wattdepot
    * .datamodel.Depository, org.wattdepot.datamodel.Measurement)
@@ -237,7 +210,7 @@ public class WattDepotClient implements WattDepotInterface {
   public void deleteMeasurement(Depository depository, Measurement measurement)
       throws IdNotFoundException {
     ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
-        + depository.getId() + "/" + Labels.MEASUREMENT + "/" + measurement.getSlug());
+        + depository.getId() + "/" + Labels.MEASUREMENT + "/" + measurement.getId());
     DepositoryMeasurementResource resource = client.wrap(DepositoryMeasurementResource.class);
     try {
       resource.remove();
@@ -428,42 +401,6 @@ public class WattDepotClient implements WattDepotInterface {
    */
   public String getOrganizationId() {
     return organizationId;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.client.WattDepotInterface#getLocation(java.lang.String)
-   */
-  @Override
-  public SensorLocation getLocation(String id) throws IdNotFoundException {
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.LOCATION + "/" + id);
-    SensorLocationResource resource = client.wrap(SensorLocationResource.class);
-    SensorLocation ret = null;
-    try {
-      ret = resource.retrieve();
-    }
-    catch (ResourceException e) {
-      throw new IdNotFoundException(id + " is not a known Location id.");
-    }
-    finally {
-      client.release();
-    }
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.client.WattDepotInterface#getLocations()
-   */
-  @Override
-  public SensorLocationList getLocations() {
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.LOCATIONS + "/");
-    SensorLocationsResource resource = client.wrap(SensorLocationsResource.class);
-    SensorLocationList ret = resource.retrieve();
-    client.release();
-    return ret;
   }
 
   /*
@@ -837,25 +774,6 @@ public class WattDepotClient implements WattDepotInterface {
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#putLocation(org.wattdepot.datamodel
-   * .Location)
-   */
-  @Override
-  public void putLocation(SensorLocation loc) {
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.LOCATION + "/");
-    SensorLocationPutResource resource = client.wrap(SensorLocationPutResource.class);
-    try {
-      resource.store(loc);
-    }
-    finally {
-      client.release();
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
    * @see org.wattdepot.client.WattDepotInterface#putMeasurement(org.wattdepot.
    * datamodel.Depository, org.wattdepot.datamodel.Measurement)
    */
@@ -981,25 +899,6 @@ public class WattDepotClient implements WattDepotInterface {
   @Override
   public void updateDepository(Depository depository) {
     throw new RuntimeException("Can't update an existing Depository.");
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.client.WattDepotInterface#updateLocation(org.wattdepot.
-   * datamodel.Location)
-   */
-  @Override
-  public void updateLocation(SensorLocation sensorLocation) {
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.LOCATION + "/"
-        + sensorLocation.getId());
-    SensorLocationResource resource = client.wrap(SensorLocationResource.class);
-    try {
-      resource.update(sensorLocation);
-    }
-    finally {
-      client.release();
-    }
   }
 
   /*

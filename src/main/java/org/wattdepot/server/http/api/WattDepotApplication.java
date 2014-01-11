@@ -195,10 +195,6 @@ public class WattDepotApplication extends Application {
     router.attach(API.SENSOR_GROUP_PUT_URI, SensorGroupPutServerResource.class);
     router.attach(API.SENSOR_GROUP_URI, SensorGroupServerResource.class);
     router.attach(API.SENSOR_GROUPS_URI, SensorGroupsServerResource.class);
-    // SensorLocations
-    router.attach(API.SENSOR_LOCATION_PUT_URI, SensorLocationPutServerResource.class);
-    router.attach(API.SENSOR_LOCATION_URI, SensorLocationServerResource.class);
-    router.attach(API.SENSOR_LOCATIONS_URI, SensorLocationsServerResource.class);
     // SensorModels
     router.attach(API.SENSOR_MODEL_PUT_URI, SensorModelPutServerResource.class);
     router.attach(API.SENSOR_MODEL_URI, SensorModelServerResource.class);

@@ -37,7 +37,6 @@ import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
-import org.wattdepot.common.domainmodel.SensorLocation;
 import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -60,7 +59,13 @@ public class AdminServerResource extends WattDepotServerResource {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/");
     if (!isInRole(orgId) && !isInRole("admin")) {
       User user = getClientInfo().getUser();
-      UserInfo info = depot.getUser(user.getIdentifier(), orgId);
+      UserInfo info = null;
+      try {
+        info = depot.getUser(user.getIdentifier(), orgId);
+      }
+      catch (IdNotFoundException e) {
+        return null;
+      }
       Organization group = depot.getUsersGroup(info);
       if (group != null) {
         redirectPermanent("/wattdepot/" + group.getId() + "/");
@@ -75,7 +80,6 @@ public class AdminServerResource extends WattDepotServerResource {
       List<UserInfo> users = depot.getUsers("admin");
       List<Organization> groups = depot.getOrganizations();
       List<Depository> depos = depot.getDepositories(orgId);
-      List<SensorLocation> locs = depot.getSensorLocations(orgId);
       List<Sensor> sensors = depot.getSensors(orgId);
       List<SensorModel> sensorModels = depot.getSensorModels();
       List<SensorGroup> sensorGroups = depot.getSensorGroups(orgId);
@@ -86,7 +90,6 @@ public class AdminServerResource extends WattDepotServerResource {
       dataModel.put("groups", groups);
       dataModel.put("groupId", orgId);
       dataModel.put("depositories", depos);
-      dataModel.put("locations", locs);
       dataModel.put("sensors", sensors);
       dataModel.put("sensorgroups", sensorGroups);
       dataModel.put("sensormodels", sensorModels);

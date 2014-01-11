@@ -18,7 +18,15 @@
  */
 package org.wattdepot.server.depository.impl.hibernate;
 
+import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.wattdepot.common.domainmodel.Property;
 import org.wattdepot.common.domainmodel.UserInfo;
@@ -30,11 +38,28 @@ import org.wattdepot.common.domainmodel.UserInfo;
  * @author Cam Moore
  * 
  */
-@SuppressWarnings("PMD.UselessOverridingMethod")
-public class UserInfoImpl extends UserInfo {
+@Entity
+@Table(name = "USERS")
+public class UserInfoImpl {
 
   /** Database primary key. */
+  @Id
+  @GeneratedValue
   private Long pk;
+  /** A unique id for the User. */
+  private String uid;
+  /** The User's first name. */
+  private String firstName;
+  /** The User's last name. */
+  private String lastName;
+  /** The User's email address. */
+  private String email;
+  /** Additional properties of the user. */
+  @OneToMany
+  private Set<PropertyImpl> properties;
+  /** This user's organization. */
+  @ManyToOne
+  private OrganizationImpl org;
 
   /**
    * Default constructor.
@@ -44,124 +69,49 @@ public class UserInfoImpl extends UserInfo {
   }
 
   /**
-   * @param uid
-   *          The unique user id.
-   * @param firstName
-   *          The user's name.
-   * @param lastName
-   *          The user's last name.
-   * @param email
-   *          The user's email address.
-   * @param orgId
-   *          The id of the organization this user belongs to.
-   * @param properties
-   *          The additional properties for the user.
+   * @param uid the user's uid.
+   * @param firstName the user's first name.
+   * @param lastName the user's last name.
+   * @param email the user's email address.
+   * @param properties additional properties.
+   * @param org the user's organization.
    */
-  public UserInfoImpl(String uid, String firstName, String lastName,
-      String email, String orgId, Set<Property> properties) {
-    super(uid, firstName, lastName, email, orgId, properties);
+  public UserInfoImpl(String uid, String firstName, String lastName, String email,
+      Set<PropertyImpl> properties, OrganizationImpl org) {
+    this.uid = uid;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.email = email;
+    this.properties = properties;
+    this.org = org;
   }
 
   /**
-   * Converter constructor.
-   * 
-   * @param info
-   *          UserInfo to clone.
+   * @return the email
    */
-  public UserInfoImpl(UserInfo info) {
-    super(info.getUid(), info.getFirstName(), info.getLastName(), info
-        .getEmail(), info.getOrganizationId(), info.getProperties());
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.UserInfo#addProperty(org.wattdepot.common
-   * .domainmodel.Property)
-   */
-  @Override
-  public boolean addProperty(Property e) {
-    // TODO Auto-generated method stub
-    return super.addProperty(e);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see java.lang.Object#equals(java.lang.Object)
-   */
-  @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
-      return false;
-    }
-    if (this == obj) {
-      return true;
-    }
-    if (obj.getClass().equals(UserInfo.class)) {
-      return super.equals(obj);
-    }
-    if (!super.equals(obj)) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    UserInfoImpl other = (UserInfoImpl) obj;
-    if (pk == null) {
-      if (other.pk != null) {
-        return false;
-      }
-    }
-    else if (!pk.equals(other.pk)) {
-      return false;
-    }
-    return true;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.UserInfo#getEmail()
-   */
-  @Override
   public String getEmail() {
-    // TODO Auto-generated method stub
-    return super.getEmail();
+    return email;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.UserInfo#getFirstName()
+  /**
+   * @return the firstName
    */
-  @Override
   public String getFirstName() {
-    // TODO Auto-generated method stub
-    return super.getFirstName();
+    return firstName;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.UserInfo#getLastName()
+  /**
+   * @return the lastName
    */
-  @Override
   public String getLastName() {
-    // TODO Auto-generated method stub
-    return super.getLastName();
+    return lastName;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.UserInfo#getOrganizationId()
+  /**
+   * @return the org
    */
-  @Override
-  public String getOrganizationId() {
-    // TODO Auto-generated method stub
-    return super.getOrganizationId();
+  public OrganizationImpl getOrg() {
+    return org;
   }
 
   /**
@@ -171,38 +121,69 @@ public class UserInfoImpl extends UserInfo {
     return pk;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.UserInfo#getProperties()
+  /**
+   * @return the properties
    */
-  @Override
-  public Set<Property> getProperties() {
-    // TODO Auto-generated method stub
-    return super.getProperties();
+  @OneToMany
+  public Set<PropertyImpl> getProperties() {
+    return properties;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.UserInfo#getProperty(java.lang.String)
+  /**
+   * @return the uid
    */
-  @Override
-  public Property getProperty(String key) {
-    // TODO Auto-generated method stub
-    return super.getProperty(key);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.UserInfo#getUID()
-   */
-  @Override
   public String getUid() {
-    // TODO Auto-generated method stub
-    return super.getUid();
+    return uid;
+  }
+
+  /**
+   * @param email the email to set
+   */
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  /**
+   * @param firstName the firstName to set
+   */
+  public void setFirstName(String firstName) {
+    this.firstName = firstName;
+  }
+
+  /**
+   * @param lastName the lastName to set
+   */
+  public void setLastName(String lastName) {
+    this.lastName = lastName;
+  }
+
+  /**
+   * @param org the org to set
+   */
+  public void setOrg(OrganizationImpl org) {
+    this.org = org;
+  }
+
+  /**
+   * @param pk the pk to set
+   */
+  @SuppressWarnings("unused")
+  private void setPk(Long pk) {
+    this.pk = pk;
+  }
+
+  /**
+   * @param properties the properties to set
+   */
+  public void setProperties(Set<PropertyImpl> properties) {
+    this.properties = properties;
+  }
+
+  /**
+   * @param uid the uid to set
+   */
+  public void setUid(String uid) {
+    this.uid = uid;
   }
 
   /*
@@ -213,99 +194,114 @@ public class UserInfoImpl extends UserInfo {
   @Override
   public int hashCode() {
     final int prime = 31;
-    int result = super.hashCode();
+    int result = 1;
+    result = prime * result + ((email == null) ? 0 : email.hashCode());
+    result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
+    result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
+    result = prime * result + ((org == null) ? 0 : org.hashCode());
     result = prime * result + ((pk == null) ? 0 : pk.hashCode());
+    result = prime * result + ((properties == null) ? 0 : properties.hashCode());
+    result = prime * result + ((uid == null) ? 0 : uid.hashCode());
     return result;
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * org.wattdepot.common.domainmodel.UserInfo#removeProperty(java.lang.Object)
+   * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
-  public boolean removeProperty(Object o) {
-    // TODO Auto-generated method stub
-    return super.removeProperty(o);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.UserInfo#setEmail(java.lang.String)
-   */
-  @Override
-  public void setEmail(String email) {
-    // TODO Auto-generated method stub
-    super.setEmail(email);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.UserInfo#setFirstName(java.lang.String)
-   */
-  @Override
-  public void setFirstName(String firstName) {
-    // TODO Auto-generated method stub
-    super.setFirstName(firstName);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.UserInfo#setLastName(java.lang.String)
-   */
-  @Override
-  public void setLastName(String lastName) {
-    // TODO Auto-generated method stub
-    super.setLastName(lastName);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.common.domainmodel.UserInfo#setOrganizationId(java.lang.String
-   * )
-   */
-  @Override
-  public void setOrganizationId(String organizationId) {
-    // TODO Auto-generated method stub
-    super.setOrganizationId(organizationId);
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    UserInfoImpl other = (UserInfoImpl) obj;
+    if (email == null) {
+      if (other.email != null) {
+        return false;
+      }
+    }
+    else if (!email.equals(other.email)) {
+      return false;
+    }
+    if (firstName == null) {
+      if (other.firstName != null) {
+        return false;
+      }
+    }
+    else if (!firstName.equals(other.firstName)) {
+      return false;
+    }
+    if (lastName == null) {
+      if (other.lastName != null) {
+        return false;
+      }
+    }
+    else if (!lastName.equals(other.lastName)) {
+      return false;
+    }
+    if (org == null) {
+      if (other.org != null) {
+        return false;
+      }
+    }
+    else if (!org.equals(other.org)) {
+      return false;
+    }
+    if (pk == null) {
+      if (other.pk != null) {
+        return false;
+      }
+    }
+    else if (!pk.equals(other.pk)) {
+      return false;
+    }
+    if (properties == null) {
+      if (other.properties != null) {
+        return false;
+      }
+    }
+    else if (!properties.equals(other.properties)) {
+      return false;
+    }
+    if (uid == null) {
+      if (other.uid != null) {
+        return false;
+      }
+    }
+    else if (!uid.equals(other.uid)) {
+      return false;
+    }
+    return true;
   }
 
   /**
-   * @param pk
-   *          the pk to set
+   * @return a UserInfo equivalent to this.
    */
-  public void setPk(Long pk) {
-    this.pk = pk;
+  public UserInfo toUserInfo() {
+    Set<Property> props = new HashSet<Property>();
+    for (PropertyImpl i : properties) {
+      props.add(new Property(i.getKey(), i.getValue()));
+    }
+    UserInfo ret = new UserInfo(uid, firstName, lastName, email, org.getId(), props);
+    return ret;
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.common.domainmodel.UserInfo#setProperties(java.util.Set)
+   * @see java.lang.Object#toString()
    */
   @Override
-  public void setProperties(Set<Property> properties) {
-    // TODO Auto-generated method stub
-    super.setProperties(properties);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.common.domainmodel.UserInfo#setUID(java.lang.String)
-   */
-  @Override
-  public void setUid(String id) {
-    // TODO Auto-generated method stub
-    super.setUid(id);
+  public String toString() {
+    return "UserInfoImpl [pk=" + pk + ", uid=" + uid + ", firstName=" + firstName + ", lastName="
+        + lastName + ", email=" + email + ", properties=" + properties + ", org=" + org + "]";
   }
 
 }

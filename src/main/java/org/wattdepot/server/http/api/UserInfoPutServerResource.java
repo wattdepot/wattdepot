@@ -27,6 +27,7 @@ import org.restlet.security.User;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.UserInfoPutResource;
 
@@ -54,30 +55,27 @@ public class UserInfoPutServerResource extends WattDepotServerResource implement
       if (!depot.getUserIds(orgId).contains(user.getUid())) {
         try {
           UserPassword password = depot.getUserPassword(user.getUid(), orgId);
-          if (password != null) {
-            UserInfo defined = depot
-                .defineUserInfo(user.getUid(), user.getFirstName(), user.getLastName(),
-                    user.getEmail(), user.getOrganizationId(), user.getProperties());
-            // Add user to Realm
-            WattDepotApplication app = (WattDepotApplication) getApplication();
-            Role role = app.getRole(user.getOrganizationId());
-            if (role == null) {
-              role = new Role(user.getOrganizationId());
-              app.getRoles().add(role);
-            }
-            MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
-            User u = new User(defined.getUid(), password.getPlainText(), defined.getFirstName(),
-                defined.getLastName(), defined.getEmail());
-            realm.getUsers().add(u);
-            realm.map(u, role);
+          UserInfo defined = depot.defineUserInfo(user.getUid(), user.getFirstName(),
+              user.getLastName(), user.getEmail(), user.getOrganizationId(), user.getProperties());
+          // Add user to Realm
+          WattDepotApplication app = (WattDepotApplication) getApplication();
+          Role role = app.getRole(user.getOrganizationId());
+          if (role == null) {
+            role = new Role(user.getOrganizationId());
+            app.getRoles().add(role);
           }
-          else {
-            setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED,
-                "No UserPassword defined for " + user.getUid());
-          }
+          MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
+          User u = new User(defined.getUid(), password.getPlainText(), defined.getFirstName(),
+              defined.getLastName(), defined.getEmail());
+          realm.getUsers().add(u);
+          realm.map(u, role);
         }
         catch (UniqueIdException e) {
           setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+        }
+        catch (IdNotFoundException e) {
+          setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED,
+              "No UserPassword defined for " + user.getUid());
         }
       }
     }

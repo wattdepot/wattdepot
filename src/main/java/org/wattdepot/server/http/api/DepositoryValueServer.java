@@ -26,6 +26,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.MeasuredValue;
 import org.wattdepot.common.domainmodel.Sensor;
@@ -34,7 +35,6 @@ import org.wattdepot.common.exception.MeasurementGapException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.DateConvert;
-import org.wattdepot.server.depository.impl.hibernate.DepositoryImpl;
 
 /**
  * DepositoryValueServerResource - ServerResouce that handles the GET
@@ -80,13 +80,11 @@ public class DepositoryValueServer extends WattDepotServerResource {
   public MeasuredValue doRetrieve() {
     getLogger().log(
         Level.INFO,
-        "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId
-            + "}/value/?sensor={" + sensorId + "}&start={" + start + "}&end={"
-            + end + "}&timestamp={" + timestamp + "}&latest={" + latest
-            + "}&earliest={" + earliest + "}&gap={" + gapSeconds + "}");
+        "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/value/?sensor={"
+            + sensorId + "}&start={" + start + "}&end={" + end + "}&timestamp={" + timestamp
+            + "}&latest={" + latest + "}&earliest={" + earliest + "}&gap={" + gapSeconds + "}");
     try {
-      DepositoryImpl deposit = (DepositoryImpl) depot.getDepository(
-          depositoryId, orgId);
+      Depository deposit = depot.getDepository(depositoryId, orgId);
       if (deposit != null) {
         Sensor sensor = depot.getSensor(sensorId, orgId);
         if (sensor != null) {
@@ -104,8 +102,7 @@ public class DepositoryValueServer extends WattDepotServerResource {
           else if (timestamp != null) {
             time = DateConvert.parseCalStringToDate(timestamp);
             if (gapSeconds != null) {
-              value = deposit.getValue(sensor.getId(), time,
-                  Long.parseLong(gapSeconds));
+              value = deposit.getValue(sensor.getId(), time, Long.parseLong(gapSeconds));
             }
             else {
               value = deposit.getValue(sensor.getId(), time);
@@ -123,8 +120,7 @@ public class DepositoryValueServer extends WattDepotServerResource {
             }
           }
 
-          MeasuredValue val = new MeasuredValue(sensorId, value,
-              deposit.getMeasurementType());
+          MeasuredValue val = new MeasuredValue(sensorId, value, deposit.getMeasurementType());
           if (end != null) {
             val.setDate(endDate);
           }
@@ -134,13 +130,11 @@ public class DepositoryValueServer extends WattDepotServerResource {
           return val;
         }
         else {
-          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Could not find sensor "
-              + sensorId);
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Could not find sensor " + sensorId);
         }
       }
       else {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Could not find depository "
-            + depositoryId);
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Could not find depository " + depositoryId);
       }
     }
     catch (MisMatchedOwnerException e) {

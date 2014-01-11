@@ -32,8 +32,6 @@ import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.domainmodel.SensorGroupList;
 import org.wattdepot.common.domainmodel.SensorList;
-import org.wattdepot.common.domainmodel.SensorLocation;
-import org.wattdepot.common.domainmodel.SensorLocationList;
 import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.domainmodel.SensorModelList;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -59,17 +57,6 @@ public interface WattDepotInterface {
    *           if the Depository is not found in the server.
    */
   public void deleteDepository(Depository depository)
-      throws IdNotFoundException;
-
-  /**
-   * Deletes the given Location.
-   * 
-   * @param sensorLocation
-   *          the Location to delete.
-   * @throws IdNotFoundException
-   *           if the Location is not found in the server.
-   */
-  public void deleteLocation(SensorLocation sensorLocation)
       throws IdNotFoundException;
 
   /**
@@ -152,22 +139,6 @@ public interface WattDepotInterface {
    *              if the given id is not a Depository's id.
    */
   public Depository getDepository(String id) throws IdNotFoundException;
-
-  /**
-   * Retrieves the Location with the given id from the WattDepot Server.
-   * 
-   * @param id
-   *          The Location's id.
-   * @return the Location with the given id or null.
-   * @exception IdNotFoundException
-   *              if the given id is not a Location's id.
-   */
-  public SensorLocation getLocation(String id) throws IdNotFoundException;
-
-  /**
-   * @return The defined Locations.
-   */
-  public SensorLocationList getLocations();
 
   /**
    * @param depository
@@ -357,14 +328,6 @@ public interface WattDepotInterface {
   public void putDepository(Depository depository);
 
   /**
-   * Stores the given Location in the WattDepot Server.
-   * 
-   * @param loc
-   *          the Location.
-   */
-  public void putLocation(SensorLocation loc);
-
-  /**
    * @param depository
    *          The Depository to store the Measurement.
    * @param measurement
@@ -423,14 +386,6 @@ public interface WattDepotInterface {
    *          The Depository to update.
    */
   public void updateDepository(Depository depository);
-
-  /**
-   * Updates the given Location in the WattDepot Server.
-   * 
-   * @param sensorLocation
-   *          the Location to update.
-   */
-  public void updateLocation(SensorLocation sensorLocation);
 
   /**
    * Updates the given MeasurementType in the WattDepot Server.

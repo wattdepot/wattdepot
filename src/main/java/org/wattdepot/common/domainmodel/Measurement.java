@@ -37,7 +37,7 @@ import org.wattdepot.common.util.Slug;
  * 
  */
 public class Measurement {
-  private String slug;
+  private String id;
   private String sensorId;
   private Date timestamp;
   private Double value;
@@ -59,7 +59,7 @@ public class Measurement {
    */
   public Measurement(String sensorId, Date timestamp, Double value, Unit<?> units) {
     // Can a sensor create two measurements at the same time with the same type?
-    this.slug = Slug.slugify(sensorId + timestamp + units);
+    this.id = Slug.slugify(sensorId + timestamp + units);
     this.sensorId = sensorId;
     this.timestamp = new Date(timestamp.getTime());
     this.amount = Amount.valueOf(value, units);
@@ -164,10 +164,10 @@ public class Measurement {
   }
 
   /**
-   * @return the slug
+   * @return the id
    */
-  public String getSlug() {
-    return slug;
+  public String getId() {
+    return id;
   }
 
   /**
@@ -222,15 +222,15 @@ public class Measurement {
   }
 
   /**
-   * @param slug the slug to set
+   * @param id the id to set
    * @exception BadSlugException if the slug is not valid.
    */
-  public void setSlug(String slug) throws BadSlugException {
-    if (Slug.validateSlug(slug)) {
-      this.slug = slug;
+  public void setId(String id) throws BadSlugException {
+    if (Slug.validateSlug(id)) {
+      this.id = id;
     }
     else {
-      throw new BadSlugException(slug + " is not a valid slug.");
+      throw new BadSlugException(id + " is not a valid slug.");
     }
   }
 
@@ -249,14 +249,14 @@ public class Measurement {
   @Override
   public String toString() {
     try {
-      return "Measurement [slug= " + slug + ", sensorId=" + sensorId + ", timestamp="
+      return "Measurement [id= " + id + ", sensorId=" + sensorId + ", timestamp="
           + DateConvert.convertDate(timestamp) + ", value=" + value + ", units=" + units + "]";
     }
     catch (DatatypeConfigurationException e) {
       // shouldn't happen
       e.printStackTrace();
     }
-    return "Measurement [slug= " + slug + ", sensorId=" + sensorId + ", timestamp=" + timestamp
+    return "Measurement [id= " + id + ", sensorId=" + sensorId + ", timestamp=" + timestamp
         + ", value=" + value + ", units=" + units + "]";
   }
 

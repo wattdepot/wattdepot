@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.exception.BadSlugException;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.MeasurementTypePutResource;
 
@@ -48,7 +49,13 @@ public class MeasurementTypePutServerResource extends WattDepotServerResource
     getLogger().log(Level.INFO,
         "PUT /wattdepot/measurement-type/ with " + measurementType);
     if (isInRole("admin")) {
-      MeasurementType mt = depot.getMeasurementType(measurementType.getId());
+      MeasurementType mt = null;
+      try {
+        mt = depot.getMeasurementType(measurementType.getId());
+      }
+      catch (IdNotFoundException e1) { // NOPMD
+        // possible out come.
+      }
       if (mt == null) {
         try {
           depot.defineMeasurementType(measurementType.getId(),

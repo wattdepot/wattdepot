@@ -36,8 +36,6 @@ public class Sensor implements IDomainModel {
   private String name;
   /** The URI to the sensor. */
   private String uri;
-  /** The location of the sensor. */
-  private String locationId;
   /** The id of the model of the sensor. */
   private String modelId;
   /** Additional properties of the sensor. */
@@ -55,29 +53,26 @@ public class Sensor implements IDomainModel {
   /**
    * @param name The name.
    * @param uri The URI to the meter.
-   * @param locationId The id of the meter's location.
    * @param modelId The id of the meter's model.
    * @param ownerId the id of the owner of the sensor.
    */
-  public Sensor(String name, String uri, String locationId, String modelId, String ownerId) {
-    this(Slug.slugify(name), name, uri, locationId, modelId, new HashSet<Property>(), ownerId);
+  public Sensor(String name, String uri, String modelId, String ownerId) {
+    this(Slug.slugify(name), name, uri, modelId, new HashSet<Property>(), ownerId);
   }
 
   /**
    * @param id The unique id.
    * @param name The name.
    * @param uri The URI to the meter.
-   * @param locationId The id of the meter's location.
    * @param modelId The id of the meter's model.
    * @param properties The properties associated with this Sensor.
    * @param ownerId the id of the owner of the sensor.
    */
-  public Sensor(String id, String name, String uri, String locationId, String modelId,
-      Set<Property> properties, String ownerId) {
+  public Sensor(String id, String name, String uri, String modelId, Set<Property> properties,
+      String ownerId) {
     this.id = id;
     this.name = name;
     this.uri = uri;
-    this.locationId = locationId;
     this.modelId = modelId;
     this.properties = properties;
     this.ownerId = ownerId;
@@ -124,14 +119,6 @@ public class Sensor implements IDomainModel {
       }
     }
     else if (!name.equals(other.name)) {
-      return false;
-    }
-    if (locationId == null) {
-      if (other.locationId != null) {
-        return false;
-      }
-    }
-    else if (!locationId.equals(other.locationId)) {
       return false;
     }
     if (modelId == null) {
@@ -218,13 +205,6 @@ public class Sensor implements IDomainModel {
   }
 
   /**
-   * @return the sensorLocation
-   */
-  public String getSensorLocationId() {
-    return locationId;
-  }
-
-  /**
    * @return the uri
    */
   public String getUri() {
@@ -242,7 +222,6 @@ public class Sensor implements IDomainModel {
     int result = 1;
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     result = prime * result + ((name == null) ? 0 : name.hashCode());
-    result = prime * result + ((locationId == null) ? 0 : locationId.hashCode());
     result = prime * result + ((modelId == null) ? 0 : modelId.hashCode());
     result = prime * result + ((ownerId == null) ? 0 : ownerId.hashCode());
     result = prime * result + ((properties == null) ? 0 : properties.hashCode());
@@ -313,13 +292,6 @@ public class Sensor implements IDomainModel {
   }
 
   /**
-   * @param sensorLocation the sensorLocation to set
-   */
-  public void setSensorLocationId(String sensorLocation) {
-    this.locationId = sensorLocation;
-  }
-
-  /**
    * @param uri the uri to set
    */
   public void setUri(String uri) {
@@ -333,8 +305,8 @@ public class Sensor implements IDomainModel {
    */
   @Override
   public String toString() {
-    return "Sensor [id=" + id + ", name=" + name + ", uri=" + uri + ", locationId=" + locationId
-        + ", modelId=" + modelId + ", properties=" + properties + "]";
+    return "Sensor [id=" + id + ", name=" + name + ", uri=" + uri + ", modelId=" + modelId
+        + ", properties=" + properties + "]";
   }
 
 }

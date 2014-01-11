@@ -60,8 +60,10 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
   public MeasurementType retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/measurement-type/{" + typeSlug + "}");
     MeasurementType mt = null;
-    mt = depot.getMeasurementType(typeSlug);
-    if (mt == null) {
+    try {
+      mt = depot.getMeasurementType(typeSlug);
+    }
+    catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "MeasurementType " + typeSlug
           + " is not defined.");
     }
@@ -80,11 +82,14 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
     getLogger().log(Level.INFO,
         "POST /wattdepot/measurement-type/{" + typeSlug + "} with " + measurementType);
     if (isInRole("admin")) {
-      MeasurementType mt = depot.getMeasurementType(measurementType.getId());
-      if (mt != null) {
-        depot.updateMeasurementType(measurementType);
+      MeasurementType mt;
+      try {
+        mt = depot.getMeasurementType(measurementType.getId());
+        if (mt != null) {
+          depot.updateMeasurementType(measurementType);
+        }
       }
-      else {
+      catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_CONFLICT,
             "No such Measurement type defined. Cannot update undefined MeasurementType.");
       }

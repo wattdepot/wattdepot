@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.exception.BadSlugException;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.SensorModelPutResource;
 
@@ -60,7 +61,12 @@ public class SensorModelPutServerResource extends WattDepotServerResource
       }
     }
     else {
-      depot.updateSensorModel(sensormodel);
+      try {
+        depot.updateSensorModel(sensormodel);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
+      }
     }
   }
 }
