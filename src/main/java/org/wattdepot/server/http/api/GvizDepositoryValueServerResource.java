@@ -18,7 +18,7 @@
  */
 package org.wattdepot.server.http.api;
 
-import org.wattdepot.common.domainmodel.MeasuredValue;
+import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.http.api.GvizDepositoryValueResource;
 import org.wattdepot.common.util.GvizHelper;
 
@@ -56,7 +56,7 @@ public class GvizDepositoryValueServerResource extends DepositoryValueServer
    */
   @Override
   public String retrieve() {
-    MeasuredValue mValue = doRetrieve();
+    InterpolatedValue mValue = doRetrieve();
     return GvizHelper.getGvizResponse(mValue, tqxString, tqString);
   }
 }

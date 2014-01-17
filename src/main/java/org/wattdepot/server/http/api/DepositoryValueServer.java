@@ -28,7 +28,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.MeasuredValue;
+import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementGapException;
@@ -77,7 +77,7 @@ public class DepositoryValueServer extends WattDepotServerResource {
    * 
    * @return measured value.
    */
-  public MeasuredValue doRetrieve() {
+  public InterpolatedValue doRetrieve() {
     getLogger().log(
         Level.INFO,
         "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/value/?sensor={"
@@ -94,33 +94,35 @@ public class DepositoryValueServer extends WattDepotServerResource {
           Date time = null;
 
           if (earliest != null) {
-            return deposit.getEarliestMeasuredValue(sensorId);
+            return depot.getEarliestMeasuredValue(depositoryId, orgId, sensorId);
           }
           else if (latest != null) {
-            return deposit.getLatestMeasuredValue(sensorId);
+            return depot.getLatestMeasuredValue(depositoryId, orgId, sensorId);
           }
           else if (timestamp != null) {
             time = DateConvert.parseCalStringToDate(timestamp);
             if (gapSeconds != null) {
-              value = deposit.getValue(sensor.getId(), time, Long.parseLong(gapSeconds));
+              value = depot.getValue(depositoryId, orgId, sensor.getId(), time,
+                  Long.parseLong(gapSeconds));
             }
             else {
-              value = deposit.getValue(sensor.getId(), time);
+              value = depot.getValue(depositoryId, orgId, sensor.getId(), time);
             }
           }
           else if (start != null && end != null) {
             startDate = DateConvert.parseCalStringToDate(start);
             endDate = DateConvert.parseCalStringToDate(end);
             if (gapSeconds != null) {
-              value = deposit.getValue(sensor.getId(), startDate, endDate,
+              value = depot.getValue(depositoryId, orgId, sensor.getId(), startDate, endDate,
                   Long.parseLong(gapSeconds));
             }
             else {
-              value = deposit.getValue(sensor.getId(), startDate, endDate);
+              value = depot.getValue(depositoryId, orgId, sensor.getId(), startDate, endDate);
             }
           }
 
-          MeasuredValue val = new MeasuredValue(sensorId, value, deposit.getMeasurementType());
+          InterpolatedValue val = new InterpolatedValue(sensorId, value,
+              deposit.getMeasurementType(), null);
           if (end != null) {
             val.setDate(endDate);
           }

@@ -84,6 +84,9 @@ public class UserInfoImpl {
     this.email = email;
     this.properties = properties;
     this.org = org;
+    if (org != null && !org.getUsers().contains(this)) {
+      org.getUsers().add(this);
+    }
   }
 
   /**
@@ -162,6 +165,9 @@ public class UserInfoImpl {
    */
   public void setOrg(OrganizationImpl org) {
     this.org = org;
+    if (!org.getUsers().contains(this)) {
+      org.getUsers().add(this);
+    }
   }
 
   /**
@@ -198,7 +204,7 @@ public class UserInfoImpl {
     result = prime * result + ((email == null) ? 0 : email.hashCode());
     result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
     result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
-    result = prime * result + ((org == null) ? 0 : org.hashCode());
+    result = prime * result + ((org == null) ? 0 : org.getId().hashCode());
     result = prime * result + ((pk == null) ? 0 : pk.hashCode());
     result = prime * result + ((properties == null) ? 0 : properties.hashCode());
     result = prime * result + ((uid == null) ? 0 : uid.hashCode());
@@ -251,7 +257,7 @@ public class UserInfoImpl {
         return false;
       }
     }
-    else if (!org.equals(other.org)) {
+    else if (!org.getId().equals(other.org.getId())) {
       return false;
     }
     if (pk == null) {
@@ -301,7 +307,8 @@ public class UserInfoImpl {
   @Override
   public String toString() {
     return "UserInfoImpl [pk=" + pk + ", uid=" + uid + ", firstName=" + firstName + ", lastName="
-        + lastName + ", email=" + email + ", properties=" + properties + ", org=" + org + "]";
+        + lastName + ", email=" + email + ", properties=" + properties + ", orgId=" + org.getId()
+        + "]";
   }
 
 }

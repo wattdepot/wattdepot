@@ -233,7 +233,7 @@ public class InstanceFactory {
    */
   public static Organization getOrganization2() {
     Set<String> users = new HashSet<String>();
-    users.add(getUserInfo().getUid());
+    users.add(getUserInfo2().getUid());
     return new Organization("Test User Group2", users);
   }
 
@@ -254,7 +254,7 @@ public class InstanceFactory {
     Set<Property> properties = new HashSet<Property>();
     properties.add(getProperty());
     return new UserInfo("test_user_id2", "test_first_name2", "test_last_name2",
-        "test_email2@test.com", "test-user-group", properties);
+        "test_email2@test.com", "test-user-group2", properties);
   }
 
   /**

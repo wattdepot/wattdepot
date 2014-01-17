@@ -21,6 +21,7 @@ package org.wattdepot.server.depository.impl.hibernate;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -47,7 +48,7 @@ public class OrganizationImpl {
   /** Unique id that is also a slug usable in URLs. */
   private String id;
   private String name;
-  @OneToMany
+  @OneToMany(mappedBy="org", cascade=CascadeType.PERSIST)
   private Set<UserInfoImpl> users;
 
   /**
@@ -66,6 +67,15 @@ public class OrganizationImpl {
     this.id = id;
     this.name = name;
     this.users = users;
+  }
+
+  /**
+   * @param e
+   * @return
+   * @see java.util.Set#add(java.lang.Object)
+   */
+  public boolean addUser(UserInfoImpl e) {
+    return users.add(e);
   }
 
   /*
@@ -152,6 +162,15 @@ public class OrganizationImpl {
     result = prime * result + ((pk == null) ? 0 : pk.hashCode());
     result = prime * result + ((users == null) ? 0 : users.hashCode());
     return result;
+  }
+
+  /**
+   * @param ui the UserInfoImpl to remove from the Organization.
+   * @return true if successful.
+   * @see java.util.Set#remove(java.lang.Object)
+   */
+  public boolean removeUser(UserInfoImpl ui) {
+    return users.remove(ui);
   }
 
   /**

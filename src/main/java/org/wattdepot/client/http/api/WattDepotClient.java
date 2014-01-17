@@ -35,7 +35,7 @@ import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.DepositoryList;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.MeasuredValue;
+import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementList;
 import org.wattdepot.common.domainmodel.MeasurementType;
@@ -600,7 +600,7 @@ public class WattDepotClient implements WattDepotInterface {
           + Labels.VALUE + "/" + "?sensor=" + sensor.getId() + "&timestamp="
           + DateConvert.convertDate(timestamp));
       DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
-      MeasuredValue ret = resource.retrieve();
+      InterpolatedValue ret = resource.retrieve();
       client.release();
       if (ret != null) {
         return ret.getValue();
@@ -629,7 +629,7 @@ public class WattDepotClient implements WattDepotInterface {
           + Labels.VALUE + "/" + "?sensor=" + sensor.getId() + "&start="
           + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end));
       DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
-      MeasuredValue ret = resource.retrieve();
+      InterpolatedValue ret = resource.retrieve();
       client.release();
       return ret.getValue();
     }
@@ -657,7 +657,7 @@ public class WattDepotClient implements WattDepotInterface {
           + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&gap="
           + gapSeconds);
       DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
-      MeasuredValue ret = resource.retrieve();
+      InterpolatedValue ret = resource.retrieve();
       client.release();
       return ret.getValue();
     }
@@ -684,7 +684,7 @@ public class WattDepotClient implements WattDepotInterface {
           + Labels.VALUE + "/" + "?sensor=" + sensor.getId() + "&timestamp="
           + DateConvert.convertDate(timestamp) + "&gap=" + gapSeconds);
       DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
-      MeasuredValue ret = resource.retrieve();
+      InterpolatedValue ret = resource.retrieve();
       client.release();
       return ret.getValue();
     }

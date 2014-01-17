@@ -125,7 +125,7 @@ public class Measurement {
    * @return true if this Measurement has the same sensorId, time,
    *         MeasurementType, and value as the MeasuredValue.
    */
-  public boolean equivalent(MeasuredValue value) {
+  public boolean equivalent(InterpolatedValue value) {
     if (!sensorId.equals(value.getSensorId())) {
       return false;
     }

@@ -89,6 +89,9 @@ public class UserPasswordServerResource extends WattDepotServerResource implemen
       catch (UniqueIdException e) {
         setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
       }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, user + " isn't defined so can't update.");
+      }
     }
     else {
       try {

@@ -85,7 +85,7 @@ public class DepositoryMeasurementsServer extends WattDepotServerResource {
             Date startDate = DateConvert.parseCalStringToDate(start);
             Date endDate = DateConvert.parseCalStringToDate(end);
             if (startDate != null && endDate != null) {
-              for (Measurement meas : depository.getMeasurements(
+              for (Measurement meas : depot.getMeasurements(depositoryId, orgId,
                   sensor.getId(), startDate, endDate)) {
                 ret.getMeasurements().add(meas);
               }

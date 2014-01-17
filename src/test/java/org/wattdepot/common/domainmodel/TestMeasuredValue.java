@@ -21,6 +21,8 @@ package org.wattdepot.common.domainmodel;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Date;
+
 import org.junit.Test;
 
 /**
@@ -33,15 +35,18 @@ public class TestMeasuredValue {
 
   /**
    * Test method for
-   * {@link org.wattdepot.common.domainmodel.MeasuredValue#MeasuredValue()}.
+   * {@link org.wattdepot.common.domainmodel.InterpolatedValue#MeasuredValue()}.
    */
   @Test
   public void testMeasuredValue() {
-    MeasuredValue val = new MeasuredValue("sensorId", 10.1, InstanceFactory.getMeasurementType());
+    Date now = new Date();
+    InterpolatedValue val = new InterpolatedValue("sensorId", 10.1,
+        InstanceFactory.getMeasurementType(), now);
     assertNotNull(val);
     assertTrue("sensorId".equals(val.getSensorId()));
     assertTrue(10.1 == val.getValue());
     assertTrue(InstanceFactory.getMeasurementType().equals(val.getMeasurementType()));
+    assertTrue(now.equals(val.getDate()));
   }
 
 }

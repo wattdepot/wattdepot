@@ -24,6 +24,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.hibernate.exception.ConstraintViolationException;
@@ -34,10 +35,11 @@ import org.junit.Test;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.InstanceFactory;
-import org.wattdepot.common.domainmodel.MeasuredValue;
+import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.domainmodel.Property;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.domainmodel.SensorModel;
@@ -88,30 +90,56 @@ public class TestWattDepotPersistenceImpl {
    */
   @Before
   public void setUp() throws UniqueIdException {
+    // 1. define the organization w/o any users.
     try {
       impl.getOrganization(testOrg.getId());
     }
     catch (IdNotFoundException e) {
       try {
-        impl.defineOrganization(testOrg.getId(), testOrg.getName(), testOrg.getUsers());
+        impl.defineOrganization(testOrg.getId(), testOrg.getName(), new HashSet<String>());
       }
       catch (BadSlugException e1) {
         e1.printStackTrace();
       }
+      catch (IdNotFoundException e1) {
+        e1.printStackTrace();
+      }
     }
+    // 2. define the user
     try {
       impl.getUser(testUser.getUid(), testUser.getOrganizationId());
     }
     catch (IdNotFoundException e) {
-      impl.defineUserInfo(testUser.getUid(), testUser.getFirstName(), testUser.getLastName(),
-          testUser.getEmail(), testUser.getOrganizationId(), testUser.getProperties());
+      try {
+        impl.defineUserInfo(testUser.getUid(), testUser.getFirstName(), testUser.getLastName(),
+            testUser.getEmail(), testUser.getOrganizationId(), testUser.getProperties());
+      }
+      catch (IdNotFoundException e1) {
+        // Shouldn't happen!
+        e1.printStackTrace();
+      }
     }
+    // 3. update the organization
+    try {
+      impl.updateOrganization(testOrg);
+    }
+    catch (IdNotFoundException e1) {
+      // this shouldn't happen
+      e1.printStackTrace();
+    }
+    // 4. Create the password.
     try {
       impl.getUserPassword(testPassword.getUid(), testPassword.getOrganizationId());
     }
     catch (IdNotFoundException e) {
-      impl.defineUserPassword(testPassword.getUid(), testPassword.getOrganizationId(),
-          testPassword.getPlainText(), testPassword.getEncryptedPassword());
+      try {
+        impl.defineUserPassword(testPassword.getUid(), testPassword.getOrganizationId(),
+            testPassword.getPlainText(), testPassword.getEncryptedPassword());
+      }
+      catch (IdNotFoundException e1) {
+        // this shouldn't happen
+        e1.printStackTrace();
+      }
     }
   }
 
@@ -121,19 +149,42 @@ public class TestWattDepotPersistenceImpl {
    * @throws java.lang.Exception if there is a problem.
    */
   @After
-  public void tearDown() throws Exception {
-    UserPassword testP = impl.getUserPassword(testPassword.getUid(),
-        testPassword.getOrganizationId());
-    if (testP != null) {
-      impl.deleteUserPassword(testP.getUid(), testPassword.getOrganizationId());
+  public void tearDown() {
+    Organization testO;
+    try {
+      testO = impl.getOrganization(testOrg.getId());
+      if (testO != null) {
+        impl.deleteOrganization(testO.getId());
+      }
     }
-    UserInfo testU = impl.getUser(testUser.getUid(), testUser.getOrganizationId());
-    if (testU != null) {
-      impl.deleteUser(testU.getUid(), testU.getOrganizationId());
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
     }
-    Organization testO = impl.getOrganization(testOrg.getId());
-    if (testO != null) {
-      impl.deleteOrganization(testO.getId());
+    try {
+      impl.deleteOrganization(InstanceFactory.getUserInfo2().getOrganizationId());
+    }
+    catch (IdNotFoundException e1) { // NOPMD
+      // not a problem
+    }
+    UserPassword testP;
+    try {
+      testP = impl.getUserPassword(testPassword.getUid(), testPassword.getOrganizationId());
+      if (testP != null) {
+        impl.deleteUserPassword(testP.getUid(), testPassword.getOrganizationId());
+      }
+    }
+    catch (IdNotFoundException e) { // NOPMD
+      // e.printStackTrace();
+    }
+    UserInfo testU;
+    try {
+      testU = impl.getUser(testUser.getUid(), testUser.getOrganizationId());
+      if (testU != null) {
+        impl.deleteUser(testU.getUid(), testU.getOrganizationId());
+      }
+    }
+    catch (IdNotFoundException e) { // NOPMD
+      // e.printStackTrace();
     }
   }
 
@@ -426,24 +477,26 @@ public class TestWattDepotPersistenceImpl {
       Measurement m2 = InstanceFactory.getMeasurementTwo();
       Measurement m3 = InstanceFactory.getMeasurementThree();
       sensorId = m1.getSensorId();
-      d.putMeasurement(m1);
-      d.putMeasurement(m2);
-      d.putMeasurement(m3);
-      Measurement defined = d.getMeasurement(m1.getId());
+      impl.putMeasurement(dep.getId(), dep.getOwnerId(), m1);
+      impl.putMeasurement(dep.getId(), dep.getOwnerId(), m2);
+      impl.putMeasurement(dep.getId(), dep.getOwnerId(), m3);
+      Measurement defined = impl.getMeasurement(dep.getId(), dep.getOwnerId(), m1.getId());
       assertNotNull(defined);
       assertTrue(defined.equals(m1));
       assertTrue(defined.toString().equals(m1.toString()));
       // assertTrue(defined.hashCode() == m1.hashCode());
-      List<Measurement> list = d.getMeasurements(sensorId);
+      List<Measurement> list = impl.getMeasurements(dep.getId(), dep.getOwnerId(), sensorId);
       assertTrue(list.size() == 3);
-      list = d.getMeasurements(sensorId, InstanceFactory.getTimeBetweenM1andM2(),
-          InstanceFactory.getTimeBetweenM1andM3());
+      list = impl.getMeasurements(dep.getId(), dep.getOwnerId(), sensorId,
+          InstanceFactory.getTimeBetweenM1andM2(), InstanceFactory.getTimeBetweenM1andM3());
       assertTrue(list.size() == 1);
       try {
-        Double val = d.getValue(sensorId, InstanceFactory.getTimeBetweenM1andM2());
+        Double val = impl.getValue(dep.getId(), dep.getOwnerId(), sensorId,
+            InstanceFactory.getTimeBetweenM1andM2());
         assertTrue(Math.abs(val - m1.getValue()) < 0.001);
         try {
-          Double val2 = d.getValue(sensorId, InstanceFactory.getTimeBetweenM1andM2(), 700L);
+          Double val2 = impl.getValue(dep.getId(), dep.getOwnerId(), sensorId,
+              InstanceFactory.getTimeBetweenM1andM2(), 700L);
           assertTrue(Math.abs(val - val2) < 0.001);
         }
         catch (MeasurementGapException e) {
@@ -451,7 +504,7 @@ public class TestWattDepotPersistenceImpl {
           fail(e.getMessage() + " should not happen");
         }
         try {
-          Double val2 = d.getValue(sensorId, m2.getDate(), 700L);
+          Double val2 = impl.getValue(dep.getId(), dep.getOwnerId(), sensorId, m2.getDate(), 700L);
           assertTrue(Math.abs(val - val2) < 0.001);
         }
         catch (MeasurementGapException e) {
@@ -459,13 +512,14 @@ public class TestWattDepotPersistenceImpl {
           fail(e.getMessage() + " should not happen");
         }
         try {
-          d.getValue(sensorId, InstanceFactory.getTimeBetweenM1andM2(), 70L);
+          impl.getValue(dep.getId(), dep.getOwnerId(), sensorId,
+              InstanceFactory.getTimeBetweenM1andM2(), 70L);
           fail("Should detect gap.");
         }
         catch (MeasurementGapException e) {
           // expected
         }
-        val = d.getValue(sensorId, m1.getDate());
+        val = impl.getValue(dep.getId(), dep.getOwnerId(), sensorId, m1.getDate());
         assertTrue(Math.abs(val - m1.getValue()) < 0.0001);
       }
       catch (NoMeasurementException e) {
@@ -473,32 +527,22 @@ public class TestWattDepotPersistenceImpl {
         fail(e.getMessage() + " should not happen");
       }
       try {
-        d.getValue(sensorId, InstanceFactory.getTimeBeforeM1());
+        impl.getValue(dep.getId(), dep.getOwnerId(), sensorId, InstanceFactory.getTimeBeforeM1());
         fail("Should throw NoMeasurementException.");
       }
       catch (NoMeasurementException e) {
         // expected
       }
       try {
-        d.getValue(sensorId, InstanceFactory.getTimeAfterM3());
+        impl.getValue(dep.getId(), dep.getOwnerId(), sensorId, InstanceFactory.getTimeAfterM3());
         fail("Should throw NoMeasurementException.");
       }
       catch (NoMeasurementException e) {
         // expected
       }
       try {
-        d.getValue(sensorId, InstanceFactory.getTimeBeforeM1(), 700L);
-        fail("Should throw NoMeasurementException.");
-      }
-      catch (NoMeasurementException e) {
-        // expected
-      }
-      catch (MeasurementGapException e) {
-        e.printStackTrace();
-        fail(e.getMessage() + " should not happen");
-      }
-      try {
-        d.getValue(sensorId, InstanceFactory.getTimeAfterM3(), 700L);
+        impl.getValue(dep.getId(), dep.getOwnerId(), sensorId, InstanceFactory.getTimeBeforeM1(),
+            700L);
         fail("Should throw NoMeasurementException.");
       }
       catch (NoMeasurementException e) {
@@ -509,8 +553,20 @@ public class TestWattDepotPersistenceImpl {
         fail(e.getMessage() + " should not happen");
       }
       try {
-        Double val = d.getValue(sensorId, InstanceFactory.getTimeBetweenM1andM2(),
-            InstanceFactory.getTimeBetweenM1andM3());
+        impl.getValue(dep.getId(), dep.getOwnerId(), sensorId, InstanceFactory.getTimeAfterM3(),
+            700L);
+        fail("Should throw NoMeasurementException.");
+      }
+      catch (NoMeasurementException e) {
+        // expected
+      }
+      catch (MeasurementGapException e) {
+        e.printStackTrace();
+        fail(e.getMessage() + " should not happen");
+      }
+      try {
+        Double val = impl.getValue(dep.getId(), dep.getOwnerId(), sensorId,
+            InstanceFactory.getTimeBetweenM1andM2(), InstanceFactory.getTimeBetweenM1andM3());
         assertTrue(Math.abs(val - 0.0) < 0.001);
       }
       catch (NoMeasurementException e) {
@@ -518,8 +574,8 @@ public class TestWattDepotPersistenceImpl {
         fail(e.getMessage() + " shouldn't happen");
       }
       try {
-        Double val = d.getValue(sensorId, InstanceFactory.getTimeBetweenM1andM2(),
-            InstanceFactory.getTimeBetweenM1andM3(), 700L);
+        Double val = impl.getValue(dep.getId(), dep.getOwnerId(), sensorId,
+            InstanceFactory.getTimeBetweenM1andM2(), InstanceFactory.getTimeBetweenM1andM3(), 700L);
         assertTrue(Math.abs(val - 0.0) < 0.001);
       }
       catch (NoMeasurementException e) {
@@ -531,14 +587,16 @@ public class TestWattDepotPersistenceImpl {
         fail(e.getMessage() + " shouldn't happen");
       }
       try {
-        MeasuredValue earliest = d.getEarliestMeasuredValue(sensorId);
+        InterpolatedValue earliest = impl.getEarliestMeasuredValue(dep.getId(), dep.getOwnerId(),
+            sensorId);
         assertNotNull(earliest);
         assertTrue(earliest.equivalent(m1));
         assertTrue(earliest.getSensorId().equals(m1.getSensorId()));
         assertTrue(earliest.getValue().equals(m1.getValue()));
         assertTrue(earliest.getMeasurementType().getUnits().equals(m1.getMeasurementType()));
         assertTrue(earliest.getDate().equals(m1.getDate()));
-        MeasuredValue latest = d.getLatestMeasuredValue(sensorId);
+        InterpolatedValue latest = impl.getLatestMeasuredValue(dep.getId(), dep.getOwnerId(),
+            sensorId);
         assertNotNull(latest);
         assertTrue(latest.equivalent(m3));
         assertTrue(latest.getSensorId().equals(m3.getSensorId()));
@@ -547,12 +605,12 @@ public class TestWattDepotPersistenceImpl {
         e.printStackTrace();
         fail(e.getMessage() + " should not happen");
       }
-      List<String> sensors = d.listSensors();
+      List<String> sensors = impl.listSensors(dep.getId(), dep.getOwnerId());
       assertNotNull(sensors);
       assertTrue(sensors.contains(sensorId));
-      d.deleteMeasurement(m1);
-      d.deleteMeasurement(m2);
-      d.deleteMeasurement(m3);
+      impl.deleteMeasurement(dep.getId(), dep.getOwnerId(), m1.getId());
+      impl.deleteMeasurement(dep.getId(), dep.getOwnerId(), m2.getId());
+      impl.deleteMeasurement(dep.getId(), dep.getOwnerId(), m3.getId());
       impl.deleteDepository(dep.getId(), dep.getOwnerId());
     }
     catch (UniqueIdException e) {
@@ -662,15 +720,23 @@ public class TestWattDepotPersistenceImpl {
     assertTrue(numOrgs >= 0);
     Organization org = InstanceFactory.getOrganization2();
     try {
-      impl.defineOrganization(org.getId(), org.getName(), org.getUsers());
+      try {
+        impl.defineOrganization(org.getId(), org.getName(), org.getUsers());
+        fail("Shouldn't be able to define the org before the user.");
+      }
+      catch (IdNotFoundException e1) {
+        // expected since user isn't defined
+        impl.defineOrganization(org.getId(), org.getName(), new HashSet<String>());
+        // no users
+      }
       list = impl.getOrganizations();
       assertTrue(numOrgs + 1 == list.size());
       List<String> ids = impl.getOrganizationIds();
       assertTrue(list.size() == ids.size());
       Organization defined = impl.getOrganization(org.getId());
       assertNotNull(defined);
-      assertTrue(defined.equals(org));
-      assertTrue(defined.toString().equals(org.toString()));
+      // assertTrue(defined.equals(org));
+      // assertTrue(defined.toString().equals(org.toString()));
       // can't check hash codes since we are dealing with Organizations and
       // OrganizationImpls.
       // assertTrue(defined.hashCode() == org.hashCode());
@@ -1031,10 +1097,23 @@ public class TestWattDepotPersistenceImpl {
     int numUsers = list.size();
     assertTrue(numUsers >= 0);
     try {
-      impl.defineUserInfo(user.getUid(), user.getFirstName(), user.getLastName(), user.getEmail(),
-          user.getOrganizationId(), user.getProperties());
+      try {
+        impl.defineUserInfo(user.getUid(), user.getFirstName(), user.getLastName(),
+            user.getEmail(), user.getOrganizationId(), user.getProperties());
+      }
+      catch (IdNotFoundException e1) {
+        addEmptyOrganization(InstanceFactory.getOrganization2());
+        try {
+          impl.defineUserInfo(user.getUid(), user.getFirstName(), user.getLastName(),
+              user.getEmail(), user.getOrganizationId(), user.getProperties());
+        }
+        catch (IdNotFoundException e) {
+          e.printStackTrace();
+          fail(e.getMessage() + " should not happen");
+        }
+      }
       list = impl.getUsers(user.getOrganizationId());
-      assertTrue(numUsers + 1 == list.size());
+      assertTrue("expecting " + (numUsers + 1) + " got " + list.size(), numUsers + 1 == list.size());
       List<String> ids = impl.getUserIds(user.getOrganizationId());
       assertTrue(list.size() == ids.size());
       UserInfo defined = null;
@@ -1070,11 +1149,25 @@ public class TestWattDepotPersistenceImpl {
       assertFalse(updated.equals(user));
       assertFalse(updated.toString().equals(user.toString()));
       assertFalse(updated.hashCode() == user.hashCode());
-      Organization group = impl.getUsersGroup(user);
-      assertNull(group);
-      group = impl.getUsersGroup(InstanceFactory.getUserInfo());
+      Organization group = null;
+      try {
+        group = impl.getOrganization(user.getOrganizationId());
+      }
+      catch (IdNotFoundException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
       assertNotNull(group);
-      assertTrue(group.getId().equals(user.getOrganizationId()));
+      try {
+        group = impl.getOrganization(InstanceFactory.getUserInfo2().getOrganizationId());
+      }
+      catch (IdNotFoundException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      assertNotNull(group);
+      assertTrue("expecting " + group.getId() + " got " + user.getOrganizationId(), group.getId()
+          .equals(user.getOrganizationId()));
     }
     catch (UniqueIdException e) {
       e.printStackTrace();
@@ -1107,40 +1200,57 @@ public class TestWattDepotPersistenceImpl {
     try {
       impl.defineUserPassword(password.getUid(), password.getOrganizationId(),
           password.getPlainText(), password.getEncryptedPassword());
-      UserPassword defined = null;
-      try {
-        defined = impl.getUserPassword(password.getUid(), password.getOrganizationId());
-      }
-      catch (IdNotFoundException e) {
-        e.printStackTrace();
-        fail(e.getMessage() + " should not happen");
-      }
-      assertNotNull(defined);
-      assertTrue(defined.equals(password));
-      defined.setPlainText("New plainText");
-      try {
-        impl.updateUserPassword(defined);
-      }
-      catch (IdNotFoundException e) {
-        e.printStackTrace();
-        fail(e.getMessage() + " should not happen");
-      }
-      UserPassword updated = null;
-      try {
-        updated = impl.getUserPassword(password.getUid(), password.getOrganizationId());
-      }
-      catch (IdNotFoundException e) {
-        e.printStackTrace();
-        fail(e.getMessage() + " should not happen");
-      }
-      assertNotNull(updated);
-      assertFalse(updated.equals(password));
-      assertFalse(updated.toString().equals(password.toString()));
     }
     catch (UniqueIdException e) {
       e.printStackTrace();
       fail(e.getMessage() + " should not happen");
     }
+    catch (IdNotFoundException e) {
+      // expected since test_user_id2 is not a valid userid.
+      try {
+        impl.defineUserInfo(password.getUid(), password.getPlainText(), password.getPlainText(),
+            password.getPlainText(), password.getOrganizationId(), new HashSet<Property>());
+        impl.defineUserPassword(password.getUid(), password.getOrganizationId(),
+            password.getPlainText(), password.getEncryptedPassword());
+      }
+      catch (UniqueIdException e1) {
+        // TODO Auto-generated catch block
+        e1.printStackTrace();
+      }
+      catch (IdNotFoundException e1) {
+        e1.printStackTrace();
+        fail(e1.getMessage() + " should not happen.");
+      }
+    }
+    UserPassword defined = null;
+    try {
+      defined = impl.getUserPassword(password.getUid(), password.getOrganizationId());
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen");
+    }
+    assertNotNull(defined);
+    assertTrue(defined.equals(password));
+    defined.setPlainText("New plainText");
+    try {
+      impl.updateUserPassword(defined);
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen");
+    }
+    UserPassword updated = null;
+    try {
+      updated = impl.getUserPassword(password.getUid(), password.getOrganizationId());
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen");
+    }
+    assertNotNull(updated);
+    assertFalse(updated.equals(password));
+    assertFalse(updated.toString().equals(password.toString()));
     try {
       impl.deleteUserPassword("bogus-user-password-id-9685", "bogus-organization-5928");
       fail("Should not be able to delete bogus password.");
@@ -1215,12 +1325,12 @@ public class TestWattDepotPersistenceImpl {
    * @throws IdNotFoundException if the Sensor is not defined.
    */
   private void deleteSensor() throws MisMatchedOwnerException, IdNotFoundException {
-    deleteSensorModel();
     Sensor sensor = InstanceFactory.getSensor();
     Sensor defined = impl.getSensor(sensor.getId(), sensor.getOwnerId());
     if (defined != null) {
       impl.deleteSensor(sensor.getId(), sensor.getOwnerId());
     }
+    deleteSensorModel();
   }
 
   /**
@@ -1293,6 +1403,47 @@ public class TestWattDepotPersistenceImpl {
     MeasurementType defined = impl.getMeasurementType(type.getId());
     if (defined != null) {
       impl.deleteMeasurementType(type.getId());
+    }
+  }
+
+  private void addUserInfo(UserInfo user) {
+    try {
+      impl.getUser(user.getUid(), user.getOrganizationId());
+    }
+    catch (IdNotFoundException e) {
+      try {
+        impl.defineUserInfo(user.getUid(), user.getFirstName(), user.getLastName(),
+            user.getEmail(), user.getOrganizationId(), user.getProperties());
+      }
+      catch (UniqueIdException e1) {
+        e1.printStackTrace();
+      }
+      catch (IdNotFoundException e1) {
+        e1.printStackTrace();
+      }
+    }
+  }
+
+  private void addEmptyOrganization(Organization org) {
+    try {
+      impl.getOrganization(org.getId());
+    }
+    catch (IdNotFoundException e) {
+      try {
+        impl.defineOrganization(org.getId(), org.getName(), new HashSet<String>());
+      }
+      catch (UniqueIdException e1) {
+        // TODO Auto-generated catch block
+        e1.printStackTrace();
+      }
+      catch (BadSlugException e1) {
+        // TODO Auto-generated catch block
+        e1.printStackTrace();
+      }
+      catch (IdNotFoundException e1) {
+        // TODO Auto-generated catch block
+        e1.printStackTrace();
+      }
     }
   }
 }

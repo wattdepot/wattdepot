@@ -62,17 +62,20 @@ public class DepositoryMeasurementPutServerResource extends WattDepotServerResou
    */
   @Override
   public void store(Measurement meas) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/depository/{" + depositoryId
-        + "}/measurement/ with " + meas);
+    getLogger().log(
+        Level.INFO,
+        "PUT /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/measurement/ with "
+            + meas);
     try {
       Depository depository = depot.getDepository(depositoryId, orgId);
       if (depository != null) {
         Sensor sensor = depot.getSensor(meas.getSensorId(), orgId);
         if (sensor != null) {
-        depository.putMeasurement(meas);
+          depot.putMeasurement(depositoryId, orgId, meas);
         }
         else {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "Sensor " + meas.getSensorId() + " does not exist");
+          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "Sensor " + meas.getSensorId()
+              + " does not exist");
         }
       }
       else {

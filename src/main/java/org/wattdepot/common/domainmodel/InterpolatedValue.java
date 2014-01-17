@@ -1,5 +1,5 @@
 /**
- * MeasuredValue.java This file is part of WattDepot.
+ * InterpolatedValue.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -25,40 +25,42 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import org.wattdepot.common.util.DateConvert;
 
 /**
- * MeasuredValue - represents a measured value. Has sensor id, value and
- * measurement type.
+ * InterpolatedValue - represents an interpolated value derived from
+ * measurements. Has sensor id, value and measurement type.
  * 
  * @author Cam Moore
  * 
  */
-public class MeasuredValue {
+public class InterpolatedValue {
   /** The id of the sensor making the measurement. */
   private String sensorId;
   /** The value of the measurement. */
   private Double value;
   /** The type of the measurement. */
   private MeasurementType measurementType;
-  /** The time of the measured value. */
+  /** The time of the interpolated value. */
   private Date date;
 
   /**
    * Hide the default constructor.
    */
-  protected MeasuredValue() {
+  protected InterpolatedValue() {
 
   }
 
   /**
-   * Creates a new MeasuredValue.
+   * Creates a new InterpolatedValue.
    * 
    * @param sensorId The id of the sensor that made the measurement.
    * @param value The value of the measurement.
    * @param measurementType The type of the measurement.
+   * @param date the time of the value.
    */
-  public MeasuredValue(String sensorId, Double value, MeasurementType measurementType) {
+  public InterpolatedValue(String sensorId, Double value, MeasurementType measurementType, Date date) {
     this.sensorId = sensorId;
     this.value = value;
     this.measurementType = measurementType;
+    this.date = date;
   }
 
   /*
@@ -77,7 +79,7 @@ public class MeasuredValue {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    MeasuredValue other = (MeasuredValue) obj;
+    InterpolatedValue other = (InterpolatedValue) obj;
     if (date == null) {
       if (other.date != null) {
         return false;
@@ -115,7 +117,7 @@ public class MeasuredValue {
 
   /**
    * @param meas a Measurement
-   * @return true if this MeasuredValue has the same sensorId, time,
+   * @return true if this InterpolatedValue has the same sensorId, time,
    *         MeasurementType, and value as the Measurement.
    */
   public boolean equivalent(Measurement meas) {
@@ -214,14 +216,14 @@ public class MeasuredValue {
   @Override
   public String toString() {
     try {
-      return "MeasuredValue [sensorId=" + sensorId + ", value=" + value + ", measurementType="
+      return "InterpolatedValue [sensorId=" + sensorId + ", value=" + value + ", measurementType="
           + measurementType + ", date=" + DateConvert.convertDate(date) + "]";
     }
     catch (DatatypeConfigurationException e) {
       // shouldn't happen
       e.printStackTrace();
     }
-    return "MeasuredValue [sensorId=" + sensorId + ", value=" + value + ", measurementType="
+    return "InterpolatedValue [sensorId=" + sensorId + ", value=" + value + ", measurementType="
         + measurementType + ", date=" + date + "]";
   }
 

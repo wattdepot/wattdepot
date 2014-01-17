@@ -18,11 +18,14 @@
  */
 package org.wattdepot.server;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.InterpolatedValue;
+import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Property;
@@ -33,7 +36,10 @@ import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.BadSlugException;
 import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MeasurementGapException;
+import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
+import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.util.SensorModelHelper;
 import org.wattdepot.common.util.Slug;
@@ -120,9 +126,10 @@ public abstract class WattDepotPersistence {
    * @throws UniqueIdException If the id is already used for another
    *         Organization.
    * @throws BadSlugException if the slug isn't valid.
+   * @throws IdNotFoundException if the user's are not defined.
    */
   public abstract Organization defineOrganization(String slug, String name, Set<String> users)
-      throws UniqueIdException, BadSlugException;
+      throws UniqueIdException, BadSlugException, IdNotFoundException;
 
   /**
    * @param slug The unique slug.
@@ -186,9 +193,11 @@ public abstract class WattDepotPersistence {
    * @param properties The additional properties of the user.
    * @return The defined UserInfo.
    * @throws UniqueIdException if the id is already used for another UserInfo.
+   * @throws IdNotFoundException Organization is not defined.
    */
   public abstract UserInfo defineUserInfo(String userId, String firstName, String lastName,
-      String email, String orgId, Set<Property> properties) throws UniqueIdException;
+      String email, String orgId, Set<Property> properties) throws UniqueIdException,
+      IdNotFoundException;
 
   /**
    * @param userId The unique userId.
@@ -197,9 +206,11 @@ public abstract class WattDepotPersistence {
    * @param encrypted the encrypted password.
    * @return The defined UserPassword.
    * @throws UniqueIdException if the id is already used for another UserInfo.
+   * @throws IdNotFoundException if the organization or user ids are not
+   *         defined.
    */
   public abstract UserPassword defineUserPassword(String userId, String orgId, String password,
-      String encrypted) throws UniqueIdException;
+      String encrypted) throws UniqueIdException, IdNotFoundException;
 
   /**
    * Deletes the given CollectorProcessDefinition.
@@ -224,6 +235,15 @@ public abstract class WattDepotPersistence {
    */
   public abstract void deleteDepository(String id, String groupId) throws IdNotFoundException,
       MisMatchedOwnerException;
+
+  /**
+   * @param depotId, the id of the Depository storing the measurement.
+   * @param orgId, the id of the Organization.
+   * @param measid The id of the measurement to delete.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract void deleteMeasurement(String depotId, String orgId, String measId)
+      throws IdNotFoundException;
 
   /**
    * Deletes the given measurement type.
@@ -326,6 +346,56 @@ public abstract class WattDepotPersistence {
    * @return A list of the defined WattDepository Ids.
    */
   public abstract List<String> getDepositoryIds(String groupId);
+
+  /**
+   * @param sensorId The id of the Sensor making the measurements.
+   * @return The earliest measurement Value
+   * @throws NoMeasurementException If there aren't any measurements around the
+   *         time.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract InterpolatedValue getEarliestMeasuredValue(String depotId, String orgId,
+      String sensorId) throws NoMeasurementException, IdNotFoundException;
+
+  /**
+   * @param depotId the id of the Depository storing the measurements.
+   * @param sensorId The id of the Sensor making the measurements.
+   * @return The latest measurement Value
+   * @throws NoMeasurementException If there aren't any measurements around the
+   *         time.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract InterpolatedValue getLatestMeasuredValue(String depotId, String orgId,
+      String sensorId) throws NoMeasurementException, IdNotFoundException;
+
+  /**
+   * @param depotId the id of the Depository storing the measurements.
+   * @param measId The measurement id.
+   * @return The Measurement with the given id or null.
+   * @throws IdNotFoundException if there are problems with the ids.
+   */
+  public abstract Measurement getMeasurement(String depotId, String orgId, String measId)
+      throws IdNotFoundException;
+
+  /**
+   * @param depotId the id of the Depository storing the measurements.
+   * @param sensorId the id of the Sensor.
+   * @return A list of all the measurements made by the Sensor.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract List<Measurement> getMeasurements(String depotId, String orgId, String sensorId)
+      throws IdNotFoundException;
+
+  /**
+   * @param depotId the id of the Depository storing the measurements.
+   * @param sensorId The id of the Sensor.
+   * @param start The start of the interval.
+   * @param end The end of the interval.
+   * @return A list of the measurements in the interval.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract List<Measurement> getMeasurements(String depotId, String orgId, String sensorId,
+      Date start, Date end) throws IdNotFoundException;
 
   /**
    * @param id The unique id for the MeasurementType.
@@ -468,10 +538,67 @@ public abstract class WattDepotPersistence {
   public abstract List<UserInfo> getUsers(String orgId);
 
   /**
-   * @param user The user.
-   * @return The UserGroup that the user is in.
+   * @param depotId the id of the depository.
+   * @param sensorId The id of the Sensor making the measurements.
+   * @param timestamp The time of the value.
+   * @return The Value 'measured' at the given time, most likely an interpolated
+   *         value.
+   * @throws NoMeasurementException If there aren't any measurements around the
+   *         time.
+   * @throws IdNotFoundException if there is a problem with the ids.
    */
-  public abstract Organization getUsersGroup(UserInfo user);
+  public abstract Double getValue(String depotId, String orgId, String sensorId, Date timestamp)
+      throws NoMeasurementException, IdNotFoundException;
+
+  /**
+   * @param depotId the id of the depository.
+   * @param sensorId The id of the Sensor making the measurements.
+   * @param start The start of the period.
+   * @param end The end of the period.
+   * @return The value measured the difference between the end value and the
+   *         start value.
+   * @throws NoMeasurementException if there are no measurements around the
+   *         start or end time.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract Double getValue(String depotId, String orgId, String sensorId, Date start,
+      Date end) throws NoMeasurementException, IdNotFoundException;
+
+  /**
+   * @param depotId the id of the depository.
+   * @param sensorId The id of the Sensor making the measurements.
+   * @param start The start of the interval.
+   * @param end The end of the interval
+   * @param gapSeconds The maximum number of seconds that measurements need to
+   *        be within the start and end.
+   * @return The value measured the difference between the end value and the
+   *         start value.
+   * @throws NoMeasurementException if there are no measurements around the
+   *         start or end time.
+   * @throws MeasurementGapException if the measurements around start or end are
+   *         too far apart.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract Double getValue(String depotId, String orgId, String sensorId, Date start,
+      Date end, Long gapSeconds) throws NoMeasurementException, MeasurementGapException,
+      IdNotFoundException;
+
+  /**
+   * @param depotId the id of the depository.
+   * @param sensorId The id of the Sensor making the measurements.
+   * @param timestamp The time of the value.
+   * @param gapSeconds The maximum number of seconds that measurements need to
+   *        be within the start and end.
+   * @return The Value 'measured' at the given time, most likely an interpolated
+   *         value.
+   * @throws NoMeasurementException If there aren't any measurements around the
+   *         time.
+   * @throws MeasurementGapException if the measurements around timestamp are
+   *         too far apart.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract Double getValue(String depotId, String orgId, String sensorId, Date timestamp,
+      Long gapSeconds) throws NoMeasurementException, MeasurementGapException, IdNotFoundException;
 
   /**
    * Ensures the base set of MeasurementTypes are defined in WattDepot.
@@ -519,6 +646,25 @@ public abstract class WattDepotPersistence {
     }
 
   }
+
+  /**
+   * @param depotId the id of the depository.
+   * @param orgId the id of the organization.
+   * @return A list of the Sensor ids contributing Measurements to the given
+   *         depository.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract List<String> listSensors(String depotId, String orgId) throws IdNotFoundException;
+
+  /**
+   * @param meas The measurement to store.
+   * @param orgId the organization id.
+   * @throws MeasurementTypeException if the type of the measurement doesn't
+   *         match the Depository measurement type.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract void putMeasurement(String depotId, String orgId, Measurement meas)
+      throws MeasurementTypeException, IdNotFoundException;
 
   /**
    * @param properties the properties to set
@@ -598,5 +744,4 @@ public abstract class WattDepotPersistence {
    * @throws IdNotFoundException if the password is not in persistence.
    */
   public abstract UserPassword updateUserPassword(UserPassword password) throws IdNotFoundException;
-
 }

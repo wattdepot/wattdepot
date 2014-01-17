@@ -66,11 +66,14 @@ public class AdminServerResource extends WattDepotServerResource {
       catch (IdNotFoundException e) {
         return null;
       }
-      Organization group = depot.getUsersGroup(info);
-      if (group != null) {
-        redirectPermanent("/wattdepot/" + group.getId() + "/");
+      Organization group = null;
+      try {
+        group = depot.getOrganization(info.getOrganizationId());
+        if (group != null) {
+          redirectPermanent("/wattdepot/" + group.getId() + "/");
+        }
       }
-      else {
+      catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_FORBIDDEN);
       }
     }
@@ -103,7 +106,7 @@ public class AdminServerResource extends WattDepotServerResource {
           MediaType.TEXT_HTML);
       return template;
     }
-    catch (IdNotFoundException e) {  // NOPMD
+    catch (IdNotFoundException e) { // NOPMD
       // not sure what to do here.
     }
     return null;

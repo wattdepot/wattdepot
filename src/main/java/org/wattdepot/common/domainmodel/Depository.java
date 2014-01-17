@@ -78,13 +78,6 @@ public class Depository implements IDomainModel {
     this.ownerId = ownerId;
   }
 
-  /**
-   * @param meas The measurement to delete.
-   */
-  public void deleteMeasurement(Measurement meas) {
-    throw new RuntimeException("Not implemented.");
-  }
-
   /*
    * (non-Javadoc)
    * 
@@ -128,56 +121,10 @@ public class Depository implements IDomainModel {
   }
 
   /**
-   * @param sensorId The id of the Sensor making the measurements.
-   * @return The earliest measurement Value
-   * @throws NoMeasurementException If there aren't any measurements around the
-   *         time.
-   */
-  public MeasuredValue getEarliestMeasuredValue(String sensorId) throws NoMeasurementException {
-    throw new RuntimeException("Not implemented");
-  }
-
-  /**
    * @return the id.
    */
   public String getId() {
     return id;
-  }
-
-  /**
-   * @param sensorId The id of the Sensor making the measurements.
-   * @return The latest measurement Value
-   * @throws NoMeasurementException If there aren't any measurements around the
-   *         time.
-   */
-  public MeasuredValue getLatestMeasuredValue(String sensorId) throws NoMeasurementException {
-    throw new RuntimeException("Not implemented");
-  }
-
-  /**
-   * @param measId The measurement id.
-   * @return The Measurement with the given id or null.
-   */
-  public Measurement getMeasurement(String measId) {
-    throw new RuntimeException("Not implemented");
-  }
-
-  /**
-   * @param sensorId the id of the Sensor.
-   * @return A list of all the measurements made by the Sensor.
-   */
-  public List<Measurement> getMeasurements(String sensorId) {
-    throw new RuntimeException("Not implemented.");
-  }
-
-  /**
-   * @param sensorId The id of the Sensor.
-   * @param start The start of the interval.
-   * @param end The end of the interval.
-   * @return A list of the measurements in the interval.
-   */
-  public List<Measurement> getMeasurements(String sensorId, Date start, Date end) {
-    throw new RuntimeException("Not implemented.");
   }
 
   /**
@@ -199,66 +146,6 @@ public class Depository implements IDomainModel {
    */
   public String getOwnerId() {
     return ownerId;
-  }
-
-  /**
-   * @param sensorId The id of the Sensor making the measurements.
-   * @param timestamp The time of the value.
-   * @return The Value 'measured' at the given time, most likely an interpolated
-   *         value.
-   * @throws NoMeasurementException If there aren't any measurements around the
-   *         time.
-   */
-  public Double getValue(String sensorId, Date timestamp) throws NoMeasurementException {
-    throw new RuntimeException("Not implemented.");
-  }
-
-  /**
-   * @param sensorId The id of the Sensor making the measurements.
-   * @param start The start of the period.
-   * @param end The end of the period.
-   * @return The value measured the difference between the end value and the
-   *         start value.
-   * @throws NoMeasurementException if there are no measurements around the
-   *         start or end time.
-   */
-  public Double getValue(String sensorId, Date start, Date end) throws NoMeasurementException {
-    throw new RuntimeException("Not implemented.");
-  }
-
-  /**
-   * @param sensorId The id of the Sensor making the measurements.
-   * @param start The start of the interval.
-   * @param end The end of the interval
-   * @param gapSeconds The maximum number of seconds that measurements need to
-   *        be within the start and end.
-   * @return The value measured the difference between the end value and the
-   *         start value.
-   * @throws NoMeasurementException if there are no measurements around the
-   *         start or end time.
-   * @throws MeasurementGapException if the measurements around start or end are
-   *         too far apart.
-   */
-  public Double getValue(String sensorId, Date start, Date end, Long gapSeconds)
-      throws NoMeasurementException, MeasurementGapException {
-    throw new RuntimeException("Not implemented.");
-  }
-
-  /**
-   * @param sensorId The id of the Sensor making the measurements.
-   * @param timestamp The time of the value.
-   * @param gapSeconds The maximum number of seconds that measurements need to
-   *        be within the start and end.
-   * @return The Value 'measured' at the given time, most likely an interpolated
-   *         value.
-   * @throws NoMeasurementException If there aren't any measurements around the
-   *         time.
-   * @throws MeasurementGapException if the measurements around timestamp are
-   *         too far apart.
-   */
-  public Double getValue(String sensorId, Date timestamp, Long gapSeconds)
-      throws NoMeasurementException, MeasurementGapException {
-    throw new RuntimeException("Not implemented.");
   }
 
   /*
@@ -288,23 +175,6 @@ public class Depository implements IDomainModel {
       return true;
     }
     return false;
-  }
-
-  /**
-   * @return A list of the Sensor ids contributing Measurements to this
-   *         depository.
-   */
-  public List<String> listSensors() {
-    throw new RuntimeException("Not implemented.");
-  }
-
-  /**
-   * @param meas The measurement to store.
-   * @throws MeasurementTypeException if the type of the measurement doesn't
-   *         match the Depository measurement type.
-   */
-  public void putMeasurement(Measurement meas) throws MeasurementTypeException {
-    throw new RuntimeException("Not implemented.");
   }
 
   /**

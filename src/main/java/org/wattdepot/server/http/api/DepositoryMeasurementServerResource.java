@@ -67,7 +67,7 @@ public class DepositoryMeasurementServerResource extends WattDepotServerResource
     try {
       Depository depository = depot.getDepository(depositoryId, orgId);
       if (depository != null) {
-        ret = depository.getMeasurement(measId);
+        ret = depot.getMeasurement(depositoryId, orgId, measId);
       }
       else {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " does not exist.");
@@ -109,9 +109,7 @@ public class DepositoryMeasurementServerResource extends WattDepotServerResource
         "DEL /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/measurement/{" + measId
             + "}");
     try {
-      Depository depository = depot.getDepository(depositoryId, orgId);
-      Measurement meas = depository.getMeasurement(measId);
-      depository.deleteMeasurement(meas);
+      depot.deleteMeasurement(depositoryId, orgId, measId);
     }
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " does not exist.");

@@ -67,7 +67,7 @@ public class DepositorySensorsServerResource extends WattDepotServerResource imp
       depository = depot.getDepository(depositoryId, orgId);
       if (depository != null) {
         ret = new SensorList();
-        for (String sid : depository.listSensors()) {
+        for (String sid : depot.listSensors(depositoryId, orgId)) {
           Sensor s = depot.getSensor(sid, orgId);
           ret.getSensors().add(s);
         }
