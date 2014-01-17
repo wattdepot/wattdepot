@@ -124,7 +124,7 @@ public class InterpolatedValue {
     if (!sensorId.equals(meas.getSensorId())) {
       return false;
     }
-    if (!date.equals(meas.getDate())) {
+    if (date.getTime() - meas.getDate().getTime() != 0) {
       return false;
     }
     if (!measurementType.getUnits().equals(meas.getMeasurementType())) {

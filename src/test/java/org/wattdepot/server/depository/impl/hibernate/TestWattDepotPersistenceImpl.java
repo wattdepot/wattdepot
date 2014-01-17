@@ -359,7 +359,7 @@ public class TestWattDepotPersistenceImpl {
       e.printStackTrace();
       fail("should not happen");
     }
-    catch (ConstraintViolationException e) {
+    catch (IdNotFoundException e) {
       // This is expected since we haven't defined the measurement type.
       try {
         addMeasurementType();
@@ -368,10 +368,6 @@ public class TestWattDepotPersistenceImpl {
         e1.printStackTrace();
         fail("should not happen");
       }
-    }
-    catch (IdNotFoundException e) {
-      e.printStackTrace();
-      fail(e.getMessage() + " should not happen");
     }
     try {
       impl.defineDepository(dep.getId(), dep.getName(), dep.getMeasurementType(), dep.getOwnerId());
@@ -451,6 +447,12 @@ public class TestWattDepotPersistenceImpl {
       e.printStackTrace();
       fail("should not happen");
     }
+    try {
+      deleteMeasurementType();
+    }
+    catch (IdNotFoundException e) { // NOPMD
+      // not a problem.
+    }
   }
 
   /**
@@ -477,6 +479,7 @@ public class TestWattDepotPersistenceImpl {
       Measurement m2 = InstanceFactory.getMeasurementTwo();
       Measurement m3 = InstanceFactory.getMeasurementThree();
       sensorId = m1.getSensorId();
+      addSensor();
       impl.putMeasurement(dep.getId(), dep.getOwnerId(), m1);
       impl.putMeasurement(dep.getId(), dep.getOwnerId(), m2);
       impl.putMeasurement(dep.getId(), dep.getOwnerId(), m3);
@@ -612,6 +615,7 @@ public class TestWattDepotPersistenceImpl {
       impl.deleteMeasurement(dep.getId(), dep.getOwnerId(), m2.getId());
       impl.deleteMeasurement(dep.getId(), dep.getOwnerId(), m3.getId());
       impl.deleteDepository(dep.getId(), dep.getOwnerId());
+      deleteSensor();
     }
     catch (UniqueIdException e) {
       e.printStackTrace();

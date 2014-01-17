@@ -59,7 +59,7 @@ public class Measurement {
    */
   public Measurement(String sensorId, Date timestamp, Double value, Unit<?> units) {
     // Can a sensor create two measurements at the same time with the same type?
-    this.id = Slug.slugify(sensorId + timestamp + units);
+    this.id = Slug.slugify(sensorId + timestamp.getTime() + units);
     this.sensorId = sensorId;
     this.timestamp = new Date(timestamp.getTime());
     this.amount = Amount.valueOf(value, units);
