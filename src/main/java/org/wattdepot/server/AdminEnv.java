@@ -1,7 +1,7 @@
 /**
- * UserResource.java This file is part of WattDepot.
+ * AdminEnv.java This file is part of WattDepot.
  *
- * Copyright (C) 2013  Cam Moore
+ * Copyright (C) 2014  Cam Moore
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,35 +16,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.common.http.api;
+package org.wattdepot.server;
 
-import org.restlet.resource.Get;
-import org.restlet.resource.Post;
+import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 
 /**
- * UserResource - HTTP Interface for data model User.
+ * AdminEnv tests to see if the UserInfo.ADMIN gets their uid and password from
+ * the environment variables.
  * 
  * @author Cam Moore
  * 
  */
-public interface UserPasswordResource {
+public class AdminEnv {
 
   /**
-   * Defines GET /wattdepot/admin/userpassword/{user_id} API call.
    * 
-   * @return The User with the given id. The id is sent in the request.
    */
-  @Get("json") // Use JSON as transport encoding.
-  public UserPassword retrieve();
+  public AdminEnv() {
+    // TODO Auto-generated constructor stub
+  }
 
   /**
-   * Defines the POST /wattdepot/admin/userpassword/ API call.
-   * 
-   * @param user
-   *          The User to store.
+   * @param args command line arguments, they are ignored.
    */
-  @Post()
-  public void update(UserPassword user);
+  public static void main(String[] args) {
+    System.out.println(UserInfo.ROOT);
+    System.out.println(UserPassword.ROOT);
+
+  }
 
 }

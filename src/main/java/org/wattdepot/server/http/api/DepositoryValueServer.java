@@ -121,13 +121,14 @@ public class DepositoryValueServer extends WattDepotServerResource {
             }
           }
 
-          InterpolatedValue val = new InterpolatedValue(sensorId, value,
-              deposit.getMeasurementType(), null);
+          InterpolatedValue val = null; 
           if (end != null) {
-            val.setDate(endDate);
+            val = new InterpolatedValue(sensorId, value,
+                deposit.getMeasurementType(), endDate);
           }
           else if (time != null) {
-            val.setDate(time);
+            val = new InterpolatedValue(sensorId, value,
+                deposit.getMeasurementType(), time);
           }
           return val;
         }

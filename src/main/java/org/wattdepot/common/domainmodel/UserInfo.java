@@ -21,6 +21,8 @@ package org.wattdepot.common.domainmodel;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.wattdepot.server.ServerProperties;
+
 /**
  * User - represents a user of WattDepot.
  * 
@@ -33,7 +35,7 @@ public class UserInfo {
 
   /** The admin user. */
   public static final UserInfo ROOT = new UserInfo("root", "root", null, null, Organization.ADMIN_GROUP_NAME,
-      new HashSet<Property>());
+      new HashSet<Property>(), "admin");
 
   /** A unique id for the User. */
   private String uid;
@@ -47,9 +49,11 @@ public class UserInfo {
   private Set<Property> properties;
   /** orgId the organization id this user belongs to. */
   private String organizationId;
+  /** The user's password. */
+  private String password;
 
   static {
-    String adminName = System.getProperty(ADMIN_USER_NAME);
+    String adminName = System.getenv().get(ServerProperties.ADMIN_USER_NAME_ENV);
     if (adminName != null) {
       ROOT.setUid(adminName);
     }
@@ -71,15 +75,17 @@ public class UserInfo {
    * @param email The user's email address.
    * @param orgId The id of the organization this user belongs to.
    * @param properties The additional properties for the user.
+   * @param password the user's password.
    */
   public UserInfo(String id, String firstName, String lastName, String email, String orgId,
-      Set<Property> properties) {
+      Set<Property> properties, String password) {
     this.uid = id;
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
     this.organizationId = orgId;
     this.properties = properties;
+    this.password = password;
   }
 
   /**
@@ -151,13 +157,6 @@ public class UserInfo {
   }
 
   /**
-   * @return the unique id.
-   */
-  public String getUid() {
-    return uid;
-  }
-
-  /**
    * @return the lastName
    */
   public String getLastName() {
@@ -169,6 +168,13 @@ public class UserInfo {
    */
   public String getOrganizationId() {
     return organizationId;
+  }
+
+  /**
+   * @return the password
+   */
+  public String getPassword() {
+    return password;
   }
 
   /**
@@ -189,6 +195,13 @@ public class UserInfo {
       }
     }
     return null;
+  }
+
+  /**
+   * @return the unique id.
+   */
+  public String getUid() {
+    return uid;
   }
 
   /*
@@ -230,13 +243,6 @@ public class UserInfo {
   }
 
   /**
-   * @param id the id to set
-   */
-  public void setUid(String id) {
-    this.uid = id;
-  }
-
-  /**
    * @param lastName the lastName to set
    */
   public void setLastName(String lastName) {
@@ -251,10 +257,24 @@ public class UserInfo {
   }
 
   /**
+   * @param password the password to set
+   */
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  /**
    * @param properties the properties to set
    */
   public void setProperties(Set<Property> properties) {
     this.properties = properties;
+  }
+
+  /**
+   * @param id the id to set
+   */
+  public void setUid(String id) {
+    this.uid = id;
   }
 
   /*

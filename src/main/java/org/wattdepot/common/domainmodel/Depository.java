@@ -18,12 +18,6 @@
  */
 package org.wattdepot.common.domainmodel;
 
-import java.util.Date;
-import java.util.List;
-
-import org.wattdepot.common.exception.MeasurementGapException;
-import org.wattdepot.common.exception.MeasurementTypeException;
-import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.Slug;
 
 /**

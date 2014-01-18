@@ -27,7 +27,7 @@ import javax.persistence.Table;
 import org.wattdepot.common.domainmodel.MeasurementType;
 
 /**
- * MeasurementTypeImpl
+ * MeasurementTypeImpl - Hibernate implementation of the MeasurementType.
  * 
  * @author Cam Moore
  * 

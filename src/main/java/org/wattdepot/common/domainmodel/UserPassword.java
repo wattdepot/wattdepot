@@ -18,7 +18,8 @@
  */
 package org.wattdepot.common.domainmodel;
 
-import org.jasypt.util.password.StrongPasswordEncryptor;
+import org.wattdepot.server.ServerProperties;
+import org.wattdepot.server.StrongAES;
 
 /**
  * UserPassword - UserId and encrypted password pair.
@@ -30,22 +31,17 @@ public class UserPassword {
   /** Name of property used to store the admin password. */
   public static final String ADMIN_USER_PASSWORD = "wattdepot-server.admin.password";
 
-  /** The encryptor to use for all passwords. */
-  private static final StrongPasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
-
   /** The password for the admin user. */
-  public static final UserPassword ADMIN = new UserPassword(UserInfo.ROOT.getUid(),
+  public static final UserPassword ROOT = new UserPassword(UserInfo.ROOT.getUid(),
       UserInfo.ROOT.getOrganizationId(), "admin");
   private String uid;
   private String encryptedPassword;
-  private String plainText;
   private String orgId;
 
   static {
-    String password = System.getProperty(ADMIN_USER_PASSWORD);
+    String password = System.getenv().get(ServerProperties.ADMIN_USER_PASSWORD_ENV);
     if (password != null) {
-      ADMIN.setPassword(password);
-      ADMIN.setPlainText(password);
+      ROOT.setPassword(password);
     }
   }
 
@@ -69,8 +65,7 @@ public class UserPassword {
    */
   public UserPassword(String id, String orgId, String plainTextPassword) {
     this.uid = id;
-    this.plainText = plainTextPassword;
-    this.encryptedPassword = passwordEncryptor.encryptPassword(plainTextPassword);
+    this.encryptedPassword = StrongAES.getInstance().encrypt(plainTextPassword);
     this.orgId = orgId;
   }
 
@@ -82,7 +77,7 @@ public class UserPassword {
    * @return True if the password is correct.
    */
   public boolean checkPassword(String inputPassword) {
-    return passwordEncryptor.checkPassword(inputPassword, encryptedPassword);
+    return StrongAES.getInstance().encrypt(inputPassword).equals(encryptedPassword);
   }
 
   /*
@@ -108,7 +103,7 @@ public class UserPassword {
         return false;
       }
     }
-    else if (!plainText.equals(other.plainText)) {
+    else if (!encryptedPassword.equals(other.encryptedPassword)) {
       return false;
     }
     if (uid == null) {
@@ -151,13 +146,6 @@ public class UserPassword {
     return orgId;
   }
 
-  /**
-   * @return the plainText
-   */
-  public String getPlainText() {
-    return plainText;
-  }
-
   /*
    * (non-Javadoc)
    * 
@@ -167,7 +155,7 @@ public class UserPassword {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((plainText == null) ? 0 : plainText.hashCode());
+    result = prime * result + ((encryptedPassword == null) ? 0 : encryptedPassword.hashCode());
     result = prime * result + ((uid == null) ? 0 : uid.hashCode());
     result = prime * result + ((orgId == null) ? 0 : orgId.hashCode());
     return result;
@@ -204,15 +192,7 @@ public class UserPassword {
    *          the plain text password.
    */
   public void setPassword(String plainText) {
-    this.encryptedPassword = passwordEncryptor.encryptPassword(plainText);
-  }
-
-  /**
-   * @param plainText
-   *          the plainText to set
-   */
-  public void setPlainText(String plainText) {
-    this.plainText = plainText;
+    this.encryptedPassword = StrongAES.getInstance().encrypt(plainText);
   }
 
   /*

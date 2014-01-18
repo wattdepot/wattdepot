@@ -26,7 +26,6 @@ import org.restlet.security.Role;
 import org.restlet.security.User;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserInfo;
-import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.UserInfoPutResource;
@@ -54,9 +53,9 @@ public class UserInfoPutServerResource extends WattDepotServerResource implement
     if (orgId.equals(user.getOrganizationId()) || orgId.equals(Organization.ADMIN_GROUP_NAME)) {
       if (!depot.getUserIds(orgId).contains(user.getUid())) {
         try {
-          UserPassword password = depot.getUserPassword(user.getUid(), orgId);
           UserInfo defined = depot.defineUserInfo(user.getUid(), user.getFirstName(),
-              user.getLastName(), user.getEmail(), user.getOrganizationId(), user.getProperties());
+              user.getLastName(), user.getEmail(), user.getOrganizationId(), user.getProperties(),
+              user.getPassword());
           // Add user to Realm
           WattDepotApplication app = (WattDepotApplication) getApplication();
           Role role = app.getRole(user.getOrganizationId());
@@ -65,7 +64,7 @@ public class UserInfoPutServerResource extends WattDepotServerResource implement
             app.getRoles().add(role);
           }
           MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
-          User u = new User(defined.getUid(), password.getPlainText(), defined.getFirstName(),
+          User u = new User(defined.getUid(), user.getPassword(), defined.getFirstName(),
               defined.getLastName(), defined.getEmail());
           realm.getUsers().add(u);
           realm.map(u, role);
@@ -74,8 +73,7 @@ public class UserInfoPutServerResource extends WattDepotServerResource implement
           setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
         }
         catch (IdNotFoundException e) {
-          setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED,
-              "No UserPassword defined for " + user.getUid());
+          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
         }
       }
     }

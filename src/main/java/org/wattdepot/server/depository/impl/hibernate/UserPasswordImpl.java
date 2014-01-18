@@ -26,6 +26,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.wattdepot.common.domainmodel.UserPassword;
+import org.wattdepot.server.StrongAES;
 
 /**
  * UserPasswordImpl - Hibernate implementation of UserPassword. Has a Long pk
@@ -46,8 +47,6 @@ public class UserPasswordImpl {
   @OneToOne
   private UserInfoImpl user;
   private String encryptedPassword;
-  /** The plain text password. */
-  private String plainText;
   /** The user's organization. */
   @ManyToOne
   private OrganizationImpl org;
@@ -62,13 +61,11 @@ public class UserPasswordImpl {
   /**
    * @param user the user.
    * @param plainText their plaintext password.
-   * @param encrypted their encrypted password.
    * @param org their organization.
    */
-  public UserPasswordImpl(UserInfoImpl user, String plainText, String encrypted, OrganizationImpl org) {
+  public UserPasswordImpl(UserInfoImpl user, String plainText, OrganizationImpl org) {
     this.user = user;
-    this.plainText = plainText;
-    this.encryptedPassword = encrypted;
+    this.encryptedPassword = StrongAES.getInstance().encrypt(plainText);
     this.org = org;
   }
 
@@ -91,13 +88,6 @@ public class UserPasswordImpl {
    */
   public Long getPk() {
     return pk;
-  }
-
-  /**
-   * @return the plainText
-   */
-  public String getPlainText() {
-    return plainText;
   }
 
   /**
@@ -130,20 +120,15 @@ public class UserPasswordImpl {
   }
 
   /**
-   * @param plainText the plainText to set
-   */
-  public void setPlainText(String plainText) {
-    this.plainText = plainText;
-  }
-
-  /**
    * @param user the user to set
    */
   public void setUser(UserInfoImpl user) {
     this.user = user;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.Object#hashCode()
    */
   @Override
@@ -153,70 +138,79 @@ public class UserPasswordImpl {
     result = prime * result + ((encryptedPassword == null) ? 0 : encryptedPassword.hashCode());
     result = prime * result + ((org == null) ? 0 : org.hashCode());
     result = prime * result + ((pk == null) ? 0 : pk.hashCode());
-    result = prime * result + ((plainText == null) ? 0 : plainText.hashCode());
     result = prime * result + ((user == null) ? 0 : user.hashCode());
     return result;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     UserPasswordImpl other = (UserPasswordImpl) obj;
     if (encryptedPassword == null) {
-      if (other.encryptedPassword != null)
+      if (other.encryptedPassword != null) {
         return false;
+      }
     }
-    else if (!encryptedPassword.equals(other.encryptedPassword))
+    else if (!encryptedPassword.equals(other.encryptedPassword)) {
       return false;
+    }
     if (org == null) {
-      if (other.org != null)
+      if (other.org != null) {
         return false;
+      }
     }
-    else if (!org.equals(other.org))
+    else if (!org.equals(other.org)) {
       return false;
+    }
     if (pk == null) {
-      if (other.pk != null)
+      if (other.pk != null) {
         return false;
+      }
     }
-    else if (!pk.equals(other.pk))
+    else if (!pk.equals(other.pk)) {
       return false;
-    if (plainText == null) {
-      if (other.plainText != null)
-        return false;
     }
-    else if (!plainText.equals(other.plainText))
-      return false;
     if (user == null) {
-      if (other.user != null)
+      if (other.user != null) {
         return false;
+      }
     }
-    else if (!user.equals(other.user))
+    else if (!user.equals(other.user)) {
       return false;
+    }
     return true;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.Object#toString()
    */
   @Override
   public String toString() {
     return "UserPasswordImpl [pk=" + pk + ", user=" + user + ", encryptedPassword="
-        + encryptedPassword + ", plainText=********, org=" + org + "]";
+        + encryptedPassword + ", org=" + org + "]";
   }
 
   /**
    * @return the equivalent UserPassword.
    */
   public UserPassword toUserPassword() {
-    UserPassword ret = new UserPassword(user.getUid(), org.getId(), plainText);
+    UserPassword ret = new UserPassword(user.getUid(), org.getId(), StrongAES.getInstance()
+        .decrypt(encryptedPassword));
     return ret;
   }
 }

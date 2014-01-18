@@ -311,6 +311,9 @@ public class CollectorProcessDefinitionImpl {
     this.sensor = sensor;
   }
 
+  /**
+   * @return the CollectorProcessDefinition equivalent.
+   */
   public CollectorProcessDefinition toCPD() {
     Set<Property> props = new HashSet<Property>();
     for (PropertyImpl p : properties) {

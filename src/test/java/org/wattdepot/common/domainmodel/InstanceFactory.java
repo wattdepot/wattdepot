@@ -244,7 +244,7 @@ public class InstanceFactory {
     Set<Property> properties = new HashSet<Property>();
     properties.add(getProperty());
     return new UserInfo("test_user_id", "test_first_name", "test_last_name", "test_email@test.com",
-        "test-user-group", properties);
+        "test-user-group", properties, "secret1");
   }
 
   /**
@@ -254,7 +254,7 @@ public class InstanceFactory {
     Set<Property> properties = new HashSet<Property>();
     properties.add(getProperty());
     return new UserInfo("test_user_id2", "test_first_name2", "test_last_name2",
-        "test_email2@test.com", "test-user-group2", properties);
+        "test_email2@test.com", "test-user-group2", properties, "secret2");
   }
 
   /**

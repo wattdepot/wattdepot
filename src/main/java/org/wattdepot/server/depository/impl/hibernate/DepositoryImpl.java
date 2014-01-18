@@ -18,10 +18,6 @@
  */
 package org.wattdepot.server.depository.impl.hibernate;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -29,13 +25,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.Session;
 import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.InterpolatedValue;
-import org.wattdepot.common.domainmodel.Measurement;
-import org.wattdepot.common.exception.MeasurementGapException;
-import org.wattdepot.common.exception.MeasurementTypeException;
-import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.server.ServerProperties;
 
 /**

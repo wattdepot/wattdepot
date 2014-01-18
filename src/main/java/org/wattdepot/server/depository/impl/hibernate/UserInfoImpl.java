@@ -295,7 +295,7 @@ public class UserInfoImpl {
     for (PropertyImpl i : properties) {
       props.add(new Property(i.getKey(), i.getValue()));
     }
-    UserInfo ret = new UserInfo(uid, firstName, lastName, email, org.getId(), props);
+    UserInfo ret = new UserInfo(uid, firstName, lastName, email, org.getId(), props, "********");
     return ret;
   }
 

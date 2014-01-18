@@ -36,7 +36,6 @@ import org.wattdepot.common.domainmodel.OrganizationList;
 import org.wattdepot.common.domainmodel.Property;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserInfoList;
-import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.util.logger.WattDepotLogger;
 import org.wattdepot.server.WattDepotServer;
@@ -122,6 +121,7 @@ public class TestWattDepotAdminClient {
         catch (Exception e) {
           System.out.println("Failed with " + props.get(ClientProperties.USER_NAME) + " and "
               + props.get(ClientProperties.USER_PASSWORD));
+          e.printStackTrace();
         }
       }
     }
@@ -179,15 +179,11 @@ public class TestWattDepotAdminClient {
       fail(e.getMessage() + " should not happen");
     }
     // create two users with same id different organizations.
-    UserPassword up1 = new UserPassword("id", one.getId(), "secret1");
-    admin.putUserPassword(up1);
     UserInfo u1 = new UserInfo("id", "firstName", "lastName", "email", one.getId(),
-        new HashSet<Property>());
+        new HashSet<Property>(), "secret1");
     admin.putUser(u1);
-    UserPassword up2 = new UserPassword("id", two.getId(), "secret2");
-    admin.putUserPassword(up2);
     UserInfo u2 = new UserInfo("id", "firstName", "lastName", "email", two.getId(),
-        new HashSet<Property>());
+        new HashSet<Property>(), "secret2");
     admin.putUser(u2);
     UserInfoList ulist = admin.getUsers(one.getId());
     assertNotNull(ulist);

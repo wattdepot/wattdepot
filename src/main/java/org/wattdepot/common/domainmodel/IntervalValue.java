@@ -56,14 +56,16 @@ public class IntervalValue {
    * @param sensorId The id of the sensor that made the measurement.
    * @param value The value of the measurement.
    * @param measurementType The type of the measurement.
+   * @param start the start of the interval.
+   * @param end the end of the interval.
    */
   public IntervalValue(String sensorId, Double value, MeasurementType measurementType, Date start,
       Date end) {
     this.sensorId = sensorId;
     this.value = value;
     this.measurementType = measurementType;
-    this.start = start;
-    this.end = end;
+    this.start = new Date(start.getTime());
+    this.end = new Date(end.getTime());
   }
 
   /*
@@ -130,7 +132,7 @@ public class IntervalValue {
    * @return the end
    */
   public Date getEnd() {
-    return end;
+    return new Date(end.getTime());
   }
 
   /**
@@ -151,7 +153,7 @@ public class IntervalValue {
    * @return the start
    */
   public Date getStart() {
-    return start;
+    return new Date(start.getTime());
   }
 
   /**
@@ -182,7 +184,7 @@ public class IntervalValue {
    * @param end the end to set
    */
   public void setEnd(Date end) {
-    this.end = end;
+    this.end = new Date(end.getTime());
   }
 
   /**
@@ -203,7 +205,7 @@ public class IntervalValue {
    * @param start the start to set
    */
   public void setStart(Date start) {
-    this.start = start;
+    this.start = new Date(start.getTime());
   }
 
   /**

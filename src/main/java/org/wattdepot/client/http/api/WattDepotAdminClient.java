@@ -117,28 +117,6 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.client.WattDepotAdminInterface#deleteUserPassword(java.lang
-   * .String)
-   */
-  @Override
-  public void deleteUserPassword(String id, String orgId) throws IdNotFoundException {
-    ClientResource client = makeClient(orgId + "/" + Labels.USER_PASSWORD + "/" + id);
-    UserPasswordResource resource = client.wrap(UserPasswordResource.class);
-    try {
-      resource.remove();
-    }
-    catch (ResourceException re) {
-      throw new IdNotFoundException(id + " is not a defined UserPassword.");
-    }
-    finally {
-      client.release();
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
    * org.wattdepot.client.WattDepotAdminInterface#putOrganization(org.wattdepot
    * .common.domainmodel.Organization)
    */
@@ -171,22 +149,6 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
     finally {
       client.release();
     }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotAdminInterface#putUserPassword(org.wattdepot
-   * .datamodel.UserPassword)
-   */
-  @Override
-  public void putUserPassword(UserPassword password) {
-    ClientResource client = makeClient(password.getOrganizationId() + "/" + Labels.USER_PASSWORD
-        + "/" + password.getUid());
-    UserPasswordResource resource = client.wrap(UserPasswordResource.class);
-    resource.store(password);
-    client.release();
   }
 
   /*
@@ -332,6 +294,24 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
       client.release();
     }
     return ret;
+  }
+
+  /* (non-Javadoc)
+   * @see org.wattdepot.client.WattDepotAdminInterface#updateUserPassword(org.wattdepot.common.domainmodel.UserPassword)
+   */
+  @Override
+  public void updateUserPassword(UserPassword password) throws IdNotFoundException {
+    ClientResource client = makeClient(password.getOrganizationId() + "/" + Labels.USER_PASSWORD + "/");
+    UserPasswordResource resource = client.wrap(UserPasswordResource.class);
+    try {
+      resource.update(password);
+    }
+    catch (ResourceException re) {
+      throw new IdNotFoundException(password.getUid() + " is not a defined UserPassword.");
+    }
+    finally {
+      client.release();
+    }
   }
 
 }

@@ -170,7 +170,7 @@ public class MeasurementImpl {
   @Temporal(TemporalType.TIMESTAMP)
   @Column(name = "MEASUREMENT_DATE")
   public Date getTimestamp() {
-    return timestamp;
+    return new Date(timestamp.getTime());
   }
 
   /**
@@ -238,7 +238,7 @@ public class MeasurementImpl {
    * @param timestamp the timestamp to set
    */
   public void setTimestamp(Date timestamp) {
-    this.timestamp = timestamp;
+    this.timestamp = new Date(timestamp.getTime());
   }
 
   /**

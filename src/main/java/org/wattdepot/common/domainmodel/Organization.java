@@ -47,9 +47,9 @@ public class Organization {
   /** The ids of the users in this group. */
   protected Set<String> users;
 
-  static {
-    //ADMIN_GROUP.add(UserInfo.ROOT.getUid());
-  }
+//  static {
+//    ADMIN_GROUP.add(UserInfo.ROOT.getUid());
+//  }
 
   /**
    * The default constructor.

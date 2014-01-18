@@ -48,7 +48,7 @@ public class OrganizationImpl {
   /** Unique id that is also a slug usable in URLs. */
   private String id;
   private String name;
-  @OneToMany(mappedBy="org", cascade=CascadeType.PERSIST)
+  @OneToMany(mappedBy = "org", cascade = CascadeType.PERSIST)
   private Set<UserInfoImpl> users;
 
   /**
@@ -70,8 +70,8 @@ public class OrganizationImpl {
   }
 
   /**
-   * @param e
-   * @return
+   * @param e the UserInfoImpl to add.
+   * @return true if successful.
    * @see java.util.Set#add(java.lang.Object)
    */
   public boolean addUser(UserInfoImpl e) {
@@ -85,37 +85,48 @@ public class OrganizationImpl {
    */
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     OrganizationImpl other = (OrganizationImpl) obj;
     if (id == null) {
-      if (other.id != null)
+      if (other.id != null) {
         return false;
+      }
     }
-    else if (!id.equals(other.id))
+    else if (!id.equals(other.id)) {
       return false;
+    }
     if (name == null) {
-      if (other.name != null)
+      if (other.name != null) {
         return false;
+      }
     }
-    else if (!name.equals(other.name))
+    else if (!name.equals(other.name)) {
       return false;
+    }
     if (pk == null) {
-      if (other.pk != null)
+      if (other.pk != null) {
         return false;
+      }
     }
-    else if (!pk.equals(other.pk))
+    else if (!pk.equals(other.pk)) {
       return false;
+    }
     if (users == null) {
-      if (other.users != null)
+      if (other.users != null) {
         return false;
+      }
     }
-    else if (!users.equals(other.users))
+    else if (!users.equals(other.users)) {
       return false;
+    }
     return true;
   }
 

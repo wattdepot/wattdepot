@@ -20,14 +20,12 @@ package org.wattdepot.server.depository.impl.hibernate;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.HashSet;
 import java.util.List;
 
-import org.hibernate.exception.ConstraintViolationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -53,6 +51,7 @@ import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.server.ServerProperties;
+import org.wattdepot.server.StrongAES;
 
 /**
  * TestWattDepotImpl - Test cases for the WattDepotImpl.
@@ -112,7 +111,8 @@ public class TestWattDepotPersistenceImpl {
     catch (IdNotFoundException e) {
       try {
         impl.defineUserInfo(testUser.getUid(), testUser.getFirstName(), testUser.getLastName(),
-            testUser.getEmail(), testUser.getOrganizationId(), testUser.getProperties());
+            testUser.getEmail(), testUser.getOrganizationId(), testUser.getProperties(),
+            testUser.getPassword());
       }
       catch (IdNotFoundException e1) {
         // Shouldn't happen!
@@ -127,26 +127,10 @@ public class TestWattDepotPersistenceImpl {
       // this shouldn't happen
       e1.printStackTrace();
     }
-    // 4. Create the password.
-    try {
-      impl.getUserPassword(testPassword.getUid(), testPassword.getOrganizationId());
-    }
-    catch (IdNotFoundException e) {
-      try {
-        impl.defineUserPassword(testPassword.getUid(), testPassword.getOrganizationId(),
-            testPassword.getPlainText(), testPassword.getEncryptedPassword());
-      }
-      catch (IdNotFoundException e1) {
-        // this shouldn't happen
-        e1.printStackTrace();
-      }
-    }
   }
 
   /**
    * Cleans up the test user, password, and organization.
-   * 
-   * @throws java.lang.Exception if there is a problem.
    */
   @After
   public void tearDown() {
@@ -1103,13 +1087,13 @@ public class TestWattDepotPersistenceImpl {
     try {
       try {
         impl.defineUserInfo(user.getUid(), user.getFirstName(), user.getLastName(),
-            user.getEmail(), user.getOrganizationId(), user.getProperties());
+            user.getEmail(), user.getOrganizationId(), user.getProperties(), user.getPassword());
       }
       catch (IdNotFoundException e1) {
         addEmptyOrganization(InstanceFactory.getOrganization2());
         try {
           impl.defineUserInfo(user.getUid(), user.getFirstName(), user.getLastName(),
-              user.getEmail(), user.getOrganizationId(), user.getProperties());
+              user.getEmail(), user.getOrganizationId(), user.getProperties(), user.getPassword());
         }
         catch (IdNotFoundException e) {
           e.printStackTrace();
@@ -1158,16 +1142,16 @@ public class TestWattDepotPersistenceImpl {
         group = impl.getOrganization(user.getOrganizationId());
       }
       catch (IdNotFoundException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
+        fail(e.getMessage() + " should not happen.");
       }
       assertNotNull(group);
       try {
         group = impl.getOrganization(InstanceFactory.getUserInfo2().getOrganizationId());
       }
       catch (IdNotFoundException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
+        fail(e.getMessage() + " should not happen.");
       }
       assertNotNull(group);
       assertTrue("expecting " + group.getId() + " got " + user.getOrganizationId(), group.getId()
@@ -1202,29 +1186,18 @@ public class TestWattDepotPersistenceImpl {
   public void testUserPasswords() {
     UserPassword password = InstanceFactory.getUserPassword2();
     try {
-      impl.defineUserPassword(password.getUid(), password.getOrganizationId(),
-          password.getPlainText(), password.getEncryptedPassword());
+      impl.defineUserInfo(password.getUid(), password.getEncryptedPassword(),
+          password.getEncryptedPassword(), password.getEncryptedPassword(),
+          password.getOrganizationId(), new HashSet<Property>(),
+          StrongAES.getInstance().decrypt(password.getEncryptedPassword()));
     }
     catch (UniqueIdException e) {
       e.printStackTrace();
       fail(e.getMessage() + " should not happen");
     }
     catch (IdNotFoundException e) {
-      // expected since test_user_id2 is not a valid userid.
-      try {
-        impl.defineUserInfo(password.getUid(), password.getPlainText(), password.getPlainText(),
-            password.getPlainText(), password.getOrganizationId(), new HashSet<Property>());
-        impl.defineUserPassword(password.getUid(), password.getOrganizationId(),
-            password.getPlainText(), password.getEncryptedPassword());
-      }
-      catch (UniqueIdException e1) {
-        // TODO Auto-generated catch block
-        e1.printStackTrace();
-      }
-      catch (IdNotFoundException e1) {
-        e1.printStackTrace();
-        fail(e1.getMessage() + " should not happen.");
-      }
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen");
     }
     UserPassword defined = null;
     try {
@@ -1236,7 +1209,7 @@ public class TestWattDepotPersistenceImpl {
     }
     assertNotNull(defined);
     assertTrue(defined.equals(password));
-    defined.setPlainText("New plainText");
+    defined.setPassword("New plainText");
     try {
       impl.updateUserPassword(defined);
     }
@@ -1410,24 +1383,28 @@ public class TestWattDepotPersistenceImpl {
     }
   }
 
-  private void addUserInfo(UserInfo user) {
-    try {
-      impl.getUser(user.getUid(), user.getOrganizationId());
-    }
-    catch (IdNotFoundException e) {
-      try {
-        impl.defineUserInfo(user.getUid(), user.getFirstName(), user.getLastName(),
-            user.getEmail(), user.getOrganizationId(), user.getProperties());
-      }
-      catch (UniqueIdException e1) {
-        e1.printStackTrace();
-      }
-      catch (IdNotFoundException e1) {
-        e1.printStackTrace();
-      }
-    }
-  }
+  // private void addUserInfo(UserInfo user) {
+  // try {
+  // impl.getUser(user.getUid(), user.getOrganizationId());
+  // }
+  // catch (IdNotFoundException e) {
+  // try {
+  // impl.defineUserInfo(user.getUid(), user.getFirstName(), user.getLastName(),
+  // user.getEmail(), user.getOrganizationId(), user.getProperties(),
+  // user.getPassword());
+  // }
+  // catch (UniqueIdException e1) {
+  // e1.printStackTrace();
+  // }
+  // catch (IdNotFoundException e1) {
+  // e1.printStackTrace();
+  // }
+  // }
+  // }
 
+  /**
+   * @param org The empty Organization.
+   */
   private void addEmptyOrganization(Organization org) {
     try {
       impl.getOrganization(org.getId());
@@ -1437,15 +1414,12 @@ public class TestWattDepotPersistenceImpl {
         impl.defineOrganization(org.getId(), org.getName(), new HashSet<String>());
       }
       catch (UniqueIdException e1) {
-        // TODO Auto-generated catch block
         e1.printStackTrace();
       }
       catch (BadSlugException e1) {
-        // TODO Auto-generated catch block
         e1.printStackTrace();
       }
       catch (IdNotFoundException e1) {
-        // TODO Auto-generated catch block
         e1.printStackTrace();
       }
     }

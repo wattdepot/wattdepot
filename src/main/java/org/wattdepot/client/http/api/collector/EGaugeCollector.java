@@ -51,7 +51,6 @@ import org.wattdepot.common.domainmodel.Property;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.domainmodel.UserInfo;
-import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.BadSensorUriException;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -368,7 +367,7 @@ public class EGaugeCollector extends MultiThreadedCollector {
       password = cmd.getOptionValue("p");
     }
     else {
-      password = UserPassword.ADMIN.getPlainText();
+      password = "default";
     }
     if (cmd.hasOption("c")) {
       collectorId = cmd.getOptionValue("c");

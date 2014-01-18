@@ -47,6 +47,7 @@ import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.util.SensorModelHelper;
 import org.wattdepot.common.util.Slug;
 import org.wattdepot.server.ServerProperties;
+import org.wattdepot.server.StrongAES;
 import org.wattdepot.server.WattDepotPersistence;
 
 /**
@@ -157,62 +158,69 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
         throw new RuntimeException("opens and closed mismatched.");
       }
     }
-    // UserInfo adminUser = getUser(UserInfo.ROOT.getId());
-    // if (checkSession && getSessionClose() != getSessionOpen()) {
-    // throw new RuntimeException("opens and closed mismatched.");
-    // }
-    // TODO: check on this we don't want to have the root user defined in the
-    // database, but we need
-    // them in the Restlet Application/Component.
-    // if (adminUser == null) {
-    // try {
-    // defineUserInfo(UserInfo.ROOT.getId(), UserInfo.ROOT.getFirstName(),
-    // UserInfo.ROOT.getLastName(), UserInfo.ROOT.getEmail(),
-    // UserInfo.ROOT.getProperties());
-    // if (checkSession && getSessionClose() != getSessionOpen()) {
-    // throw new RuntimeException("opens and closed mismatched.");
-    // }
-    // }
-    // catch (UniqueIdException e) {
-    // // what do we do here?
-    // e.printStackTrace();
-    // }
-    // }
-    // else {
-    // updateUserInfo(UserInfo.ROOT);
-    // if (checkSession && getSessionClose() != getSessionOpen()) {
-    // throw new RuntimeException("opens and closed mismatched.");
-    // }
-    // }
-    //
-    // UserPassword adminPassword;
-    // try {
-    // adminPassword = getUserPassword(UserInfo.ROOT.getUid(),
-    // UserInfo.ROOT.getOrganizationId());
-    // updateUserPassword(adminPassword);
-    // if (checkSession && getSessionClose() != getSessionOpen()) {
-    // throw new RuntimeException("opens and closed mismatched.");
-    // }
-    // }
-    // catch (IdNotFoundException e2) {
-    // // adminPassword no defined.
-    // try {
-    // defineUserPassword(UserPassword.ADMIN.getUid(),
-    // UserPassword.ADMIN.getOrganizationId(),
-    // UserPassword.ADMIN.getPlainText(),
-    // UserPassword.ADMIN.getEncryptedPassword());
-    // if (checkSession && getSessionClose() != getSessionOpen()) {
-    // throw new RuntimeException("opens and closed mismatched.");
-    // }
-    // }
-    // catch (UniqueIdException e1) {
-    // // what do we do here?
-    // e1.printStackTrace();
-    // }
-    // }
-    // if (checkSession && getSessionClose() != getSessionOpen()) {
-    // throw new RuntimeException("opens and closed mismatched.");
-    // }
+    UserInfo adminUser = null;
+    try {
+      adminUser = getUser(UserInfo.ROOT.getUid(), Organization.ADMIN_GROUP.getId());
+    }
+    catch (IdNotFoundException e) {
+      try {
+        defineUserInfo(UserInfo.ROOT.getUid(), UserInfo.ROOT.getFirstName(),
+            UserInfo.ROOT.getLastName(), UserInfo.ROOT.getEmail(),
+            Organization.ADMIN_GROUP.getId(), UserInfo.ROOT.getProperties(), StrongAES
+                .getInstance().decrypt(UserPassword.ROOT.getEncryptedPassword()));
+        if (checkSession && getSessionClose() != getSessionOpen()) {
+          throw new RuntimeException("opens and closed mismatched.");
+        }
+      }
+      catch (UniqueIdException e1) {
+        // what do we do here?
+        e1.printStackTrace();
+      }
+      catch (IdNotFoundException e1) {
+        // this shouldn't happen
+        e1.printStackTrace();
+      }
+    }
+    if (checkSession && getSessionClose() != getSessionOpen()) {
+      throw new RuntimeException("opens and closed mismatched.");
+    }
+    if (adminUser != null) {
+      try {
+        updateUserInfo(UserInfo.ROOT);
+      }
+      catch (IdNotFoundException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      if (checkSession && getSessionClose() != getSessionOpen()) {
+        throw new RuntimeException("opens and closed mismatched.");
+      }
+    }
+    if (!Organization.ADMIN_GROUP.getUsers().contains(UserInfo.ROOT.getUid())) {
+      Organization.ADMIN_GROUP.add(UserInfo.ROOT.getUid());
+      try {
+        updateOrganization(Organization.ADMIN_GROUP);
+      }
+      catch (IdNotFoundException e) { // NOPMD
+        // There is a problem
+      }
+    }
+
+    UserPassword adminPassword;
+    try {
+      adminPassword = getUserPassword(UserInfo.ROOT.getUid(), UserInfo.ROOT.getOrganizationId());
+      updateUserPassword(adminPassword);
+      if (checkSession && getSessionClose() != getSessionOpen()) {
+        throw new RuntimeException("opens and closed mismatched.");
+      }
+    }
+    catch (IdNotFoundException e2) { // NOPMD
+      // adminPassword no defined.
+      // we are in trouble.
+    }
+    if (checkSession && getSessionClose() != getSessionOpen()) {
+      throw new RuntimeException("opens and closed mismatched.");
+    }
   }
 
   /*
@@ -388,10 +396,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       throw new BadSlugException(slug + " is not a valid slug.");
     }
     getOrganization(ownerId);
-    SensorModel m = getSensorModel(modelId);
-    if (m == null) {
-      throw new IdNotFoundException(modelId + " is not a defined SensorModel id.");
-    }
+    getSensorModel(modelId);
     Sensor s = null;
     try {
       s = getSensor(slug, ownerId);
@@ -507,7 +512,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    */
   @Override
   public UserInfo defineUserInfo(String id, String firstName, String lastName, String email,
-      String orgId, Set<Property> properties) throws UniqueIdException, IdNotFoundException {
+      String orgId, Set<Property> properties, String password) throws UniqueIdException,
+      IdNotFoundException {
     getOrganization(orgId);
     UserInfo u = null;
     try {
@@ -532,36 +538,12 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     UserInfoImpl impl = new UserInfoImpl(id, firstName, lastName, email, props, org);
     session.saveOrUpdate(impl);
     u = impl.toUserInfo();
+    UserPasswordImpl up = new UserPasswordImpl(impl, password, org);
+    session.saveOrUpdate(up);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
     return u;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.server.WattDepot#defineUserPassword(java.lang.String,
-   * java.lang.String)
-   */
-  @Override
-  public UserPassword defineUserPassword(String id, String orgId, String password, String encrypted)
-      throws UniqueIdException, IdNotFoundException {
-    getOrganization(orgId);
-    getUser(id, orgId);
-    UserPassword ret = null;
-    Session session = Manager.getFactory(getServerProperties()).openSession();
-    sessionOpen++;
-    session.beginTransaction();
-    OrganizationImpl org = retrieveOrganization(session, orgId);
-    UserInfoImpl user = retrieveUser(session, id, orgId);
-    UserPasswordImpl up = new UserPasswordImpl(user, password, encrypted, org);
-    session.saveOrUpdate(up);
-    ret = up.toUserPassword();
-    session.getTransaction().commit();
-    session.close();
-    sessionClose++;
-    return ret;
   }
 
   /*
@@ -799,8 +781,10 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.beginTransaction();
     OrganizationImpl orgImpl = retrieveOrganization(session, orgId);
     UserInfoImpl impl = retrieveUser(session, id, orgId);
+    UserPasswordImpl up = retrieveUserPassword(session, id, orgId);
     orgImpl.removeUser(impl);
     session.saveOrUpdate(orgImpl);
+    session.delete(up);
     session.delete(impl);
     session.getTransaction().commit();
     session.close();
@@ -1400,6 +1384,13 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     return ret;
   }
 
+  /**
+   * @param session The session with an open transaction.
+   * @param depotId the id of the Depository.
+   * @param orgId the organization's id.
+   * @param measId the measurement's id.
+   * @return the MeasurementImpl.
+   */
   private MeasurementImpl retrieveMeasurement(Session session, String depotId, String orgId,
       String measId) {
     DepositoryImpl depot = retrieveDepository(session, depotId, orgId);
@@ -1885,7 +1876,6 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.beginTransaction();
     UserPasswordImpl impl = retrieveUserPassword(session, password.getUid(),
         password.getOrganizationId());
-    impl.setPlainText(password.getPlainText());
     impl.setEncryptedPassword(password.getEncryptedPassword());
     impl.setOrg(retrieveOrganization(session, password.getOrganizationId()));
     impl.setUser(retrieveUser(session, password.getUid(), password.getOrganizationId()));

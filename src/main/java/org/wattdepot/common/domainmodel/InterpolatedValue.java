@@ -60,7 +60,7 @@ public class InterpolatedValue {
     this.sensorId = sensorId;
     this.value = value;
     this.measurementType = measurementType;
-    this.date = date;
+    this.date = new Date(date.getTime());
   }
 
   /*

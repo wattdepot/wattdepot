@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.logging.Logger;
 
 import javax.measure.unit.Unit;
@@ -46,13 +47,13 @@ import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementList;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.MeasurementTypeList;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.domainmodel.SensorGroupList;
 import org.wattdepot.common.domainmodel.SensorList;
 import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.domainmodel.SensorModelList;
-import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.BadCredentialException;
@@ -61,6 +62,7 @@ import org.wattdepot.common.exception.MeasurementGapException;
 import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.logger.WattDepotLogger;
+import org.wattdepot.server.StrongAES;
 import org.wattdepot.server.WattDepotServer;
 
 /**
@@ -130,9 +132,25 @@ public class TestWattDepotClient {
               + props.get(ClientProperties.USER_PASSWORD));
         }
       }
-      admin.putUserPassword(testPassword);
-      admin.putUser(testUser);
-      admin.putOrganization(testGroup);
+      // 1. Define test organization w/o users
+      Organization empty = new Organization(testGroup.getId(), testGroup.getName(),
+          new HashSet<String>());
+      try {
+        admin.getOrganization(testGroup.getId());
+      }
+      catch (IdNotFoundException e) {
+        admin.putOrganization(empty);
+      }
+      // 2. Define the user.
+      try {
+        admin.getUser(testUser.getUid(), testGroup.getId());
+      }
+      catch (IdNotFoundException e) {
+        admin.putUser(testUser);
+      }
+      // 3. Update the organization
+      admin.updateOrganization(testGroup);
+
       try {
         admin.putMeasurementType(InstanceFactory.getMeasurementType());
       }
@@ -141,7 +159,7 @@ public class TestWattDepotClient {
       }
       if (test == null) {
         test = new WattDepotClient(serverURL, testUser.getUid(), testUser.getOrganizationId(),
-            testPassword.getPlainText());
+            testUser.getPassword());
       }
       test.isHealthy();
       test.getWattDepotUri();
@@ -157,7 +175,9 @@ public class TestWattDepotClient {
   @After
   public void tearDown() throws Exception {
     logger.finest("tearDown()");
-    admin.deleteOrganization(testGroup.getId());
+    if (admin != null) {
+      admin.deleteOrganization(testGroup.getId());
+    }
     logger.finest("Done tearDown()");
   }
 
@@ -172,7 +192,8 @@ public class TestWattDepotClient {
     // test some bad cases
     try {
       WattDepotClient bad = new WattDepotClient(null, testPassword.getUid(),
-          testPassword.getOrganizationId(), testPassword.getPlainText());
+          testPassword.getOrganizationId(), StrongAES.getInstance().decrypt(
+              testPassword.getEncryptedPassword()));
       fail(bad + " should not exist.");
     }
     catch (IllegalArgumentException e) {
@@ -183,7 +204,8 @@ public class TestWattDepotClient {
     }
     try {
       WattDepotClient bad = new WattDepotClient("http://localhost", testPassword.getUid(),
-          testPassword.getOrganizationId(), testPassword.getPlainText());
+          testPassword.getOrganizationId(), StrongAES.getInstance().decrypt(
+              testPassword.getEncryptedPassword()));
       fail(bad + " should not exist.");
     }
     catch (IllegalArgumentException e) {
@@ -524,7 +546,13 @@ public class TestWattDepotClient {
       CollectorProcessDefinition ret = test.getCollectorProcessDefinition(data.getId());
       assertEquals(data, ret);
       ret.setDepositoryId("new depotistory_id");
-      test.updateCollectorProcessDefinition(ret);
+      try {
+        test.updateCollectorProcessDefinition(ret);
+        fail("Should not be able to update to bogus depository id.");
+      }
+      catch (Exception e) { // NOPMD
+        // we expect this
+      }
       list = test.getCollectorProcessDefinition();
       assertNotNull(list);
       assertTrue(list.getDefinitions().size() == 1);
@@ -657,18 +685,18 @@ public class TestWattDepotClient {
     }
   }
 
-  /**
-   * Deletes the test SensorModel from the WattDepotServer if it isn't defined.
-   */
-  private void deleteSensorModel() {
-    SensorModel model = InstanceFactory.getSensorModel();
-    try {
-      test.deleteSensorModel(model);
-    }
-    catch (IdNotFoundException e) {
-      // didn't exist so there isn't any problem.
-    }
-  }
+//  /**
+//   * Deletes the test SensorModel from the WattDepotServer if it isn't defined.
+//   */
+//  private void deleteSensorModel() {
+//    SensorModel model = InstanceFactory.getSensorModel();
+//    try {
+//      test.deleteSensorModel(model);
+//    }
+//    catch (IdNotFoundException e) {
+//      // didn't exist so there isn't any problem.
+//    }
+//  }
 
   /**
    * Adds the Sensor to the WattDepotServer if it isn't defined.
@@ -684,18 +712,7 @@ public class TestWattDepotClient {
     }
   }
 
-  /**
-   * Deletes the Sensor from the WattDepotServer if it isn't defined.
-   */
-  private void deleteSensor() {
-    Sensor sensor = InstanceFactory.getSensor();
-    try {
-      test.deleteSensor(sensor);
-    }
-    catch (IdNotFoundException e) {
-      // didn't exist so we're done.
-    }
-  }
+
 
   /**
    * Adds the test Depository to WattDepotServer if it isn't defined.
