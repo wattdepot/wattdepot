@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
@@ -69,6 +70,16 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    */
   public WattDepotPersistenceImpl(ServerProperties properties) {
     super();
+    try {
+      Session validate = Manager.getValidateFactory(properties).openSession();
+      validate.close();
+    }
+    catch (HibernateException e) {
+      // e.printStackTrace();
+      // might be able to just use the 'update' sessionFactory.
+//      Session create = Manager.getCreateFactory(properties).openSession();
+//      create.close();
+    }
     setServerProperties(properties);
     this.checkSession = properties.get(ServerProperties.CHECK_SESSIONS).equals("true");
     // Start with the Organizations
@@ -164,11 +175,6 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     }
     catch (IdNotFoundException e) {
       try {
-        System.out.println("**********************************************************");
-        System.out.println("*** Root user = " + UserInfo.ROOT.getUid() + ", " + StrongAES
-            .getInstance().decrypt(UserPassword.ROOT.getEncryptedPassword()));
-        System.out.println("*** Admin org id is " + Organization.ADMIN_GROUP.getId());
-        System.out.println("**********************************************************");
         defineUserInfo(UserInfo.ROOT.getUid(), UserInfo.ROOT.getFirstName(),
             UserInfo.ROOT.getLastName(), UserInfo.ROOT.getEmail(),
             Organization.ADMIN_GROUP.getId(), UserInfo.ROOT.getProperties(), StrongAES

@@ -240,7 +240,7 @@ public class ServerProperties {
     properties.setProperty(DB_USER_NAME, "myuser");
     properties.setProperty(DB_PASSWORD, "secret");
     properties.setProperty(DB_SHOW_SQL, "false");
-    properties.setProperty(DB_TABLE_UPDATE, "create");
+    properties.setProperty(DB_TABLE_UPDATE, "update");
     properties.setProperty(ENABLE_LOGGING_KEY, TRUE);
     properties.setProperty(CHECK_SESSIONS, FALSE);
     properties.setProperty(LOGGING_LEVEL_KEY, "INFO");

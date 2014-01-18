@@ -100,9 +100,13 @@ public class ExampleInstances {
     }
     catch (IdNotFoundException e) {
       // not defined so put it.
+      org.setUsers(new HashSet<String>());
+      admin.putOrganization(org);
       admin.putUser(user1);
       admin.putUser(user2);
-      admin.putOrganization(org);
+      org.add(user1.getUid());
+      org.add(user2.getUid());
+      admin.updateOrganization(org);
     }
   }
 
