@@ -164,6 +164,11 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     }
     catch (IdNotFoundException e) {
       try {
+        System.out.println("**********************************************************");
+        System.out.println("*** Root user = " + UserInfo.ROOT.getUid() + ", " + StrongAES
+            .getInstance().decrypt(UserPassword.ROOT.getEncryptedPassword()));
+        System.out.println("*** Admin org id is " + Organization.ADMIN_GROUP.getId());
+        System.out.println("**********************************************************");
         defineUserInfo(UserInfo.ROOT.getUid(), UserInfo.ROOT.getFirstName(),
             UserInfo.ROOT.getLastName(), UserInfo.ROOT.getEmail(),
             Organization.ADMIN_GROUP.getId(), UserInfo.ROOT.getProperties(), StrongAES

@@ -24,11 +24,14 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.measure.unit.Unit;
+import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -48,6 +51,7 @@ import org.wattdepot.common.domainmodel.MeasurementList;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.MeasurementTypeList;
 import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.domainmodel.Property;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.domainmodel.SensorGroupList;
@@ -55,14 +59,14 @@ import org.wattdepot.common.domainmodel.SensorList;
 import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.domainmodel.SensorModelList;
 import org.wattdepot.common.domainmodel.UserInfo;
-import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementGapException;
 import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.NoMeasurementException;
+import org.wattdepot.common.util.DateConvert;
+import org.wattdepot.common.util.UnitsHelper;
 import org.wattdepot.common.util.logger.WattDepotLogger;
-import org.wattdepot.server.StrongAES;
 import org.wattdepot.server.WattDepotServer;
 
 /**
@@ -73,14 +77,21 @@ import org.wattdepot.server.WattDepotServer;
  */
 public class TestWattDepotClient {
 
-  protected static WattDepotServer server;
+  private static WattDepotServer server;
 
   /** The handle on the client. */
   private static WattDepotAdminClient admin;
   private static WattDepotClient test;
-  private static UserInfo testUser = InstanceFactory.getUserInfo();
-  private static UserPassword testPassword = InstanceFactory.getUserPassword();
-  private static Organization testGroup = InstanceFactory.getOrganization();
+  private UserInfo testUser = null;
+  private Organization testOrg = null;
+  private SensorModel testModel = null;
+  private Sensor testSensor = null;
+  private MeasurementType testMeasurementType = null;
+  private Depository testDepository = null;
+  private CollectorProcessDefinition testCPD = null;
+  private Measurement testMeasurement1 = null;
+  private Measurement testMeasurement2 = null;
+  private Measurement testMeasurement3 = null;
 
   /** The logger. */
   private Logger logger = null;
@@ -112,6 +123,44 @@ public class TestWattDepotClient {
    */
   @Before
   public void setUp() {
+    // Set up the test instances.
+    Set<Property> properties = new HashSet<Property>();
+    properties.add(new Property("isAdmin", "no they are not"));
+    testUser = new UserInfo("wattdepot-client-id", "First Name", "Last Name", "test@test.com",
+        "test-wattdepotclient", properties, "secret1");
+    Set<String> users = new HashSet<String>();
+    users.add(testUser.getUid());
+    testOrg = new Organization("Test WattDepotClient", users);
+    testUser.setOrganizationId(testOrg.getId());
+    testModel = new SensorModel("TestWattDepotClient Sensor Model", "test_model_protocol",
+        "test_model_type", "test_model_version");
+    testSensor = new Sensor("TestWattDepotClient Sensor", "test_sensor_uri", testModel.getId(),
+        testOrg.getId());
+    testMeasurementType = new MeasurementType("Test MeasurementType Name",
+        UnitsHelper.quantities.get("Flow Rate (gal/s)"));
+    testDepository = new Depository("Test Depository", testMeasurementType, testOrg.getId());
+    testCPD = new CollectorProcessDefinition("TestWattDepotClient Collector Process Defintion",
+        testSensor.getId(), 10L, testDepository.getId(), testOrg.getId());
+    try {
+      Date measTime1 = DateConvert.parseCalStringToDate("2013-11-20T14:35:27.925-1000");
+      Date measTime2 = DateConvert.parseCalStringToDate("2013-11-20T14:35:37.925-1000");
+      Date measTime3 = DateConvert.parseCalStringToDate("2013-11-20T14:45:37.925-1000");
+      Double value = 100.0;
+      testMeasurement1 = new Measurement(testSensor.getId(), measTime1, value,
+          testMeasurementType.unit());
+      testMeasurement2 = new Measurement(testSensor.getId(), measTime2, value,
+          testMeasurementType.unit());
+      testMeasurement3 = new Measurement(testSensor.getId(), measTime3, value,
+          testMeasurementType.unit());
+    }
+    catch (ParseException e) {
+      e.printStackTrace();
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+
+    // Set up the logging and clients.
     try {
       ClientProperties props = new ClientProperties();
       props.setTestProperties();
@@ -124,35 +173,35 @@ public class TestWattDepotClient {
       logger.finest(serverURL);
       if (admin == null) {
         try {
-          admin = new WattDepotAdminClient(serverURL, props.get(ClientProperties.USER_NAME),
-              "admin", props.get(ClientProperties.USER_PASSWORD));
+          admin = new WattDepotAdminClient(serverURL, UserInfo.ROOT.getUid(),
+              Organization.ADMIN_GROUP.getId(), UserInfo.ROOT.getPassword());
         }
         catch (Exception e) {
-          System.out.println("Failed with " + props.get(ClientProperties.USER_NAME) + " and "
-              + props.get(ClientProperties.USER_PASSWORD));
+          System.out.println("Failed with " + UserInfo.ROOT.getUid() + " and "
+              + UserInfo.ROOT.getPassword());
         }
       }
       // 1. Define test organization w/o users
-      Organization empty = new Organization(testGroup.getId(), testGroup.getName(),
+      Organization empty = new Organization(testOrg.getId(), testOrg.getName(),
           new HashSet<String>());
       try {
-        admin.getOrganization(testGroup.getId());
+        admin.getOrganization(testOrg.getId());
       }
       catch (IdNotFoundException e) {
         admin.putOrganization(empty);
       }
       // 2. Define the user.
       try {
-        admin.getUser(testUser.getUid(), testGroup.getId());
+        admin.getUser(testUser.getUid(), testOrg.getId());
       }
       catch (IdNotFoundException e) {
         admin.putUser(testUser);
       }
       // 3. Update the organization
-      admin.updateOrganization(testGroup);
+      admin.updateOrganization(testOrg);
 
       try {
-        admin.putMeasurementType(InstanceFactory.getMeasurementType());
+        admin.putMeasurementType(testMeasurementType);
       }
       catch (Exception e) {
         e.printStackTrace();
@@ -176,7 +225,7 @@ public class TestWattDepotClient {
   public void tearDown() throws Exception {
     logger.finest("tearDown()");
     if (admin != null) {
-      admin.deleteOrganization(testGroup.getId());
+      admin.deleteOrganization(testOrg.getId());
     }
     logger.finest("Done tearDown()");
   }
@@ -188,12 +237,14 @@ public class TestWattDepotClient {
    */
   @Test
   public void testWattDepotClient() {
+    if (test == null) {
+      setUp();
+    }
     assertNotNull(test);
     // test some bad cases
     try {
-      WattDepotClient bad = new WattDepotClient(null, testPassword.getUid(),
-          testPassword.getOrganizationId(), StrongAES.getInstance().decrypt(
-              testPassword.getEncryptedPassword()));
+      WattDepotClient bad = new WattDepotClient(null, testUser.getUid(),
+          testUser.getOrganizationId(), testUser.getPassword());
       fail(bad + " should not exist.");
     }
     catch (IllegalArgumentException e) {
@@ -203,9 +254,8 @@ public class TestWattDepotClient {
       fail("We used good credentials");
     }
     try {
-      WattDepotClient bad = new WattDepotClient("http://localhost", testPassword.getUid(),
-          testPassword.getOrganizationId(), StrongAES.getInstance().decrypt(
-              testPassword.getEncryptedPassword()));
+      WattDepotClient bad = new WattDepotClient("http://localhost", testUser.getUid(),
+          testUser.getOrganizationId(), testUser.getPassword());
       fail(bad + " should not exist.");
     }
     catch (IllegalArgumentException e) {
@@ -215,8 +265,8 @@ public class TestWattDepotClient {
       fail("We used good credentials");
     }
     try {
-      WattDepotClient bad = new WattDepotClient(serverURL, testPassword.getUid(),
-          testPassword.getOrganizationId(), testPassword.getEncryptedPassword());
+      WattDepotClient bad = new WattDepotClient(serverURL, testUser.getUid(),
+          testUser.getOrganizationId(), "bad password string");
       fail(bad + " should not exist.");
     }
     catch (BadCredentialException e) {
@@ -230,7 +280,7 @@ public class TestWattDepotClient {
    */
   @Test
   public void testDepository() {
-    Depository depo = InstanceFactory.getDepository();
+    Depository depo = testDepository;
     // Get list
     DepositoryList list = test.getDepositories();
     assertNotNull(list);
@@ -285,7 +335,7 @@ public class TestWattDepotClient {
    */
   @Test
   public void testMeasurementType() {
-    MeasurementType type = InstanceFactory.getMeasurementType();
+    MeasurementType type = testMeasurementType;
     // Put new instance (CREATE)
     try {
       test.putMeasurementType(type);
@@ -356,7 +406,7 @@ public class TestWattDepotClient {
    */
   @Test
   public void testSensor() {
-    Sensor sensor = InstanceFactory.getSensor();
+    Sensor sensor = testSensor;
     // Get list
     SensorList list = test.getSensors();
     assertNotNull(list);
@@ -413,7 +463,10 @@ public class TestWattDepotClient {
    */
   @Test
   public void testSensorGroup() {
-    SensorGroup group = InstanceFactory.getSensorGroup();
+    Set<String> sensors = new HashSet<String>();
+    sensors.add("testwattdepotclient-sensor");
+    SensorGroup group = new SensorGroup("TestWattDepotClient Sensor Group", sensors,
+        testOrg.getId());
     // Get list
     SensorGroupList list = test.getSensorGroups();
     assertNotNull(list);
@@ -431,6 +484,8 @@ public class TestWattDepotClient {
       }
     }
     list = test.getSensorGroups();
+    System.out.println(list.getGroups().get(0));
+    System.out.println(group);
     assertTrue(list.getGroups().contains(group));
     try {
       // get instance (READ)
@@ -472,7 +527,7 @@ public class TestWattDepotClient {
    */
   @Test
   public void testSensorModel() {
-    SensorModel model = InstanceFactory.getSensorModel();
+    SensorModel model = testModel;
     // Get list
     SensorModelList list = test.getSensorModels();
     assertNotNull(list);
@@ -521,7 +576,7 @@ public class TestWattDepotClient {
    */
   @Test
   public void testCollectorProcessDefinition() {
-    CollectorProcessDefinition data = InstanceFactory.getCollectorProcessDefinition();
+    CollectorProcessDefinition data = testCPD;
     // Get list
     CollectorProcessDefinitionList list = test.getCollectorProcessDefinition();
     assertNotNull(list);
@@ -586,11 +641,11 @@ public class TestWattDepotClient {
    */
   @Test
   public void testMeasurements() {
-    Depository depo = InstanceFactory.getDepository();
+    Depository depo = testDepository;
     test.putDepository(depo);
-    Measurement m1 = InstanceFactory.getMeasurementOne();
-    Measurement m2 = InstanceFactory.getMeasurementTwo();
-    Measurement m3 = InstanceFactory.getMeasurementThree();
+    Measurement m1 = testMeasurement1;
+    Measurement m2 = testMeasurement2;
+    Measurement m3 = testMeasurement3;
     try {
       try {
         test.putMeasurement(depo, m1);
@@ -651,7 +706,7 @@ public class TestWattDepotClient {
     }
 
     // error conditions
-    Measurement bogus = InstanceFactory.getMeasurementTwo();
+    Measurement bogus = testMeasurement2;
     bogus.setMeasurementType("dyn");
     ;
     try {
@@ -675,56 +730,52 @@ public class TestWattDepotClient {
    * Adds the test SensorModel to the WattDepotServer if it isn't defined.
    */
   private void addSensorModel() {
-    SensorModel model = InstanceFactory.getSensorModel();
     try {
-      test.getSensorModel(model.getId());
+      test.getSensorModel(testModel.getId());
     }
     catch (IdNotFoundException e) {
       // we can add the model.
-      test.putSensorModel(model);
+      test.putSensorModel(testModel);
     }
   }
 
-//  /**
-//   * Deletes the test SensorModel from the WattDepotServer if it isn't defined.
-//   */
-//  private void deleteSensorModel() {
-//    SensorModel model = InstanceFactory.getSensorModel();
-//    try {
-//      test.deleteSensorModel(model);
-//    }
-//    catch (IdNotFoundException e) {
-//      // didn't exist so there isn't any problem.
-//    }
-//  }
+  // /**
+  // * Deletes the test SensorModel from the WattDepotServer if it isn't
+  // defined.
+  // */
+  // private void deleteSensorModel() {
+  // SensorModel model = InstanceFactory.getSensorModel();
+  // try {
+  // test.deleteSensorModel(model);
+  // }
+  // catch (IdNotFoundException e) {
+  // // didn't exist so there isn't any problem.
+  // }
+  // }
 
   /**
    * Adds the Sensor to the WattDepotServer if it isn't defined.
    */
   private void addSensor() {
-    Sensor sensor = InstanceFactory.getSensor();
     try {
-      test.getSensor(sensor.getId());
+      test.getSensor(testSensor.getId());
     }
     catch (IdNotFoundException e) {
       // doesn't exist so we can add it.
-      test.putSensor(sensor);
+      test.putSensor(testSensor);
     }
   }
-
-
 
   /**
    * Adds the test Depository to WattDepotServer if it isn't defined.
    */
   private void addDepository() {
-    Depository depot = InstanceFactory.getDepository();
     try {
-      test.getDepository(depot.getId());
+      test.getDepository(testDepository.getId());
     }
     catch (IdNotFoundException e) {
       // doesn't exist so we can add it.
-      test.putDepository(depot);
+      test.putDepository(testDepository);
     }
   }
 }
