@@ -1326,6 +1326,27 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     sessionClose++;
     return ret;
   }
+  
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.server.WattDepot#getUsers()
+   */
+  @Override
+  public List<UserInfo> getUsers() {
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    sessionOpen++;
+    session.beginTransaction();
+    List<UserInfoImpl> result = retrieveUsers(session);
+    ArrayList<UserInfo> ret = new ArrayList<UserInfo>();
+    for (UserInfoImpl u : result) {
+      ret.add(u.toUserInfo());
+    }
+    session.getTransaction().commit();
+    session.close();
+    sessionClose++;
+    return ret;
+  }
 
   /**
    * @param session The session with an open transaction.
@@ -1619,6 +1640,16 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     return result;
   }
 
+  /**
+   * @param session The Session with an open transaction.
+   * @return A List of all the defined users.
+   */
+  @SuppressWarnings("unchecked")
+  private List<UserInfoImpl> retrieveUsers(Session session) {
+    List<UserInfoImpl> result = (List<UserInfoImpl>) session
+        .createQuery("FROM UserInfoImpl").list();
+    return result;    
+  }
   /**
    * Use this method after beginning a transaction.
    * 

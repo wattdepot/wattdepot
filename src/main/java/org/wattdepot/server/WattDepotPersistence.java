@@ -527,10 +527,15 @@ public abstract class WattDepotPersistence {
 
   /**
    * @param orgId the id of the organization the user is in.
-   * @return The known/defined UserInfos.
+   * @return The known/defined UserInfos in the given organization.
    */
   public abstract List<UserInfo> getUsers(String orgId);
 
+  /**
+   * @return All the known/defined UserInfos.
+   */
+  public abstract List<UserInfo> getUsers();
+  
   /**
    * @param depotId the id of the depository.
    * @param orgId the Organziation's id.
