@@ -43,15 +43,32 @@
 </nav>
 
   <div id="modal-dialogs"></div>
+ 
   <div class="container">
+  <div class="panel-group" id="help">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <a class="panel-title" data-toggle="collapse" data-parent="#help" href="#collapseHelp">Help <img src="/webroot/dist/icon-help-sm.png"></a>
+      </div>
+      <div id="collapseHelp" class="panel-collapse collapse">
+        <div class="panel-body">
+        Use the following steps to create your Organizations and Users.
+        <ol>
+            <li>Create an Organization without any users in it. This is important since the persistence requires users to be members of an organization and the organization must exist before users are created.</li>
+            <li>Create one or more users (one at a time). When creating the user choose the organization they are members of.</li>
+        </ol>
+        </div>
+      </div>
+    </div>
+  </div>
   <!-- Nav tabs -->
     <ul class="nav nav-tabs">
-        <li><a id="users_tab_link" href="#users" data-toggle="tab">Users</a></li>
         <li><a id="organization_tab_link" href="#orgs" data-toggle="tab">Organizations</a></li>
+        <li><a id="users_tab_link" href="#users" data-toggle="tab">Users</a></li>
     </ul>
     <!-- Tab panes -->
     <div class="tab-content">
-        <div class="tab-pane" id="orgs">
+        <div class="tab-pane active" id="orgs">
             <div class="well">
                 <table class="table">
                     <thead>
@@ -84,7 +101,7 @@
                 <button data-toggle="modal" data-target="#addOrganizationModal" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> Add Organization</button>
             </div>        
         </div>
-        <div class="tab-pane active" id="users">
+        <div class="tab-pane" id="users">
             <div class="well">
                 <table class="table">
                     <thead>

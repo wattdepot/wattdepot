@@ -66,110 +66,110 @@ public abstract class WattDepotPersistence {
    * Defines a new CollectorProcessDefinition. This does not start any
    * processes.
    * 
-   * @param slug The unique slug.
+   * @param id The unique id.
    * @param name The unique name.
    * @param sensorId The id of the Sensor to poll.
    * @param pollingInterval The polling interval.
    * @param depositoryId The id of the depository to use.
    * @param properties The properties associated with this
    *        CollectorProcessDefinition.
-   * @param ownerId the id of the owner of the CollectorProcessDefinition
+   * @param orgId the id of the owner of the CollectorProcessDefinition
    * @return The defined CollectorProcessDefinition.
    * @throws UniqueIdException if the id is already used for another
    *         CollectorProcessDefinintion.
    * @throws MisMatchedOwnerException if the given owner doesn't match the
    *         owners of the Sensor or Depository.
-   * @throws IdNotFoundException if the sensorId or ownerId are not defined.
-   * @throws BadSlugException if the given slug isn't valid.
+   * @throws IdNotFoundException if the sensorId or orgId are not defined.
+   * @throws BadSlugException if the given id isn't valid.
    */
-  public abstract CollectorProcessDefinition defineCollectorProcessDefinition(String slug,
+  public abstract CollectorProcessDefinition defineCollectorProcessDefinition(String id,
       String name, String sensorId, Long pollingInterval, String depositoryId,
-      Set<Property> properties, String ownerId) throws UniqueIdException, MisMatchedOwnerException,
+      Set<Property> properties, String orgId) throws UniqueIdException, MisMatchedOwnerException,
       IdNotFoundException, BadSlugException;
 
   /**
    * Defines a new WattDepository in WattDepot.
    * 
-   * @param slug The unique slug.
+   * @param id The unique id.
    * @param name The name.
    * @param measurementType the Measurement Type.
-   * @param ownerId the id of the owner of the WattDepository.
+   * @param orgId the id of the owner of the WattDepository.
    * @return the defined WattDepository.
    * @throws UniqueIdException if the id is already used for another
    *         WattDepository.
-   * @throws IdNotFoundException if the ownerId is not defined.
-   * @throws BadSlugException if the slug isn't valid.
+   * @throws IdNotFoundException if the orgId is not defined.
+   * @throws BadSlugException if the id isn't valid.
    */
-  public abstract Depository defineDepository(String slug, String name,
-      MeasurementType measurementType, String ownerId) throws UniqueIdException,
+  public abstract Depository defineDepository(String id, String name,
+      MeasurementType measurementType, String orgId) throws UniqueIdException,
       IdNotFoundException, BadSlugException;
 
   /**
    * Defines a new MeasurementType in WattDepot.
    * 
-   * @param slug The unique slug.
+   * @param id The unique id.
    * @param name the name of the MeasurementType.
    * @param units the units for the MeasurementType. Must be a
    *        javax.measure.unit.Unit toString() value.
    * @return the defined MeasurementType.
-   * @throws UniqueIdException if the slug derived from name is already defined.
-   * @throws BadSlugException if the slug isn't valid.
+   * @throws UniqueIdException if the id derived from name is already defined.
+   * @throws BadSlugException if the id isn't valid.
    */
-  public abstract MeasurementType defineMeasurementType(String slug, String name, String units)
+  public abstract MeasurementType defineMeasurementType(String id, String name, String units)
       throws UniqueIdException, BadSlugException;
 
   /**
-   * @param slug The unique slug.
+   * @param id The unique id.
    * @param name The unique name.
    * @param users The members of the group.
    * @return The defined Organization.
    * @throws UniqueIdException If the id is already used for another
    *         Organization.
-   * @throws BadSlugException if the slug isn't valid.
+   * @throws BadSlugException if the id isn't valid.
    * @throws IdNotFoundException if the user's are not defined.
    */
-  public abstract Organization defineOrganization(String slug, String name, Set<String> users)
+  public abstract Organization defineOrganization(String id, String name, Set<String> users)
       throws UniqueIdException, BadSlugException, IdNotFoundException;
 
   /**
-   * @param slug The unique slug.
+   * @param id The unique id.
    * @param name The name of the sensor.
    * @param uri The URI for the sensor.
    * @param modelId The id of the SensorModel.
    * @param properties the properties associated with this Sensor.
-   * @param ownerId the id of the owner of the Sensor.
+   * @param orgId the id of the owner of the Sensor.
    * @return the defined Sensor.
    * @throws UniqueIdException if the id is already used for another Sensor.
    * @throws MisMatchedOwnerException if the given owner doesn't match the
    *         owners of the SensorModel.
-   * @throws IdNotFoundException if modelId, or ownerId are not actual Ids.
-   * @throws BadSlugException if the slug isn't valid.
+   * @throws IdNotFoundException if modelId, or orgId are not actual Ids.
+   * @throws BadSlugException if the id isn't valid.
    */
-  public abstract Sensor defineSensor(String slug, String name, String uri, String modelId,
-      Set<Property> properties, String ownerId) throws UniqueIdException, MisMatchedOwnerException,
+  public abstract Sensor defineSensor(String id, String name, String uri, String modelId,
+      Set<Property> properties, String orgId) throws UniqueIdException, MisMatchedOwnerException,
       IdNotFoundException, BadSlugException;
 
   /**
-   * @param slug The unique slug.
+   * @param id The unique id.
    * @param name The unique name.
    * @param sensors A set of the Sensors that make up the SensorGroup
-   * @param ownerId the owner of the SensorGroup.
+   * @param orgId the owner of the SensorGroup.
    * @return the defined SensorGroup.
    * @throws UniqueIdException if the id is already used for another
    *         SensorGroup.
    * @throws MisMatchedOwnerException if the given owner doesn't match the
    *         owners of the Sensors.
-   * @throws IdNotFoundException if sensorIds, or ownerId are not actual Ids.
-   * @throws BadSlugException id the slug isn't valid.
+   * @throws IdNotFoundException if sensorIds, or orgId are not actual Ids.
+   * @throws BadSlugException id the id isn't valid.
    */
-  public abstract SensorGroup defineSensorGroup(String slug, String name, Set<String> sensors,
-      String ownerId) throws UniqueIdException, MisMatchedOwnerException, IdNotFoundException,
+  public abstract SensorGroup defineSensorGroup(String id, String name, Set<String> sensors,
+      String orgId) throws UniqueIdException, MisMatchedOwnerException, IdNotFoundException,
       BadSlugException;
 
   /**
    * Defines a new SensorModel in WattDepot.
    * 
-   * @param slug The unique slug.
+   * @param id The unique id.
    * @param name The unique name.
    * @param protocol The protocol used by a meter.
    * @param type The type of the meter.
@@ -177,9 +177,9 @@ public abstract class WattDepotPersistence {
    * @return the defined SensorModel.
    * @throws UniqueIdException if the id is already used for another
    *         SensorModel.
-   * @throws BadSlugException if the slug isn't valid.
+   * @throws BadSlugException if the id isn't valid.
    */
-  public abstract SensorModel defineSensorModel(String slug, String name, String protocol,
+  public abstract SensorModel defineSensorModel(String id, String name, String protocol,
       String type, String version) throws UniqueIdException, BadSlugException;
 
   /**
@@ -203,25 +203,25 @@ public abstract class WattDepotPersistence {
   /**
    * Deletes the given CollectorProcessDefinition.
    * 
-   * @param slug The unique slug of the CollectorProcessDefinition.
-   * @param groupId the group id of the user making the request.
+   * @param id The unique id of the CollectorProcessDefinition.
+   * @param orgId the group id of the user making the request.
    * @throws IdNotFoundException If the id is not known or defined.
-   * @throws MisMatchedOwnerException if the groupId doesn't match the owner of
+   * @throws MisMatchedOwnerException if the orgId doesn't match the owner of
    *         the sensor process.
    */
-  public abstract void deleteCollectorProcessDefinition(String slug, String groupId)
+  public abstract void deleteCollectorProcessDefinition(String id, String orgId)
       throws IdNotFoundException, MisMatchedOwnerException;
 
   /**
    * Deletes the given WattDepository.
    * 
    * @param id The unique id of the WattDepository.
-   * @param groupId the group id of the user making the request.
+   * @param orgId the group id of the user making the request.
    * @throws IdNotFoundException If the id is not known or defined.
-   * @throws MisMatchedOwnerException if the groupId doesn't match the owner of
+   * @throws MisMatchedOwnerException if the orgId doesn't match the owner of
    *         the sensor process.
    */
-  public abstract void deleteDepository(String id, String groupId) throws IdNotFoundException,
+  public abstract void deleteDepository(String id, String orgId) throws IdNotFoundException,
       MisMatchedOwnerException;
 
   /**
@@ -236,10 +236,10 @@ public abstract class WattDepotPersistence {
   /**
    * Deletes the given measurement type.
    * 
-   * @param slug The unique id for the MeasurementType to delete.
-   * @throws IdNotFoundException if the slug is not a known MeasurementType.
+   * @param id The unique id for the MeasurementType to delete.
+   * @throws IdNotFoundException if the id is not a known MeasurementType.
    */
-  public abstract void deleteMeasurementType(String slug) throws IdNotFoundException;
+  public abstract void deleteMeasurementType(String id) throws IdNotFoundException;
 
   /**
    * @param id The unique id of the Organization.
@@ -251,24 +251,24 @@ public abstract class WattDepotPersistence {
    * Deletes the given Sensor.
    * 
    * @param id The unique id of the Sensor.
-   * @param groupId the group id of the user making the request.
+   * @param orgId the group id of the user making the request.
    * @throws IdNotFoundException If the id is not known or defined.
-   * @throws MisMatchedOwnerException if the groupId doesn't match the owner of
+   * @throws MisMatchedOwnerException if the orgId doesn't match the owner of
    *         the sensor.
    */
-  public abstract void deleteSensor(String id, String groupId) throws IdNotFoundException,
+  public abstract void deleteSensor(String id, String orgId) throws IdNotFoundException,
       MisMatchedOwnerException;
 
   /**
    * Deletes the given SensorGroup.
    * 
    * @param id The unique id of the SensorGroup.
-   * @param groupId the group id of the user making the request.
+   * @param orgId the group id of the user making the request.
    * @throws IdNotFoundException If the id is not known or defined.
-   * @throws MisMatchedOwnerException if the groupId doesn't match the owner of
+   * @throws MisMatchedOwnerException if the orgId doesn't match the owner of
    *         the sensor group.
    */
-  public abstract void deleteSensorGroup(String id, String groupId) throws IdNotFoundException,
+  public abstract void deleteSensorGroup(String id, String orgId) throws IdNotFoundException,
       MisMatchedOwnerException;
 
   /**
@@ -295,45 +295,45 @@ public abstract class WattDepotPersistence {
 
   /**
    * @param id The unique id for the CollectorProcessDefinition.
-   * @param groupId the group id of the user making the request.
+   * @param orgId the group id of the user making the request.
    * @return The CollectorProcessDefinition with the given id.
    * @throws IdNotFoundException if either id is not defined.
    */
-  public abstract CollectorProcessDefinition getCollectorProcessDefinition(String id, String groupId)
+  public abstract CollectorProcessDefinition getCollectorProcessDefinition(String id, String orgId)
       throws IdNotFoundException;
 
   /**
-   * @param groupId the id of the owner Organization.
+   * @param orgId the id of the owner Organization.
    * @return A list of the defined CollectorProcessDefinition Ids.
    */
-  public abstract List<String> getCollectorProcessDefinitionIds(String groupId);
+  public abstract List<String> getCollectorProcessDefinitionIds(String orgId);
 
   /**
-   * @param groupId the group id of the user making the request.
+   * @param orgId the group id of the user making the request.
    * @return The known/defined CollectorProcessDefinitiones owned by the given
    *         group id.
    */
-  public abstract List<CollectorProcessDefinition> getCollectorProcessDefinitions(String groupId);
+  public abstract List<CollectorProcessDefinition> getCollectorProcessDefinitions(String orgId);
 
   /**
-   * @param groupId the group id of the user making the request.
+   * @param orgId the group id of the user making the request.
    * @return The known/defined WattDepositories owned by the given group id.
    */
-  public abstract List<Depository> getDepositories(String groupId);
+  public abstract List<Depository> getDepositories(String orgId);
 
   /**
    * @param id The unique id for the Depository to get.
-   * @param ownerId the id of the owner's Organization.
+   * @param orgId the id of the owner's Organization.
    * @return The WattDepository with the given id.
    * @throws IdNotFoundException if either id is not defined.
    */
-  public abstract Depository getDepository(String id, String ownerId) throws IdNotFoundException;
+  public abstract Depository getDepository(String id, String orgId) throws IdNotFoundException;
 
   /**
-   * @param groupId the id of the owner UserGroup.
+   * @param orgId the id of the owner UserGroup.
    * @return A list of the defined WattDepository Ids.
    */
-  public abstract List<String> getDepositoryIds(String groupId);
+  public abstract List<String> getDepositoryIds(String orgId);
 
   /**
    * @param depotId the id of the Depository.
@@ -393,7 +393,7 @@ public abstract class WattDepotPersistence {
 
   /**
    * @param id The unique id for the MeasurementType.
-   * @return The MeasurementType with the given slug.
+   * @return The MeasurementType with the given id.
    * @throws IdNotFoundException if the id is not defined.
    */
   public abstract MeasurementType getMeasurementType(String id) throws IdNotFoundException;
@@ -422,41 +422,41 @@ public abstract class WattDepotPersistence {
 
   /**
    * @param id The unique id for the Sensor.
-   * @param groupId the group id of the user making the request.
+   * @param orgId the group id of the user making the request.
    * @return The Sensor with the given id.
    * @throws MisMatchedOwnerException if the owners of the pieces don't match.
    * @throws IdNotFoundException if the ids are not defined.
    */
-  public abstract Sensor getSensor(String id, String groupId) throws MisMatchedOwnerException,
+  public abstract Sensor getSensor(String id, String orgId) throws MisMatchedOwnerException,
       IdNotFoundException;
 
   /**
    * @param id The unique id for the SensorGroup.
-   * @param groupId the group id of the user making the request.
+   * @param orgId the group id of the user making the request.
    * @return The SensorGroup with the given id.
    * @throws IdNotFoundException if the ids are not defined.
    */
-  public abstract SensorGroup getSensorGroup(String id, String groupId) throws IdNotFoundException;
+  public abstract SensorGroup getSensorGroup(String id, String orgId) throws IdNotFoundException;
 
   /**
-   * @param ownerId the id of the owner UserGroup.
+   * @param orgId the id of the owner UserGroup.
    * @return A list of the defined SensorGroup Ids.
-   * @throws IdNotFoundException if ownerId is not defined.
+   * @throws IdNotFoundException if orgId is not defined.
    */
-  public abstract List<String> getSensorGroupIds(String ownerId) throws IdNotFoundException;
+  public abstract List<String> getSensorGroupIds(String orgId) throws IdNotFoundException;
 
   /**
-   * @param ownerId the id of the Organization owning the SensorGroups.
+   * @param orgId the id of the Organization owning the SensorGroups.
    * @return The known/defined SensorGroups owned by the given Organization id.
-   * @throws IdNotFoundException if the ownerId is not defined.
+   * @throws IdNotFoundException if the orgId is not defined.
    */
-  public abstract List<SensorGroup> getSensorGroups(String ownerId) throws IdNotFoundException;
+  public abstract List<SensorGroup> getSensorGroups(String orgId) throws IdNotFoundException;
 
   /**
-   * @param groupId the id of the owner UserGroup.
+   * @param orgId the id of the owner UserGroup.
    * @return A list of the defined Sensor Ids.
    */
-  public abstract List<String> getSensorIds(String groupId);
+  public abstract List<String> getSensorIds(String orgId);
 
   /**
    * @param id The unique id for the SensorModel.
@@ -476,10 +476,10 @@ public abstract class WattDepotPersistence {
   public abstract List<SensorModel> getSensorModels();
 
   /**
-   * @param groupId the group id of the user making the request.
+   * @param orgId the group id of the user making the request.
    * @return The known/defined Sensors owned by the given group id.
    */
-  public abstract List<Sensor> getSensors(String groupId);
+  public abstract List<Sensor> getSensors(String orgId);
 
   /**
    * @return the properties
