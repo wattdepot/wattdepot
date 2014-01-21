@@ -449,7 +449,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     Organization owner = getOrganization(orgId);
     for (String sensorId : sensorIds) {
       Sensor sensor = getSensor(sensorId, orgId);
-      if (!orgId.equals(sensor.getOwnerId())) {
+      if (!orgId.equals(sensor.getOrganizationId())) {
         throw new MisMatchedOwnerException(orgId + " is not the owner of all the sensors.");
       }
     }
@@ -1687,21 +1687,21 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public CollectorProcessDefinition updateCollectorProcessDefinition(
       CollectorProcessDefinition process) throws IdNotFoundException {
-    getCollectorProcessDefinition(process.getId(), process.getOwnerId());
-    getDepository(process.getDepositoryId(), process.getOwnerId());
-    getSensor(process.getSensorId(), process.getOwnerId());
+    getCollectorProcessDefinition(process.getId(), process.getOrganizationId());
+    getDepository(process.getDepositoryId(), process.getOrganizationId());
+    getSensor(process.getSensorId(), process.getOrganizationId());
     CollectorProcessDefinition ret = null;
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
     CollectorProcessDefinitionImpl impl = retrieveCollectorProcessDefinition(session,
-        process.getId(), process.getOwnerId());
+        process.getId(), process.getOrganizationId());
     impl.setId(process.getId());
     impl.setName(process.getName());
     impl.setPollingInterval(process.getPollingInterval());
-    impl.setDepository(retrieveDepository(session, process.getDepositoryId(), process.getOwnerId()));
-    impl.setSensor(retrieveSensor(session, process.getSensorId(), process.getOwnerId()));
-    impl.setOrg(retrieveOrganization(session, process.getOwnerId()));
+    impl.setDepository(retrieveDepository(session, process.getDepositoryId(), process.getOrganizationId()));
+    impl.setSensor(retrieveSensor(session, process.getSensorId(), process.getOrganizationId()));
+    impl.setOrg(retrieveOrganization(session, process.getOrganizationId()));
     storeCollectorProcessDefinition(session, impl);
     ret = impl.toCPD();
     session.getTransaction().commit();
@@ -1776,16 +1776,16 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    */
   @Override
   public Sensor updateSensor(Sensor sensor) throws IdNotFoundException {
-    getOrganization(sensor.getOwnerId());
+    getOrganization(sensor.getOrganizationId());
     getSensorModel(sensor.getModelId());
     Sensor ret = null;
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    SensorImpl impl = retrieveSensor(session, sensor.getId(), sensor.getOwnerId());
+    SensorImpl impl = retrieveSensor(session, sensor.getId(), sensor.getOrganizationId());
     impl.setId(sensor.getId());
     impl.setName(sensor.getName());
-    impl.setOrg(retrieveOrganization(session, sensor.getOwnerId()));
+    impl.setOrg(retrieveOrganization(session, sensor.getOrganizationId()));
     impl.setModel(retrieveSensorModel(session, sensor.getModelId()));
     Set<PropertyImpl> props = new HashSet<PropertyImpl>();
     for (Property p : sensor.getProperties()) {
@@ -1809,24 +1809,24 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    */
   @Override
   public SensorGroup updateSensorGroup(SensorGroup group) throws IdNotFoundException {
-    getOrganization(group.getOwnerId());
-    getSensorGroup(group.getId(), group.getOwnerId());
+    getOrganization(group.getOrganizationId());
+    getSensorGroup(group.getId(), group.getOrganizationId());
     // validate the list of sensor ids.
     for (String id : group.getSensors()) {
-      getSensor(id, group.getOwnerId());
+      getSensor(id, group.getOrganizationId());
     }
     SensorGroup ret = null;
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    OrganizationImpl org = retrieveOrganization(session, group.getOwnerId());
-    SensorGroupImpl impl = retrieveSensorGroup(session, group.getId(), group.getOwnerId());
+    OrganizationImpl org = retrieveOrganization(session, group.getOrganizationId());
+    SensorGroupImpl impl = retrieveSensorGroup(session, group.getId(), group.getOrganizationId());
     impl.setId(group.getId());
     impl.setName(group.getName());
     impl.setOrg(org);
     Set<SensorImpl> sensors = new HashSet<SensorImpl>();
     for (String s : group.getSensors()) {
-      sensors.add(retrieveSensor(session, s, group.getOwnerId()));
+      sensors.add(retrieveSensor(session, s, group.getOrganizationId()));
     }
     impl.setSensors(sensors);
     session.saveOrUpdate(impl);

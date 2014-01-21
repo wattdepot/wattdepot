@@ -161,7 +161,7 @@ public class SensorGroup implements IDomainModel {
   /**
    * @return the owner
    */
-  public String getOwnerId() {
+  public String getOrganizationId() {
     return ownerId;
   }
 
@@ -238,7 +238,7 @@ public class SensorGroup implements IDomainModel {
   /**
    * @param owner the id of the owner to set
    */
-  public void setOwnerId(String owner) {
+  public void setOrganizationId(String owner) {
     this.ownerId = owner;
   }
 

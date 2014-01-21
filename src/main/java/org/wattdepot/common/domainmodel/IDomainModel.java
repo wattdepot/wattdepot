@@ -36,7 +36,7 @@ public interface IDomainModel {
   /**
    * @return The id of the owner of this instance.
    */
-  public String getOwnerId();
+  public String getOrganizationId();
 
   /**
    * The slug is the name of the instance lower-cased, spaces replaced with '-',
@@ -59,7 +59,7 @@ public interface IDomainModel {
    * 
    * @param ownerId the id of the owner.
    */
-  public void setOwnerId(String ownerId);
+  public void setOrganizationId(String ownerId);
 
   /**
    * Sets the instance's slug.

@@ -47,7 +47,7 @@ public class TestCollectorProcessDefinition {
     assertTrue("sensorId".equals(cpd.getSensorId()));
     assertTrue(10 == cpd.getPollingInterval());
     assertTrue("depositoryId".equals(cpd.getDepositoryId()));
-    assertTrue("ownerId".equals(cpd.getOwnerId()));
+    assertTrue("ownerId".equals(cpd.getOrganizationId()));
   }
 
   /**

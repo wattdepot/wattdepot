@@ -161,9 +161,9 @@ public class ExampleInstances {
         johnson.putDepository(energy);
       }
       CollectorProcessDefinition energyCPD1 = new CollectorProcessDefinition(
-          "Ilima 6th telco energy", telco.getId(), 10L, energy.getId(), energy.getOwnerId());
+          "Ilima 6th telco energy", telco.getId(), 10L, energy.getId(), energy.getOrganizationId());
       CollectorProcessDefinition energyCPD2 = new CollectorProcessDefinition(
-          "Ilima 6th elect energy", elect.getId(), 10L, energy.getId(), energy.getOwnerId());
+          "Ilima 6th elect energy", elect.getId(), 10L, energy.getId(), energy.getOrganizationId());
       try {
         cmoore.getCollectorProcessDefinition(energyCPD2.getId());
       }

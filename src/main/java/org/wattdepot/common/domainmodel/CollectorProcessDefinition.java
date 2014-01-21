@@ -200,7 +200,7 @@ public class CollectorProcessDefinition implements IDomainModel {
   /**
    * @return the owner
    */
-  public String getOwnerId() {
+  public String getOrganizationId() {
     return ownerId;
   }
 
@@ -314,7 +314,7 @@ public class CollectorProcessDefinition implements IDomainModel {
   /**
    * @param ownerId the id of the owner to set
    */
-  public void setOwnerId(String ownerId) {
+  public void setOrganizationId(String ownerId) {
     this.ownerId = ownerId;
   }
 

@@ -321,7 +321,7 @@ public class TestWattDepotClient {
     }
 
     // error conditions
-    Depository bogus = new Depository("bogus", depo.getMeasurementType(), depo.getOwnerId());
+    Depository bogus = new Depository("bogus", depo.getMeasurementType(), depo.getOrganizationId());
     try {
       test.deleteDepository(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -449,7 +449,7 @@ public class TestWattDepotClient {
       fail("Should have " + sensor);
     }
     // error conditions
-    Sensor bogus = new Sensor("bogus", sensor.getUri(), sensor.getModelId(), sensor.getOwnerId());
+    Sensor bogus = new Sensor("bogus", sensor.getUri(), sensor.getModelId(), sensor.getOrganizationId());
     try {
       test.deleteSensor(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -512,7 +512,7 @@ public class TestWattDepotClient {
       fail("Should have " + group);
     }
     // error conditions
-    SensorGroup bogus = new SensorGroup("bogus", group.getSensors(), group.getOwnerId());
+    SensorGroup bogus = new SensorGroup("bogus", group.getSensors(), group.getOrganizationId());
     try {
       test.deleteSensorGroup(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -627,7 +627,7 @@ public class TestWattDepotClient {
     }
     // error conditions
     CollectorProcessDefinition bogus = new CollectorProcessDefinition("bogus", data.getSensorId(),
-        data.getPollingInterval(), data.getDepositoryId(), data.getOwnerId());
+        data.getPollingInterval(), data.getDepositoryId(), data.getOrganizationId());
     try {
       test.deleteCollectorProcessDefinition(bogus);
       fail("Shouldn't be able to delete " + bogus);

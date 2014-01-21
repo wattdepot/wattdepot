@@ -35,7 +35,7 @@ public class Depository implements IDomainModel {
   /** Type of measurements stored in the Depository. */
   protected MeasurementType measurementType;
   /** The id of the owner of this depository. */
-  protected String ownerId;
+  protected String organizationId;
 
   /**
    * The default constructor.
@@ -63,13 +63,13 @@ public class Depository implements IDomainModel {
    * @param name The name of the Depository.
    * @param measurementType The type of the measurements this Depository
    *        accepts.
-   * @param ownerId the id of the owner of the location.
+   * @param orgId the id of the organization of the Depository.
    */
-  public Depository(String slug, String name, MeasurementType measurementType, String ownerId) {
+  public Depository(String slug, String name, MeasurementType measurementType, String orgId) {
     this.name = name;
     this.id = slug;
     this.measurementType = measurementType;
-    this.ownerId = ownerId;
+    this.organizationId = orgId;
   }
 
   /*
@@ -138,8 +138,8 @@ public class Depository implements IDomainModel {
   /**
    * @return the id of the owner.
    */
-  public String getOwnerId() {
-    return ownerId;
+  public String getOrganizationId() {
+    return organizationId;
   }
 
   /*
@@ -164,8 +164,8 @@ public class Depository implements IDomainModel {
    *         ADMIN_GROUP.
    */
   public boolean isOwner(Organization group) {
-    if (ownerId != null
-        && (ownerId.equals(group.getId()) || group.equals(Organization.ADMIN_GROUP))) {
+    if (organizationId != null
+        && (organizationId.equals(group.getId()) || group.equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;
@@ -196,10 +196,10 @@ public class Depository implements IDomainModel {
   }
 
   /**
-   * @param ownerId the id of the owner.
+   * @param orgId the id of the owner.
    */
-  public void setOwnerId(String ownerId) {
-    this.ownerId = ownerId;
+  public void setOrganizationId(String orgId) {
+    this.organizationId = orgId;
   }
 
   /*

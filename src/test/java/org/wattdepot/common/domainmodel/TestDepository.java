@@ -43,7 +43,7 @@ public class TestDepository {
     assertNotNull(depo);
     assertTrue("Test Depository".equals(depo.getName()));
     assertTrue("test-depository".equals(depo.getId()));
-    assertTrue("test-user-group".equals(depo.getOwnerId()));
+    assertTrue("test-user-group".equals(depo.getOrganizationId()));
   }
 
   /**
