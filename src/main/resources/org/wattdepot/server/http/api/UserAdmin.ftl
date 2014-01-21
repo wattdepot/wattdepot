@@ -57,6 +57,7 @@
             <li>Create an Organization without any users in it. This is important since the persistence requires users to be members of an organization and the organization must exist before users are created.</li>
             <li>Create one or more users (one at a time). When creating the user choose the organization they are members of.</li>
         </ol>
+        <p>Deleting an organization deletes all the items in the organization. This is a very <em>dangerous</em> opperation.</p>
         </div>
       </div>
     </div>
