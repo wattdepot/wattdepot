@@ -20,8 +20,10 @@ package org.wattdepot.server.http.api;
 
 import java.util.logging.Level;
 
+import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.DepositoryList;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.http.api.DepositoriesResource;
 
 /**
@@ -42,8 +44,14 @@ public class DepositoriesServerResource extends WattDepotServerResource implemen
   public DepositoryList retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/depositories/");
     DepositoryList list = new DepositoryList();
-    for (Depository d : depot.getDepositories(orgId)) {
-      list.getDepositories().add(d);
+    try {
+      for (Depository d : depot.getDepositories(orgId)) {
+        list.getDepositories().add(d);
+      }
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, orgId
+          + " is not a defined Organization id.");
     }
     return list;
   }

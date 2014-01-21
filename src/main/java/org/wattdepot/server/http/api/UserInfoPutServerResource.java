@@ -51,30 +51,35 @@ public class UserInfoPutServerResource extends WattDepotServerResource implement
   public void store(UserInfo user) {
     getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/user/ with " + user);
     if (orgId.equals(user.getOrganizationId()) || orgId.equals(Organization.ADMIN_GROUP_NAME)) {
-      if (!depot.getUserIds(orgId).contains(user.getUid())) {
-        try {
-          UserInfo defined = depot.defineUserInfo(user.getUid(), user.getFirstName(),
-              user.getLastName(), user.getEmail(), user.getOrganizationId(), user.getProperties(),
-              user.getPassword());
-          // Add user to Realm
-          WattDepotApplication app = (WattDepotApplication) getApplication();
-          Role role = app.getRole(user.getOrganizationId());
-          if (role == null) {
-            role = new Role(user.getOrganizationId());
-            app.getRoles().add(role);
+      try {
+        if (!depot.getUserIds(orgId).contains(user.getUid())) {
+          try {
+            UserInfo defined = depot.defineUserInfo(user.getUid(), user.getFirstName(),
+                user.getLastName(), user.getEmail(), user.getOrganizationId(), user.getProperties(),
+                user.getPassword());
+            // Add user to Realm
+            WattDepotApplication app = (WattDepotApplication) getApplication();
+            Role role = app.getRole(user.getOrganizationId());
+            if (role == null) {
+              role = new Role(user.getOrganizationId());
+              app.getRoles().add(role);
+            }
+            MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
+            User u = new User(defined.getUid(), user.getPassword(), defined.getFirstName(),
+                defined.getLastName(), defined.getEmail());
+            realm.getUsers().add(u);
+            realm.map(u, role);
           }
-          MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
-          User u = new User(defined.getUid(), user.getPassword(), defined.getFirstName(),
-              defined.getLastName(), defined.getEmail());
-          realm.getUsers().add(u);
-          realm.map(u, role);
+          catch (UniqueIdException e) {
+            setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+          }
+          catch (IdNotFoundException e) {
+            setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+          }
         }
-        catch (UniqueIdException e) {
-          setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
-        }
-        catch (IdNotFoundException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-        }
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization id.");
       }
     }
     else {

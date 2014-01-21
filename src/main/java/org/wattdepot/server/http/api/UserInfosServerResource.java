@@ -20,27 +20,36 @@ package org.wattdepot.server.http.api;
 
 import java.util.logging.Level;
 
+import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserInfoList;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.http.api.UserInfosResource;
 
 /**
  * UserInfosServerResource handles the /wattdepot/{org-id}/users/ request.
- *
+ * 
  * @author Cam Moore
- *
+ * 
  */
 public class UserInfosServerResource extends WattDepotServerResource implements UserInfosResource {
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.wattdepot.common.http.api.UserInfosResource#retrieve()
    */
   @Override
   public UserInfoList retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/users/");
     UserInfoList ret = new UserInfoList();
-    for (UserInfo u : depot.getUsers(orgId)) {
-      ret.getUsers().add(u);
+    try {
+      for (UserInfo u : depot.getUsers(orgId)) {
+        ret.getUsers().add(u);
+      }
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization id.");
     }
     return ret;
   }

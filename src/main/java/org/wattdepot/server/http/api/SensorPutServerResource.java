@@ -53,32 +53,37 @@ public class SensorPutServerResource extends WattDepotServerResource implements
     catch (IdNotFoundException e1) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
-    if (!depot.getSensorIds(orgId).contains(sensor.getId())) {
-      try {
-        depot.defineSensor(sensor.getId(), sensor.getName(), sensor.getUri(),
-            sensor.getModelId(),
-            sensor.getProperties(), orgId);
+    try {
+      if (!depot.getSensorIds(orgId).contains(sensor.getId())) {
+        try {
+          depot.defineSensor(sensor.getId(), sensor.getName(), sensor.getUri(),
+              sensor.getModelId(),
+              sensor.getProperties(), orgId);
+        }
+        catch (UniqueIdException e) {
+          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+        }
+        catch (MisMatchedOwnerException e) {
+          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+        }
+        catch (IdNotFoundException e) {
+          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+        }
+        catch (BadSlugException e) {
+          setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
+        }
       }
-      catch (UniqueIdException e) {
-        setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-      }
-      catch (MisMatchedOwnerException e) {
-        setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-      }
-      catch (IdNotFoundException e) {
-        setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-      }
-      catch (BadSlugException e) {
-        setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
+      else {
+        try {
+          depot.updateSensor(sensor);
+        }
+        catch (IdNotFoundException e) {
+          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+        }
       }
     }
-    else {
-      try {
-        depot.updateSensor(sensor);
-      }
-      catch (IdNotFoundException e) {
-        setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-      }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, orgId + " is not a defined Organization id.");
     }
   }
 }

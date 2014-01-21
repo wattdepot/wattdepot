@@ -20,8 +20,10 @@ package org.wattdepot.server.http.api;
 
 import java.util.logging.Level;
 
+import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.http.api.CollectorProcessDefinitionsResource;
 
 /**
@@ -43,8 +45,14 @@ public class CollectorProcessDefinitionsServerResource extends WattDepotServerRe
   public CollectorProcessDefinitionList retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/collector-process-definitions/");
     CollectorProcessDefinitionList ret = new CollectorProcessDefinitionList();
-    for (CollectorProcessDefinition sp : depot.getCollectorProcessDefinitions(orgId)) {
-      ret.getDefinitions().add(sp);
+    try {
+      for (CollectorProcessDefinition sp : depot.getCollectorProcessDefinitions(orgId)) {
+        ret.getDefinitions().add(sp);
+      }
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, orgId
+          + " is not a defined Organization id.");
     }
     return ret;
   }

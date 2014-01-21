@@ -50,6 +50,7 @@ import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.exception.UniqueIdException;
+import org.wattdepot.common.util.UnitsHelper;
 import org.wattdepot.server.ServerProperties;
 import org.wattdepot.server.StrongAES;
 
@@ -79,6 +80,8 @@ public class TestWattDepotPersistenceImpl {
     testOrg = InstanceFactory.getOrganization();
     // shouldn't have to do this.
     testUser.setOrganizationId(testOrg.getId());
+    // prime the MeasurementTypes
+    UnitsHelper.quantities.containsKey("W");
   }
 
   /**
@@ -179,7 +182,13 @@ public class TestWattDepotPersistenceImpl {
   @Test
   public void testCollectorProcessDefinitions() {
     // get the list of CollectorProcessDefinitions
-    List<CollectorProcessDefinition> list = impl.getCollectorProcessDefinitions(testOrg.getId());
+    List<CollectorProcessDefinition> list = null;
+    try {
+      list = impl.getCollectorProcessDefinitions(testOrg.getId());
+    }
+    catch (IdNotFoundException e3) {
+      fail(e3.getMessage() + " should not happen");
+    }
     int numCollector = list.size();
     assertTrue(numCollector >= 0);
     // Create a new instance
@@ -258,9 +267,20 @@ public class TestWattDepotPersistenceImpl {
       fail(e.getMessage() + " shouldn't happen");
     }
 
-    list = impl.getCollectorProcessDefinitions(testOrg.getId());
+    try {
+      list = impl.getCollectorProcessDefinitions(testOrg.getId());
+    }
+    catch (IdNotFoundException e2) {
+      fail(e2.getMessage() + " should not happen");
+    }
     assertTrue(numCollector + 1 == list.size());
-    List<String> ids = impl.getCollectorProcessDefinitionIds(testOrg.getId());
+    List<String> ids = null;
+    try {
+      ids = impl.getCollectorProcessDefinitionIds(testOrg.getId());
+    }
+    catch (IdNotFoundException e2) {
+      fail(e2.getMessage() + " should not happen");
+    }
     assertTrue(list.size() == ids.size());
     try {
       CollectorProcessDefinition defined = impl.getCollectorProcessDefinition(cpd.getId(),
@@ -327,7 +347,13 @@ public class TestWattDepotPersistenceImpl {
   @Test
   public void testDepositories() {
     // get the depositories.
-    List<Depository> list = impl.getDepositories(testOrg.getId());
+    List<Depository> list = null;
+    try {
+      list = impl.getDepositories(testOrg.getId());
+    }
+    catch (IdNotFoundException e3) {
+      fail(e3.getMessage() + " should not happen");
+    }
     int numDepository = list.size();
     assertTrue(numDepository >= 0);
     // Create a new instance
@@ -422,7 +448,12 @@ public class TestWattDepotPersistenceImpl {
       e.printStackTrace();
       fail("should not happen");
     }
-    list = impl.getDepositories(testOrg.getId());
+    try {
+      list = impl.getDepositories(testOrg.getId());
+    }
+    catch (IdNotFoundException e1) {
+      fail(e1.getMessage() + " should not happen");
+    }
     assertTrue(numDepository == list.size());
     try {
       deleteMeasurementType();
@@ -769,7 +800,13 @@ public class TestWattDepotPersistenceImpl {
    */
   @Test
   public void testSensors() {
-    List<Sensor> list = impl.getSensors(testOrg.getId());
+    List<Sensor> list = null;
+    try {
+      list = impl.getSensors(testOrg.getId());
+    }
+    catch (IdNotFoundException e2) {
+      fail(e2.getMessage() + " should not happen");
+    }
     int numSensors = list.size();
     assertTrue(numSensors >= 0);
     Sensor sens = InstanceFactory.getSensor();
@@ -899,9 +936,14 @@ public class TestWattDepotPersistenceImpl {
    */
   @Test
   public void testSensorGroups() {
-    List<SensorGroup> list;
+    List<SensorGroup> list = null;
     int numGroups = 0;
-    list = impl.getSensorGroups(testOrg.getId());
+    try {
+      list = impl.getSensorGroups(testOrg.getId());
+    }
+    catch (IdNotFoundException e2) {
+      fail(e2.getMessage() + " should not happen");
+    }
     numGroups = list.size();
     assertTrue(numGroups >= 0);
     SensorGroup group = InstanceFactory.getSensorGroup();
@@ -1081,8 +1123,17 @@ public class TestWattDepotPersistenceImpl {
   @Test
   public void testUsers() {
     UserInfo user = InstanceFactory.getUserInfo2();
-    List<UserInfo> list = impl.getUsers(user.getOrganizationId());
-    int numUsers = list.size();
+    List<UserInfo> list = null;
+    try {
+      list = impl.getUsers(user.getOrganizationId());
+    }
+    catch (IdNotFoundException e2) { // NOPMD
+      // expected org2 not defined.
+    }
+    int numUsers = 0;
+    if (list != null) {
+      numUsers = list.size();
+    }
     assertTrue(numUsers >= 0);
     try {
       try {
@@ -1160,6 +1211,9 @@ public class TestWattDepotPersistenceImpl {
     catch (UniqueIdException e) {
       e.printStackTrace();
       fail(e.getMessage() + " should not happen");
+    }
+    catch (IdNotFoundException e1) {
+      fail(e1.getMessage() + " should not happen");
     }
     try {
       impl.deleteUser("bogus-user-id-4502", "bogus-organization-9520");

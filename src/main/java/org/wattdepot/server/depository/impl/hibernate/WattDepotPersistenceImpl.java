@@ -69,16 +69,16 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    */
   public WattDepotPersistenceImpl(ServerProperties properties) {
     super();
-//    try {
-//      Session validate = Manager.getValidateFactory(properties).openSession();
-//      validate.close();
-//    }
-//    catch (HibernateException e) { // NOPMD
-//      // e.printStackTrace();
-//      // might be able to just use the 'update' sessionFactory.
-////      Session create = Manager.getCreateFactory(properties).openSession();
-////      create.close();
-//    }
+    // try {
+    // Session validate = Manager.getValidateFactory(properties).openSession();
+    // validate.close();
+    // }
+    // catch (HibernateException e) { // NOPMD
+    // // e.printStackTrace();
+    // // might be able to just use the 'update' sessionFactory.
+    // // Session create = Manager.getCreateFactory(properties).openSession();
+    // // create.close();
+    // }
     setServerProperties(properties);
     this.checkSession = properties.get(ServerProperties.CHECK_SESSIONS).equals("true");
     // Start with the Organizations
@@ -564,8 +564,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * .String, java.lang.String)
    */
   @Override
-  public void deleteCollectorProcessDefinition(String id, String orgId)
-      throws IdNotFoundException, MisMatchedOwnerException {
+  public void deleteCollectorProcessDefinition(String id, String orgId) throws IdNotFoundException,
+      MisMatchedOwnerException {
     getCollectorProcessDefinition(id, orgId);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
@@ -853,7 +853,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * @see org.wattdepot.server.WattDepot#getCollectorProcessDefinitionIds()
    */
   @Override
-  public List<String> getCollectorProcessDefinitionIds(String orgId) {
+  public List<String> getCollectorProcessDefinitionIds(String orgId) throws IdNotFoundException {
     ArrayList<String> ret = new ArrayList<String>();
     for (CollectorProcessDefinition s : getCollectorProcessDefinitions(orgId)) {
       ret.add(s.getId());
@@ -869,7 +869,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * .String)
    */
   @Override
-  public List<CollectorProcessDefinition> getCollectorProcessDefinitions(String orgId) {
+  public List<CollectorProcessDefinition> getCollectorProcessDefinitions(String orgId)
+      throws IdNotFoundException {
+    getOrganization(orgId);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
@@ -890,7 +892,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * @see org.wattdepot.server.WattDepot#getWattDepositories(java.lang.String)
    */
   @Override
-  public List<Depository> getDepositories(String orgId) {
+  public List<Depository> getDepositories(String orgId) throws IdNotFoundException {
+    getOrganization(orgId);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
@@ -937,7 +940,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * @see org.wattdepot.server.WattDepot#getWattDepositoryIds()
    */
   @Override
-  public List<String> getDepositoryIds(String orgId) {
+  public List<String> getDepositoryIds(String orgId) throws IdNotFoundException {
     ArrayList<String> ret = new ArrayList<String>();
     for (Depository d : getDepositories(orgId)) {
       ret.add(d.getId());
@@ -1120,7 +1123,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * @see org.wattdepot.server.WattDepot#getSensorGroups(java.lang.String)
    */
   @Override
-  public List<SensorGroup> getSensorGroups(String orgId) {
+  public List<SensorGroup> getSensorGroups(String orgId) throws IdNotFoundException {
+    getOrganization(orgId);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
@@ -1141,7 +1145,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * @see org.wattdepot.server.WattDepot#getSensorIds()
    */
   @Override
-  public List<String> getSensorIds(String orgId) {
+  public List<String> getSensorIds(String orgId) throws IdNotFoundException {
     ArrayList<String> ret = new ArrayList<String>();
     for (Sensor s : getSensors(orgId)) {
       ret.add(s.getId());
@@ -1215,7 +1219,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * @see org.wattdepot.server.WattDepot#getSensors(java.lang.String)
    */
   @Override
-  public List<Sensor> getSensors(String orgId) {
+  public List<Sensor> getSensors(String orgId) throws IdNotFoundException {
+    getOrganization(orgId);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
@@ -1251,6 +1256,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    */
   @Override
   public UserInfo getUser(String id, String orgId) throws IdNotFoundException {
+    getOrganization(orgId);
     UserInfo ret = null;
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
@@ -1274,7 +1280,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * @see org.wattdepot.server.WattDepot#getUserIds()
    */
   @Override
-  public List<String> getUserIds(String orgId) {
+  public List<String> getUserIds(String orgId) throws IdNotFoundException {
     ArrayList<String> ret = new ArrayList<String>();
     for (UserInfo u : getUsers(orgId)) {
       ret.add(u.getUid());
@@ -1312,7 +1318,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * @see org.wattdepot.server.WattDepot#getUsers()
    */
   @Override
-  public List<UserInfo> getUsers(String orgId) {
+  public List<UserInfo> getUsers(String orgId) throws IdNotFoundException {
+    getOrganization(orgId);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
@@ -1326,7 +1333,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     sessionClose++;
     return ret;
   }
-  
+
   /*
    * (non-Javadoc)
    * 
@@ -1646,10 +1653,11 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    */
   @SuppressWarnings("unchecked")
   private List<UserInfoImpl> retrieveUsers(Session session) {
-    List<UserInfoImpl> result = (List<UserInfoImpl>) session
-        .createQuery("FROM UserInfoImpl").list();
-    return result;    
+    List<UserInfoImpl> result = (List<UserInfoImpl>) session.createQuery("FROM UserInfoImpl")
+        .list();
+    return result;
   }
+
   /**
    * Use this method after beginning a transaction.
    * 
@@ -1699,7 +1707,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     impl.setId(process.getId());
     impl.setName(process.getName());
     impl.setPollingInterval(process.getPollingInterval());
-    impl.setDepository(retrieveDepository(session, process.getDepositoryId(), process.getOrganizationId()));
+    impl.setDepository(retrieveDepository(session, process.getDepositoryId(),
+        process.getOrganizationId()));
     impl.setSensor(retrieveSensor(session, process.getSensorId(), process.getOrganizationId()));
     impl.setOrg(retrieveOrganization(session, process.getOrganizationId()));
     storeCollectorProcessDefinition(session, impl);

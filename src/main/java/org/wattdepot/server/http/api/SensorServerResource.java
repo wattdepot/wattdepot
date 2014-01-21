@@ -110,16 +110,22 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
     if (sensorId.equals(sensor.getId())) {
-      if (depot.getSensorIds(orgId).contains(sensor.getId())) {
-        try {
-          depot.updateSensor(sensor);
+      try {
+        if (depot.getSensorIds(orgId).contains(sensor.getId())) {
+          try {
+            depot.updateSensor(sensor);
+          }
+          catch (IdNotFoundException e) {
+            setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+          }
         }
-        catch (IdNotFoundException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+        else {
+          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, sensor.getName() + " is not defined.");
         }
       }
-      else {
-        setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, sensor.getName() + " is not defined.");
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, orgId
+            + " is not a defined Organization id.");
       }
     }
     else {

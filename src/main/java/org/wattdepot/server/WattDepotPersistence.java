@@ -101,8 +101,8 @@ public abstract class WattDepotPersistence {
    * @throws BadSlugException if the id isn't valid.
    */
   public abstract Depository defineDepository(String id, String name,
-      MeasurementType measurementType, String orgId) throws UniqueIdException,
-      IdNotFoundException, BadSlugException;
+      MeasurementType measurementType, String orgId) throws UniqueIdException, IdNotFoundException,
+      BadSlugException;
 
   /**
    * Defines a new MeasurementType in WattDepot.
@@ -305,21 +305,26 @@ public abstract class WattDepotPersistence {
   /**
    * @param orgId the id of the owner Organization.
    * @return A list of the defined CollectorProcessDefinition Ids.
+   * @throws IdNotFoundException if the orgId is not defined.
    */
-  public abstract List<String> getCollectorProcessDefinitionIds(String orgId);
+  public abstract List<String> getCollectorProcessDefinitionIds(String orgId)
+      throws IdNotFoundException;
 
   /**
    * @param orgId the group id of the user making the request.
    * @return The known/defined CollectorProcessDefinitiones owned by the given
    *         group id.
+   * @throws IdNotFoundException if the orgId is not defined.
    */
-  public abstract List<CollectorProcessDefinition> getCollectorProcessDefinitions(String orgId);
+  public abstract List<CollectorProcessDefinition> getCollectorProcessDefinitions(String orgId)
+      throws IdNotFoundException;
 
   /**
    * @param orgId the group id of the user making the request.
    * @return The known/defined WattDepositories owned by the given group id.
+   * @throws IdNotFoundException if orgId is not defined.
    */
-  public abstract List<Depository> getDepositories(String orgId);
+  public abstract List<Depository> getDepositories(String orgId) throws IdNotFoundException;
 
   /**
    * @param id The unique id for the Depository to get.
@@ -332,8 +337,9 @@ public abstract class WattDepotPersistence {
   /**
    * @param orgId the id of the owner UserGroup.
    * @return A list of the defined WattDepository Ids.
+   * @throws IdNotFoundException if orgId is not defined.
    */
-  public abstract List<String> getDepositoryIds(String orgId);
+  public abstract List<String> getDepositoryIds(String orgId) throws IdNotFoundException;
 
   /**
    * @param depotId the id of the Depository.
@@ -455,8 +461,9 @@ public abstract class WattDepotPersistence {
   /**
    * @param orgId the id of the owner UserGroup.
    * @return A list of the defined Sensor Ids.
+   * @throws IdNotFoundException if orgId is not defined.
    */
-  public abstract List<String> getSensorIds(String orgId);
+  public abstract List<String> getSensorIds(String orgId) throws IdNotFoundException;
 
   /**
    * @param id The unique id for the SensorModel.
@@ -478,8 +485,9 @@ public abstract class WattDepotPersistence {
   /**
    * @param orgId the group id of the user making the request.
    * @return The known/defined Sensors owned by the given group id.
+   * @throws IdNotFoundException if orgId is not defined.
    */
-  public abstract List<Sensor> getSensors(String orgId);
+  public abstract List<Sensor> getSensors(String orgId) throws IdNotFoundException;
 
   /**
    * @return the properties
@@ -514,8 +522,9 @@ public abstract class WattDepotPersistence {
   /**
    * @param orgId the id of the organization the user is in.
    * @return A list of the defined user Ids.
+   * @throws IdNotFoundException if orgId is not defined.
    */
-  public abstract List<String> getUserIds(String orgId);
+  public abstract List<String> getUserIds(String orgId) throws IdNotFoundException;
 
   /**
    * @param id The user's id.
@@ -528,14 +537,15 @@ public abstract class WattDepotPersistence {
   /**
    * @param orgId the id of the organization the user is in.
    * @return The known/defined UserInfos in the given organization.
+   * @throws IdNotFoundException if orgId is not defined.
    */
-  public abstract List<UserInfo> getUsers(String orgId);
+  public abstract List<UserInfo> getUsers(String orgId) throws IdNotFoundException;
 
   /**
    * @return All the known/defined UserInfos.
    */
   public abstract List<UserInfo> getUsers();
-  
+
   /**
    * @param depotId the id of the depository.
    * @param orgId the Organziation's id.

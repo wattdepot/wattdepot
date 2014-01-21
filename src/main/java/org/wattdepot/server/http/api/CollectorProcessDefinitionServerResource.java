@@ -68,7 +68,7 @@ public class CollectorProcessDefinitionServerResource extends WattDepotServerRes
       process = depot.getCollectorProcessDefinition(definitionId, orgId);
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     if (process == null) {
       setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "CollectorProcessDefinition "
@@ -110,20 +110,19 @@ public class CollectorProcessDefinitionServerResource extends WattDepotServerRes
         Level.INFO,
         "POST /wattdepot/{" + orgId + "}/collector-process-definition/{" + definitionId + "} with "
             + definition);
-    try {
-      depot.getOrganization(orgId);
-    }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
-    }
     if (definition.getId().equals(definitionId)) {
-      if (depot.getCollectorProcessDefinitionIds(orgId).contains(definition.getId())) {
-        try {
-          depot.updateCollectorProcessDefinition(definition);
+      try {
+        if (depot.getCollectorProcessDefinitionIds(orgId).contains(definition.getId())) {
+          try {
+            depot.updateCollectorProcessDefinition(definition);
+          }
+          catch (IdNotFoundException e) {
+            setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+          }
         }
-        catch (IdNotFoundException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "Ids do not match.");
-        }
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
     }
     else {
