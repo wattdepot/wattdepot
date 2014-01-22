@@ -50,7 +50,7 @@ public class DepositoriesServerResource extends WattDepotServerResource implemen
       }
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, orgId
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId
           + " is not a defined Organization id.");
     }
     return list;

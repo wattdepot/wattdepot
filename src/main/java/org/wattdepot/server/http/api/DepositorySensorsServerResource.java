@@ -77,7 +77,7 @@ public class DepositorySensorsServerResource extends WattDepotServerResource imp
       }
     }
     catch (MisMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " not defined.");

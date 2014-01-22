@@ -61,16 +61,16 @@ public class SensorGroupPutServerResource extends WattDepotServerResource
               sensorgroup.getSensors(), orgId);
         }
         catch (UniqueIdException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         }
         catch (MisMatchedOwnerException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         }
         catch (IdNotFoundException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         }
         catch (BadSlugException e) {
-          setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         }
       }
       else {

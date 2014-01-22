@@ -61,7 +61,7 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
       user = depot.getUser(userId, orgId);
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "User " + userId + " is not defined.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "User " + userId + " is not defined.");
     }
     return user;
   }
@@ -95,7 +95,7 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
       depot.deleteUser(userId, orgId);
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
   }
 

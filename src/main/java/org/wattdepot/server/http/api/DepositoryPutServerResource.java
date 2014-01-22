@@ -58,13 +58,13 @@ public class DepositoryPutServerResource extends WattDepotServerResource
           depository.getMeasurementType(), orgId);
     }
     catch (UniqueIdException e) {
-      setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     catch (BadSlugException e) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
   }
 }

@@ -73,7 +73,7 @@ public class AdminServerResource extends WattDepotServerResource {
         }
       }
       catch (IdNotFoundException e) {
-        setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
       }
     }
     Map<String, Object> dataModel = new HashMap<String, Object>();

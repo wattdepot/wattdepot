@@ -64,7 +64,7 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
       mt = depot.getMeasurementType(typeSlug);
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "MeasurementType " + typeSlug
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "MeasurementType " + typeSlug
           + " is not defined.");
     }
     return mt;
@@ -90,12 +90,12 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
         }
       }
       catch (IdNotFoundException e) {
-        setStatus(Status.CLIENT_ERROR_CONFLICT,
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
             "No such Measurement type defined. Cannot update undefined MeasurementType.");
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Only admin may update MeasurementTypes.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Only admin may update MeasurementTypes.");
     }
   }
 
@@ -112,11 +112,11 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
         depot.deleteMeasurementType(typeSlug);
       }
       catch (IdNotFoundException e) {
-        setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Only admin may remove MeasurementTypes.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Only admin may remove MeasurementTypes.");
     }
   }
 

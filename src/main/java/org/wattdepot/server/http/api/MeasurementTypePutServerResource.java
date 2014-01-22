@@ -62,15 +62,15 @@ public class MeasurementTypePutServerResource extends WattDepotServerResource
               measurementType.getName(), measurementType.getUnits());
         }
         catch (UniqueIdException e) {
-          setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         }
         catch (BadSlugException e) {
-          setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         }
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_FORBIDDEN,
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
           "Only admin may add new MeasurementTypes.");
     }
   }

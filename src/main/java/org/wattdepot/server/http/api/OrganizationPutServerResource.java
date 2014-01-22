@@ -74,14 +74,14 @@ public class OrganizationPutServerResource extends WattDepotServerResource
         }
       }
       catch (UniqueIdException e) {
-        setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
       catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId
             + " is not a defined Organization.");
       }
       catch (BadSlugException e) {
-        setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
     }
     else {

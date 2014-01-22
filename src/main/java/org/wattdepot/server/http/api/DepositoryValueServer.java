@@ -141,16 +141,16 @@ public class DepositoryValueServer extends WattDepotServerResource {
       }
     }
     catch (MisMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     catch (NoMeasurementException e1) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e1.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e1.getMessage());
     }
     catch (NumberFormatException e) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     catch (MeasurementGapException e) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     catch (ParseException e) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
@@ -160,7 +160,7 @@ public class DepositoryValueServer extends WattDepotServerResource {
       setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     return null;
   }

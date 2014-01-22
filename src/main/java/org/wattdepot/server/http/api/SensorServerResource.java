@@ -61,10 +61,10 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
       depot.deleteSensor(sensorId, orgId);
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     catch (MisMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
   }
 
@@ -81,13 +81,13 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
       sensor = depot.getSensor(sensorId, orgId);
     }
     catch (MisMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Sensor " + sensorId + " is not defined.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Sensor " + sensorId + " is not defined.");
     }
     if (sensor == null) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Sensor " + sensorId + " is not defined.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Sensor " + sensorId + " is not defined.");
     }
     return sensor;
   }
@@ -116,15 +116,15 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
             depot.updateSensor(sensor);
           }
           catch (IdNotFoundException e) {
-            setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
           }
         }
         else {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, sensor.getName() + " is not defined.");
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensor.getName() + " is not defined.");
         }
       }
       catch (IdNotFoundException e) {
-        setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, orgId
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId
             + " is not a defined Organization id.");
       }
     }

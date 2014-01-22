@@ -64,7 +64,7 @@ public class SensorModelServerResource extends WattDepotServerResource implement
       model = depot.getSensorModel(sensorModelId);
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "SensorModel " + sensorModelId
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "SensorModel " + sensorModelId
           + " is not defined.");
     }
     return model;
@@ -84,7 +84,7 @@ public class SensorModelServerResource extends WattDepotServerResource implement
       depot.updateSensorModel(sensormodel);
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_CONFLICT, "Can't update unknown SensorModel.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Can't update unknown SensorModel.");
     }
   }
 
@@ -100,7 +100,7 @@ public class SensorModelServerResource extends WattDepotServerResource implement
       depot.deleteSensorModel(sensorModelId);
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
   }
 

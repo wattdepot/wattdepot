@@ -66,10 +66,10 @@ public class SensorGroupServerResource extends WattDepotServerResource implement
       group = depot.getSensorGroup(sensorGroupId, orgId);
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     if (group == null) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "SensorGroup " + sensorGroupId
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "SensorGroup " + sensorGroupId
           + " is not defined.");
 
     }
@@ -118,10 +118,10 @@ public class SensorGroupServerResource extends WattDepotServerResource implement
       depot.deleteSensorGroup(sensorGroupId, orgId);
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     catch (MisMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
   }
 

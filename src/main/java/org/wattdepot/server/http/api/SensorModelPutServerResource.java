@@ -54,10 +54,10 @@ public class SensorModelPutServerResource extends WattDepotServerResource
             sensormodel.getVersion());
       }
       catch (UniqueIdException e) {
-        setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
       catch (BadSlugException e) {
-        setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
     }
     else {
@@ -65,7 +65,7 @@ public class SensorModelPutServerResource extends WattDepotServerResource
         depot.updateSensorModel(sensormodel);
       }
       catch (IdNotFoundException e) {
-        setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
     }
   }

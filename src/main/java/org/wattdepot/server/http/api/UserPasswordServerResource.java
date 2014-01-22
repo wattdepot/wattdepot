@@ -69,7 +69,7 @@ public class UserPasswordServerResource extends WattDepotServerResource implemen
         return user;
       }
       catch (IdNotFoundException e) {
-        setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "User " + userId + " is not defined.");
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "User " + userId + " is not defined.");
       }
     }
     return null;
@@ -94,7 +94,7 @@ public class UserPasswordServerResource extends WattDepotServerResource implemen
         depot.updateUserPassword(user);
       }
       catch (IdNotFoundException e) {
-        setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "User " + user.getUid()
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "User " + user.getUid()
             + " is not defined.");
       }
     }

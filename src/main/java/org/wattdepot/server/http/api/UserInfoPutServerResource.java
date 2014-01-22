@@ -71,10 +71,10 @@ public class UserInfoPutServerResource extends WattDepotServerResource implement
             realm.map(u, role);
           }
           catch (UniqueIdException e) {
-            setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
           }
           catch (IdNotFoundException e) {
-            setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
           }
         }
       }
@@ -83,7 +83,7 @@ public class UserInfoPutServerResource extends WattDepotServerResource implement
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "User " + user.getUid() + " is not in "
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "User " + user.getUid() + " is not in "
           + orgId);
     }
   }

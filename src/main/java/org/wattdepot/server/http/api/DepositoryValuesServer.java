@@ -121,7 +121,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
         }
       }
       catch (MisMatchedOwnerException e) {
-        setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
       catch (ParseException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());

@@ -418,7 +418,7 @@ public class TestWattDepotClient {
       fail("Can't put a sensor w/o location or model being defined.");
     }
     catch (ResourceException re) {
-      if (re.getStatus().equals(Status.CLIENT_ERROR_FAILED_DEPENDENCY)) {
+      if (re.getStatus().equals(Status.CLIENT_ERROR_BAD_REQUEST)) {
         addSensorModel();
         test.putSensor(sensor);
       }
@@ -478,7 +478,7 @@ public class TestWattDepotClient {
       fail("Can't put SensorGroup w/o defining the sensor.");
     }
     catch (ResourceException e) {
-      if (e.getStatus().equals(Status.CLIENT_ERROR_FAILED_DEPENDENCY)) {
+      if (e.getStatus().equals(Status.CLIENT_ERROR_BAD_REQUEST)) {
         addSensorModel();
         addSensor();
         test.putSensorGroup(group);
@@ -588,7 +588,7 @@ public class TestWattDepotClient {
       fail("Can't put a CollectorProcessDefinition for a sensor that isn't defined.");
     }
     catch (ResourceException e) {
-      if (e.getStatus().equals(Status.CLIENT_ERROR_FAILED_DEPENDENCY)) {
+      if (e.getStatus().equals(Status.CLIENT_ERROR_BAD_REQUEST)) {
         addSensorModel();
         addSensor();
         addDepository();
@@ -653,7 +653,7 @@ public class TestWattDepotClient {
         fail("Can't put a measurement with a sensor that isn't defined.");
       }
       catch (ResourceException re) {
-        if (re.getStatus().equals(Status.CLIENT_ERROR_FAILED_DEPENDENCY)) {
+        if (re.getStatus().equals(Status.CLIENT_ERROR_BAD_REQUEST)) {
           addSensorModel();
           addSensor();
           test.putMeasurement(depo, m1);

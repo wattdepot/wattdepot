@@ -74,7 +74,7 @@ public class DepositoryMeasurementServerResource extends WattDepotServerResource
       }
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     return ret;
   }

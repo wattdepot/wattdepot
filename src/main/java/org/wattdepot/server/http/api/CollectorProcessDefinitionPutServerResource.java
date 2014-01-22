@@ -66,30 +66,30 @@ public class CollectorProcessDefinitionPutServerResource extends WattDepotServer
                 definition.getProperties(), orgId);
           }
           else {
-            setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "Sensor " + definition.getSensorId()
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Sensor " + definition.getSensorId()
                 + " is not defined.");
           }
         }
         catch (UniqueIdException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         }
         catch (MisMatchedOwnerException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         }
         catch (IdNotFoundException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         }
         catch (BadSlugException e) {
-          setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         }
       }
       else {
-        setStatus(Status.CLIENT_ERROR_CONFLICT,
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
             "CollectorProcessDefinition " + definition.getName() + " is already defined.");
       }
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, orgId
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId
           + " is not a defined Organization id.");
     }
   }

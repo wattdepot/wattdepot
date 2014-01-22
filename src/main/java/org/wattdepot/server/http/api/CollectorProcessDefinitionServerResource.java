@@ -71,7 +71,7 @@ public class CollectorProcessDefinitionServerResource extends WattDepotServerRes
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     if (process == null) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "CollectorProcessDefinition "
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "CollectorProcessDefinition "
           + definitionId + " is not defined.");
     }
     return process;
@@ -90,10 +90,10 @@ public class CollectorProcessDefinitionServerResource extends WattDepotServerRes
       depot.deleteCollectorProcessDefinition(definitionId, orgId);
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     catch (MisMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
   }
 
@@ -117,7 +117,7 @@ public class CollectorProcessDefinitionServerResource extends WattDepotServerRes
             depot.updateCollectorProcessDefinition(definition);
           }
           catch (IdNotFoundException e) {
-            setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
           }
         }
       }
@@ -126,7 +126,7 @@ public class CollectorProcessDefinitionServerResource extends WattDepotServerRes
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, "Ids do not match.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Ids do not match.");
     }
   }
 

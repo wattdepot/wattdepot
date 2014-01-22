@@ -70,7 +70,7 @@ public class DepositoryServerResource extends WattDepotServerResource implements
       depo = depot.getDepository(depositoryId, orgId);
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Depository " + depositoryId
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Depository " + depositoryId
           + " is not defined.");
     }
     return depo;
@@ -107,10 +107,10 @@ public class DepositoryServerResource extends WattDepotServerResource implements
       depot.deleteDepository(depositoryId, orgId);
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     catch (MisMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
   }
 

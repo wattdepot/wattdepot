@@ -115,7 +115,7 @@ public class DepositoryMeasurementsServer extends WattDepotServerResource {
         setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
       }
       catch (MisMatchedOwnerException e) {
-        setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
       getLogger().info(ret.toString());
       return ret;
