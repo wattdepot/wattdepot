@@ -269,12 +269,9 @@
                     class="btn btn-primary" onclick="deleteOrganization();">Delete
                     Organization</button>
             </div>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<!-- / .modal -->
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- / .modal -->
 
   <!-- *********** Users ************ -->
   <!-- Add User -->

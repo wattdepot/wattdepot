@@ -12,10 +12,10 @@
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="https://code.jquery.com/jquery.js"></script>
 <script src="/webroot/dist/js/bootstrap.min.js"></script>
-<script src="/webroot/dist/js/wattdepot-admin.js"></script>
+<script src="/webroot/dist/js/wattdepot-organization-admin.js"></script>
 <script> 
 $(function(){
-  $("#modal-dialogs").load("/webroot/dist/dialogs.html"); 
+  //$("#modal-dialogs").load("/webroot/dist/dialogs.html"); 
   //$("#navigation-bar").load("/webroot/dist/navbar.html");
 });
 </script> 
@@ -39,31 +39,9 @@ $(function(){
     <ul class="nav navbar-nav">
       <li class="active"><a href="#">Definitions</a></li>
       <li><a href="/wattdepot/admin/summary/">Logs/Information/Summary</a></li>
- <!--      <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-        <ul class="dropdown-menu">
-          <li><a href="#">Action</a></li>
-          <li><a href="#">Another action</a></li>
-          <li><a href="#">Something else here</a></li>
-          <li class="divider"></li>
-          <li><a href="#">Separated link</a></li>
-          <li class="divider"></li>
-          <li><a href="#">One more separated link</a></li>
-        </ul>
-      </li> -->
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li><a href="#">${orgId}</a></li>
-<!--       <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-        <ul class="dropdown-menu">
-          <li><a href="#">Action</a></li>
-          <li><a href="#">Another action</a></li>
-          <li><a href="#">Something else here</a></li>
-          <li class="divider"></li>
-          <li><a href="#">Separated link</a></li>
-        </ul>
-      </li> -->
     </ul>
   </div><!-- /.navbar-collapse -->
 </nav>
@@ -81,6 +59,19 @@ $(function(){
     <div class="tab-content">
         <div class="tab-pane active" id="depositories">
             <div class="well">
+              <div class="panel-group" id="help">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <a class="panel-title text-right" data-toggle="collapse" data-parent="#help" href="#collapseHelp">Help <img src="/webroot/dist/icon-help-sm.png"></a>
+                  </div>
+                  <div id="collapseHelp" class="panel-collapse collapse">
+                    <div class="panel-body">
+                      <p>You cannot edit Depositories just create them or delete them. Deleting a Depository deletes all the measurements stored in the depository.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            
                 <table class="table">
                     <thead>
                       <tr><th colspan="5"><h3>Depositories</h3></th></tr>
@@ -89,15 +80,11 @@ $(function(){
                             <th>Name</th>
                             <th>Measurement Type</th>
                             <th style="width: 7px;"></th>
-                            <th style="width: 7px;"></th>
                         </tr>
                     </thead>
                     <tbody>
                     <#list depositories as d>
                         <tr><td>${d.id}</td><td>${d.name}</td><td><#if d.getMeasurementType()??>${d.measurementType.name}</#if></td>
-                            <td>
-                                <span class="glyphicon glyphicon-pencil" onclick="edit_depository_dialog(event, '${d.id}');"></span>
-                            </td>
                             <td>
                                 <span class="glyphicon glyphicon-remove" onclick="delete_depository_dialog(event, '${d.id}');"></span>
                             </td>
@@ -252,20 +239,118 @@ $(function(){
             </div>       
         </div>
     </div>  
+
+<!-- ********************** Depository Modal Dialog Boxes **************************** -->
+<!-- Add Depository -->
+<div class="modal fade" id="addDepositoryModal" tabindex="-1"
+    role="dialog" aria-labelledby="addDepositoryModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Add Depository</h4>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <form>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Depository
+                                Id</label>
+                            <div class="col-md-9">
+                                <input type="text"
+                                    name="depository_id"
+                                    class="form-control">
+                                <p class="help-block">Unique Depository id and be a slug. Slugs consist of lowercase letter, numbers and '-', no other characters are allowed.</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Depository
+                                Name</label>
+                            <div class="col-md-9">
+                                <input type="text"
+                                    name="depository_name"
+                                    class="form-control">
+                                <p class="help-block">Unique name.</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-md-3 control-label">Depository
+                                Measurement Type</label>
+                            <div class="col-md-9">
+                                <select class="form-control" name="depository_type">
+                                <#list measurementtypes as mt>
+                                    <option value="${mt.id}">${mt.name}</option>
+                                </#list>
+                                </select>
+                                <p class="help-block">The type of measurement the depository stores.</p>
+                            </div>
+                        </div>
+                        <div class="clearfix"></div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                    data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary"
+                    onclick="putNewDepository();">Save changes</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<!-- Delete Depository -->
+<div class="modal fade" id="deleteDepositoryModal" tabindex="-1"
+    role="dialog" aria-labelledby="deleteDepositoryModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Delete Depository</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <b>Delete Depository </b>
+                </p>
+                <div id="del_depository_id"></div>
+                <p><em>WARNING</em> All measurements in this depository will be deleted.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                    data-dismiss="modal">Close</button>
+                <button id="delete_button" type="button"
+                    class="btn btn-primary"
+                    onclick="deleteDepository();">Delete
+                    Depository</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- / .modal -->
     
     
+<!-- ********************** Sensor Modal Dialog Boxes **************************** -->
   <!-- Add Sensor -->
   <div class="modal fade" id="addSensorModal" tabindex="-1" role="dialog" aria-labelledby="addSensorModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title">Add/Edit Sensor</h4>
+          <h4 class="modal-title">Add Sensor</h4>
         </div>
         <div class="modal-body">
           <div class="container">
             <form>
-              <input type="hidden" name="sensor_id" value="">            
+              <div class="form-group">
+                <label class="col-md-3 control-label">Sensor Id</label>
+                <div class="col-md-9">
+                  <input type="text" name="sensor_id" class="form-control">
+                  <p class="help-block">Sensor id must be unique and be a slug. Slugs consist of lowercase letter, numbers and '-', no other characters are allowed.</p>
+                </div>
+              </div>
               <div class="form-group">
                 <label class="col-md-3 control-label" for="sensor_id">Sensor Name</label>
                 <div class="col-md-9">
@@ -301,50 +386,6 @@ $(function(){
               </div>
               <div class="clearfix"></div>
             </form>
-            <button class="btn-xs btn-success" data-toggle="collapse" data-target="#newLocationForm"><span class="glyphicon glyphicon-plus"></span> Location</button>                
-            <div id="newLocationForm" class="collapse"> 
-              <form>
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Location Name</label>
-                  <div class="col-md-9">
-                    <input type="text" name="inline_location_id" class="form-control">
-                    <p class="help-block">The unique name of the location.</p>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Latitude</label>
-                  <div class="col-md-9">
-                    <input type="number" name="inline_location_latitude" class="form-control">
-                    <p class="help-block">Enter the latitude.</p>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Longitude</label>
-                  <div class="col-md-9">
-                    <input type="number" name="inline_location_longitude" class="form-control">
-                    <p class="help-block"></p>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Altitude</label>
-                  <div class="col-md-9">
-                    <input type="number" name="inline_location_altitude" class="form-control">
-                    <p class="help-block"></p>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Description</label>
-                  <div class="col-md-9">
-                    <input type="text" name="inline_location_description" class="form-control">
-                    <p class="help-block"></p>
-                  </div>
-                </div>
-                <div class="clearfix"></div>
-              </form>
-              <button type="button" class="btn-sm btn-primary"
-                        onclick="putNewInlineLocation();">Save Location</button>
-              <p></p>
-            </div>
             <button class="btn-xs btn-success" data-toggle="collapse" data-target="#newModelForm"><span class="glyphicon glyphicon-plus"></span> Model</button>
             <div id="newModelForm" class="collapse"> 
               <form>
@@ -545,58 +586,6 @@ $(function(){
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->    
 
-<!-- Add Depository -->
-<div class="modal fade" id="addDepositoryModal" tabindex="-1"
-    role="dialog" aria-labelledby="addDepositoryModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"
-                    aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Add/Edit Depository</h4>
-            </div>
-            <div class="modal-body">
-                <div class="container">
-                    <form>
-                        <div class="form-group">
-                            <label class="col-md-3 control-label">Depository
-                                Name</label>
-                            <div class="col-md-9">
-                                <input type="text"
-                                    name="depository_name"
-                                    class="form-control">
-                                <p class="help-block">Unique name.</p>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-md-3 control-label">Depository
-                                Measurement Type</label>
-                            <div class="col-md-9">
-                                <select class="form-control" name="depository_type">
-                                <#list measurementtypes as mt>
-                                    <option value="${mt.id}">${mt.name}</option>
-                                </#list>
-                                </select>
-                                <p class="help-block">The type of measurement the depository stores.</p>
-                            </div>
-                        </div>
-                        <div class="clearfix"></div>
-                    </form>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default"
-                    data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary"
-                    onclick="putNewDepository();">Save changes</button>
-            </div>
-        </div>
-        <!-- /.modal-content -->
-    </div>
-    <!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->
 
 
 </div>
@@ -609,10 +598,10 @@ $(document).ready(function () {
     
 });
 
-var GROUPID = "${orgId}";
+var ORGID = "${orgId}";
 var DEPOSITORIES = {};
 <#list depositories as d>
-DEPOSITORIES["${d.id}"] = {"id": "${d.id}", "name": "${d.name}", "measurementType": "${d.measurementType}", "organizationId": "${d.organizationId}"};
+DEPOSITORIES["${d.id}"] = {"id": "${d.id}", "name": "${d.name}", "measurementType": "${d.measurementType.id}", "organizationId": "${d.organizationId}"};
 </#list>
 var MODELS = {};
 <#list sensormodels as m>
