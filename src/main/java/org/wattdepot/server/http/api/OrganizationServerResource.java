@@ -99,8 +99,7 @@ public class OrganizationServerResource extends WattDepotServerResource implemen
   }
 
   /**
-   * @param userId
-   *          The id of the UserInfo instance.
+   * @param userId The id of the UserInfo instance.
    * @return The Restlet User that corresponds to the given UserInfo.
    */
   private User getUser(String userId) {
@@ -123,6 +122,8 @@ public class OrganizationServerResource extends WattDepotServerResource implemen
    */
   @Override
   public void update(Organization organization) {
+    getLogger().log(Level.INFO,
+        "POST /wattdepot/{" + orgId + "}/organization/{" + userGroupId + "} with " + organization);
     try {
       depot.updateOrganization(organization);
       // update the Realm

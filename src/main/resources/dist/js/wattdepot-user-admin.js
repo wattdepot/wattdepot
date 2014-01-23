@@ -138,14 +138,16 @@ function deleteUser() {
 
 // ****************** Organizations **************************
 function putNewOrganization() {
-    var name = $("input[name='usergroup_name']").val();
-    var selected_ids = $("select[name='groupusers']").val() || [];
+    var id = $("input[name='organization_id']").val();
+    var name = $("input[name='organization_name']").val();
+    var selected_ids = $("select[name='organization_users']").val() || [];
     var selected_users = new Array();
     for (var i = 0; i < selected_ids.length; i++) {
         selected_users.push(getKnownUser(selected_ids[i]));
     }
-    setSelectedTab('users');
-    var grp = {
+    setSelectedTab('orgs');
+    var org = {
+        "id" : id,
         "name" : name,
         "users" : selected_users
     };
@@ -153,15 +155,19 @@ function putNewOrganization() {
         url : '/wattdepot/admin/organization/',
         type : 'PUT',
         contentType : 'application/json',
-        data : JSON.stringify(grp),
+        data : JSON.stringify(org),
         success : function() {
             location.reload();
         },
+        error : function( jqXHR, textStatus, errorThrown) {
+            console.log(textStatus + ": " + errorThrown);
+            return false;
+        }
     });
 };
 
-function edit_usergroup_dialog(event, id) {
-    var modalElement = $('#addOrganizationModal');
+function edit_organization_dialog(event, id) {
+    var modalElement = $('#editOrganizationModal');
     modalElement.modal({
         backdrop : true,
         keyboard : true,
@@ -169,16 +175,48 @@ function edit_usergroup_dialog(event, id) {
     });
 
     var group = getKnownOrganization(id);
-    $("input[name='usergroup_name']").val(id);
+    $("input[name='edit_organization_id']").val(id);
+    $("input[name='edit_organization_name']").val(group.name);
     for (var i = 0; i < group.users.length; i++) {
         var uid = group.users[i].id;
-        $('select[name="groupusers"] option[value="' + uid + '"]').prop(
+        $('select[name="edit_organization_users"] option[value="' + uid + '"]').prop(
                 "selected", "selected");
     }
     modalElement.modal('show');
 };
 
-function delete_usergroup_dialog(event, id) {
+function updateOrganization() {
+    var id = $("input[name='edit_organization_id']").val();
+    var name = $("input[name='edit_organization_name']").val();
+    var selected_ids = $("select[name='edit_organization_users']").val() || [];
+    var selected_users = new Array();
+    for (var i = 0; i < selected_ids.length; i++) {
+        selected_users.push(selected_ids[i]);
+    }
+    setSelectedTab('orgs');
+    var org = {
+        "id" : id,
+        "name" : name,
+        "users" : selected_users
+    };
+    $.ajax({
+        url : '/wattdepot/admin/organization/' + id,
+        type : 'POST',
+        contentType : 'application/json',
+        data : JSON.stringify(org),
+        success : function() {
+            location.reload();
+        },
+        error : function( jqXHR, textStatus, errorThrown) {
+            console.log(textStatus + ": " + errorThrown);
+            var modalElement = $('#editOrganizationModal');
+            modalElement.modal('toggle');
+            return true;
+        },
+    });
+};
+
+function delete_organization_dialog(event, id) {
     var modalElement = $('#deleteOrganizationModal');
 
     modalElement.modal({
@@ -186,13 +224,13 @@ function delete_usergroup_dialog(event, id) {
         keyboard : true,
         show : false
     });
-    modalElement.find('#del_usergroup_id').html(id);
+    modalElement.find('#del_organization_id').html(id);
     modalElement.modal('show');
 };
 
 function deleteOrganization() {
-    var id = $('#del_usergroup_id').html();
-    setSelectedTab('users');
+    var id = $('#del_organization_id').html();
+    setSelectedTab('orgs');
     $.ajax({
         url : '/wattdepot/admin/organization/' + id,
         type : 'DELETE',

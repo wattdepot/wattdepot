@@ -24,6 +24,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.http.api.UserInfoResource;
 
@@ -74,9 +75,13 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
    */
   @Override
   public void update(UserInfo user) {
-    getLogger().log(Level.INFO, "POST /wattdepot/{" + orgId + "}/user/{" + userId + "}");
+    getLogger().log(Level.INFO,
+        "POST /wattdepot/{" + orgId + "}/user/{" + userId + "} with " + user);
     try {
       depot.updateUserInfo(user);
+      UserPassword password = depot.getUserPassword(user.getUid(), user.getOrganizationId());
+      password.setPassword(user.getPassword());
+      depot.updateUserPassword(password);
     }
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No User " + userId + " in WattDepot.");

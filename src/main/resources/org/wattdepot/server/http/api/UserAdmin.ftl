@@ -89,10 +89,10 @@
                         <#if g.id != adminId>
                         <tr><td>${g.id}</td><td>${g.name}</td><td><#list g.users as u>${u} </#list></td>
                             <td>
-                                <#if g.id != "admin"><span class="glyphicon glyphicon-pencil" onclick="edit_usergroup_dialog(event, '${g.id}');"></span></#if>
+                                <#if g.id != "admin"><span class="glyphicon glyphicon-pencil" onclick="edit_organization_dialog(event, '${g.id}');"></span></#if>
                             </td>
                             <td>
-                                <#if g.id != "admin"><span class="glyphicon glyphicon-remove" onclick="delete_usergroup_dialog(event, '${g.id}');"></span></#if>
+                                <#if g.id != "admin"><span class="glyphicon glyphicon-remove" onclick="delete_organization_dialog(event, '${g.id}');"></span></#if>
                             </td>
                         </tr>
                         </#if>
@@ -144,22 +144,30 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title">Add/Edit User Group</h4>
+          <h4 class="modal-title">Add an Organization</h4>
         </div>
         <div class="modal-body">
             <div class="container">
                 <form>
                 <div class="form-group">
-                        <label class="col-md-3 control-label" for="usergroup_name">Group Name</label>
+                        <label class="col-md-3 control-label" for="organization_name">Organization Id</label>
                         <div class="col-md-9">
-                            <input type="text" name="usergroup_name" class="form-control"/>
-                            <p class="help-block">User group names must be unique.</p>
+                            <input type="text" name="organization_id" class="form-control"/>
+                            <p class="help-block">Organization id must be unique and be a slug. Slugs consist of lowercase letter, numbers and '-', no other characters are allowed.</p>
                         </div>
                 </div>
                 <div class="form-group">
-                    <label class="col-md-3 control-label" for="groupusers">Users</label>
+                        <label class="col-md-3 control-label" for="organization_name">Group Name</label>
+                        <div class="col-md-9">
+                            <input type="text" name="organization_name" class="form-control"/>
+                            <p class="help-block">User group names should be unique.</p>
+                        </div>
+                </div>
+<!--
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="organization_users">Users</label>
                     <div class="col-md-9">
-                        <select class="form-control" name="groupusers" multiple="multiple">
+                        <select class="form-control" name="organization_users" multiple="multiple">
                         <#list users as u>
                             <#if u.uid != rootUid>
                             <option value="${u.uid}">${u.uid}</option>
@@ -169,6 +177,7 @@
                         <p class="help-block">Choose the members of the group. Users can only be in one group.</p>
                     </div>
                 </div>
+-->
                 <div class="clearfix"></div>
                 </form>
             </div>                
@@ -180,6 +189,59 @@
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
+
+  <!-- Edit Organization -->
+  <div class="modal fade" id="editOrganizationModal" tabindex="-1" role="dialog" aria-labelledby="editOrganizationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Edit Organization</h4>
+        </div>
+        <div class="modal-body">
+            <div class="container">
+                <form>
+                <div class="form-group">
+                  <label class="col-md-3 control-label" for="edit_organization_name">Id</label>
+                  <div class="col-md-9">
+                    <input type="hidden" name="edit_organization_id" class="form-control"/>
+                    <p class="help-block">Organization ids cannot be edited once created.</p>
+                  </div>
+                </div>
+                <div class="form-group">
+                        <label class="col-md-3 control-label" for="edit_organization_name">Organization Name</label>
+                        <div class="col-md-9">
+                            <input type="text" name="edit_organization_name" class="form-control"/>
+                            <p class="help-block">Organization names should be unique.</p>
+                        </div>
+                </div>
+                <div class="form-group">
+                <div class="form-group">
+                    <label class="col-md-3 control-label" for="organization_users">Users</label>
+                    <div class="col-md-9">
+                        <select class="form-control hidden" name="edit_organization_users" multiple="multiple">
+                        <#list users as u>
+                            <#if u.uid != rootUid>
+                            <option value="${u.uid}">${u.uid}</option>
+                            </#if>
+                        </#list>
+                        </select>
+                       <p class="help-block">To edit the users in the Organization, edit the idividual Users and change their Organization.</p>
+                    </div>
+                </div>
+                </div>
+                <div class="clearfix"></div>
+                </form>
+            </div>                
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="updateOrganization();">Save changes</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
 <!-- Delete Organization -->
 <div class="modal fade" id="deleteOrganizationModal" tabindex="-1"
     role="dialog" aria-labelledby="deleteOrganizationModalLabel"
@@ -189,13 +251,13 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"
                     aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Delete User Group</h4>
+                <h4 class="modal-title">Delete Organization</h4>
             </div>
             <div class="modal-body">
                 <p>
                     <b>Delete Organization </b>
                 </p>
-                <div id="del_usergroup_id"></div>
+                <div id="del_organization_id"></div>
                 <p></p>
                 <p><b>Warning!</b> This operation will delete all the WattDepot Sensors, Depositories, Measurements, and 
                 Collector Process Definitions, etc. associated with this Organization.</p> 
@@ -229,6 +291,15 @@
                   <div class="container">
                       <form>
                           <div class="form-group">
+                              <label class="col-md-3 control-label">User Id</label>
+                              <div class="col-md-9">
+                                  <input type="text" name="user_id"
+                                      class="form-control">
+                                  <p class="help-block">Unique user
+                                      id.</p>
+                              </div>
+                          </div>
+                          <div class="form-group">
                               <label class="col-md-3 control-label">First
                                   Name</label>
                               <div class="col-md-9">
@@ -253,15 +324,6 @@
                                   <input type="email" name="user_email"
                                       class="form-control">
                                   <p class="help-block">email address.</p>
-                              </div>
-                          </div>
-                          <div class="form-group">
-                              <label class="col-md-3 control-label">Username</label>
-                              <div class="col-md-9">
-                                  <input type="text" name="user_id"
-                                      class="form-control">
-                                  <p class="help-block">Unique user
-                                      name.</p>
                               </div>
                           </div>
                           <div class="form-group">
@@ -313,6 +375,14 @@
                   <div class="container">
                       <form>
                           <div class="form-group">
+                              <label class="col-md-3 control-label">User Id</label>
+                              <div class="col-md-9">
+                                  <input type="hidden" name="edit_user_id"
+                                      class="form-control">
+                                  <p class="help-block">Cannot change the User's id once set.</p>
+                              </div>
+                          </div>
+                          <div class="form-group">
                               <label class="col-md-3 control-label">First
                                   Name</label>
                               <div class="col-md-9">
@@ -339,8 +409,6 @@
                                   <p class="help-block">email address.</p>
                               </div>
                           </div>
-                          <input type="hidden" name="edit_user_id"
-                                 class="form-control">
                           <div class="form-group">
                               <label class="col-md-3 control-label">Password</label>
                               <div class="col-md-9">
@@ -353,14 +421,14 @@
                           <div class="form-group">
                             <label class="col-md-3 control-label" for="organizations">Organization</label>
                             <div class="col-md-9">
-                              <select class="form-control" name="edit_user_organization">
+                              <select class="form-control hidden" name="edit_user_organization">
                               <#list orgs as o>
                                 <#if o.id != orgId>
                                 <option value="${o.id}">${o.name}</option>
                                 </#if>
                               </#list>
                         </select>
-                        <p class="help-block">Choose the organization for this user. Users can only be in one organization.</p>
+                        <p class="help-block">You cannot change a User's organization once set.</p>
                     </div>
                 </div>
                       </form>
