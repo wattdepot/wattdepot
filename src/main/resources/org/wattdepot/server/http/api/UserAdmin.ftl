@@ -204,7 +204,7 @@
                 <div class="form-group">
                   <label class="col-md-3 control-label" for="edit_organization_name">Id</label>
                   <div class="col-md-9">
-                    <input type="hidden" name="edit_organization_id" class="form-control"/>
+                    <input type="text" name="edit_organization_id" class="form-control" disabled/>
                     <p class="help-block">Organization ids cannot be edited once created.</p>
                   </div>
                 </div>
@@ -219,14 +219,14 @@
                 <div class="form-group">
                     <label class="col-md-3 control-label" for="organization_users">Users</label>
                     <div class="col-md-9">
-                        <select class="form-control hidden" name="edit_organization_users" multiple="multiple">
+                        <select class="form-control" name="edit_organization_users" multiple="multiple" disabled>
                         <#list users as u>
                             <#if u.uid != rootUid>
                             <option value="${u.uid}">${u.uid}</option>
                             </#if>
                         </#list>
                         </select>
-                       <p class="help-block">To edit the users in the Organization, edit the idividual Users and change their Organization.</p>
+                       <p class="help-block">To edit the users in the Organization, you must create or delete the users since you cannot change their Organization.</p>
                     </div>
                 </div>
                 </div>
@@ -377,8 +377,8 @@
                           <div class="form-group">
                               <label class="col-md-3 control-label">User Id</label>
                               <div class="col-md-9">
-                                  <input type="hidden" name="edit_user_id"
-                                      class="form-control">
+                                  <input type="text" name="edit_user_id"
+                                      class="form-control" disabled>
                                   <p class="help-block">Cannot change the User's id once set.</p>
                               </div>
                           </div>
@@ -421,7 +421,7 @@
                           <div class="form-group">
                             <label class="col-md-3 control-label" for="organizations">Organization</label>
                             <div class="col-md-9">
-                              <select class="form-control hidden" name="edit_user_organization">
+                              <select class="form-control" name="edit_user_organization" disabled>
                               <#list orgs as o>
                                 <#if o.id != orgId>
                                 <option value="${o.id}">${o.name}</option>

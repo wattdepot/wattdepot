@@ -22,6 +22,9 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import org.restlet.security.MemoryRealm;
+import org.restlet.security.Role;
+import org.restlet.security.User;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
@@ -82,6 +85,13 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
       UserPassword password = depot.getUserPassword(user.getUid(), user.getOrganizationId());
       password.setPassword(user.getPassword());
       depot.updateUserPassword(password);
+      WattDepotApplication app = (WattDepotApplication) getApplication();
+      MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
+      for (User u : realm.getUsers()) {
+        if (u.getIdentifier().equals(user.getUid())) {
+          u.setSecret(user.getPassword().toCharArray());
+        }
+      }
     }
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No User " + userId + " in WattDepot.");
