@@ -50,7 +50,7 @@ function getKnownSensorGroup(id) {
 }
 
 function getKnownCPD(id) {
-    return SENSORPROCESSES[id];
+    return CPDS[id];
 }
 
 // ****************** Depositories **************************
@@ -59,7 +59,6 @@ function putNewDepository() {
     var name = $("input[name='depository_name']").val();
     var selected_type = $("select[name='depository_type']").val();
     var measType = getKnownMeasurementType(selected_type);
-    var owner = getKnownUserGroup(ORGID);
     var depo = {
         "id" : id,
         "name" : name,
@@ -108,8 +107,6 @@ function putNewSensor() {
     var id = $("input[name='sensor_id']").val();
     var name = $("input[name='sensor_name']").val();
     var uri = $("input[name='sensor_uri']").val();
-    var selected_loc = $("select[name='sensor_location']").val();
-    var loc = buildLocation(selected_loc);
     var selected_model = $("select[name='sensor_model']").val();
     var sensor = {
         "id" : id,
@@ -165,7 +162,7 @@ function putNewInlineSensorProperty() {
 };
 
 function edit_sensor_dialog(event, id) {
-    var modalElement = $('#addSensorModal');
+    var modalElement = $('#editSensorModal');
     modalElement.modal({
         backdrop : true,
         keyboard : true,
@@ -173,14 +170,11 @@ function edit_sensor_dialog(event, id) {
     });
 
     var sensor = getKnownSensor(id);
-    $("input[name='sensor_id']").val(id);    
-    $("input[name='sensor_name']").val(sensor['name']);
-    $("input[name='sensor_uri']").val(sensor['uri']);
-    var lid = sensor.locationId;
-    $('select[name="sensor_location"] option[value="' + lid + '"]').prop(
-            "selected", "selected");
+    $("input[name='edit_sensor_id']").val(id);    
+    $("input[name='edit_sensor_name']").val(sensor['name']);
+    $("input[name='edit_sensor_uri']").val(sensor['uri']);
     var mid = sensor.modelId;
-    $('select[name="sensor_model"] option[value="' + mid + '"]').prop(
+    $('select[name="edit_sensor_model"] option[value="' + mid + '"]').prop(
             "selected", "selected");
     var properties = sensor.properties;
     var prop_str = "";
@@ -190,6 +184,30 @@ function edit_sensor_dialog(event, id) {
     $('#sensor_properties').text(prop_str);
 
     modalElement.modal('show');
+};
+
+function updateSensor() {
+  var id = $("input[name='edit_sensor_id']").val();
+  var name = $("input[name='edit_sensor_name']").val();
+  var uri = $("input[name='edit_sensor_uri']").val();
+  var selected_model = $("select[name='sensor_model']").val();
+  var sensor = {
+      "id" : id,
+      "name" : name,
+      "uri" : uri,
+      "modelId" : selected_model,
+      "organizationId" : ORGID
+  };
+  setSelectedTab('sensors');
+  $.ajax({
+      url : '/wattdepot/' + ORGID + '/sensor/' + id,
+      type : 'POST',
+      contentType : 'application/json',
+      data : JSON.stringify(sensor),
+      success : function() {
+          location.reload();
+      },
+  });
 };
 
 function delete_sensor_dialog(event, id) {
@@ -217,18 +235,20 @@ function deleteSensor() {
     });
 };
 
+
 // ****************** Sensor Groups **************************
 function putNewSensorGroup() {
+    var id = $("input[name='sensorgroup_id']").val();
     var name = $("input[name='sensorgroup_name']").val();
     var selected_ids = $("select[name='groupsensors']").val() || [];
     var selected_sensors = new Array();
     for (var i = 0; i < selected_ids.length; i++) {
-        selected_sensors.push(buildSensor(selected_ids[i]));
+        selected_sensors.push(selected_ids[i]);
     }
-    var owner = getKnownUserGroup(ORGID);    
     
     setSelectedTab('sensorgroups');
     var grp = {
+        "id" : id,
         "name" : name,
         "sensors" : selected_sensors,
         "organizationId" : ORGID
@@ -245,7 +265,7 @@ function putNewSensorGroup() {
 };
 
 function edit_sensorgroup_dialog(event, id) {
-    var modalElement = $('#addSensorGroupModal');
+    var modalElement = $('#editSensorGroupModal');
     modalElement.modal({
         backdrop : true,
         keyboard : true,
@@ -253,14 +273,43 @@ function edit_sensorgroup_dialog(event, id) {
     });
 
     var group = getKnownSensorGroup(id);
-    $("input[name='sensorgroup_name']").val(id);
+    $("input[name='edit_sensorgroup_id']").val(group['id']);
+    $("input[name='edit_sensorgroup_name']").val(group['name']);
     for (var i = 0; i < group.sensors.length; i++) {
         var uid = group.sensors[i].id;
-        $('select[name="groupsensors"] option[value="' + uid + '"]').prop(
+        $('select[name="edit_groupsensors"] option[value="' + uid + '"]').prop(
                 "selected", "selected");
     }
     modalElement.modal('show');
 };
+
+function updateSensorGroup() {
+  var id = $("input[name='edit_sensorgroup_id']").val();
+  var name = $("input[name='edit_sensorgroup_name']").val();
+  var selected_ids = $("select[name='edit_groupsensors']").val() || [];
+  var selected_sensors = new Array();
+  for (var i = 0; i < selected_ids.length; i++) {
+      selected_sensors.push(selected_ids[i]);
+  }
+  
+  setSelectedTab('sensorgroups');
+  var grp = {
+      "id" : id,
+      "name" : name,
+      "sensors" : selected_sensors,
+      "organizationId" : ORGID
+  };
+  $.ajax({
+      url : '/wattdepot/' + ORGID + '/sensor-group/' + id,
+      type : 'POST',
+      contentType : 'application/json',
+      data : JSON.stringify(grp),
+      success : function() {
+          location.reload();
+      },
+  });
+};
+
 
 function delete_sensorgroup_dialog(event, id) {
     var modalElement = $('#deleteSensorGroupModal');
@@ -289,11 +338,13 @@ function deleteSensorGroup() {
 
 // ****************** Sensor Models **************************
 function putNewModel() {
-    var name = $("input[name='model_id']").val();
+    var id = $("input[name='model_id']").val();
+    var name = $("input[name='model_name']").val();
     var protocol = $("input[name='model_protocol']").val();
     var type = $("input[name='model_type']").val();
     var version = $("input[name='model_version']").val();
     var model = {
+        "id" : id,
         "name" : name,
         "protocol" : protocol,
         "type" : type,
@@ -335,7 +386,7 @@ function putNewInlineModel() {
 };
 
 function edit_model_dialog(event, id) {
-    var modalElement = $('#addModelModal');
+    var modalElement = $('#editModelModal');
     modalElement.modal({
         backdrop : true,
         keyboard : true,
@@ -343,11 +394,37 @@ function edit_model_dialog(event, id) {
     });
 
     var model = getKnownSensorModel(id);
-    $("input[name='model_id']").val(model['name']);
-    $("input[name='model_protocol']").val(model['protocol']);
-    $("input[name='model_type']").val(model['type']);
-    $("input[name='model_version']").val(model['version']);
+    $("input[name='edit_model_id']").val(model['id']);
+    $("input[name='edit_model_name']").val(model['name']);
+    $("input[name='edit_model_protocol']").val(model['protocol']);
+    $("input[name='edit_model_type']").val(model['type']);
+    $("input[name='edit_model_version']").val(model['version']);
     modalElement.modal('show');
+};
+
+function updateModel() {
+  var id = $("input[name='edit_model_id']").val();
+  var name = $("input[name='edit_model_name']").val();
+  var protocol = $("input[name='edit_model_protocol']").val();
+  var type = $("input[name='edit_model_type']").val();
+  var version = $("input[name='edit_model_version']").val();
+  var model = {
+      "id" : id,
+      "name" : name,
+      "protocol" : protocol,
+      "type" : type,
+      "version" : version
+  };
+  setSelectedTab('sensors');
+  $.ajax({
+      url : '/wattdepot/' + ORGID + '/sensor-model/' + id,
+      type : 'POST',
+      contentType : 'application/json',
+      data : JSON.stringify(model),
+      success : function() {
+          location.reload();
+      },
+  });
 };
 
 function delete_model_dialog(event, id) {
@@ -376,24 +453,23 @@ function deleteModel() {
 };
 
 //****************** Sensor Processes **************************
-function putNewProcess() {
-    var name = $("input[name='sensorprocess_name']").val();
-    var selected_sensor = $("select[name='process_sensor']").val();
-    var sensor = buildSensor(selected_sensor);
-    var interval = $("input[name='sensorprocess_polling']").val();
-    var selected_depository = $("select[name='process_depository']").val();
-    var depo = buildDepository(selected_depository);
-    var owner = getKnownUserGroup(ORGID);    
+function putNewCPD() {
+    var id = $("input[name='cpd_id']").val();
+    var name = $("input[name='cpd_name']").val();
+    var selected_sensor = $("select[name='cpd_sensor']").val();
+    var interval = $("input[name='cpd_polling']").val();
+    var selected_depository = $("select[name='cpd_depository']").val();
     var process = {
+        "id" : id,
         "name" : name,
-        "sensor" : sensor,
+        "sensorId" : selected_sensor,
         "pollingInterval" : interval,
         "depositoryId" : selected_depository,
         "organizationId" : ORGID
     };
     setSelectedTab('sensorprocesses');
     $.ajax({
-        url : '/wattdepot/' + ORGID + '/collector-metadata/',
+        url : '/wattdepot/' + ORGID + '/collector-process-definition/',
         type : 'PUT',
         contentType : 'application/json',
         data : JSON.stringify(process),
@@ -403,59 +479,24 @@ function putNewProcess() {
     });
 };
 
-function putNewInlineMetaProperty() {
-    var id = $("input[name='meta_id']").val();
-    var metadata = getKnownCPD(id);
-    var key = $("input[name='inline_meta_key']").val();
-    var value = $("input[name='inline_meta_value']").val();
-    var property = new Object();
-    var sensor = buildSensor(metadata.sensorId);
-    var owner = getKnownUserGroup(ORGID);    
 
-    property.key = key;
-    property.value = value;
-    metadata.properties.push(property);
-    var collector = {
-        "id" : id,
-        "name" : metadata.name,
-        "sensor" : sensor,
-        "pollingInterval" : metadata.pollingInterval,
-        "depositoryId" : metadata.depositoryId,
-        "organizationId" : ORGID,
-        "properties" : metadata.properties
-        
-    };
+function edit_cpd_dialog(event, id) {
     setSelectedTab('sensorprocesses');
-    $.ajax({
-        url : '/wattdepot/' + ORGID + '/collector-metadata/',
-        type : 'PUT',
-        contentType : 'application/json',
-        data : JSON.stringify(collector),
-        success : function() {
-            location.reload();
-        },
-    });
-    
-}
-
-function edit_process_dialog(event, id) {
-    setSelectedTab('sensorprocesses');
-    var modalElement = $('#addProcessModal');
+    var modalElement = $('#editCPDModal');
     modalElement.modal({
         backdrop : true,
         keyboard : true,
         show : false
     });
-
     var process = getKnownCPD(id);
-    $("input[name='meta_id']").val(id);
-    $("input[name='sensorprocess_name']").val(process['id']);
+    $("input[name='edit_cpd_id']").val(id);
+    $("input[name='edit_cpd_name']").val(process['id']);
     var lid = process.sensorId;
-    $('select[name="process_sensor"] option[value="' + lid + '"]').prop(
+    $('select[name="edit_cpd_sensor"] option[value="' + lid + '"]').prop(
             "selected", "selected");
-    $("input[name='sensorprocess_polling']").val(process['pollingInterval']);
+    $("input[name='edit_cpd_polling']").val(process['pollingInterval']);
     var mid = process.depositoryId;
-    $('select[name="process_depository"] option[value="' + mid + '"]').prop(
+    $('select[name="edit_cpd_depository"] option[value="' + mid + '"]').prop(
             "selected", "selected");
     var properties = process.properties;
     var prop_str = "";
@@ -466,7 +507,33 @@ function edit_process_dialog(event, id) {
     modalElement.modal('show');
 };
 
-function delete_process_dialog(event, id) {
+function updateCPD() {
+  var id = $("input[name='edit_cpd_id']").val();
+  var name = $("input[name='edit_cpd_name']").val();
+  var selected_sensor = $("select[name='edit_cpd_sensor']").val();
+  var interval = $("input[name='edit_cpd_polling']").val();
+  var selected_depository = $("select[name='edit_cpd_depository']").val();
+  var process = {
+      "id" : id,
+      "name" : name,
+      "sensorId" : selected_sensor,
+      "pollingInterval" : interval,
+      "depositoryId" : selected_depository,
+      "organizationId" : ORGID
+  };
+  setSelectedTab('sensorprocesses');
+  $.ajax({
+      url : '/wattdepot/' + ORGID + '/collector-process-definition/' + id,
+      type : 'POST',
+      contentType : 'application/json',
+      data : JSON.stringify(process),
+      success : function() {
+          location.reload();
+      },
+  });
+};
+
+function delete_cpd_dialog(event, id) {
     var modalElement = $('#deleteSensorProcessModal');
 
     modalElement.modal({
@@ -482,7 +549,7 @@ function deleteCPD() {
     var id = $('#del_sensorprocess_id').html();
     setSelectedTab('sensorprocesses');
     $.ajax({
-        url : '/wattdepot/' + ORGID + '/collector-metadata/' + id,
+        url : '/wattdepot/' + ORGID + '/collector-process-definition/' + id,
         type : 'DELETE',
         contentType : 'application/json',
         success : function() {

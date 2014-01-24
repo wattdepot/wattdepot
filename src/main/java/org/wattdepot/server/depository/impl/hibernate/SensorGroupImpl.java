@@ -21,14 +21,14 @@ package org.wattdepot.server.depository.impl.hibernate;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.wattdepot.common.domainmodel.SensorGroup;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.wattdepot.common.domainmodel.SensorGroup;
 
 /**
  * SensorGroupImpl - Hibernate implementation of the SensorGroup. Includes pk
@@ -50,7 +50,7 @@ public class SensorGroupImpl {
   /** The name of the group. */
   private String name;
   /** Set of sensors that make up the group. */
-  @OneToMany
+  @ManyToMany
   private Set<SensorImpl> sensors;
   /** The group's organization. */
   @ManyToOne

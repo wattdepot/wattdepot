@@ -84,7 +84,7 @@ public class SensorGroupServerResource extends WattDepotServerResource implement
    */
   @Override
   public void update(SensorGroup sensorgroup) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/sensor-group/ with " + sensorgroup);
+    getLogger().log(Level.INFO, "POST /wattdepot/{" + orgId + "}/sensor-group/ with " + sensorgroup);
     try {
       depot.getOrganization(orgId);
     }

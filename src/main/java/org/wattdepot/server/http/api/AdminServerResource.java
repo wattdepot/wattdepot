@@ -99,14 +99,14 @@ public class AdminServerResource extends WattDepotServerResource {
       List<Sensor> sensors = depot.getSensors(orgId);
       List<SensorModel> sensorModels = depot.getSensorModels();
       List<SensorGroup> sensorGroups = depot.getSensorGroups(orgId);
-      List<CollectorProcessDefinition> sensorProcesses = depot
+      List<CollectorProcessDefinition> cpds = depot
           .getCollectorProcessDefinitions(orgId);
       List<MeasurementType> measurementTypes = depot.getMeasurementTypes();
       dataModel.put("depositories", depos);
       dataModel.put("sensors", sensors);
       dataModel.put("sensorgroups", sensorGroups);
       dataModel.put("sensormodels", sensorModels);
-      dataModel.put("sensorprocesses", sensorProcesses);
+      dataModel.put("cpds", cpds);
       dataModel.put("measurementtypes", measurementTypes);
       rep = new ClientResource(LocalReference.createClapReference(getClass().getPackage())
           + "/OrganizationAdmin.ftl").get();

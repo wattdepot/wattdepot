@@ -51,7 +51,7 @@ public class CollectorProcessDefinition implements IDomainModel {
    * Hide the default constructor.
    */
   protected CollectorProcessDefinition() {
-
+    properties = new HashSet<Property>();
   }
 
   /**
