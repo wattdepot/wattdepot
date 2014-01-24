@@ -31,6 +31,7 @@ import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementList;
 import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.util.DateConvert;
@@ -80,24 +81,36 @@ public class DepositoryMeasurementsServer extends WattDepotServerResource {
       try {
         Depository depository = depot.getDepository(depositoryId, orgId);
         if (depository != null) {
-          Sensor sensor = depot.getSensor(sensorId, orgId);
-          if (sensor != null) {
-            Date startDate = DateConvert.parseCalStringToDate(start);
-            Date endDate = DateConvert.parseCalStringToDate(end);
-            if (startDate != null && endDate != null) {
-              for (Measurement meas : depot.getMeasurements(depositoryId, orgId,
-                  sensor.getId(), startDate, endDate)) {
+          Date startDate = DateConvert.parseCalStringToDate(start);
+          Date endDate = DateConvert.parseCalStringToDate(end);
+          if (startDate != null && endDate != null) {
+            Sensor sensor = depot.getSensor(sensorId, orgId);
+            if (sensor != null) {
+              for (Measurement meas : depot.getMeasurements(depositoryId,
+                  orgId, sensor.getId(), startDate, endDate)) {
                 ret.getMeasurements().add(meas);
               }
             }
             else {
-              setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
-                  "Start date and/or end date missing.");
+              SensorGroup group = depot.getSensorGroup(sensorId, orgId);
+              if (group != null) {
+                for (String s : group.getSensors()) {
+                  sensor = depot.getSensor(s, orgId);
+                  for (Measurement meas : depot.getMeasurements(depositoryId,
+                      orgId, sensor.getId(), startDate, endDate)) {
+                    ret.getMeasurements().add(meas);
+                  }                  
+                }
+              }
+              else {
+                setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensorId
+                    + " is not defined");
+              }
             }
           }
           else {
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensorId
-                + " is not defined");
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+                "Start date and/or end date missing.");
           }
         }
         else {
