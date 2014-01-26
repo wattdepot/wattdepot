@@ -46,6 +46,7 @@ import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.DepositoryList;
 import org.wattdepot.common.domainmodel.InstanceFactory;
+import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementList;
 import org.wattdepot.common.domainmodel.MeasurementType;
@@ -449,7 +450,8 @@ public class TestWattDepotClient {
       fail("Should have " + sensor);
     }
     // error conditions
-    Sensor bogus = new Sensor("bogus", sensor.getUri(), sensor.getModelId(), sensor.getOrganizationId());
+    Sensor bogus = new Sensor("bogus", sensor.getUri(), sensor.getModelId(),
+        sensor.getOrganizationId());
     try {
       test.deleteSensor(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -725,6 +727,108 @@ public class TestWattDepotClient {
     catch (IdNotFoundException e) {
       // we expect this.
     }
+  }
+
+  /**
+   * Tests getting measurements and values for SensorGroups.
+   */
+  @Test
+  public void testSensorGroupMeasurements() {
+    addSensorModel();
+    // Initialize and store the sensors
+    Sensor sensor1 = new Sensor("TestWattDepotClient Sensor1", "test_sensor_uri1",
+        testModel.getId(), testOrg.getId());
+    Sensor sensor2 = new Sensor("TestWattDepotClient Sensor2", "test_sensor_uri2",
+        testModel.getId(), testOrg.getId());
+    test.putSensor(sensor1);
+    test.putSensor(sensor2);
+    // Initialize and store the SensorGroup
+    Set<String> sensorNames = new HashSet<String>();
+    sensorNames.add(sensor1.getId());
+    sensorNames.add(sensor2.getId());
+    SensorGroup group = new SensorGroup("TestWattDepotClient SensorGroup1", sensorNames,
+        testOrg.getId());
+    test.putSensorGroup(group);
+    // Make sure the depository is saved.
+    Depository depo = testDepository;
+    test.putDepository(depo);
+    // Create some measurements
+    try {
+      Date measTime1 = DateConvert.parseCalStringToDate("2013-11-20T14:35:27.925-1000");
+      Date measTime2 = DateConvert.parseCalStringToDate("2013-11-20T14:35:37.925-1000");
+      Date measTime3 = DateConvert.parseCalStringToDate("2013-11-20T14:35:47.925-1000");
+      Date measTime4 = DateConvert.parseCalStringToDate("2013-11-20T14:35:57.925-1000");
+      Date measTime5 = DateConvert.parseCalStringToDate("2013-11-20T14:36:07.925-1000");
+      Date measTime6 = DateConvert.parseCalStringToDate("2013-11-20T14:36:17.925-1000");
+      Double value = 50.1;
+      Measurement s1m1 = new Measurement(sensor1.getId(), measTime1, value,
+          testMeasurementType.unit());
+      Measurement s1m2 = new Measurement(sensor1.getId(), measTime3, value,
+          testMeasurementType.unit());
+      Measurement s1m3 = new Measurement(sensor1.getId(), measTime5, value,
+          testMeasurementType.unit());
+      Measurement s2m1 = new Measurement(sensor2.getId(), measTime2, value,
+          testMeasurementType.unit());
+      Measurement s2m2 = new Measurement(sensor2.getId(), measTime4, value,
+          testMeasurementType.unit());
+      Measurement s2m3 = new Measurement(sensor2.getId(), measTime6, value,
+          testMeasurementType.unit());
+      test.putMeasurement(depo, s1m1);
+      test.putMeasurement(depo, s1m2);
+      test.putMeasurement(depo, s1m3);
+      test.putMeasurement(depo, s2m1);
+      test.putMeasurement(depo, s2m2);
+      test.putMeasurement(depo, s2m3);
+      
+      // now get the measurements for the group
+      MeasurementList measurements = test.getMeasurements(depo, group, measTime1, measTime6);
+      assertNotNull(measurements);
+      assertTrue(measurements.getMeasurements().size() == 6);
+      assertTrue(measurements.getMeasurements().contains(s2m3));
+      assertTrue(measurements.getMeasurements().contains(s2m2));
+      assertTrue(measurements.getMeasurements().contains(s2m1));
+      assertTrue(measurements.getMeasurements().contains(s1m3));
+      assertTrue(measurements.getMeasurements().contains(s1m2));
+      assertTrue(measurements.getMeasurements().contains(s1m1));
+      
+      InterpolatedValue iv = test.getEarliestValue(depo, sensor1);
+      assertNotNull(iv);
+      assertTrue(iv.getDate().equals(s1m1.getDate()));
+      iv = test.getLatestValue(depo, sensor2);
+      assertTrue(iv.getDate().equals(s2m3.getDate()));
+      
+      // Get value for group
+      try {
+        Double val = test.getValue(depo, group, measTime3);
+        assertNotNull(val);
+        assertTrue(Math.abs(val - 2 * value) < 0.0001);
+        iv = test.getEarliestValue(depo, group);
+        assertNotNull(iv);
+        assertTrue(Math.abs(iv.getValue() - 2 * value) < 0.0001);
+        assertTrue(measTime2.equals(iv.getDate()));
+        iv = test.getLatestValue(depo, group);
+        assertNotNull(iv);
+        assertTrue(Math.abs(iv.getValue() - 2 * value) < 0.0001);
+        assertTrue(measTime5.equals(iv.getDate()));
+      }
+      catch (NoMeasurementException e) {
+        e.printStackTrace();
+        fail(e.getMessage() + " should not happen");
+      }
+    }
+    catch (ParseException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen.");
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen.");
+    }
+    catch (MeasurementTypeException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen.");
+    }
+
   }
 
   /**

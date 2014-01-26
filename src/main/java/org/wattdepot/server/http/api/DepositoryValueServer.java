@@ -30,6 +30,7 @@ import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementGapException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
@@ -86,54 +87,81 @@ public class DepositoryValueServer extends WattDepotServerResource {
     try {
       Depository deposit = depot.getDepository(depositoryId, orgId);
       if (deposit != null) {
-        Sensor sensor = depot.getSensor(sensorId, orgId);
-        if (sensor != null) {
-          Double value = null;
-          Date startDate = null;
-          Date endDate = null;
-          Date time = null;
-
-          if (earliest != null) {
-            return depot.getEarliestMeasuredValue(depositoryId, orgId, sensorId);
-          }
-          else if (latest != null) {
-            return depot.getLatestMeasuredValue(depositoryId, orgId, sensorId);
-          }
-          else if (timestamp != null) {
-            time = DateConvert.parseCalStringToDate(timestamp);
-            if (gapSeconds != null) {
-              value = depot.getValue(depositoryId, orgId, sensor.getId(), time,
-                  Long.parseLong(gapSeconds));
-            }
-            else {
-              value = depot.getValue(depositoryId, orgId, sensor.getId(), time);
-            }
-          }
-          else if (start != null && end != null) {
-            startDate = DateConvert.parseCalStringToDate(start);
-            endDate = DateConvert.parseCalStringToDate(end);
-            if (gapSeconds != null) {
-              value = depot.getValue(depositoryId, orgId, sensor.getId(), startDate, endDate,
-                  Long.parseLong(gapSeconds));
-            }
-            else {
-              value = depot.getValue(depositoryId, orgId, sensor.getId(), startDate, endDate);
-            }
-          }
-
-          InterpolatedValue val = null; 
-          if (end != null) {
-            val = new InterpolatedValue(sensorId, value,
-                deposit.getMeasurementType(), endDate);
-          }
-          else if (time != null) {
-            val = new InterpolatedValue(sensorId, value,
-                deposit.getMeasurementType(), time);
-          }
-          return val;
+        try {
+          depot.getSensor(sensorId, orgId);
+          return calculateValue(sensorId, start, end, timestamp, earliest, latest);
         }
-        else {
-          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Could not find sensor " + sensorId);
+        catch (IdNotFoundException inf) {
+          try {
+            SensorGroup group = depot.getSensorGroup(sensorId, orgId);
+            InterpolatedValue val = null;
+            // this wont work for earliest or latest.
+            if (earliest != null) {
+              // find the last 'earliest' time
+              Date time = null;
+              for (String s : group.getSensors()) {
+                InterpolatedValue v = calculateValue(s, start, end, timestamp, earliest, latest);
+                if (time == null) {
+                  time = v.getDate();
+                }
+                else if (time.before(v.getDate())) {
+                  time = v.getDate();
+                }
+              }
+              // have the time get the value at time
+              for (String s : group.getSensors()) {
+                if (val == null) {
+                  val = calculateValue(s, null, null, DateConvert.convertDate(time).toString(),
+                      null, null);
+                }
+                else {
+                  val.setValue(val.getValue()
+                      + calculateValue(s, null, null, DateConvert.convertDate(time).toString(),
+                          null, null).getValue());
+                }
+              }
+            }
+            else if (latest != null) {
+              // find the first 'latest' time
+              Date time = null;
+              for (String s : group.getSensors()) {
+                InterpolatedValue v = calculateValue(s, start, end, timestamp, earliest, latest);
+                if (time == null) {
+                  time = v.getDate();
+                }
+                else if (time.after(v.getDate())) {
+                  time = v.getDate();
+                }
+              }
+              // have the time get the value at time
+              for (String s : group.getSensors()) {
+                if (val == null) {
+                  val = calculateValue(s, null, null, DateConvert.convertDate(time).toString(),
+                      null, null);
+                }
+                else {
+                  val.setValue(val.getValue()
+                      + calculateValue(s, null, null, DateConvert.convertDate(time).toString(),
+                          null, null).getValue());
+                }
+              }
+            }
+            else {
+              for (String s : group.getSensors()) {
+                if (val == null) {
+                  val = calculateValue(s, start, end, timestamp, earliest, latest);
+                }
+                else {
+                  val.setValue(val.getValue()
+                      + calculateValue(s, start, end, timestamp, earliest, latest).getValue());
+                }
+              }
+            }
+            return val;
+          }
+          catch (IdNotFoundException inf1) {
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Could not find sensor " + sensorId);
+          }
         }
       }
       else {
@@ -163,5 +191,74 @@ public class DepositoryValueServer extends WattDepotServerResource {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     return null;
+  }
+
+  /**
+   * @param sensorId the Sensor's id.
+   * @param start The start time. Optional, must have end if not null.
+   * @param end The end time. Optional, must exist if start not null.
+   * @param timestamp The time of the value. Optional, must be null if start or
+   *        end.
+   * @param earliest if not null will get earliest value. Optional, must be null
+   *        if start or end or latest or timestamp.
+   * @param latest if not null will get latest value. Optional, must be null if
+   *        start or end or earliest or timestamp.
+   * @return The interpolated value for the sensorId and time(s).
+   * @throws IdNotFoundException if sensorId is not defined.
+   * @throws MisMatchedOwnerException if sensorId is not in orgId.
+   * @throws NoMeasurementException if there aren't measurements around the
+   *         time(s).
+   * @throws ParseException if the times are not valid Date strings.
+   * @throws DatatypeConfigurationException if there is a server problem.
+   * @throws NumberFormatException if there is a problem.
+   * @throws MeasurementGapException if the measurements are too far apart.
+   */
+  private InterpolatedValue calculateValue(String sensorId, String start, String end,
+      String timestamp, String earliest, String latest) throws IdNotFoundException,
+      MisMatchedOwnerException, NoMeasurementException, ParseException,
+      DatatypeConfigurationException, NumberFormatException, MeasurementGapException {
+    Depository deposit = depot.getDepository(depositoryId, orgId);
+    Sensor sensor = depot.getSensor(sensorId, orgId);
+    Double value = null;
+    Date startDate = null;
+    Date endDate = null;
+    Date time = null;
+    InterpolatedValue val = null;
+
+    if (earliest != null) {
+      return depot.getEarliestMeasuredValue(depositoryId, orgId, sensorId);
+    }
+    else if (latest != null) {
+      return depot.getLatestMeasuredValue(depositoryId, orgId, sensorId);
+    }
+    else if (timestamp != null) {
+      time = DateConvert.parseCalStringToDate(timestamp);
+      if (gapSeconds != null) {
+        value = depot.getValue(depositoryId, orgId, sensor.getId(), time,
+            Long.parseLong(gapSeconds));
+      }
+      else {
+        value = depot.getValue(depositoryId, orgId, sensor.getId(), time);
+      }
+    }
+    else if (start != null && end != null) {
+      startDate = DateConvert.parseCalStringToDate(start);
+      endDate = DateConvert.parseCalStringToDate(end);
+      if (gapSeconds != null) {
+        value = depot.getValue(depositoryId, orgId, sensor.getId(), startDate, endDate,
+            Long.parseLong(gapSeconds));
+      }
+      else {
+        value = depot.getValue(depositoryId, orgId, sensor.getId(), startDate, endDate);
+      }
+    }
+
+    if (end != null) {
+      val = new InterpolatedValue(sensorId, value, deposit.getMeasurementType(), endDate);
+    }
+    else if (time != null) {
+      val = new InterpolatedValue(sensorId, value, deposit.getMeasurementType(), time);
+    }
+    return val;
   }
 }

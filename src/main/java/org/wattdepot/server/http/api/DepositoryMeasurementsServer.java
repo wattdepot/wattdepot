@@ -72,9 +72,8 @@ public class DepositoryMeasurementsServer extends WattDepotServerResource {
   public MeasurementList doRetrieve() {
     getLogger().log(
         Level.INFO,
-        "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId
-            + "}/measurements/?sensor={" + sensorId + "}&start={" + start
-            + "}&end={" + end + "}");
+        "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/measurements/?sensor={"
+            + sensorId + "}&start={" + start + "}&end={" + end + "}");
 
     if (start != null && end != null) {
       MeasurementList ret = new MeasurementList();
@@ -84,38 +83,35 @@ public class DepositoryMeasurementsServer extends WattDepotServerResource {
           Date startDate = DateConvert.parseCalStringToDate(start);
           Date endDate = DateConvert.parseCalStringToDate(end);
           if (startDate != null && endDate != null) {
-            Sensor sensor = depot.getSensor(sensorId, orgId);
-            if (sensor != null) {
-              for (Measurement meas : depot.getMeasurements(depositoryId,
-                  orgId, sensor.getId(), startDate, endDate)) {
+            try {
+              Sensor sensor = depot.getSensor(sensorId, orgId);
+              for (Measurement meas : depot.getMeasurements(depositoryId, orgId, sensor.getId(),
+                  startDate, endDate)) {
                 ret.getMeasurements().add(meas);
               }
             }
-            else {
-              SensorGroup group = depot.getSensorGroup(sensorId, orgId);
-              if (group != null) {
+            catch (IdNotFoundException nf) {
+              try {
+                SensorGroup group = depot.getSensorGroup(sensorId, orgId);
                 for (String s : group.getSensors()) {
-                  sensor = depot.getSensor(s, orgId);
-                  for (Measurement meas : depot.getMeasurements(depositoryId,
-                      orgId, sensor.getId(), startDate, endDate)) {
+                  Sensor sensor = depot.getSensor(s, orgId);
+                  for (Measurement meas : depot.getMeasurements(depositoryId, orgId,
+                      sensor.getId(), startDate, endDate)) {
                     ret.getMeasurements().add(meas);
-                  }                  
+                  }
                 }
               }
-              else {
-                setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensorId
-                    + " is not defined");
+              catch (IdNotFoundException nf1) {
+                setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensorId + " is not defined");
               }
             }
           }
           else {
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
-                "Start date and/or end date missing.");
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Start date and/or end date missing.");
           }
         }
         else {
-          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId
-              + " is not defined.");
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " is not defined.");
         }
       }
       catch (IdNotFoundException e) {
@@ -134,10 +130,8 @@ public class DepositoryMeasurementsServer extends WattDepotServerResource {
       return ret;
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
-          "Missing start and/or end times.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Missing start and/or end times.");
       return null;
     }
   }
-
 }

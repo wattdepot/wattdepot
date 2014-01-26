@@ -33,6 +33,7 @@ import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.MeasuredValueList;
 import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.NoMeasurementException;
@@ -84,23 +85,22 @@ public class DepositoryValuesServer extends WattDepotServerResource {
       try {
         Depository depository = depot.getDepository(depositoryId, orgId);
         if (depository != null) {
+          XMLGregorianCalendar startTime = DateConvert.parseCalString(start);
+          XMLGregorianCalendar endTime = DateConvert.parseCalString(end);
+
+          // interval is in minute
+          int intervalMinutes = Integer.parseInt(interval);
+
+          // Build list of timestamps, starting with startTime, separated by
+          // intervalMilliseconds
+          List<XMLGregorianCalendar> timestampList = Tstamp.getTimestampList(startTime, endTime,
+              intervalMinutes);
+
           Sensor sensor = depot.getSensor(sensorId, orgId);
           if (sensor != null) {
-
-            XMLGregorianCalendar startTime = DateConvert.parseCalString(start);
-            XMLGregorianCalendar endTime = DateConvert.parseCalString(end);
-
-            // interval is in minute
-            int intervalMinutes = Integer.parseInt(interval);
-
-            // Build list of timestamps, starting with startTime, separated by
-            // intervalMilliseconds
-            List<XMLGregorianCalendar> timestampList = Tstamp.getTimestampList(startTime, endTime,
-                intervalMinutes);
-
             for (int i = 0; i < timestampList.size(); i++) {
               Date timestamp = DateConvert.convertXMLCal(timestampList.get(i));
-              Double value = depot.getValue(depositoryId, orgId,sensor.getId(), timestamp);
+              Double value = depot.getValue(depositoryId, orgId, sensor.getId(), timestamp);
               if (value == null) {
                 value = new Double(0);
               }
@@ -113,7 +113,30 @@ public class DepositoryValuesServer extends WattDepotServerResource {
             }
           }
           else {
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensorId + " is not defined");
+            SensorGroup group = depot.getSensorGroup(sensorId, orgId);
+            if (group != null) {
+              for (String s : group.getSensors()) {
+                Sensor sens = depot.getSensor(s, orgId);
+                if (sens != null) {
+                  for (int i = 0; i < timestampList.size(); i++) {
+                    Date timestamp = DateConvert.convertXMLCal(timestampList.get(i));
+                    Double value = depot.getValue(depositoryId, orgId, sens.getId(), timestamp);
+                    if (value == null) {
+                      value = new Double(0);
+                    }
+                    InterpolatedValue mValue = new InterpolatedValue(sens.getId(), value,
+                        depository.getMeasurementType(), timestamp);
+
+                    mValue.setDate(timestamp);
+
+                    ret.getMeasuredValues().add(mValue);
+                  }
+                }
+              }
+            }
+            else {
+              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensorId + " is not defined");
+            }
           }
         }
         else {

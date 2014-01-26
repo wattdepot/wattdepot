@@ -35,8 +35,8 @@ import org.wattdepot.common.http.api.SensorGroupPutResource;
  * @author Cam Moore
  * 
  */
-public class SensorGroupPutServerResource extends WattDepotServerResource
-    implements SensorGroupPutResource {
+public class SensorGroupPutServerResource extends WattDepotServerResource implements
+    SensorGroupPutResource {
 
   /*
    * (non-Javadoc)
@@ -46,8 +46,7 @@ public class SensorGroupPutServerResource extends WattDepotServerResource
    */
   @Override
   public void store(SensorGroup sensorgroup) {
-    getLogger().log(Level.INFO,
-        "PUT /wattdepot/{" + orgId + "}/sensor-group/ with " + sensorgroup);
+    getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/sensor-group/ with " + sensorgroup);
     try {
       depot.getOrganization(orgId);
     }
@@ -55,26 +54,31 @@ public class SensorGroupPutServerResource extends WattDepotServerResource
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
     try {
-      if (!depot.getSensorGroupIds(orgId).contains(sensorgroup.getId())) {
-        try {
-          depot.defineSensorGroup(sensorgroup.getId(), sensorgroup.getName(),
-              sensorgroup.getSensors(), orgId);
+      if (!depot.getSensorIds(orgId).contains(sensorgroup.getId())) {
+        if (!depot.getSensorGroupIds(orgId).contains(sensorgroup.getId())) {
+          try {
+            depot.defineSensorGroup(sensorgroup.getId(), sensorgroup.getName(),
+                sensorgroup.getSensors(), orgId);
+          }
+          catch (UniqueIdException e) {
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          }
+          catch (MisMatchedOwnerException e) {
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          }
+          catch (IdNotFoundException e) {
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          }
+          catch (BadSlugException e) {
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          }
         }
-        catch (UniqueIdException e) {
-          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-        }
-        catch (MisMatchedOwnerException e) {
-          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-        }
-        catch (IdNotFoundException e) {
-          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-        }
-        catch (BadSlugException e) {
-          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        else {
+          depot.updateSensorGroup(sensorgroup);
         }
       }
       else {
-        depot.updateSensorGroup(sensorgroup);
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensorgroup.getId() + " is already used.");
       }
     }
     catch (IdNotFoundException e) {
