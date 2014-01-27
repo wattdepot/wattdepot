@@ -285,6 +285,19 @@ public interface WattDepotInterface {
 
   /**
    * @param depository The Depository storing the measurements.
+   * @param group The SensorGroup whose Sensors are making the measurements.
+   * @param start The start of the period.
+   * @param end The end of the period.
+   * @return The value measured the difference between the end value and the
+   *         start value.
+   * @throws NoMeasurementException if there are no measurements around the
+   *         start or end time.
+   */
+  public Double getValue(Depository depository, SensorGroup group, Date start, Date end)
+      throws NoMeasurementException;
+
+  /**
+   * @param depository The Depository storing the measurements.
    * @param sensor The Sensor making the measurements.
    * @param start The start of the interval.
    * @param end The end of the interval
@@ -302,6 +315,23 @@ public interface WattDepotInterface {
 
   /**
    * @param depository The Depository storing the measurements.
+   * @param group The SensorGroup whose Sensors are making the measurements.
+   * @param start The start of the interval.
+   * @param end The end of the interval
+   * @param gapSeconds The maximum number of seconds that measurements need to
+   *        be within the start and end.
+   * @return The value measured the difference between the end value and the
+   *         start value.
+   * @throws NoMeasurementException if there are no measurements around the
+   *         start or end time.
+   * @throws MeasurementGapException if the measurements around start or end are
+   *         too far apart.
+   */
+  public Double getValue(Depository depository, SensorGroup group, Date start, Date end, Long gapSeconds)
+      throws NoMeasurementException, MeasurementGapException;
+
+  /**
+   * @param depository The Depository storing the measurements.
    * @param sensor The Sensor making the measurements.
    * @param timestamp The time of the value.
    * @param gapSeconds The maximum number of seconds that measurements need to
@@ -314,6 +344,22 @@ public interface WattDepotInterface {
    *         too far apart.
    */
   public Double getValue(Depository depository, Sensor sensor, Date timestamp, Long gapSeconds)
+      throws NoMeasurementException, MeasurementGapException;
+
+  /**
+   * @param depository The Depository storing the measurements.
+   * @param group The SensorGroup whose Sensors are making the measurements.
+   * @param timestamp The time of the value.
+   * @param gapSeconds The maximum number of seconds that measurements need to
+   *        be within the start and end.
+   * @return The Value 'measured' at the given time, most likely an interpolated
+   *         value.
+   * @throws NoMeasurementException If there aren't any measurements around the
+   *         time.
+   * @throws MeasurementGapException if the measurements around timestamp are
+   *         too far apart.
+   */
+  public Double getValue(Depository depository, SensorGroup group, Date timestamp, Long gapSeconds)
       throws NoMeasurementException, MeasurementGapException;
 
   /**

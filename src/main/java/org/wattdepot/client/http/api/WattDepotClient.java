@@ -807,6 +807,73 @@ public class WattDepotClient implements WattDepotInterface {
     return null;
   }
 
+  /* (non-Javadoc)
+   * @see org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.common.domainmodel.Depository, org.wattdepot.common.domainmodel.SensorGroup, java.util.Date, java.util.Date)
+   */
+  @Override
+  public Double getValue(Depository depository, SensorGroup group, Date start, Date end)
+      throws NoMeasurementException {
+    ClientResource client = null;
+    try {
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUE + "/" + "?sensor=" + group.getId() + "&start="
+          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end));
+      DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
+      InterpolatedValue ret = resource.retrieve();
+      client.release();
+      return ret.getValue();
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.common.domainmodel.Depository, org.wattdepot.common.domainmodel.SensorGroup, java.util.Date, java.util.Date, java.lang.Long)
+   */
+  @Override
+  public Double getValue(Depository depository, SensorGroup group, Date start, Date end,
+      Long gapSeconds) throws NoMeasurementException, MeasurementGapException {
+    ClientResource client = null;
+    try {
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUE + "/" + "?sensor=" + group.getId() + "&start="
+          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&gap="
+          + gapSeconds);
+      DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
+      InterpolatedValue ret = resource.retrieve();
+      client.release();
+      return ret.getValue();
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.common.domainmodel.Depository, org.wattdepot.common.domainmodel.SensorGroup, java.util.Date, java.lang.Long)
+   */
+  @Override
+  public Double getValue(Depository depository, SensorGroup group, Date timestamp, Long gapSeconds)
+      throws NoMeasurementException, MeasurementGapException {
+    ClientResource client = null;
+    try {
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUE + "/" + "?sensor=" + group.getId() + "&timestamp="
+          + DateConvert.convertDate(timestamp) + "&gap=" + gapSeconds);
+      DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
+      InterpolatedValue ret = resource.retrieve();
+      client.release();
+      return ret.getValue();
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
   /**
    * @return the wattDepotUri
    */
