@@ -22,8 +22,9 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.Sensor;
-import org.wattdepot.common.domainmodel.Organization;
-import org.wattdepot.common.exception.MissMatchedOwnerException;
+import org.wattdepot.common.exception.BadSlugException;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.SensorPutResource;
 
@@ -44,26 +45,47 @@ public class SensorPutServerResource extends WattDepotServerResource implements 
   @Override
   public void store(Sensor sensor) {
     getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/sensor/ with " + sensor);
-    Organization owner = depot.getOrganization(orgId);
-    if (owner != null) {
-      if (!depot.getSensorIds(orgId).contains(sensor.getId())) {
-        try {
-          depot.defineSensor(sensor.getName(), sensor.getUri(), sensor.getSensorLocation(),
-              sensor.getModel(), owner);
+    try {
+      depot.getOrganization(orgId);
+    }
+    catch (IdNotFoundException e1) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+    }
+    try {
+      if (!depot.getSensorGroupIds(orgId).contains(sensor.getId())) {
+        if (!depot.getSensorIds(orgId).contains(sensor.getId())) {
+          try {
+            depot.defineSensor(sensor.getId(), sensor.getName(), sensor.getUri(),
+                sensor.getModelId(), sensor.getProperties(), orgId);
+          }
+          catch (UniqueIdException e) {
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          }
+          catch (MisMatchedOwnerException e) {
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          }
+          catch (IdNotFoundException e) {
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          }
+          catch (BadSlugException e) {
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          }
         }
-        catch (UniqueIdException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
-        }
-        catch (MissMatchedOwnerException e) {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+        else {
+          try {
+            depot.updateSensor(sensor);
+          }
+          catch (IdNotFoundException e) {
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          }
         }
       }
       else {
-        depot.updateSensor(sensor);
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensor.getId() + " is already defined.");
       }
     }
-    else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization id.");
     }
   }
 }

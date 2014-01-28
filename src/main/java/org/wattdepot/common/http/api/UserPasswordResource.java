@@ -18,9 +18,8 @@
  */
 package org.wattdepot.common.http.api;
 
-import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
-import org.restlet.resource.Put;
+import org.restlet.resource.Post;
 import org.wattdepot.common.domainmodel.UserPassword;
 
 /**
@@ -32,7 +31,7 @@ import org.wattdepot.common.domainmodel.UserPassword;
 public interface UserPasswordResource {
 
   /**
-   * Defines GET /wattdepot/userpassword/{user_id} API call.
+   * Defines GET /wattdepot/admin/userpassword/{user_id} API call.
    * 
    * @return The User with the given id. The id is sent in the request.
    */
@@ -40,19 +39,12 @@ public interface UserPasswordResource {
   public UserPassword retrieve();
 
   /**
-   * Defines the PUT /wattdepot/userpassword/ API call.
+   * Defines the POST /wattdepot/admin/userpassword/ API call.
    * 
    * @param user
    *          The User to store.
    */
-  @Put()
-  public void store(UserPassword user);
-
-  /**
-   * Defined the DEL /wattdepot/userpassword/{user_id} API call. The id is sent in the
-   * request.
-   */
-  @Delete
-  public void remove();
+  @Post()
+  public void update(UserPassword user);
 
 }

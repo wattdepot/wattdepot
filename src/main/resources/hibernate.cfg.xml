@@ -24,7 +24,7 @@
         <property name="hibernate.c3p0.timeout">300</property>
         <property name="hibernate.c3p0.max_statements">50</property>
         <property name="hibernate.c3p0.idle_test_period">3000</property>
-  
+
         <!-- SQL dialect -->
         <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
         <!-- <property name="dialect">org.hibernate.dialect.H2Dialect</property> -->
@@ -32,27 +32,33 @@
         <property name="cache.provider_class">org.hibernate.cache.internal.NoCacheProvider</property>
 
         <!-- Echo all executed SQL to stdout -->
-        <property name="show_sql">false</property>
+        <property name="show_sql">true</property>
 
         <!-- Drop and re-create the database schema on startup -->
         <property name="hbm2ddl.auto">create</property>
 
-        <mapping resource="org/wattdepot/common/domainmodel/Depository.hbm.xml" />
         <mapping
-            resource="org/wattdepot/server/depository/impl/hibernate/DepositoryImpl.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/Measurement.hbm.xml" />
+            class="org.wattdepot.server.depository.impl.hibernate.DepositoryImpl" />
         <mapping
-            resource="org/wattdepot/server/depository/impl/hibernate/MeasurementImpl.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/MeasurementType.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/Property.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/Sensor.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/SensorGroup.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/SensorLocation.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/SensorModel.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/CollectorMetaData.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/Organization.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/UserInfo.hbm.xml" />
-        <mapping resource="org/wattdepot/common/domainmodel/UserPassword.hbm.xml" />
+            class="org.wattdepot.server.depository.impl.hibernate.MeasurementImpl" />
+        <mapping
+            class="org.wattdepot.server.depository.impl.hibernate.MeasurementTypeImpl" />
+        <mapping
+            class="org.wattdepot.server.depository.impl.hibernate.PropertyImpl" />
+        <mapping
+            class="org.wattdepot.server.depository.impl.hibernate.SensorImpl" />
+        <mapping
+            class="org.wattdepot.server.depository.impl.hibernate.SensorGroupImpl" />
+        <mapping
+            class="org.wattdepot.server.depository.impl.hibernate.SensorModelImpl" />
+        <mapping
+            class="org.wattdepot.server.depository.impl.hibernate.CollectorProcessDefinitionImpl" />
+        <mapping
+            class="org.wattdepot.server.depository.impl.hibernate.OrganizationImpl" />
+        <mapping
+            class="org.wattdepot.server.depository.impl.hibernate.UserInfoImpl" />
+        <mapping
+            class="org.wattdepot.server.depository.impl.hibernate.UserPasswordImpl" />
 
     </session-factory>
 

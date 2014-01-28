@@ -30,17 +30,19 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.MeasuredValue;
+import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.MeasuredValueList;
 import org.wattdepot.common.domainmodel.Sensor;
-import org.wattdepot.common.exception.MissMatchedOwnerException;
+import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.DateConvert;
 import org.wattdepot.common.util.tstamp.Tstamp;
 
 /**
- * DepositoryValuesServer - Base class for handling the Depository values
- * HTTP API ("/wattdepot/{org-id}/depository/{depository-id}/values/").
+ * DepositoryValuesServer - Base class for handling the Depository values HTTP
+ * API ("/wattdepot/{org-id}/depository/{depository-id}/values/").
  * 
  * @author Yongwen Xu
  * 
@@ -70,66 +72,91 @@ public class DepositoryValuesServer extends WattDepotServerResource {
   /**
    * retrieve the depository measurement list for a sensor.
    * 
-   * @return measurement list. 
+   * @return measurement list.
    */
   public MeasuredValueList doRetrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId
-        + "}/values/?sensor={" + sensorId + "}&start={" + start + "}&end={" + end
-        + "}&interval={" + interval + "}");
-    
+    getLogger().log(
+        Level.INFO,
+        "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/values/?sensor={"
+            + sensorId + "}&start={" + start + "}&end={" + end + "}&interval={" + interval + "}");
+
     if (start != null && end != null && interval != null) {
       MeasuredValueList ret = new MeasuredValueList();
       try {
-        Depository depository = depot.getWattDeposiory(depositoryId, orgId);
+        Depository depository = depot.getDepository(depositoryId, orgId);
         if (depository != null) {
+          XMLGregorianCalendar startTime = DateConvert.parseCalString(start);
+          XMLGregorianCalendar endTime = DateConvert.parseCalString(end);
+
+          // interval is in minute
+          int intervalMinutes = Integer.parseInt(interval);
+
+          // Build list of timestamps, starting with startTime, separated by
+          // intervalMilliseconds
+          List<XMLGregorianCalendar> timestampList = Tstamp.getTimestampList(startTime, endTime,
+              intervalMinutes);
+
           Sensor sensor = depot.getSensor(sensorId, orgId);
           if (sensor != null) {
-            
-            XMLGregorianCalendar startTime = DateConvert.parseCalString(start);
-            XMLGregorianCalendar endTime = DateConvert.parseCalString(end);
-
-            // interval is in minute
-            int intervalMinutes = Integer.parseInt(interval);
-            
-            // Build list of timestamps, starting with startTime, separated by intervalMilliseconds
-            List<XMLGregorianCalendar> timestampList =
-                Tstamp.getTimestampList(startTime, endTime, intervalMinutes);
-
             for (int i = 0; i < timestampList.size(); i++) {
               Date timestamp = DateConvert.convertXMLCal(timestampList.get(i));
-              Double value = depository.getValue(sensor, timestamp);
+              Double value = depot.getValue(depositoryId, orgId, sensor.getId(), timestamp);
               if (value == null) {
                 value = new Double(0);
               }
-              MeasuredValue mValue = new MeasuredValue(
-                  sensor.getId(), 
-                  value, 
-                  depository.getMeasurementType());
-              
+              InterpolatedValue mValue = new InterpolatedValue(sensor.getId(), value,
+                  depository.getMeasurementType(), timestamp);
+
               mValue.setDate(timestamp);
 
               ret.getMeasuredValues().add(mValue);
             }
           }
           else {
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensorId + " is not defined");
+            SensorGroup group = depot.getSensorGroup(sensorId, orgId);
+            if (group != null) {
+              for (String s : group.getSensors()) {
+                Sensor sens = depot.getSensor(s, orgId);
+                if (sens != null) {
+                  for (int i = 0; i < timestampList.size(); i++) {
+                    Date timestamp = DateConvert.convertXMLCal(timestampList.get(i));
+                    Double value = depot.getValue(depositoryId, orgId, sens.getId(), timestamp);
+                    if (value == null) {
+                      value = new Double(0);
+                    }
+                    InterpolatedValue mValue = new InterpolatedValue(sens.getId(), value,
+                        depository.getMeasurementType(), timestamp);
+
+                    mValue.setDate(timestamp);
+
+                    ret.getMeasuredValues().add(mValue);
+                  }
+                }
+              }
+            }
+            else {
+              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensorId + " is not defined");
+            }
           }
         }
         else {
           setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " is not defined.");
         }
       }
-      catch (MissMatchedOwnerException e) {
-        setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+      catch (MisMatchedOwnerException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
       catch (ParseException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
       catch (DatatypeConfigurationException e) {
         setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-      } 
+      }
       catch (NoMeasurementException e) {
         setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
       getLogger().info(ret.toString());
       return ret;

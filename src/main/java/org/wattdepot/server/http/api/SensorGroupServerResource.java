@@ -24,9 +24,8 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.SensorGroup;
-import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.exception.MissMatchedOwnerException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.SensorGroupResource;
 
 /**
@@ -66,11 +65,11 @@ public class SensorGroupServerResource extends WattDepotServerResource implement
     try {
       group = depot.getSensorGroup(sensorGroupId, orgId);
     }
-    catch (MissMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     if (group == null) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "SensorGroup " + sensorGroupId
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "SensorGroup " + sensorGroupId
           + " is not defined.");
 
     }
@@ -85,10 +84,14 @@ public class SensorGroupServerResource extends WattDepotServerResource implement
    */
   @Override
   public void update(SensorGroup sensorgroup) {
-    getLogger()
-        .log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/sensor-group/ with " + sensorgroup);
-    Organization owner = depot.getOrganization(orgId);
-    if (owner != null) {
+    getLogger().log(Level.INFO, "POST /wattdepot/{" + orgId + "}/sensor-group/ with " + sensorgroup);
+    try {
+      depot.getOrganization(orgId);
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+    }
+    try {
       if (depot.getSensorGroupIds(orgId).contains(sensorgroup.getId())) {
         depot.updateSensorGroup(sensorgroup);
       }
@@ -97,7 +100,7 @@ public class SensorGroupServerResource extends WattDepotServerResource implement
             + sensorgroup.getName());
       }
     }
-    else {
+    catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
   }
@@ -115,10 +118,10 @@ public class SensorGroupServerResource extends WattDepotServerResource implement
       depot.deleteSensorGroup(sensorGroupId, orgId);
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
-    catch (MissMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+    catch (MisMatchedOwnerException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
   }
 

@@ -25,7 +25,7 @@ import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
-import org.wattdepot.common.exception.MissMatchedOwnerException;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.http.api.DepositoryMeasurementResource;
 
 /**
@@ -65,16 +65,16 @@ public class DepositoryMeasurementServerResource extends WattDepotServerResource
             + "}");
     Measurement ret = null;
     try {
-      Depository depository = depot.getWattDeposiory(depositoryId, orgId);
+      Depository depository = depot.getDepository(depositoryId, orgId);
       if (depository != null) {
-        ret = depository.getMeasurement(measId);
+        ret = depot.getMeasurement(depositoryId, orgId, measId);
       }
       else {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " does not exist.");
       }
     }
-    catch (MissMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     return ret;
   }
@@ -90,8 +90,8 @@ public class DepositoryMeasurementServerResource extends WattDepotServerResource
   public void update(Measurement meas) {
     getLogger().log(
         Level.INFO,
-        "POST /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/measurement/{"
-            + measId + "} with " + meas);
+        "POST /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/measurement/{" + measId
+            + "} with " + meas);
     setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Cannot update Measurements.");
   }
 
@@ -109,17 +109,10 @@ public class DepositoryMeasurementServerResource extends WattDepotServerResource
         "DEL /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/measurement/{" + measId
             + "}");
     try {
-      Depository depository = depot.getWattDeposiory(depositoryId, orgId);
-      if (depository != null) {
-        Measurement meas = depository.getMeasurement(measId);
-        depository.deleteMeasurement(meas);
-      }
-      else {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " does not exist.");
-      }
+      depot.deleteMeasurement(depositoryId, orgId, measId);
     }
-    catch (MissMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " does not exist.");
     }
   }
 }

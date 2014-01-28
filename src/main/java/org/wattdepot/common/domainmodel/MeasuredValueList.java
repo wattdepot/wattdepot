@@ -22,40 +22,42 @@ import java.util.ArrayList;
 
 /**
  * MeasuredValueList - a list of measured values.
- *
+ * 
  * @author Yongwen Xu
- *
+ * 
  */
 public class MeasuredValueList {
-  private ArrayList<MeasuredValue> measuredValues;
-  
+  private ArrayList<InterpolatedValue> interpolatedValues;
+
   /**
    * Default Constructor.
    */
   public MeasuredValueList() {
-    measuredValues = new ArrayList<MeasuredValue>();
+    interpolatedValues = new ArrayList<InterpolatedValue>();
   }
 
   /**
    * @return the measuredValues
    */
-  public ArrayList<MeasuredValue> getMeasuredValues() {
-    return measuredValues;
+  public ArrayList<InterpolatedValue> getMeasuredValues() {
+    return interpolatedValues;
   }
 
   /**
-   * @param measuredValues the measuredValues to set
+   * @param interpolatedValues the measuredValues to set
    */
-  public void setMeasuredValues(ArrayList<MeasuredValue> measuredValues) {
-    this.measuredValues = measuredValues;
+  public void setMeasuredValues(ArrayList<InterpolatedValue> interpolatedValues) {
+    this.interpolatedValues = interpolatedValues;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.Object#toString()
    */
   @Override
   public String toString() {
-    return "MeasuredValueList [measuredValues=" + measuredValues + "]";
+    return "MeasuredValueList [measuredValues=" + interpolatedValues + "]";
   }
 
 }

@@ -19,67 +19,106 @@
 package org.wattdepot.client;
 
 import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.domainmodel.OrganizationList;
 import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.domainmodel.UserInfoList;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;
 
 /**
- * WattDepotAdminInterface - Provides all the functionality of the
- * WattDepotInterface adding UserInfo and UserGroup functionality.
+ * WattDepotAdminInterface - Provides the functionality for the admin. Supports
+ * manipulation of UserInfos and Organizations.
  * 
  * @author Cam Moore
  * 
  */
-public interface WattDepotAdminInterface extends WattDepotInterface {
+public interface WattDepotAdminInterface {
   /**
    * Deletes the given User.
    * 
-   * @param id
-   *          the unique id of the User.
-   * @throws IdNotFoundException
-   *           if the User's id is not found.
+   * @param id the unique id of the User.
+   * @param orgId the id of the user's organization.
+   * @throws IdNotFoundException if the User's id is not found.
    */
-  public void deleteUser(String id) throws IdNotFoundException;
+  public void deleteUser(String id, String orgId) throws IdNotFoundException;
 
   /**
-   * Deletes the given UserGroup.
+   * Deletes the given Organization.
    * 
-   * @param id
-   *          the unique id of the UserGroup.
-   * @throws IdNotFoundException
-   *           if the UserGroup's id is not found.
+   * @param id the unique id of the Organization.
+   * @throws IdNotFoundException if the Organization's id is not found.
    */
-  public void deleteUserGroup(String id) throws IdNotFoundException;
+  public void deleteOrganization(String id) throws IdNotFoundException;
 
   /**
-   * @param id
-   *          the unique id of the UserPassword.
-   * @throws IdNotFoundException
-   *           if the UserPassword is not found.
+   * @param id The unique id of the Organization.
+   * @return The Organization with the given id.
+   * @throws IdNotFoundException if the id does not exist.
    */
-  public void deleteUserPassword(String id) throws IdNotFoundException;
+  public Organization getOrganization(String id) throws IdNotFoundException;
+
+  /**
+   * @return All the defined Organizations in an OrganizationList.
+   */
+  public OrganizationList getOrganizations();
+
+  /**
+   * @param id The unique id of the UserInfo.
+   * @param orgId the id of the user's organization.
+   * @return The UserInfo with the given id.
+   * @throws IdNotFoundException if the id does not exist.
+   */
+  public UserInfo getUser(String id, String orgId) throws IdNotFoundException;
+
+  /**
+   * @param orgId the id of the users' organization.
+   * 
+   * @return All the defined Users in a UserInfoList.
+   */
+  public UserInfoList getUsers(String orgId);
+
+  /**
+   * @param id The unique id of the UserPassword.
+   * @param orgId the organization id.
+   * @return The UserPassword with the given id.
+   * @throws IdNotFoundException if the id does not exist.
+   */
+  public UserPassword getUserPassword(String id, String orgId) throws IdNotFoundException;
 
   /**
    * Stores the given user in the WattDepot Server.
    * 
-   * @param user
-   *          The UserInfo to store.
+   * @param user The UserInfo to store.
    */
   public void putUser(UserInfo user);
 
   /**
-   * Stores the given UserGroup in the WattDepot Server.
+   * Stores the given Organization in the WattDepot Server.
    * 
-   * @param group
-   *          the UserGroup to store.
+   * @param org the Organization to store.
    */
-  public void putUserGroup(Organization group);
+  public void putOrganization(Organization org);
 
   /**
-   * Stores the given UserPassword in the WattDepot Server.
+   * Updates the Organization in the WattDepot Server.
    * 
-   * @param password
-   *          The UserPassword to store.
+   * @param org the Organization to update.
    */
-  public void putUserPassword(UserPassword password);
+  public void updateOrganization(Organization org);
+
+  /**
+   * Updates the UserInfo in the WattDepot Server.
+   * 
+   * @param user the UserInfo to update.
+   */
+  void updateUser(UserInfo user);
+
+  /**
+   * Updates the Userpassword in the WattDepot Server.
+   * 
+   * @param password the UserPassword to update.
+   * @throws IdNotFoundException if the user id or organization ids are not
+   *         defined.
+   */
+  void updateUserPassword(UserPassword password) throws IdNotFoundException;
 }

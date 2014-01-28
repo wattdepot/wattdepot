@@ -185,6 +185,7 @@ public class WattDepotServer {
    *           if there is a problem stopping the different servers.
    */
   public void stop() throws Exception {
+    this.depot.stop();
     this.restletServer.stop();
   }
 

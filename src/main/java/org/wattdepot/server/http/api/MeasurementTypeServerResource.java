@@ -60,9 +60,11 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
   public MeasurementType retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/measurement-type/{" + typeSlug + "}");
     MeasurementType mt = null;
-    mt = depot.getMeasurementType(typeSlug);
-    if (mt == null) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "MeasurementType " + typeSlug
+    try {
+      mt = depot.getMeasurementType(typeSlug);
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "MeasurementType " + typeSlug
           + " is not defined.");
     }
     return mt;
@@ -80,17 +82,20 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
     getLogger().log(Level.INFO,
         "POST /wattdepot/measurement-type/{" + typeSlug + "} with " + measurementType);
     if (isInRole("admin")) {
-      MeasurementType mt = depot.getMeasurementType(measurementType.getId());
-      if (mt != null) {
-        depot.updateMeasurementType(measurementType);
+      MeasurementType mt;
+      try {
+        mt = depot.getMeasurementType(measurementType.getId());
+        if (mt != null) {
+          depot.updateMeasurementType(measurementType);
+        }
       }
-      else {
-        setStatus(Status.CLIENT_ERROR_CONFLICT,
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
             "No such Measurement type defined. Cannot update undefined MeasurementType.");
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Only admin may update MeasurementTypes.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Only admin may update MeasurementTypes.");
     }
   }
 
@@ -107,11 +112,11 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
         depot.deleteMeasurementType(typeSlug);
       }
       catch (IdNotFoundException e) {
-        setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Only admin may remove MeasurementTypes.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Only admin may remove MeasurementTypes.");
     }
   }
 

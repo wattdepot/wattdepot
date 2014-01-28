@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Oct 29, 2013 12:06:15 PM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping default-lazy="false">
+    <class name="org.wattdepot.common.domainmodel.CollectorProcessDefinition" table="COLLECTORPROCESS">
+        <id name="slug" type="java.lang.String">
+            <column name="SLUG" />
+            <generator class="assigned" />
+        </id>
+        <property name="name" type = "java.lang.String">
+            <column name="NAME" />
+        </property>
+        <property name="sensorId" type = "java.lang.String">
+            <column name="SENSOR" />
+        </property>
+        <property name="pollingInterval" type="java.lang.Long">
+            <column name="POLLINGINTERVAL" />
+        </property>
+        <property name="depositoryId" type="java.lang.String">
+            <column name="DEPOSITORYID" />
+        </property>
+        <set name="properties" table="PROPERTY" inverse="false" lazy="false">
+            <key>
+                <column name="SENSORPROCESS_ID" />
+            </key>
+            <one-to-many class="org.wattdepot.common.domainmodel.Property" />
+        </set>
+        <property name="ownerId" type="java.lang.String">
+            <column name="OWNERID" />
+        </property>
+    </class>
+</hibernate-mapping>

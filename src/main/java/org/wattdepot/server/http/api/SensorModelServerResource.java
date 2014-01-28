@@ -60,9 +60,11 @@ public class SensorModelServerResource extends WattDepotServerResource implement
   public SensorModel retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/sensormodel/{" + sensorModelId + "}");
     SensorModel model = null;
-    model = depot.getSensorModel(sensorModelId);
-    if (model == null) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "SensorModel " + sensorModelId
+    try {
+      model = depot.getSensorModel(sensorModelId);
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "SensorModel " + sensorModelId
           + " is not defined.");
     }
     return model;
@@ -78,11 +80,11 @@ public class SensorModelServerResource extends WattDepotServerResource implement
   public void update(SensorModel sensormodel) {
     getLogger().log(Level.INFO,
         "POST /wattdepot/sensormodel/{" + sensorModelId + "} with " + sensormodel);
-    if (depot.getSensorModelIds().contains(sensormodel.getId())) {
+    try {
       depot.updateSensorModel(sensormodel);
     }
-    else {
-      setStatus(Status.CLIENT_ERROR_CONFLICT, "Can't update unknown SensorModel.");
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Can't update unknown SensorModel.");
     }
   }
 
@@ -98,7 +100,7 @@ public class SensorModelServerResource extends WattDepotServerResource implement
       depot.deleteSensorModel(sensorModelId);
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
   }
 

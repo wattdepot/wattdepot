@@ -23,9 +23,9 @@ import java.util.logging.Level;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.UserPasswordResource;
 
 /**
@@ -58,53 +58,45 @@ public class UserPasswordServerResource extends WattDepotServerResource implemen
   @Override
   public UserPassword retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/user-password/{" + userId + "}");
-    UserPassword user = depot.getUserPassword(userId);
-    if (user == null) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "User " + userId + " is not defined.");
+    if (!orgId.equals(Organization.ADMIN_GROUP_NAME)) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Must be in the " + Organization.ADMIN_GROUP_NAME
+          + " organization.");
     }
     else {
-      // don't return the plain text password.
-      user.setPlainText("********");
+      UserPassword user;
+      try {
+        user = depot.getUserPassword(userId, orgId);
+        return user;
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "User " + userId + " is not defined.");
+      }
     }
-    return user;
+    return null;
   }
 
   /*
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.restlet.UserPasswordResource#store(org.wattdepot.datamodel
-   * .UserPassword)
+   * org.wattdepot.common.http.api.UserPasswordResource#update(org.wattdepot
+   * .common.domainmodel.UserPassword)
    */
   @Override
-  public void store(UserPassword user) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/user-password/ with " + user);
-    if (!depot.getUserIds().contains(user.getId())) {
-      try {
-        depot.defineUserPassword(user.getId(), user.getPlainText());
-      }
-      catch (UniqueIdException e) {
-        setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
-      }
+  public void update(UserPassword user) {
+    getLogger().log(Level.INFO, "POST /wattdepot/{" + orgId + "}/user-password/ with " + user);
+    if (!orgId.equals(Organization.ADMIN_GROUP_NAME)) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Must be in the " + Organization.ADMIN_GROUP_NAME
+          + " organization.");
     }
     else {
-      depot.updateUserPassword(user);
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.restlet.UserPasswordResource#remove()
-   */
-  @Override
-  public void remove() {
-    getLogger().log(Level.INFO, "DEL /wattdepot/{" + orgId + "}/user-password/{" + userId + "}");
-    try {
-      depot.deleteUserPassword(userId);
-    }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
+      try {
+        depot.updateUserPassword(user);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "User " + user.getUid()
+            + " is not defined.");
+      }
     }
   }
 

@@ -1,5 +1,5 @@
 /**
- * UsersResource.java This file is part of WattDepot.
+ * UserInfosResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -18,13 +18,12 @@
  */
 package org.wattdepot.common.http.api;
 
-import java.util.ArrayList;
-
 import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.domainmodel.UserInfoList;
 
 /**
- * UsersResource - The HTTP API for Users.
+ * UserInfosResource - The HTTP GET /wattdepot/{org-id}/users/ Interface for
+ * UserInfos.
  * 
  * @author Cam Moore
  * 
@@ -32,11 +31,12 @@ import org.wattdepot.common.domainmodel.UserInfo;
 public interface UserInfosResource {
 
   /**
-   * Defines the GET /wattdepot/users/ API call.
+   * Defines the GET /wattdepot/{org-id}/users/ API call.
    * 
    * @return a List of the defined Users.
    */
-  @Get("json") // Use JSON as transport encoding.
-  public ArrayList<UserInfo> retrieve();
+  @Get("json")
+  // Use JSON as transport encoding.
+  public UserInfoList retrieve();
 
 }

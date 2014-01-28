@@ -20,8 +20,10 @@ package org.wattdepot.server.http.api;
 
 import java.util.logging.Level;
 
+import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorList;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.http.api.SensorsResource;
 
 /**
@@ -42,8 +44,13 @@ public class SensorsServerResource extends WattDepotServerResource implements Se
   public SensorList retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/sensors/");
     SensorList ret = new SensorList();
-    for (Sensor s : depot.getSensors(orgId)) {
-      ret.getSensors().add(s);
+    try {
+      for (Sensor s : depot.getSensors(orgId)) {
+        ret.getSensors().add(s);
+      }
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization id.");
     }
     return ret;
   }

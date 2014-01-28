@@ -18,7 +18,11 @@
  */
 package org.wattdepot.client;
 
-import static org.junit.Assert.*;
+
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.After;
 import org.junit.Before;
@@ -34,14 +38,14 @@ import org.wattdepot.common.util.UserHome;
 public class TestClientProperties {
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception if there is a problem.
    */
   @Before
   public void setUp() throws Exception {
   }
 
   /**
-   * @throws java.lang.Exception
+   * @throws java.lang.Exception if there is a problem.
    */
   @After
   public void tearDown() throws Exception {

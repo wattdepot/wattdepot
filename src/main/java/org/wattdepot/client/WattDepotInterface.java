@@ -20,10 +20,11 @@ package org.wattdepot.client;
 
 import java.util.Date;
 
-import org.wattdepot.common.domainmodel.CollectorMetaData;
-import org.wattdepot.common.domainmodel.CollectorMetaDataList;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.DepositoryList;
+import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementList;
 import org.wattdepot.common.domainmodel.MeasurementType;
@@ -32,8 +33,6 @@ import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.domainmodel.SensorGroupList;
 import org.wattdepot.common.domainmodel.SensorList;
-import org.wattdepot.common.domainmodel.SensorLocation;
-import org.wattdepot.common.domainmodel.SensorLocationList;
 import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.domainmodel.SensorModelList;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -53,34 +52,18 @@ public interface WattDepotInterface {
   /**
    * Deletes the given Depository.
    * 
-   * @param depository
-   *          the Depository to delete.
-   * @throws IdNotFoundException
-   *           if the Depository is not found in the server.
+   * @param depository the Depository to delete.
+   * @throws IdNotFoundException if the Depository is not found in the server.
    */
-  public void deleteDepository(Depository depository)
-      throws IdNotFoundException;
-
-  /**
-   * Deletes the given Location.
-   * 
-   * @param sensorLocation
-   *          the Location to delete.
-   * @throws IdNotFoundException
-   *           if the Location is not found in the server.
-   */
-  public void deleteLocation(SensorLocation sensorLocation)
-      throws IdNotFoundException;
+  public void deleteDepository(Depository depository) throws IdNotFoundException;
 
   /**
    * Deletes the given measurement from the given depository.
    * 
-   * @param depository
-   *          the Depository that stores the measurement.
-   * @param measurement
-   *          the Measurement to delete.
-   * @throws IdNotFoundException
-   *           if the Measurement is not found in the Depository.
+   * @param depository the Depository that stores the measurement.
+   * @param measurement the Measurement to delete.
+   * @throws IdNotFoundException if the Measurement is not found in the
+   *         Depository.
    */
   public void deleteMeasurement(Depository depository, Measurement measurement)
       throws IdNotFoundException;
@@ -88,53 +71,44 @@ public interface WattDepotInterface {
   /**
    * Deletes the given MeasurementType.
    * 
-   * @param type
-   *          the measurement type to delete.
-   * @throws IdNotFoundException
-   *           if the MeasurementType is not found in the Depository.
+   * @param type the measurement type to delete.
+   * @throws IdNotFoundException if the MeasurementType is not found in the
+   *         Depository.
    */
-  public void deleteMeasurementType(MeasurementType type)
-      throws IdNotFoundException;
+  public void deleteMeasurementType(MeasurementType type) throws IdNotFoundException;
 
   /**
    * Deletes the given Sensor.
    * 
-   * @param sensor
-   *          the Sensor to delete.
-   * @throws IdNotFoundException
-   *           if the Sensor is not found in the server.
+   * @param sensor the Sensor to delete.
+   * @throws IdNotFoundException if the Sensor is not found in the server.
    */
   public void deleteSensor(Sensor sensor) throws IdNotFoundException;
 
   /**
    * Deletes the given SensorGroup.
    * 
-   * @param group
-   *          the SensorGroup to delete.
-   * @throws IdNotFoundException
-   *           if the SensorGroup is not found in the server.
+   * @param group the SensorGroup to delete.
+   * @throws IdNotFoundException if the SensorGroup is not found in the server.
    */
   public void deleteSensorGroup(SensorGroup group) throws IdNotFoundException;
 
   /**
    * Deletes the given SensorModel.
    * 
-   * @param model
-   *          the SensorModel to delete.
-   * @throws IdNotFoundException
-   *           if the SensorModel is not found in the server.
+   * @param model the SensorModel to delete.
+   * @throws IdNotFoundException if the SensorModel is not found in the server.
    */
   public void deleteSensorModel(SensorModel model) throws IdNotFoundException;
 
   /**
-   * Deletes the given CollectorMetaData.
+   * Deletes the given CollectorProcessDefinitionData.
    * 
-   * @param process
-   *          the CollectorMetaData to delete.
-   * @throws IdNotFoundException
-   *           if the CollectorMetaData is not found in the server.
+   * @param process the CollectorProcessDefinitionData to delete.
+   * @throws IdNotFoundException if the CollectorProcessDefinitionData is not
+   *         found in the server.
    */
-  public void deleteCollectorMetaData(CollectorMetaData process)
+  public void deleteCollectorProcessDefinition(CollectorProcessDefinition process)
       throws IdNotFoundException;
 
   /**
@@ -145,44 +119,60 @@ public interface WattDepotInterface {
   /**
    * Retrieves the Depository with the given id from the WattDepot Server.
    * 
-   * @param id
-   *          The Depository's id.
+   * @param id The Depository's id.
    * @return the Depository with the given id or null.
-   * @exception IdNotFoundException
-   *              if the given id is not a Depository's id.
+   * @exception IdNotFoundException if the given id is not a Depository's id.
    */
   public Depository getDepository(String id) throws IdNotFoundException;
 
   /**
-   * Retrieves the Location with the given id from the WattDepot Server.
-   * 
-   * @param id
-   *          The Location's id.
-   * @return the Location with the given id or null.
-   * @exception IdNotFoundException
-   *              if the given id is not a Location's id.
+   * @param depository The Depository storing the Measurements.
+   * @param sensor The Sensor making the Measurements.
+   * @return The earliest Value.
    */
-  public SensorLocation getLocation(String id) throws IdNotFoundException;
+  public InterpolatedValue getEarliestValue(Depository depository, Sensor sensor);
 
   /**
-   * @return The defined Locations.
+   * @param depository The Depository storing the Measurements.
+   * @param group The SensorGroup whose sensors are making the Measurements.
+   * @return The earliest Value.
    */
-  public SensorLocationList getLocations();
+  public InterpolatedValue getEarliestValue(Depository depository, SensorGroup group);
 
   /**
-   * @param depository
-   *          The Depository storing the Measurements.
-   * @param sensor
-   *          The Sensor that made the measurements.
-   * @param start
-   *          The start time.
-   * @param end
-   *          The end time.
+   * @param depository The Depository storing the Measurements.
+   * @param sensor The Sensor making the Measurements.
+   * @return The latest Measurement.
+   */
+  public InterpolatedValue getLatestValue(Depository depository, Sensor sensor);
+
+  /**
+   * @param depository The Depository storing the Measurements.
+   * @param group The SensorGroup whose sensors are making the Measurements.
+   * @return The latest Value.
+   */
+  public InterpolatedValue getLatestValue(Depository depository, SensorGroup group);
+
+  /**
+   * @param depository The Depository storing the Measurements.
+   * @param sensor The Sensor that made the measurements.
+   * @param start The start time.
+   * @param end The end time.
    * @return The Measurements stored in the depository made by the sensor
    *         between start and end.
    */
-  public MeasurementList getMeasurements(Depository depository, Sensor sensor,
-      Date start, Date end);
+  public MeasurementList getMeasurements(Depository depository, Sensor sensor, Date start, Date end);
+
+  /**
+   * @param depository The Depository storing the Measurements.
+   * @param group The SensorGroup whose sensors made the measurements.
+   * @param start The start time.
+   * @param end The end time.
+   * @return The Measurements stored in the depository made by the sensor
+   *         between start and end.
+   */
+  public MeasurementList getMeasurements(Depository depository, SensorGroup group, Date start,
+      Date end);
 
   /**
    * @return The defined MeasurementTypes.
@@ -190,34 +180,28 @@ public interface WattDepotInterface {
   public MeasurementTypeList getMeasurementTypes();
 
   /**
-   * @param id
-   *          the unique id for the MeasurementType.
+   * @param id the unique id for the MeasurementType.
    * @return The MeasurementType.
-   * @exception IdNotFoundException
-   *              if the given id is not a MeasurementType's id.
+   * @exception IdNotFoundException if the given id is not a MeasurementType's
+   *            id.
    */
-  public MeasurementType getMeasurementType(String id)
-      throws IdNotFoundException;
+  public MeasurementType getMeasurementType(String id) throws IdNotFoundException;
 
   /**
    * Retrieves the Sensor with the given id from the WattDepot Server.
    * 
-   * @param id
-   *          The Sensor's id.
+   * @param id The Sensor's id.
    * @return the Sensor with the given id or null.
-   * @exception IdNotFoundException
-   *              if the given id is not a Sensor's id.
+   * @exception IdNotFoundException if the given id is not a Sensor's id.
    */
   public Sensor getSensor(String id) throws IdNotFoundException;
 
   /**
    * Retrieves the SensorGroup with the given id from the WattDepot Server.
    * 
-   * @param id
-   *          The SensorGroup's id.
+   * @param id The SensorGroup's id.
    * @return the SensorGroup with the given id or null.
-   * @exception IdNotFoundException
-   *              if the given id is not a SensorGroup's id.
+   * @exception IdNotFoundException if the given id is not a SensorGroup's id.
    */
   public SensorGroup getSensorGroup(String id) throws IdNotFoundException;
 
@@ -229,11 +213,9 @@ public interface WattDepotInterface {
   /**
    * Retrieves the SensorModel with the given id from the WattDepot Server.
    * 
-   * @param id
-   *          The SensorModel's id.
+   * @param id The SensorModel's id.
    * @return the SensorModel with the given id or null.
-   * @exception IdNotFoundException
-   *              if the given id is not a SensorModel's id.
+   * @exception IdNotFoundException if the given id is not a SensorModel's id.
    */
   public SensorModel getSensorModel(String id) throws IdNotFoundException;
 
@@ -243,22 +225,21 @@ public interface WattDepotInterface {
   public SensorModelList getSensorModels();
 
   /**
-   * Retrieves the CollectorMetaData with the given id from the WattDepot
-   * Server.
+   * Retrieves the CollectorProcessDefinitionData with the given id from the
+   * WattDepot Server.
    * 
-   * @param id
-   *          The CollectorMetaData's id.
-   * @return the CollectorMetaData with the given id or null.
-   * @exception IdNotFoundException
-   *              if the given id is not a CollectorMetaData's id.
+   * @param id The CollectorProcessDefinitionData's id.
+   * @return the CollectorProcessDefinitionData with the given id or null.
+   * @exception IdNotFoundException if the given id is not a
+   *            CollectorProcessDefinitionData's id.
    */
-  public CollectorMetaData getCollectorMetaData(String id)
+  public CollectorProcessDefinition getCollectorProcessDefinition(String id)
       throws IdNotFoundException;
 
   /**
-   * @return The defined CollectorMetaDatas.
+   * @return The defined CollectorProcessDefinitionDatas.
    */
-  public CollectorMetaDataList getCollectorMetaDatas();
+  public CollectorProcessDefinitionList getCollectorProcessDefinition();
 
   /**
    * @return The defined Sensors.
@@ -266,79 +247,120 @@ public interface WattDepotInterface {
   public SensorList getSensors();
 
   /**
-   * @param depository
-   *          The Depository storing the measurements.
-   * @param sensor
-   *          The sensor making the measurements.
-   * @param timestamp
-   *          The time for the measured value.
+   * @param depository The Depository storing the measurements.
+   * @param sensor The sensor making the measurements.
+   * @param timestamp The time for the measured value.
    * @return The Value 'measured' at the given time, most likely an interpolated
    *         value.
-   * @throws NoMeasurementException
-   *           if there aren't any measurements around the timestamp.
+   * @throws NoMeasurementException if there aren't any measurements around the
+   *         timestamp.
    */
   public Double getValue(Depository depository, Sensor sensor, Date timestamp)
       throws NoMeasurementException;
 
   /**
-   * @param depository
-   *          The Depository storing the measurements.
-   * @param sensor
-   *          The sensor making the measurements.
-   * @param start
-   *          The start of the period.
-   * @param end
-   *          The end of the period.
-   * @return The value measured the difference between the end value and the
-   *         start value.
-   * @throws NoMeasurementException
-   *           if there are no measurements around the start or end time.
-   */
-  public Double getValue(Depository depository, Sensor sensor, Date start,
-      Date end) throws NoMeasurementException;
-
-  /**
-   * @param depository
-   *          The Depository storing the measurements.
-   * @param sensor
-   *          The Sensor making the measurements.
-   * @param start
-   *          The start of the interval.
-   * @param end
-   *          The end of the interval
-   * @param gapSeconds
-   *          The maximum number of seconds that measurements need to be within
-   *          the start and end.
-   * @return The value measured the difference between the end value and the
-   *         start value.
-   * @throws NoMeasurementException
-   *           if there are no measurements around the start or end time.
-   * @throws MeasurementGapException
-   *           if the measurements around start or end are too far apart.
-   */
-  public Double getValue(Depository depository, Sensor sensor, Date start,
-      Date end, Long gapSeconds) throws NoMeasurementException,
-      MeasurementGapException;
-
-  /**
-   * @param depository
-   *          The Depository storing the measurements.
-   * @param sensor
-   *          The Sensor making the measurements.
-   * @param timestamp
-   *          The time of the value.
-   * @param gapSeconds
-   *          The maximum number of seconds that measurements need to be within
-   *          the start and end.
+   * @param depository The Depository storing the measurements.
+   * @param group The SensorGroup whose sensors are making the measurements.
+   * @param timestamp The time for the measured value.
    * @return The Value 'measured' at the given time, most likely an interpolated
    *         value.
-   * @throws NoMeasurementException
-   *           If there aren't any measurements around the time.
-   * @throws MeasurementGapException
-   *           if the measurements around timestamp are too far apart.
+   * @throws NoMeasurementException if there aren't any measurements around the
+   *         timestamp.
    */
-  public Double getValue(Depository depository, Sensor sensor, Date timestamp,
-      Long gapSeconds) throws NoMeasurementException, MeasurementGapException;
+  public Double getValue(Depository depository, SensorGroup group, Date timestamp)
+      throws NoMeasurementException;
+
+  /**
+   * @param depository The Depository storing the measurements.
+   * @param sensor The sensor making the measurements.
+   * @param start The start of the period.
+   * @param end The end of the period.
+   * @return The value measured the difference between the end value and the
+   *         start value.
+   * @throws NoMeasurementException if there are no measurements around the
+   *         start or end time.
+   */
+  public Double getValue(Depository depository, Sensor sensor, Date start, Date end)
+      throws NoMeasurementException;
+
+  /**
+   * @param depository The Depository storing the measurements.
+   * @param group The SensorGroup whose Sensors are making the measurements.
+   * @param start The start of the period.
+   * @param end The end of the period.
+   * @return The value measured the difference between the end value and the
+   *         start value.
+   * @throws NoMeasurementException if there are no measurements around the
+   *         start or end time.
+   */
+  public Double getValue(Depository depository, SensorGroup group, Date start, Date end)
+      throws NoMeasurementException;
+
+  /**
+   * @param depository The Depository storing the measurements.
+   * @param sensor The Sensor making the measurements.
+   * @param start The start of the interval.
+   * @param end The end of the interval
+   * @param gapSeconds The maximum number of seconds that measurements need to
+   *        be within the start and end.
+   * @return The value measured the difference between the end value and the
+   *         start value.
+   * @throws NoMeasurementException if there are no measurements around the
+   *         start or end time.
+   * @throws MeasurementGapException if the measurements around start or end are
+   *         too far apart.
+   */
+  public Double getValue(Depository depository, Sensor sensor, Date start, Date end, Long gapSeconds)
+      throws NoMeasurementException, MeasurementGapException;
+
+  /**
+   * @param depository The Depository storing the measurements.
+   * @param group The SensorGroup whose Sensors are making the measurements.
+   * @param start The start of the interval.
+   * @param end The end of the interval
+   * @param gapSeconds The maximum number of seconds that measurements need to
+   *        be within the start and end.
+   * @return The value measured the difference between the end value and the
+   *         start value.
+   * @throws NoMeasurementException if there are no measurements around the
+   *         start or end time.
+   * @throws MeasurementGapException if the measurements around start or end are
+   *         too far apart.
+   */
+  public Double getValue(Depository depository, SensorGroup group, Date start, Date end, Long gapSeconds)
+      throws NoMeasurementException, MeasurementGapException;
+
+  /**
+   * @param depository The Depository storing the measurements.
+   * @param sensor The Sensor making the measurements.
+   * @param timestamp The time of the value.
+   * @param gapSeconds The maximum number of seconds that measurements need to
+   *        be within the start and end.
+   * @return The Value 'measured' at the given time, most likely an interpolated
+   *         value.
+   * @throws NoMeasurementException If there aren't any measurements around the
+   *         time.
+   * @throws MeasurementGapException if the measurements around timestamp are
+   *         too far apart.
+   */
+  public Double getValue(Depository depository, Sensor sensor, Date timestamp, Long gapSeconds)
+      throws NoMeasurementException, MeasurementGapException;
+
+  /**
+   * @param depository The Depository storing the measurements.
+   * @param group The SensorGroup whose Sensors are making the measurements.
+   * @param timestamp The time of the value.
+   * @param gapSeconds The maximum number of seconds that measurements need to
+   *        be within the start and end.
+   * @return The Value 'measured' at the given time, most likely an interpolated
+   *         value.
+   * @throws NoMeasurementException If there aren't any measurements around the
+   *         time.
+   * @throws MeasurementGapException if the measurements around timestamp are
+   *         too far apart.
+   */
+  public Double getValue(Depository depository, SensorGroup group, Date timestamp, Long gapSeconds)
+      throws NoMeasurementException, MeasurementGapException;
 
   /**
    * Determines the health of the WattDepot server the client is communicating
@@ -351,27 +373,15 @@ public interface WattDepotInterface {
   /**
    * Stores the given Depository in the WattDepot Server.
    * 
-   * @param depository
-   *          the Depository.
+   * @param depository the Depository.
    */
   public void putDepository(Depository depository);
 
   /**
-   * Stores the given Location in the WattDepot Server.
-   * 
-   * @param loc
-   *          the Location.
-   */
-  public void putLocation(SensorLocation loc);
-
-  /**
-   * @param depository
-   *          The Depository to store the Measurement.
-   * @param measurement
-   *          The Measurement to store.
-   * @throws MeasurementTypeException
-   *           if the type of the measurement doesn't match the type of the
-   *           depository.
+   * @param depository The Depository to store the Measurement.
+   * @param measurement The Measurement to store.
+   * @throws MeasurementTypeException if the type of the measurement doesn't
+   *         match the type of the depository.
    */
   public void putMeasurement(Depository depository, Measurement measurement)
       throws MeasurementTypeException;
@@ -379,96 +389,77 @@ public interface WattDepotInterface {
   /**
    * Stores the given MeasurementType in the WattDepot Server.
    * 
-   * @param type
-   *          the MeasurementType.
+   * @param type the MeasurementType.
    */
   public void putMeasurementType(MeasurementType type);
 
   /**
    * Stores the given Sensor in the WattDepot Server.
    * 
-   * @param sensor
-   *          the Sensor.
+   * @param sensor the Sensor.
    */
   public void putSensor(Sensor sensor);
 
   /**
    * Stores the given SensorGroup in the WattDepot Server.
    * 
-   * @param group
-   *          the SensorGroup.
+   * @param group the SensorGroup.
    */
   public void putSensorGroup(SensorGroup group);
 
   /**
    * Stores the given SensorModel in the WattDepot Server.
    * 
-   * @param model
-   *          the SensorModel.
+   * @param model the SensorModel.
    */
   public void putSensorModel(SensorModel model);
 
   /**
-   * Stores the given CollectorMetaData in the WattDepot Server.
+   * Stores the given CollectorProcessDefinitionData in the WattDepot Server.
    * 
-   * @param process
-   *          the CollectorMetaData.
+   * @param process the CollectorProcessDefinitionData.
    */
-  public void putCollectorMetaData(CollectorMetaData process);
+  public void putCollectorProcessDefinition(CollectorProcessDefinition process);
 
   /**
    * Updates the given Depository in the WattDepot Server.
    * 
-   * @param depository
-   *          The Depository to update.
+   * @param depository The Depository to update.
    */
   public void updateDepository(Depository depository);
 
   /**
-   * Updates the given Location in the WattDepot Server.
-   * 
-   * @param sensorLocation
-   *          the Location to update.
-   */
-  public void updateLocation(SensorLocation sensorLocation);
-
-  /**
    * Updates the given MeasurementType in the WattDepot Server.
    * 
-   * @param type
-   *          the MeasurementType to update.
+   * @param type the MeasurementType to update.
    */
   public void updateMeasurementType(MeasurementType type);
 
   /**
    * Updates the given Sensor in the WattDepot Server.
    * 
-   * @param sensor
-   *          The Sensor to update.
+   * @param sensor The Sensor to update.
    */
   public void updateSensor(Sensor sensor);
 
   /**
    * Updates the given SensorGroup in the WattDepot Server.
    * 
-   * @param group
-   *          The SensorGroup to update.
+   * @param group The SensorGroup to update.
    */
   public void updateSensorGroup(SensorGroup group);
 
   /**
    * Updates the given SensorModel in the WattDepot Server.
    * 
-   * @param model
-   *          the SensorModel to update.
+   * @param model the SensorModel to update.
    */
   public void updateSensorModel(SensorModel model);
 
   /**
-   * Updates the given CollectorMetaData in the WattDepot Server.
+   * Updates the given CollectorProcessDefinitionData in the WattDepot Server.
    * 
-   * @param process
-   *          The CollectorMetaData to update.
+   * @param process The CollectorProcessDefinitionData to update.
    */
-  public void updateCollectorMetaData(CollectorMetaData process);
+  public void updateCollectorProcessDefinition(CollectorProcessDefinition process);
 }

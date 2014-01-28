@@ -22,13 +22,13 @@ import java.util.ArrayList;
 
 /**
  * MeasurementList - Attempt at getting a list across the wire.
- *
+ * 
  * @author Cam Moore
- *
+ * 
  */
 public class MeasurementList {
   private ArrayList<Measurement> measurements;
-  
+
   /**
    * Default Constructor.
    */
@@ -50,7 +50,9 @@ public class MeasurementList {
     this.measurements = measurements;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.Object#toString()
    */
   @Override

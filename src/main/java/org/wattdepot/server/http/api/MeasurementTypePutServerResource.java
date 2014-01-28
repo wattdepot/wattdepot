@@ -22,17 +22,20 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.MeasurementType;
+import org.wattdepot.common.exception.BadSlugException;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.MeasurementTypePutResource;
 
 /**
- * MeasurementTypePutServerResource handles the HTTP PUT API for MeasurementTypes.
+ * MeasurementTypePutServerResource handles the HTTP PUT API for
+ * MeasurementTypes.
  * 
  * @author Cam Moore
  * 
  */
-public class MeasurementTypePutServerResource extends WattDepotServerResource implements
-    MeasurementTypePutResource {
+public class MeasurementTypePutServerResource extends WattDepotServerResource
+    implements MeasurementTypePutResource {
 
   /*
    * (non-Javadoc)
@@ -43,20 +46,32 @@ public class MeasurementTypePutServerResource extends WattDepotServerResource im
    */
   @Override
   public void store(MeasurementType measurementType) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/measurement-type/ with " + measurementType);
+    getLogger().log(Level.INFO,
+        "PUT /wattdepot/measurement-type/ with " + measurementType);
     if (isInRole("admin")) {
-      MeasurementType mt = depot.getMeasurementType(measurementType.getId());
+      MeasurementType mt = null;
+      try {
+        mt = depot.getMeasurementType(measurementType.getId());
+      }
+      catch (IdNotFoundException e1) { // NOPMD
+        // possible out come.
+      }
       if (mt == null) {
         try {
-          depot.defineMeasurementType(measurementType.getName(), measurementType.getUnits());
+          depot.defineMeasurementType(measurementType.getId(),
+              measurementType.getName(), measurementType.getUnits());
         }
         catch (UniqueIdException e) {
-          setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        }
+        catch (BadSlugException e) {
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         }
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Only admin may add new MeasurementTypes.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+          "Only admin may add new MeasurementTypes.");
     }
   }
 

@@ -4,7 +4,7 @@
 <!-- Generated Oct 29, 2013 12:06:15 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping default-lazy="false">
     <class name="org.wattdepot.common.domainmodel.UserInfo" table="USERINFO">
-        <id name="id" type="java.lang.String">
+        <id name="uid" type="java.lang.String">
             <column name="ID" />
             <generator class="assigned" />
         </id>
@@ -17,8 +17,8 @@
         <property name="email" type="java.lang.String">
             <column name="EMAIL" />
         </property>
-        <property name="admin" type="java.lang.Boolean">
-            <column name="ADMIN" />
+        <property name="organizationId" type="java.lang.String">
+            <column name="ORGANIZATION" />
         </property>
         <set name="properties" table="PROPERTY" inverse="false" lazy="false">
             <key>

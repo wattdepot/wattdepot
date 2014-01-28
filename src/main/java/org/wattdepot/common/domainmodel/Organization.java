@@ -35,61 +35,69 @@ public class Organization {
   /** The name of the admin group. */
   public static final String ADMIN_GROUP_NAME = "admin";
   /** The admin user group. */
-  public static final Organization ADMIN_GROUP = new Organization(
-      ADMIN_GROUP_NAME);
+  public static final Organization ADMIN_GROUP = new Organization(ADMIN_GROUP_NAME);
 
   /** The public user group. All groups can see publicly owned objects. */
-  public static final Organization PUBLIC_GROUP = new Organization(
-      Labels.PUBLIC);
+  public static final Organization PUBLIC_GROUP = new Organization(Labels.PUBLIC);
 
-  /** A unique id. */
+  /** Unique id that is also a slug usable in URLs. */
   protected String id;
   /** The name of the group. */
   protected String name;
-  /** The users in this group. */
-  protected Set<UserInfo> users;
+  /** The ids of the users in this group. */
+  protected Set<String> users;
 
-  static {
-    ADMIN_GROUP.add(UserInfo.ROOT);
-  }
+//  static {
+//    ADMIN_GROUP.add(UserInfo.ROOT.getUid());
+//  }
 
   /**
    * The default constructor.
    */
   public Organization() {
-    users = new HashSet<UserInfo>();
+    users = new HashSet<String>();
   }
 
   /**
    * @param name
-   *          The name of the UserGroup.
+   *          The name of the Organization.
    */
   public Organization(String name) {
-    this.id = Slug.slugify(name);
-    this.name = name;
-    this.users = new HashSet<UserInfo>();
+    this(Slug.slugify(name), name, new HashSet<String>());
   }
 
   /**
    * @param name
-   *          The name of the group.
+   *          The name of the organization.
    * @param users
-   *          The Users in the group.
+   *          The Users in the organization.
    */
-  public Organization(String name, Set<UserInfo> users) {
-    this.id = Slug.slugify(name);
+  public Organization(String name, Set<String> users) {
+    this(Slug.slugify(name), name, users);
+  }
+
+  /**
+   * @param slug
+   *          The unique slug.
+   * @param name
+   *          The name of the organization.
+   * @param users
+   *          The Users in the organization.
+   */
+  public Organization(String slug, String name, Set<String> users) {
+    this.id = slug;
     this.name = name;
     this.users = users;
   }
 
   /**
-   * @param e
-   *          The User to add.
+   * @param userId
+   *          The id of the User to add.
    * @return true if successful.
    * @see java.util.List#add(java.lang.Object)
    */
-  public boolean add(UserInfo e) {
-    return users.add(e);
+  public boolean add(String userId) {
+    return users.add(userId);
   }
 
   /**
@@ -115,7 +123,8 @@ public class Organization {
     if (obj == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if (!getClass().isAssignableFrom(obj.getClass())
+        && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
     Organization other = (Organization) obj;
@@ -125,6 +134,14 @@ public class Organization {
       }
     }
     else if (!id.equals(other.id)) {
+      return false;
+    }
+    if (name == null) {
+      if (other.name != null) {
+        return false;
+      }
+    }
+    else if (!name.equals(other.name)) {
       return false;
     }
     if (users == null) {
@@ -139,7 +156,7 @@ public class Organization {
   }
 
   /**
-   * @return The unique id for the UserGroup.
+   * @return The unique id for the Organization.
    */
   public String getId() {
     return id;
@@ -155,7 +172,7 @@ public class Organization {
   /**
    * @return the users.
    */
-  public Set<UserInfo> getUsers() {
+  public Set<String> getUsers() {
     return users;
   }
 
@@ -169,6 +186,7 @@ public class Organization {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
     result = prime * result + ((users == null) ? 0 : users.hashCode());
     return result;
   }
@@ -206,7 +224,7 @@ public class Organization {
    * @param users
    *          the users to set
    */
-  public void setUsers(Set<UserInfo> users) {
+  public void setUsers(Set<String> users) {
     this.users = users;
   }
 
@@ -217,7 +235,7 @@ public class Organization {
    */
   @Override
   public String toString() {
-    return "UserGroup [id=" + id + ", users=" + users + "]";
+    return "Organization [id=" + id + ", name=" + name + ", users=" + users + "]";
   }
 
 }

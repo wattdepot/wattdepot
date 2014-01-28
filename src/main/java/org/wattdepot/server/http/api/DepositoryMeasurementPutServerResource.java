@@ -25,8 +25,10 @@ import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementTypeException;
-import org.wattdepot.common.exception.MissMatchedOwnerException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.DepositoryMeasurementPutResource;
 
 /**
@@ -60,21 +62,33 @@ public class DepositoryMeasurementPutServerResource extends WattDepotServerResou
    */
   @Override
   public void store(Measurement meas) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/depository/{" + depositoryId
-        + "}/measurement/ with " + meas);
+    getLogger().log(
+        Level.INFO,
+        "PUT /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/measurement/ with "
+            + meas);
     try {
-      Depository depository = depot.getWattDeposiory(depositoryId, orgId);
+      Depository depository = depot.getDepository(depositoryId, orgId);
       if (depository != null) {
-        depository.putMeasurement(meas);
+        Sensor sensor = depot.getSensor(meas.getSensorId(), orgId);
+        if (sensor != null) {
+          depot.putMeasurement(depositoryId, orgId, meas);
+        }
+        else {
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Sensor " + meas.getSensorId()
+              + " does not exist");
+        }
       }
       else {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " does not exist.");
       }
     }
-    catch (MissMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+    catch (MisMatchedOwnerException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
     catch (MeasurementTypeException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+    }
+    catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
   }

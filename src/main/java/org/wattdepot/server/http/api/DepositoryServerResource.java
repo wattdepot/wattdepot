@@ -24,9 +24,8 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.exception.MissMatchedOwnerException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.DepositoryResource;
 
 /**
@@ -59,17 +58,19 @@ public class DepositoryServerResource extends WattDepotServerResource implements
    */
   @Override
   public Depository retrieve() {
-    getLogger().log(Level.INFO,
-        "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}");
+    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}");
+    try {
+      depot.getOrganization(orgId);
+    }
+    catch (IdNotFoundException e1) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");
+    }
     Depository depo = null;
     try {
-      depo = depot.getWattDeposiory(depositoryId, orgId);
+      depo = depot.getDepository(depositoryId, orgId);
     }
-    catch (MissMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, e.getMessage());
-    }
-    if (depo == null) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Depository " + depositoryId
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Depository " + depositoryId
           + " is not defined.");
     }
     return depo;
@@ -85,13 +86,13 @@ public class DepositoryServerResource extends WattDepotServerResource implements
   public void update(Depository depository) {
     getLogger().log(Level.INFO,
         "POST /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "} with " + depository);
-    Organization owner = depot.getOrganization(orgId);
-    if (owner != null) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Can't update a Depository.");
+    try {
+      depot.getOrganization(orgId);
     }
-    else {
+    catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
+    setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Can't update a Depository.");
   }
 
   /*
@@ -101,16 +102,15 @@ public class DepositoryServerResource extends WattDepotServerResource implements
    */
   @Override
   public void remove() {
-    getLogger().log(Level.INFO,
-        "DEL /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}");
+    getLogger().log(Level.INFO, "DEL /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}");
     try {
-      depot.deleteWattDepository(depositoryId, orgId);
+      depot.deleteDepository(depositoryId, orgId);
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
-    catch (MissMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+    catch (MisMatchedOwnerException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
   }
 

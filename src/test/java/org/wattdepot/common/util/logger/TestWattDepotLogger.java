@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 
 import org.junit.Test;
 import org.wattdepot.common.util.UserHome;
-import org.wattdepot.common.util.logger.WattDepotLogger;
 
 /**
  * Tests the WattDepotLogger class. Portions of this code are adapted from

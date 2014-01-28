@@ -18,7 +18,8 @@
  */
 package org.wattdepot.common.domainmodel;
 
-import org.jasypt.util.password.StrongPasswordEncryptor;
+import org.wattdepot.server.ServerProperties;
+import org.wattdepot.server.StrongAES;
 
 /**
  * UserPassword - UserId and encrypted password pair.
@@ -29,19 +30,18 @@ import org.jasypt.util.password.StrongPasswordEncryptor;
 public class UserPassword {
   /** Name of property used to store the admin password. */
   public static final String ADMIN_USER_PASSWORD = "wattdepot-server.admin.password";
-  
+
   /** The password for the admin user. */
-  public static final UserPassword ADMIN = new UserPassword(UserInfo.ROOT.getId(), "admin");
-  private String id;
+  public static final UserPassword ROOT = new UserPassword(UserInfo.ROOT.getUid(),
+      UserInfo.ROOT.getOrganizationId(), "admin");
+  private String uid;
   private String encryptedPassword;
-  private String plainText;
-  private StrongPasswordEncryptor passwordEncryptor;
+  private String orgId;
 
   static {
-    String password = System.getProperty(ADMIN_USER_PASSWORD);
+    String password = System.getenv().get(ServerProperties.ADMIN_USER_PASSWORD_ENV);
     if (password != null) {
-      ADMIN.setPassword(password);
-      ADMIN.setPlainText(password);
+      ROOT.setPassword(password);
     }
   }
 
@@ -49,7 +49,7 @@ public class UserPassword {
    * Default constructor.
    */
   public UserPassword() {
-    this.passwordEncryptor = new StrongPasswordEncryptor();
+
   }
 
   /**
@@ -58,28 +58,26 @@ public class UserPassword {
    * 
    * @param id
    *          The user's id.
+   * @param orgId
+   *          the user's organization id.
    * @param plainTextPassword
    *          The plain text password.
    */
-  public UserPassword(String id, String plainTextPassword) {
-    this.passwordEncryptor = new StrongPasswordEncryptor();
-    this.id = id;
-    this.plainText = plainTextPassword;
-    this.encryptedPassword = passwordEncryptor.encryptPassword(plainTextPassword);
+  public UserPassword(String id, String orgId, String plainTextPassword) {
+    this.uid = id;
+    this.encryptedPassword = StrongAES.getInstance().encrypt(plainTextPassword);
+    this.orgId = orgId;
   }
 
-  /*
-   * (non-Javadoc)
+  /**
+   * Checks the given password.
    * 
-   * @see java.lang.Object#hashCode()
+   * @param inputPassword
+   *          The password to check.
+   * @return True if the password is correct.
    */
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((encryptedPassword == null) ? 0 : encryptedPassword.hashCode());
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
-    return result;
+  public boolean checkPassword(String inputPassword) {
+    return StrongAES.getInstance().encrypt(inputPassword).equals(encryptedPassword);
   }
 
   /*
@@ -95,7 +93,8 @@ public class UserPassword {
     if (obj == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if (!getClass().isAssignableFrom(obj.getClass())
+        && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
     UserPassword other = (UserPassword) obj;
@@ -107,40 +106,23 @@ public class UserPassword {
     else if (!encryptedPassword.equals(other.encryptedPassword)) {
       return false;
     }
-    if (id == null) {
-      if (other.id != null) {
+    if (uid == null) {
+      if (other.uid != null) {
         return false;
       }
     }
-    else if (!id.equals(other.id)) {
+    else if (!uid.equals(other.uid)) {
+      return false;
+    }
+    if (orgId == null) {
+      if (other.orgId != null) {
+        return false;
+      }
+    }
+    else if (!orgId.equals(other.orgId)) {
       return false;
     }
     return true;
-  }
-
-  /**
-   * @return the plainText
-   */
-  public String getPlainText() {
-    return plainText;
-  }
-
-  /**
-   * @param plainText the plainText to set
-   */
-  public void setPlainText(String plainText) {
-    this.plainText = plainText;
-  }
-
-  /**
-   * Checks the given password.
-   * 
-   * @param inputPassword
-   *          The password to check.
-   * @return True if the password is correct.
-   */
-  public boolean checkPassword(String inputPassword) {
-    return passwordEncryptor.checkPassword(inputPassword, encryptedPassword);
   }
 
   /**
@@ -153,8 +135,30 @@ public class UserPassword {
   /**
    * @return the id
    */
-  public String getId() {
-    return id;
+  public String getUid() {
+    return uid;
+  }
+
+  /**
+   * @return the organization id.
+   */
+  public String getOrganizationId() {
+    return orgId;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((encryptedPassword == null) ? 0 : encryptedPassword.hashCode());
+    result = prime * result + ((uid == null) ? 0 : uid.hashCode());
+    result = prime * result + ((orgId == null) ? 0 : orgId.hashCode());
+    return result;
   }
 
   /**
@@ -169,8 +173,16 @@ public class UserPassword {
    * @param id
    *          the id to set
    */
-  public void setId(String id) {
-    this.id = id;
+  public void setUid(String id) {
+    this.uid = id;
+  }
+
+  /**
+   * @param orgId
+   *          the new organization id to set.
+   */
+  public void setOrganizationId(String orgId) {
+    this.orgId = orgId;
   }
 
   /**
@@ -180,15 +192,16 @@ public class UserPassword {
    *          the plain text password.
    */
   public void setPassword(String plainText) {
-    this.encryptedPassword = passwordEncryptor.encryptPassword(plainText);
+    this.encryptedPassword = StrongAES.getInstance().encrypt(plainText);
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.Object#toString()
    */
   @Override
   public String toString() {
-    return "UserPassword [id=" + id + ", encryptedPassword=" + encryptedPassword + "]";
+    return "UserPassword [id=" + uid + ", orgId=" + orgId + ", encryptedPassword=" + encryptedPassword + "]";
   }
-  
 }

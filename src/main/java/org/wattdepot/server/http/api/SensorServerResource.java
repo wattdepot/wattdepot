@@ -24,9 +24,8 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Sensor;
-import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.exception.MissMatchedOwnerException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.SensorResource;
 
 /**
@@ -62,10 +61,10 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
       depot.deleteSensor(sensorId, orgId);
     }
     catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
-    catch (MissMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, e.getMessage());
+    catch (MisMatchedOwnerException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
   }
 
@@ -81,11 +80,14 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
     try {
       sensor = depot.getSensor(sensorId, orgId);
     }
-    catch (MissMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_FORBIDDEN, e.getMessage());
+    catch (MisMatchedOwnerException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Sensor " + sensorId + " is not defined.");
     }
     if (sensor == null) {
-      setStatus(Status.CLIENT_ERROR_EXPECTATION_FAILED, "Sensor " + sensorId + " is not defined.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Sensor " + sensorId + " is not defined.");
     }
     return sensor;
   }
@@ -101,22 +103,33 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
   public void update(Sensor sensor) {
     getLogger().log(Level.INFO,
         "POST /wattdepot/{" + orgId + "}/sensor/{" + sensorId + "} with " + sensor);
-    Organization owner = depot.getOrganization(orgId);
-    if (owner != null) {
-      if (sensorId.equals(sensor.getId())) {
+    try {
+      depot.getOrganization(orgId);
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+    }
+    if (sensorId.equals(sensor.getId())) {
+      try {
         if (depot.getSensorIds(orgId).contains(sensor.getId())) {
-          depot.updateSensor(sensor);
+          try {
+            depot.updateSensor(sensor);
+          }
+          catch (IdNotFoundException e) {
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          }
         }
         else {
-          setStatus(Status.CLIENT_ERROR_FAILED_DEPENDENCY, sensor.getName() + " is not defined.");
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensor.getName() + " is not defined.");
         }
       }
-      else {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Ids do not match.");
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId
+            + " is not a defined Organization id.");
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Ids do not match.");
     }
   }
 

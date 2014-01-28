@@ -22,6 +22,8 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.SensorModel;
+import org.wattdepot.common.exception.BadSlugException;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.SensorModelPutResource;
 
@@ -32,8 +34,8 @@ import org.wattdepot.common.http.api.SensorModelPutResource;
  * @author Cam Moore
  * 
  */
-public class SensorModelPutServerResource extends WattDepotServerResource implements
-    SensorModelPutResource {
+public class SensorModelPutServerResource extends WattDepotServerResource
+    implements SensorModelPutResource {
 
   /*
    * (non-Javadoc)
@@ -43,18 +45,28 @@ public class SensorModelPutServerResource extends WattDepotServerResource implem
    */
   @Override
   public void store(SensorModel sensormodel) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/sensormodel/ with " + sensormodel);
+    getLogger().log(Level.INFO,
+        "PUT /wattdepot/sensormodel/ with " + sensormodel);
     if (!depot.getSensorModelIds().contains(sensormodel.getId())) {
       try {
-        depot.defineSensorModel(sensormodel.getName(), sensormodel.getProtocol(),
-            sensormodel.getType(), sensormodel.getVersion());
+        depot.defineSensorModel(sensormodel.getId(), sensormodel.getName(),
+            sensormodel.getProtocol(), sensormodel.getType(),
+            sensormodel.getVersion());
       }
       catch (UniqueIdException e) {
-        setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
+      catch (BadSlugException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
     }
     else {
-      depot.updateSensorModel(sensormodel);
+      try {
+        depot.updateSensorModel(sensormodel);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
     }
   }
 }

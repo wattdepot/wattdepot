@@ -4,21 +4,21 @@
 <!-- Generated Oct 28, 2013 2:55:11 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping default-lazy="false">
     <class name="org.wattdepot.common.domainmodel.SensorGroup" table="SENSORGROUP">
-        <id name="id" type="java.lang.String">
-            <column name="ID" />
+        <id name="slug" type="java.lang.String">
+            <column name="SLUG" />
             <generator class="assigned" />
         </id>
         <property name="name" type = "java.lang.String">
             <column name="NAME" />
         </property>
-        <set name="sensors" inverse="false" table="SENSOR" lazy="false">
+        <set name="sensors" table="SENSORS">
             <key>
                 <column name="SENSORGROUP_ID" />
             </key>
-            <one-to-many class="org.wattdepot.common.domainmodel.Sensor" />
+            <element column="SENSORID" type="java.lang.String"/>
         </set>
-        <many-to-one name="owner" class="org.wattdepot.common.domainmodel.Organization" fetch="join">
-            <column name="OWNER" />
-        </many-to-one>
+        <property name="ownerId" type="java.lang.String">
+            <column name="OWNERID" />
+        </property>
     </class>
 </hibernate-mapping>

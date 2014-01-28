@@ -42,8 +42,17 @@ public class ServerProperties {
   public static final String HOSTNAME_KEY = "wattdepot-server.hostname";
   /** Name of property used to store the admin username. */
   public static final String ADMIN_USER_NAME = "wattdepot-server.admin.name";
+  /** The environment variable for storing the admin's name. */
+  public static final String ADMIN_USER_NAME_ENV = "WATTDEPOT_ADMIN_NAME";
   /** Name of property used to store the admin password. */
   public static final String ADMIN_USER_PASSWORD = "wattdepot-server.admin.password";
+  /** The environment variable for storing the admin's password. */
+  public static final String ADMIN_USER_PASSWORD_ENV = "WATTDEPOT_ADMIN_PASSOWORD";
+  /**
+   * The environment variable name that holds the salt used for encrypting
+   * passwords in WattDepot.
+   */
+  public static final String WATTDEPOT_SALT_ENV = "WATTDEPOT_SALT";
   /** The WattDepot implementation class. */
   public static final String WATT_DEPOT_IMPL_KEY = "wattdepot-server.wattdepot.impl";
   /** The wattdepot server port key. */
@@ -70,6 +79,8 @@ public class ServerProperties {
    * True for production.
    */
   public static final String ENABLE_LOGGING_KEY = "wattdepot-server.enable.logging";
+  /** Check the Session opens vs close. */
+  public static final String CHECK_SESSIONS = "wattdepot-server.check.sessions";
   /** The logging level key. */
   public static final String LOGGING_LEVEL_KEY = "wattdepot-server.logging.level";
   /** The WattDepot implementation class during testing. */
@@ -103,9 +114,8 @@ public class ServerProperties {
    * Creates a new ServerProperties instance loaded from the given filename.
    * Prints an error to the console if problems occur on loading.
    * 
-   * @param serverSubdir
-   *          The name of the subdirectory used to store all files for this
-   *          server.
+   * @param serverSubdir The name of the subdirectory used to store all files
+   *        for this server.
    */
   public ServerProperties(String serverSubdir) {
     try {
@@ -167,8 +177,7 @@ public class ServerProperties {
   /**
    * Returns the value of the Server Property specified by the key.
    * 
-   * @param key
-   *          Should be one of the public static final strings in this class.
+   * @param key Should be one of the public static final strings in this class.
    * @return The value of the key, or null if not found.
    */
   public String get(String key) {
@@ -180,8 +189,7 @@ public class ServerProperties {
    * values. The fact that we need to do this indicates a bug in Java's
    * Properties implementation to me.
    * 
-   * @param properties
-   *          The properties.
+   * @param properties The properties.
    */
   private void trimProperties(Properties properties) {
     // Have to do this iteration in a Java 5 compatible manner. no
@@ -198,11 +206,9 @@ public class ServerProperties {
    * mentioned in this file. Will also add any pre-existing System properties
    * that start with "wattdepot-server.".
    * 
-   * @param serverSubdir
-   *          The name of the subdirectory used to store all files for this
-   *          server.
-   * @throws Exception
-   *           if errors occur.
+   * @param serverSubdir The name of the subdirectory used to store all files
+   *        for this server.
+   * @throws Exception if errors occur.
    */
   private void initializeProperties(String serverSubdir) throws Exception {
     Logger logger = Logger.getLogger("org.wattdepot.properties");
@@ -216,7 +222,7 @@ public class ServerProperties {
       serverHome = wattDepot3Home + serverSubdir;
     }
     String propFileName = serverHome + "/wattdepot-server.properties";
-    String defaultAdminName = "admin";
+    String defaultAdminName = "root";
     String defaultAdminPassword = "admin";
     String defaultWattDepotImpl = "org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl";
     String defaultPort = "8192";
@@ -234,8 +240,9 @@ public class ServerProperties {
     properties.setProperty(DB_USER_NAME, "myuser");
     properties.setProperty(DB_PASSWORD, "secret");
     properties.setProperty(DB_SHOW_SQL, "false");
-    properties.setProperty(DB_TABLE_UPDATE, "create");
+    properties.setProperty(DB_TABLE_UPDATE, "update");
     properties.setProperty(ENABLE_LOGGING_KEY, TRUE);
+    properties.setProperty(CHECK_SESSIONS, FALSE);
     properties.setProperty(LOGGING_LEVEL_KEY, "INFO");
     properties.setProperty(CONTEXT_ROOT_KEY, "wattdepot");
     properties.setProperty(TEST_PORT_KEY, defaultTestPort);
@@ -287,16 +294,15 @@ public class ServerProperties {
       properties.setProperty(DB_PASSWORD, password);
       properties.setProperty(DB_CONNECTION_URL, dbUrl);
     }
-    
+
   }
 
   /**
    * Finds any System properties whose key begins with "wattdepot-server.", and
    * adds those key-value pairs to the passed Properties object.
    * 
-   * @param properties
-   *          The properties instance to be updated with the WattDepot system
-   *          properties.
+   * @param properties The properties instance to be updated with the WattDepot
+   *        system properties.
    */
   private void addServerSystemProperties(Properties properties) {
     Properties systemProperties = System.getProperties();
@@ -304,7 +310,7 @@ public class ServerProperties {
       String sysPropName = (String) entry.getKey();
       if (sysPropName.startsWith("wattdepot-server.")) {
         String sysPropValue = (String) entry.getValue();
-        if (sysPropValue != null && ! sysPropValue.isEmpty()) {
+        if (sysPropValue != null && !sysPropValue.isEmpty()) {
           properties.setProperty(sysPropName, sysPropValue);
         }
       }

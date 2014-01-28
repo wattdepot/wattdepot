@@ -31,16 +31,15 @@ import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.Get;
 import org.restlet.security.User;
-import org.wattdepot.common.domainmodel.CollectorMetaData;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.MeasurementType;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
-import org.wattdepot.common.domainmodel.SensorLocation;
 import org.wattdepot.common.domainmodel.SensorModel;
-import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserInfo;
-import org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl;
+import org.wattdepot.common.exception.IdNotFoundException;
 
 /**
  * AdministratorServerResource - Administrative interface for WattDepot. It
@@ -59,41 +58,64 @@ public class AdminServerResource extends WattDepotServerResource {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/");
     if (!isInRole(orgId) && !isInRole("admin")) {
       User user = getClientInfo().getUser();
-      UserInfo info = depot.getUser(user.getIdentifier());
-      Organization group = depot.getUsersGroup(info);
-      if (group != null) {
-        redirectPermanent("/wattdepot/" + group.getId() + "/");
+      UserInfo info = null;
+      try {
+        info = depot.getUser(user.getIdentifier(), orgId);
       }
-      else {
-        setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+      catch (IdNotFoundException e) {
+        return null;
+      }
+      Organization group = null;
+      try {
+        group = depot.getOrganization(info.getOrganizationId());
+        if (group != null) {
+          redirectPermanent("/wattdepot/" + group.getId() + "/");
+        }
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
       }
     }
     Map<String, Object> dataModel = new HashMap<String, Object>();
-    // get some stuff from the database
-    List<UserInfo> users = depot.getUsers();
-    List<Organization> groups = depot.getOrganizations();
-    List<Depository> depos = depot.getWattDepositories(orgId);
-    List<SensorLocation> locs = depot.getLocations(orgId);
-    List<Sensor> sensors = depot.getSensors(orgId);
-    List<SensorModel> sensorModels = depot.getSensorModels();
-    List<SensorGroup> sensorGroups = depot.getSensorGroups(orgId);
-    List<CollectorMetaData> sensorProcesses = depot.getCollectorMetaDatas(orgId);
-    List<MeasurementType> measurementTypes = depot.getMeasurementTypes();
-    dataModel.put("users", users);
-    dataModel.put("groups", groups);
-    dataModel.put("groupId", orgId);
-    dataModel.put("depositories", depos);
-    dataModel.put("locations", locs);
-    dataModel.put("sensors", sensors);
-    dataModel.put("sensorgroups", sensorGroups);
-    dataModel.put("sensormodels", sensorModels);
-    dataModel.put("sensorprocesses", sensorProcesses);
-    dataModel.put("measurementtypes", measurementTypes);
-    dataModel.put("opens", ((WattDepotPersistenceImpl) depot).getSessionOpen());
-    dataModel.put("closes", ((WattDepotPersistenceImpl) depot).getSessionClose());
-    Representation rep = new ClientResource(LocalReference.createClapReference(getClass()
-        .getPackage()) + "/Admin.ftl").get();
-
-    return new TemplateRepresentation(rep, dataModel, MediaType.TEXT_HTML);
+    dataModel.put("orgId", orgId);
+    Representation rep = null;
+    TemplateRepresentation template = null;
+    // decide what to show based upon the orgId.
+    if (orgId.equals(Organization.ADMIN_GROUP.getId())) {
+      // admin can manipulate users and organizations
+      List<UserInfo> users = depot.getUsers();
+      List<Organization> orgs = depot.getOrganizations();
+      dataModel.put("users", users);
+      dataModel.put("orgs", orgs);
+      dataModel.put("rootUid", UserInfo.ROOT.getUid());
+      dataModel.put("adminId", Organization.ADMIN_GROUP.getId());
+      rep = new ClientResource(LocalReference.createClapReference(getClass().getPackage())
+          + "/UserAdmin.ftl").get();
+    }
+    else {
+      try {
+      // regular organization, can manipulate sensors, depositories
+      List<Depository> depos = depot.getDepositories(orgId);
+      List<Sensor> sensors = depot.getSensors(orgId);
+      List<SensorModel> sensorModels = depot.getSensorModels();
+      List<SensorGroup> sensorGroups = depot.getSensorGroups(orgId);
+      List<CollectorProcessDefinition> cpds = depot
+          .getCollectorProcessDefinitions(orgId);
+      List<MeasurementType> measurementTypes = depot.getMeasurementTypes();
+      dataModel.put("depositories", depos);
+      dataModel.put("sensors", sensors);
+      dataModel.put("sensorgroups", sensorGroups);
+      dataModel.put("sensormodels", sensorModels);
+      dataModel.put("cpds", cpds);
+      dataModel.put("measurementtypes", measurementTypes);
+      rep = new ClientResource(LocalReference.createClapReference(getClass().getPackage())
+          + "/OrganizationAdmin.ftl").get();
+      }
+      catch (IdNotFoundException e) { 
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
+    }
+    template = new TemplateRepresentation(rep, dataModel, MediaType.TEXT_HTML);
+    return template;
   }
 }

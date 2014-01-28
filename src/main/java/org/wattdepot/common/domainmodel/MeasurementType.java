@@ -20,6 +20,7 @@ package org.wattdepot.common.domainmodel;
 
 import javax.measure.unit.Unit;
 
+import org.wattdepot.common.exception.BadSlugException;
 import org.wattdepot.common.util.Slug;
 
 /**
@@ -49,14 +50,23 @@ public class MeasurementType {
   /**
    * Creates a new MeasurementType.
    * 
-   * @param name
-   *          the name of the type.
-   * @param unit
-   *          the units of measurement.
+   * @param name the name of the type.
+   * @param unit the units of measurement.
    */
   public MeasurementType(String name, Unit<?> unit) {
+    this(Slug.slugify(name), name, unit);
+  }
+
+  /**
+   * Creates a new MeasurementType.
+   * 
+   * @param id The unique id.
+   * @param name the name of the type.
+   * @param unit the units of measurement.
+   */
+  public MeasurementType(String id, String name, Unit<?> unit) {
+    this.id = id;
     this.name = name;
-    this.id = Slug.slugify(name);
     this.unit = unit;
     this.units = this.unit.toString();
   }
@@ -106,7 +116,7 @@ public class MeasurementType {
   }
 
   /**
-   * @return the id
+   * @return the slug
    */
   public String getId() {
     return id;
@@ -142,15 +152,20 @@ public class MeasurementType {
   }
 
   /**
-   * @param id the id to set
+   * @param id the slug to set
+   * @exception BadSlugException if the id is not valid.
    */
-  public void setId(String id) {
-    this.id = id;
+  public void setId(String id) throws BadSlugException {
+    if (Slug.validateSlug(id)) {
+      this.id = id;
+    }
+    else {
+      throw new BadSlugException(id + " is not a valid slug.");
+    }
   }
 
   /**
-   * @param name
-   *          the name to set
+   * @param name the name to set
    */
   public void setName(String name) {
     this.name = name;
@@ -160,20 +175,21 @@ public class MeasurementType {
   }
 
   /**
-   * @param units
-   *          the units to set
+   * @param units the units to set
    */
   public void setUnits(String units) {
     this.units = units;
     this.unit = Unit.valueOf(units);
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see java.lang.Object#toString()
    */
   @Override
   public String toString() {
-    return "MeasurementType [name=" + name + ", units=" + units + "]";
+    return "MeasurementType [id=" + id + ", name=" + name + ", units=" + units + "]";
   }
 
   /**

@@ -18,21 +18,14 @@
  */
 package org.wattdepot.server.depository.impl.hibernate;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
-import org.hibernate.Session;
 import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.MeasuredValue;
-import org.wattdepot.common.domainmodel.Measurement;
-import org.wattdepot.common.domainmodel.MeasurementType;
-import org.wattdepot.common.domainmodel.Property;
-import org.wattdepot.common.domainmodel.Sensor;
-import org.wattdepot.common.domainmodel.Organization;
-import org.wattdepot.common.exception.MeasurementGapException;
-import org.wattdepot.common.exception.MeasurementTypeException;
-import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.server.ServerProperties;
 
 /**
@@ -42,17 +35,45 @@ import org.wattdepot.server.ServerProperties;
  * @author Cam Moore
  * 
  */
-public class DepositoryImpl extends Depository {
+@Entity
+@Table(name = "DEPOSITORIES")
+public class DepositoryImpl {
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see java.lang.Object#hashCode()
+  /** Database primary key. */
+  @Id
+  @GeneratedValue
+  private Long pk;
+  /** The unique id it is also a slug used in URIs. */
+  private String id;
+  /** Name of the Depository. */
+  private String name;
+  /** MeasurementType of the measurements stored in this depository. */
+  @ManyToOne
+  private MeasurementTypeImpl type;
+  /** This depository's organization. */
+  @ManyToOne
+  private OrganizationImpl org;
+  @Transient
+  private ServerProperties serverProperties;
+
+  /**
+   * Default constructor.
    */
-  @Override
-  public int hashCode() {
-    int result = super.hashCode();
-    return result;
+  public DepositoryImpl() {
+    super();
+  }
+
+  /**
+   * @param id the id.
+   * @param name the name.
+   * @param type the type.
+   * @param org the organization.
+   */
+  public DepositoryImpl(String id, String name, MeasurementTypeImpl type, OrganizationImpl org) {
+    this.id = id;
+    this.name = name;
+    this.type = type;
+    this.org = org;
   }
 
   /*
@@ -65,164 +86,107 @@ public class DepositoryImpl extends Depository {
     if (this == obj) {
       return true;
     }
-    if (!super.equals(obj)) {
+    if (obj == null) {
       return false;
     }
     if (getClass() != obj.getClass()) {
       return false;
     }
     DepositoryImpl other = (DepositoryImpl) obj;
-    if (serverProperties == null) {
-      if (other.serverProperties != null) {
+    if (id == null) {
+      if (other.id != null) {
         return false;
       }
     }
-    else if (!serverProperties.equals(other.serverProperties)) {
+    else if (!id.equals(other.id)) {
+      return false;
+    }
+    if (name == null) {
+      if (other.name != null) {
+        return false;
+      }
+    }
+    else if (!name.equals(other.name)) {
+      return false;
+    }
+    if (org == null) {
+      if (other.org != null) {
+        return false;
+      }
+    }
+    else if (!org.equals(other.org)) {
+      return false;
+    }
+    if (pk == null) {
+      if (other.pk != null) {
+        return false;
+      }
+    }
+    else if (!pk.equals(other.pk)) {
+      return false;
+    }
+    if (type == null) {
+      if (other.type != null) {
+        return false;
+      }
+    }
+    else if (!type.equals(other.type)) {
       return false;
     }
     return true;
   }
 
-  private ServerProperties serverProperties;
 
   /**
-   * Default constructor.
+   * @return the id
    */
-  public DepositoryImpl() {
-    super();
+  public String getId() {
+    return id;
   }
 
   /**
-   * Creates a DepositoryImpl from a Depository.
-   * 
-   * @param clone
-   *          The Depository to clone.
+   * @return the name
    */
-  public DepositoryImpl(Depository clone) {
-    super(clone.getName(), clone.getMeasurementType(), clone.getOwner());
+  public String getName() {
+    return name;
   }
 
   /**
-   * @param name
-   *          The name of the depository.
-   * @param measurementType
-   *          The type of the measurement.
-   * @param owner
-   *          The owner.
+   * @return the org
    */
-  public DepositoryImpl(String name, MeasurementType measurementType,
-      Organization owner) {
-    super(name, measurementType, owner);
+  public OrganizationImpl getOrg() {
+    return org;
+  }
+
+  /**
+   * @return the pk
+   */
+  public Long getPk() {
+    return pk;
+  }
+
+  /**
+   * @return the type
+   */
+  public MeasurementTypeImpl getType() {
+    return type;
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @see
-   * org.wattdepot.datamodel.Depository#deleteMeasurement(org.wattdepot.datamodel
-   * .Measurement)
+   * @see java.lang.Object#hashCode()
    */
   @Override
-  public void deleteMeasurement(Measurement meas) {
-    Session session = Manager.getFactory(serverProperties).openSession();
-    session.beginTransaction();
-    session.delete(meas);
-    session.getTransaction().commit();
-    session.close();
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.datamodel.Depository#getMeasurement(java.lang.String)
-   */
-  @Override
-  public Measurement getMeasurement(String measId) {
-    Measurement ret = null;
-    Session session = Manager.getFactory(serverProperties).openSession();
-    session.beginTransaction();
-    @SuppressWarnings("unchecked")
-    List<MeasurementImpl> measurements = (List<MeasurementImpl>) session
-        .createQuery("FROM MeasurementImpl").list();
-    for (MeasurementImpl meas : measurements) {
-      if (meas.getId().equals(measId)) {
-        ret = meas;
-      }
-    }
-    session.getTransaction().commit();
-    session.close();    
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.datamodel.Depository#getMeasurements(org.wattdepot.datamodel
-   * .Sensor)
-   */
-  @Override
-  public List<Measurement> getMeasurements(Sensor sensor) {
-    Session session = Manager.getFactory(serverProperties).openSession();
-    session.beginTransaction();
-    List<Measurement> ret = getMeasurements(session, sensor);
-    session.getTransaction().commit();
-    session.close();
-    return ret;
-
-  }
-
-  /**
-   * @param sensor
-   *          The Sensor.
-   * @param start
-   *          The start of the interval.
-   * @param end
-   *          The end of the interval.
-   * @return A list of the measurements in the interval.
-   */
-  @Override
-  public List<Measurement> getMeasurements(Sensor sensor, Date start, Date end) {
-    List<Measurement> ret = new ArrayList<Measurement>();
-    Session session = Manager.getFactory(serverProperties).openSession();
-    session.beginTransaction();
-    @SuppressWarnings("unchecked")
-    List<MeasurementImpl> measurements = (List<MeasurementImpl>) session
-        .createQuery(
-            "FROM MeasurementImpl WHERE date >= :start AND date <= :end AND depository = :depository")
-        .setParameter("start", start).setParameter("end", end)
-        .setParameter("depository", this).list();
-    for (MeasurementImpl meas : measurements) {
-      if (meas.getSensor().equals(sensor)) {
-        ret.add(meas);
-      }
-    }
-    session.getTransaction().commit();
-    session.close();
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.datamodel.Depository#getMeasurements(org.hibernate.Session,
-   * org.wattdepot.datamodel.Sensor)
-   */
-  @Override
-  public List<Measurement> getMeasurements(Session session, Sensor sensor) {
-    List<Measurement> ret = new ArrayList<Measurement>();
-    @SuppressWarnings("unchecked")
-    List<MeasurementImpl> measurements = (List<MeasurementImpl>) session
-        .createQuery("FROM MeasurementImpl WHERE depository = :depository")
-        .setParameter("depository", this).list();
-    for (MeasurementImpl meas : measurements) {
-      if (meas.getSensor().equals(sensor)) {
-        ret.add(meas);
-      }
-    }
-    return ret;
-
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
+    result = prime * result + ((org == null) ? 0 : org.hashCode());
+    result = prime * result + ((pk == null) ? 0 : pk.hashCode());
+    result = prime * result + ((type == null) ? 0 : type.hashCode());
+    return result;
   }
 
   /**
@@ -233,443 +197,65 @@ public class DepositoryImpl extends Depository {
   }
 
   /**
-   * @param sensor
-   *          The Sensor making the measurements.
-   * @return The latest measurement Value
-   * @throws NoMeasurementException
-   *           If there aren't any measurements around the time.
+   * @param serverProperties the serverProperties to set
    */
-  public MeasuredValue getLatestMeasuredValue(Sensor sensor)
-      throws NoMeasurementException {
-    MeasuredValue value = null;
-    Session session = Manager.getFactory(serverProperties).openSession();
-    MeasurementType type = getMeasurementType();
-    
-    @SuppressWarnings("unchecked")
-    List<MeasurementImpl> result = (List<MeasurementImpl>) session
-      .createQuery(
-        "FROM MeasurementImpl WHERE depository = :name AND sensor = :sensor "
-        + "AND date IN (SELECT max(date) FROM MeasurementImpl WHERE "
-          + "depository = :name AND sensor = :sensor)")
-      .setParameter("name", this)
-      .setParameter("sensor",  sensor)
-      .list();
-    if (result.size() > 0) {
-      MeasurementImpl meas = result.get(0);
-      value = new MeasuredValue(sensor.getId(), meas.getValue(), type);
-      value.setDate(meas.getDate());
-    }
-    
-    session.close();
-    return value;
-  }
-  
-  /**
-   * @param sensor
-   *          The Sensor making the measurements.
-   * @return The earliest measurement Value
-   * @throws NoMeasurementException
-   *           If there aren't any measurements around the time.
-   */
-  public MeasuredValue getEarliestMeasuredValue(Sensor sensor)
-      throws NoMeasurementException {
-    MeasuredValue value = null;
-    Session session = Manager.getFactory(serverProperties).openSession();
-    MeasurementType type = getMeasurementType();
-    
-    @SuppressWarnings("unchecked")
-    List<MeasurementImpl> result = (List<MeasurementImpl>) session
-      .createQuery(
-        "FROM MeasurementImpl WHERE depository = :name AND sensor = :sensor "
-        + "AND date IN (SELECT min(date) FROM MeasurementImpl WHERE "
-          + "depository = :name AND sensor = :sensor)")
-      .setParameter("name", this)
-      .setParameter("sensor",  sensor)
-      .list();
-    if (result.size() > 0) {
-      MeasurementImpl meas = result.get(0);
-      value = new MeasuredValue(sensor.getId(), meas.getValue(), type);
-      value.setDate(meas.getDate());
-    }
-    
-    session.close();
-    return value;
-  }
-  
-  /**
-   * @param sensor
-   *          The Sensor making the measurements.
-   * @param timestamp
-   *          The time of the value.
-   * @return The Value 'measured' at the given time, most likely an interpolated
-   *         value.
-   * @throws NoMeasurementException
-   *           If there aren't any measurements around the time.
-   */
-  public Double getValue(Sensor sensor, Date timestamp)
-      throws NoMeasurementException {
-    Double ret = null;
-    Session session = Manager.getFactory(serverProperties).openSession();
-    session.beginTransaction();
-
-    @SuppressWarnings("unchecked")
-    List<MeasurementImpl> result = (List<MeasurementImpl>) session
-        .createQuery(
-            "FROM MeasurementImpl WHERE date = :time AND measurementType = :measType"
-                + " AND depository = :name").setParameter("time", timestamp)
-        .setParameter("measType", getMeasurementType().getUnits())
-        .setParameter("name", this).list();
-    if (result.size() > 0) {
-      for (MeasurementImpl meas : result) {
-        if (meas.getSensor().equals(sensor)) {
-          ret = meas.getValue();
-        }
-      }
-    }
-    else {
-      // need to get the stradle
-      @SuppressWarnings("unchecked")
-      List<MeasurementImpl> before = (List<MeasurementImpl>) session
-          .createQuery(
-              "FROM MeasurementImpl WHERE date <= :time AND measurementType = :measType"
-                  + " AND depository = :name").setParameter("time", timestamp)
-          .setParameter("measType", getMeasurementType().getUnits())
-          .setParameter("name", this).list();
-      @SuppressWarnings("unchecked")
-      List<MeasurementImpl> after = (List<MeasurementImpl>) session
-          .createQuery(
-              "FROM MeasurementImpl WHERE date >= :time AND measurementType = :measType"
-                  + " AND depository = :name").setParameter("time", timestamp)
-          .setParameter("measType", getMeasurementType().getUnits())
-          .setParameter("name", this).list();
-      MeasurementImpl justBefore = null;
-      for (MeasurementImpl b : before) {
-        if (b.getSensor().equals(sensor)) {
-          if (justBefore == null) {
-            justBefore = b;
-          }
-          else if (b.getDate().compareTo(justBefore.getDate()) > 0) {
-            justBefore = b;
-          }
-        }
-        MeasurementImpl justAfter = null;
-        for (MeasurementImpl a : after) {
-          if (a.getSensor().equals(sensor)) {
-            if (justAfter == null) {
-              justAfter = a;
-            }
-            else if (a.getDate().compareTo(justBefore.getDate()) > 0) {
-              justAfter = a;
-            }
-          }
-          if (justBefore != null && justAfter != null) {
-            Double val1 = justBefore.getValue();
-            Double val2 = justAfter.getValue();
-            Double deltaV = val2 - val1;
-            Long t1 = justBefore.getDate().getTime();
-            Long t2 = justAfter.getDate().getTime();
-            Long deltaT = t2 - t1;
-            Long t3 = timestamp.getTime();
-            Long toDate = t3 - t1;
-            Double slope = deltaV / deltaT;
-            ret = val1 + (slope * toDate);
-          }
-          else if (justBefore == null && justAfter == null) {
-            session.getTransaction().commit();
-            session.close();
-            throw new NoMeasurementException(
-                "Cannot find measurements before or after " + timestamp);
-          }
-          else if (justBefore == null) {
-            session.getTransaction().commit();
-            session.close();
-            throw new NoMeasurementException("Cannot find measurement before "
-                + timestamp);
-          }
-          else if (justAfter == null) {
-            session.getTransaction().commit();
-            session.close();
-            throw new NoMeasurementException("Cannot find measurement after "
-                + timestamp);
-          }
-        }
-      }
-    }
-    session.getTransaction().commit();
-    session.close();
-    return ret;
+  public void serverProperties(ServerProperties serverProperties) {
+    this.serverProperties = serverProperties;
   }
 
   /**
-   * @param sensor
-   *          The Sensor making the measurements.
-   * @param start
-   *          The start of the period.
-   * @param end
-   *          The end of the period.
-   * @return The value measured the difference between the end value and the
-   *         start value.
-   * @throws NoMeasurementException
-   *           if there are no measurements around the start or end time.
+   * @param id the id to set
    */
-  public Double getValue(Sensor sensor, Date start, Date end)
-      throws NoMeasurementException {
-    Double endVal = getValue(sensor, end);
-    Double startVal = getValue(sensor, start);
-    if (endVal != null && startVal != null) {
-      return endVal - startVal;
-    }
-    return null;
+  public void setId(String id) {
+    this.id = id;
   }
 
   /**
-   * @param sensor
-   *          The Sensor making the measurements.
-   * @param start
-   *          The start of the interval.
-   * @param end
-   *          The end of the interval
-   * @param gapSeconds
-   *          The maximum number of seconds that measurements need to be within
-   *          the start and end.
-   * @return The value measured the difference between the end value and the
-   *         start value.
-   * @throws NoMeasurementException
-   *           if there are no measurements around the start or end time.
-   * @throws MeasurementGapException
-   *           if the measurements around start or end are too far apart.
+   * @param name the name to set
    */
-  public Double getValue(Sensor sensor, Date start, Date end, Long gapSeconds)
-      throws NoMeasurementException, MeasurementGapException {
-    Double endVal = getValue(sensor, end, gapSeconds);
-    Double startVal = getValue(sensor, start, gapSeconds);
-    if (endVal != null && startVal != null) {
-      return endVal - startVal;
-    }
-    return null;
+  public void setName(String name) {
+    this.name = name;
   }
 
   /**
-   * @param sensor
-   *          The Sensor making the measurements.
-   * @param timestamp
-   *          The time of the value.
-   * @param gapSeconds
-   *          The maximum number of seconds that measurements need to be within
-   *          the start and end.
-   * @return The Value 'measured' at the given time, most likely an interpolated
-   *         value.
-   * @throws NoMeasurementException
-   *           If there aren't any measurements around the time.
-   * @throws MeasurementGapException
-   *           if the measurements around timestamp are too far apart.
+   * @param org the org to set
    */
-  public Double getValue(Sensor sensor, Date timestamp, Long gapSeconds)
-      throws NoMeasurementException, MeasurementGapException {
-    Double ret = null;
-    Session session = Manager.getFactory(serverProperties).openSession();
-    session.beginTransaction();
+  public void setOrg(OrganizationImpl org) {
+    this.org = org;
+  }
 
-    @SuppressWarnings("unchecked")
-    List<MeasurementImpl> result = (List<MeasurementImpl>) session
-        .createQuery(
-            "FROM MeasurementImpl WHERE date = :time AND measurementType = :measType"
-                + " AND depository = :name").setParameter("time", timestamp)
-        .setParameter("measType", getMeasurementType().getUnits())
-        .setParameter("name", this).list();
-    if (result.size() > 0) {
-      for (MeasurementImpl meas : result) {
-        if (meas.getSensor().equals(sensor)) {
-          ret = meas.getValue();
-        }
-      }
-    }
-    else {
-      // need to get the stradle
-      @SuppressWarnings("unchecked")
-      List<MeasurementImpl> before = (List<MeasurementImpl>) session
-          .createQuery(
-              "FROM MeasurementImpl WHERE date <= :time AND measurementType = :measType"
-                  + " AND depository = :name").setParameter("time", timestamp)
-          .setParameter("measType", getMeasurementType().getUnits())
-          .setParameter("name", this).list();
-      @SuppressWarnings("unchecked")
-      List<MeasurementImpl> after = (List<MeasurementImpl>) session
-          .createQuery(
-              "FROM MeasurementImpl WHERE date >= :time AND measurementType = :measType"
-                  + " AND depository = :name").setParameter("time", timestamp)
-          .setParameter("measType", getMeasurementType().getUnits())
-          .setParameter("name", this).list();
-      MeasurementImpl justBefore = null;
-      for (MeasurementImpl b : before) {
-        if (b.getSensor().equals(sensor)) {
-          if (justBefore == null) {
-            justBefore = b;
-          }
-          else if (b.getDate().compareTo(justBefore.getDate()) > 0) {
-            justBefore = b;
-          }
-        }
-        MeasurementImpl justAfter = null;
-        for (MeasurementImpl a : after) {
-          if (a.getSensor().equals(sensor)) {
-            if (justAfter == null) {
-              justAfter = a;
-            }
-            else if (a.getDate().compareTo(justBefore.getDate()) > 0) {
-              justAfter = a;
-            }
-          }
-          if (justBefore != null && justAfter != null) {
-            Double val1 = justBefore.getValue();
-            Double val2 = justAfter.getValue();
-            Double deltaV = val2 - val1;
-            Long t1 = justBefore.getDate().getTime();
-            Long t2 = justAfter.getDate().getTime();
-            Long deltaT = t2 - t1;
-            if ((deltaT / 1000) > gapSeconds) {
-              session.getTransaction().commit();
-              session.close();
-              throw new MeasurementGapException("Gap of " + (deltaT / 1000)
-                  + "s is longer than " + gapSeconds);
-            }
-            Long t3 = timestamp.getTime();
-            Long toDate = t3 - t1;
-            Double slope = deltaV / deltaT;
-            ret = val1 + (slope * toDate);
-          }
-          else if (justBefore == null && justAfter == null) {
-            session.getTransaction().commit();
-            session.close();
-            throw new NoMeasurementException(
-                "Cannot find measurements before or after " + timestamp);
-          }
-          else if (justBefore == null) {
-            session.getTransaction().commit();
-            session.close();
-            throw new NoMeasurementException("Cannot find measurement before "
-                + timestamp);
-          }
-          else if (justAfter == null) {
-            session.getTransaction().commit();
-            session.close();
-            throw new NoMeasurementException("Cannot find measurement after "
-                + timestamp);
-          }
-        }
-      }
-    }
-    session.getTransaction().commit();
-    session.close();
+  /**
+   * @param pk the pk to set
+   */
+  @SuppressWarnings("unused")
+  private void setPk(Long pk) {
+    this.pk = pk;
+  }
+
+  /**
+   * @param type the type to set
+   */
+  public void setType(MeasurementTypeImpl type) {
+    this.type = type;
+  }
+
+  /**
+   * @return the Depository equivalent to this.
+   */
+  public Depository toDepository() {
+    Depository ret = new Depository(id, name, type.toMeasurementType(), org.getId());
     return ret;
   }
 
   /*
    * (non-Javadoc)
    * 
-   * @see org.wattdepot.datamodel.Depository#getSensors()
+   * @see java.lang.Object#toString()
    */
   @Override
-  public List<Sensor> listSensors() {
-    Session session = Manager.getFactory(serverProperties).openSession();
-    session.beginTransaction();
-    @SuppressWarnings("unchecked")
-    List<MeasurementImpl> result = (List<MeasurementImpl>) session
-        .createQuery("FROM MeasurementImpl WHERE depository = :name")
-        .setParameter("name", this).list();
-    ArrayList<Sensor> sensors = new ArrayList<Sensor>();
-    for (Measurement meas : result) {
-      if (!sensors.contains(meas.getSensor())) {
-        sensors.add(meas.getSensor());
-      }
-    }
-    session.getTransaction().commit();
-    session.close();
-    return sensors;
-  }
-
-  /**
-   * @param session
-   *          The Session with an open transaction.
-   * @return A List of Sensors contributing measurements to this depository.
-   */
-  public List<Sensor> listSensors(Session session) {
-    @SuppressWarnings("unchecked")
-    List<MeasurementImpl> result = (List<MeasurementImpl>) session
-        .createQuery("FROM MeasurementImpl WHERE depository = :name")
-        .setParameter("name", this).list();
-    ArrayList<Sensor> sensors = new ArrayList<Sensor>();
-    for (Measurement meas : result) {
-      if (!sensors.contains(meas.getSensor())) {
-        sensors.add(meas.getSensor());
-      }
-    }
-    return sensors;
-  }
-
-  /**
-   * @param meas
-   *          The measurement to store.
-   * @throws MeasurementTypeException
-   *           if the type of the measurement doesn't match the Depository
-   *           measurement type.
-   */
-  @SuppressWarnings("unchecked")
-  @Override
-  public void putMeasurement(Measurement meas) throws MeasurementTypeException {
-    if (!meas.getMeasurementType().equals(getMeasurementType().getUnits())) {
-      throw new MeasurementTypeException("Measurement's type "
-          + meas.getMeasurementType() + " does not match "
-          + getMeasurementType());
-    }
-
-    Session session = Manager.getFactory(serverProperties).openSession();
-    session.beginTransaction();
-    // check the sensor
-    boolean haveSensor = false;
-    for (Sensor s : (List<Sensor>) session.createQuery("from Sensor").list()) {
-      if (s.getId().equals(meas.getSensor().getId())) {
-        haveSensor = true;
-      }
-    }
-    if (!haveSensor) {
-      // ensure the sensor has an owner
-      Sensor measSensor = meas.getSensor();
-      if (measSensor.getOwner() == null) {
-        measSensor.setOwner(getOwner());
-      }
-      saveSensor(session, measSensor);
-    }
-    MeasurementImpl mImpl = new MeasurementImpl(meas);
-    mImpl.setDepository(this);
-    session.saveOrUpdate(mImpl);
-    session.getTransaction().commit();
-    session.close();
-  }
-
-  /**
-   * Use this method after beginning a transaction.
-   * 
-   * @param session
-   *          The Session, a transaction must be in progress.
-   * @param sensor
-   *          The Sensor to save.
-   */
-  private void saveSensor(Session session, Sensor sensor) {
-    for (Property p : sensor.getProperties()) {
-      session.saveOrUpdate(p);
-    }
-    session.saveOrUpdate(sensor.getSensorLocation());
-    session.saveOrUpdate(sensor.getModel());
-    session.saveOrUpdate(sensor);
-  }
-
-  /**
-   * @param serverProperties
-   *          the serverProperties to set
-   */
-  public void serverProperties(ServerProperties serverProperties) {
-    this.serverProperties = serverProperties;
+  public String toString() {
+    return "DepositoryImpl [pk=" + pk + ", id=" + id + ", name=" + name + ", type=" + type
+        + ", org=" + org + "]";
   }
 
 }

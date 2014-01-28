@@ -32,31 +32,31 @@ import org.wattdepot.server.ServerProperties;
  * 
  */
 public class Manager {
+  private static SessionFactory validateFactory;
+  private static ServiceRegistry validateRegistry;
   private static SessionFactory sessionFactory;
   private static ServiceRegistry serviceRegistry;
 
   /**
-   * @param properties
-   *          The ServerProperties that contain the database configuration.
+   * @param properties The ServerProperties that contain the database
+   *        configuration.
    * @return The singleton SessionFactory.
    */
   public static SessionFactory getFactory(ServerProperties properties) {
     if (sessionFactory == null) {
       Configuration cfg = new Configuration()
-          .addClass(org.wattdepot.common.domainmodel.CollectorMetaData.class)
-          .addClass(org.wattdepot.common.domainmodel.Depository.class)
-          .addClass(org.wattdepot.server.depository.impl.hibernate.DepositoryImpl.class)
-          .addClass(org.wattdepot.common.domainmodel.Measurement.class)
-          .addClass(org.wattdepot.server.depository.impl.hibernate.MeasurementImpl.class)
-          .addClass(org.wattdepot.common.domainmodel.MeasurementType.class)
-          .addClass(org.wattdepot.common.domainmodel.Property.class)
-          .addClass(org.wattdepot.common.domainmodel.Sensor.class)
-          .addClass(org.wattdepot.common.domainmodel.SensorGroup.class)
-          .addClass(org.wattdepot.common.domainmodel.SensorLocation.class)
-          .addClass(org.wattdepot.common.domainmodel.SensorModel.class)
-          .addClass(org.wattdepot.common.domainmodel.Organization.class)
-          .addClass(org.wattdepot.common.domainmodel.UserInfo.class)
-          .addClass(org.wattdepot.common.domainmodel.UserPassword.class)
+          .addAnnotatedClass(
+              org.wattdepot.server.depository.impl.hibernate.CollectorProcessDefinitionImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.DepositoryImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.MeasurementImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.MeasurementTypeImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.PropertyImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.SensorImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.SensorGroupImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.SensorModelImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.OrganizationImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.UserInfoImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.UserPasswordImpl.class)
           .setProperty("hibernate.connection.driver_class",
               properties.get(ServerProperties.DB_CONNECTION_DRIVER))
           .setProperty("hibernate.connection.url",
@@ -75,15 +75,71 @@ public class Manager {
           .buildServiceRegistry();
       // A SessionFactory is set up once for an application
       sessionFactory = cfg.buildSessionFactory(serviceRegistry);
-      
-//      // A SessionFactory is set up once for an application
-//      sessionFactory = new Configuration().configure() // configures settings
-//                                                       // from
-//                                                       // hibernate.cfg.xml
-//          .buildSessionFactory();
+
+      // // A SessionFactory is set up once for an application
+//       sessionFactory = new Configuration().configure() // configures settings
+//       // from
+//       // hibernate.cfg.xml
+//       .buildSessionFactory();
 
     }
     return sessionFactory;
   }
-  // TODO need a way to close the session factory when the program is pau.
+
+  /**
+   * @param properties The ServerProperties that contain the database
+   *        configuration.
+   * @return The singleton SessionFactory.
+   */
+  public static SessionFactory getValidateFactory(ServerProperties properties) {
+    if (validateFactory == null) {
+      Configuration cfg = new Configuration()
+          .addAnnotatedClass(
+              org.wattdepot.server.depository.impl.hibernate.CollectorProcessDefinitionImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.DepositoryImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.MeasurementImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.MeasurementTypeImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.PropertyImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.SensorImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.SensorGroupImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.SensorModelImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.OrganizationImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.UserInfoImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.UserPasswordImpl.class)
+          .setProperty("hibernate.connection.driver_class",
+              properties.get(ServerProperties.DB_CONNECTION_DRIVER))
+          .setProperty("hibernate.connection.url",
+              properties.get(ServerProperties.DB_CONNECTION_URL))
+          .setProperty("hibernate.connection.username",
+              properties.get(ServerProperties.DB_USER_NAME))
+          .setProperty("hibernate.connection.password",
+              properties.get(ServerProperties.DB_PASSWORD))
+          .setProperty("hibernate.c3p0.min_size", "5").setProperty("hibernate.c3p0.max_size", "20")
+          .setProperty("hibernate.c3p0.timeout", "1800")
+          .setProperty("hibernate.c3p0.max_statements", "50")
+          .setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect")
+          .setProperty("hibernate.show_sql", properties.get(ServerProperties.DB_SHOW_SQL))
+          .setProperty("hibernate.hbm2ddl.auto", "validate");
+      validateRegistry = new ServiceRegistryBuilder().applySettings(cfg.getProperties())
+          .buildServiceRegistry();
+      // A SessionFactory is set up once for an application
+      validateFactory = cfg.buildSessionFactory(validateRegistry);
+
+    }
+    return validateFactory;
+  }
+  
+  /**
+   * Closes the SessionFactory. Should be called when shutting down the system.
+   */
+  public static void closeSession() {
+    if (sessionFactory != null) {
+      sessionFactory.close();
+      sessionFactory = null;
+    }
+    if (validateFactory != null) {
+      validateFactory.close();
+      validateFactory = null;
+    }
+  }
 }

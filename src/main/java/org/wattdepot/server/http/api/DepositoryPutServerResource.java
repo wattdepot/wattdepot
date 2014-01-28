@@ -22,7 +22,8 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.exception.BadSlugException;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.DepositoryPutResource;
 
@@ -33,8 +34,8 @@ import org.wattdepot.common.http.api.DepositoryPutResource;
  * @author Cam Moore
  * 
  */
-public class DepositoryPutServerResource extends WattDepotServerResource implements
-    DepositoryPutResource {
+public class DepositoryPutServerResource extends WattDepotServerResource
+    implements DepositoryPutResource {
 
   /*
    * (non-Javadoc)
@@ -44,18 +45,26 @@ public class DepositoryPutServerResource extends WattDepotServerResource impleme
    */
   @Override
   public void store(Depository depository) {
-    getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/depository/ with " + depository);
-    Organization owner = depot.getOrganization(orgId);
-    if (owner != null) {
-      try {
-        depot.defineWattDepository(depository.getName(), depository.getMeasurementType(), owner);
-      }
-      catch (UniqueIdException e) {
-        setStatus(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
-      }
+    getLogger().log(Level.INFO,
+        "PUT /wattdepot/{" + orgId + "}/depository/ with " + depository);
+    try {
+      depot.getOrganization(orgId);
     }
-    else {
+    catch (IdNotFoundException e1) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+    }
+    try {
+      depot.defineDepository(depository.getId(), depository.getName(),
+          depository.getMeasurementType(), orgId);
+    }
+    catch (UniqueIdException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+    }
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+    }
+    catch (BadSlugException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
     }
   }
 }

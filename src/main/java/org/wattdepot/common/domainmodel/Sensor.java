@@ -29,21 +29,19 @@ import org.wattdepot.common.util.Slug;
  * @author Cam Moore
  * 
  */
-public class Sensor {
-  /** A unique id for the Sensor. */
+public class Sensor implements IDomainModel {
+  /** A unique id for the Sensor usable in URLs. */
   private String id;
   /** The name of the Sensor. */
   private String name;
   /** The URI to the sensor. */
   private String uri;
-  /** The location of the sensor. */
-  private SensorLocation sensorLocation;
-  /** The model of the sensor. */
-  private SensorModel model;
+  /** The id of the model of the sensor. */
+  private String modelId;
   /** Additional properties of the sensor. */
   private Set<Property> properties;
   /** The owner of this sensor. */
-  private Organization owner;
+  private String ownerId;
 
   /**
    * Default constructor.
@@ -53,31 +51,35 @@ public class Sensor {
   }
 
   /**
-   * @param name
-   *          The name.
-   * @param uri
-   *          The URI to the meter.
-   * @param sensorLocation
-   *          The meter's location.
-   * @param model
-   *          The meter's model.
-   * @param owner
-   *          the owner of the sensor.
+   * @param name The name.
+   * @param uri The URI to the meter.
+   * @param modelId The id of the meter's model.
+   * @param ownerId the id of the owner of the sensor.
    */
-  public Sensor(String name, String uri, SensorLocation sensorLocation, SensorModel model,
-      Organization owner) {
-    this.id = Slug.slugify(name);
-    this.name = name;
-    this.uri = uri;
-    this.sensorLocation = sensorLocation;
-    this.model = model;
-    this.properties = new HashSet<Property>();
-    this.owner = owner;
+  public Sensor(String name, String uri, String modelId, String ownerId) {
+    this(Slug.slugify(name), name, uri, modelId, new HashSet<Property>(), ownerId);
   }
 
   /**
-   * @param e
-   *          The Property to add.
+   * @param id The unique id.
+   * @param name The name.
+   * @param uri The URI to the meter.
+   * @param modelId The id of the meter's model.
+   * @param properties The properties associated with this Sensor.
+   * @param ownerId the id of the owner of the sensor.
+   */
+  public Sensor(String id, String name, String uri, String modelId, Set<Property> properties,
+      String ownerId) {
+    this.id = id;
+    this.name = name;
+    this.uri = uri;
+    this.modelId = modelId;
+    this.properties = properties;
+    this.ownerId = ownerId;
+  }
+
+  /**
+   * @param e The Property to add.
    * @return true if added.
    * @see java.util.List#add(java.lang.Object)
    */
@@ -98,7 +100,8 @@ public class Sensor {
     if (obj == null) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
+    if (!getClass().isAssignableFrom(obj.getClass())
+        && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
     Sensor other = (Sensor) obj;
@@ -110,28 +113,28 @@ public class Sensor {
     else if (!id.equals(other.id)) {
       return false;
     }
-    if (sensorLocation == null) {
-      if (other.sensorLocation != null) {
+    if (name == null) {
+      if (other.name != null) {
         return false;
       }
     }
-    else if (!sensorLocation.equals(other.sensorLocation)) {
+    else if (!name.equals(other.name)) {
       return false;
     }
-    if (model == null) {
-      if (other.model != null) {
+    if (modelId == null) {
+      if (other.modelId != null) {
         return false;
       }
     }
-    else if (!model.equals(other.model)) {
+    else if (!modelId.equals(other.modelId)) {
       return false;
     }
-    if (owner == null) {
-      if (other.owner != null) {
+    if (ownerId == null) {
+      if (other.ownerId != null) {
         return false;
       }
     }
-    else if (!owner.equals(other.owner)) {
+    else if (!ownerId.equals(other.ownerId)) {
       return false;
     }
     if (properties == null) {
@@ -161,10 +164,10 @@ public class Sensor {
   }
 
   /**
-   * @return the model
+   * @return the modelId
    */
-  public SensorModel getModel() {
-    return model;
+  public String getModelId() {
+    return modelId;
   }
 
   /**
@@ -175,10 +178,10 @@ public class Sensor {
   }
 
   /**
-   * @return the owner
+   * @return the id of the owner
    */
-  public Organization getOwner() {
-    return owner;
+  public String getOrganizationId() {
+    return ownerId;
   }
 
   /**
@@ -189,8 +192,7 @@ public class Sensor {
   }
 
   /**
-   * @param key
-   *          The key.
+   * @param key The key.
    * @return The value of associated with the key.
    */
   public Property getProperty(String key) {
@@ -200,13 +202,6 @@ public class Sensor {
       }
     }
     return null;
-  }
-
-  /**
-   * @return the sensorLocation
-   */
-  public SensorLocation getSensorLocation() {
-    return sensorLocation;
   }
 
   /**
@@ -226,9 +221,9 @@ public class Sensor {
     final int prime = 31;
     int result = 1;
     result = prime * result + ((id == null) ? 0 : id.hashCode());
-    result = prime * result + ((sensorLocation == null) ? 0 : sensorLocation.hashCode());
-    result = prime * result + ((model == null) ? 0 : model.hashCode());
-    result = prime * result + ((owner == null) ? 0 : owner.hashCode());
+    result = prime * result + ((name == null) ? 0 : name.hashCode());
+    result = prime * result + ((modelId == null) ? 0 : modelId.hashCode());
+    result = prime * result + ((ownerId == null) ? 0 : ownerId.hashCode());
     result = prime * result + ((properties == null) ? 0 : properties.hashCode());
     result = prime * result + ((uri == null) ? 0 : uri.hashCode());
     return result;
@@ -237,21 +232,20 @@ public class Sensor {
   /**
    * Determines if the given group is the owner of this location.
    * 
-   * @param group
-   *          the UserGroup to check.
+   * @param group the UserGroup to check.
    * @return True if the group owns the Location or the group is the
    *         ADMIN_GROUP.
    */
   public boolean isOwner(Organization group) {
-    if (owner != null && (owner.equals(group) || group.equals(Organization.ADMIN_GROUP))) {
+    if (ownerId != null
+        && (ownerId.equals(group.getId()) || group.equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;
   }
 
   /**
-   * @param o
-   *          The Property to remove.
+   * @param o The Property to remove.
    * @return true if removed.
    * @see java.util.List#remove(java.lang.Object)
    */
@@ -260,24 +254,21 @@ public class Sensor {
   }
 
   /**
-   * @param id
-   *          the id to set
+   * @param id the id to set
    */
   public void setId(String id) {
     this.id = id;
   }
 
   /**
-   * @param model
-   *          the model to set
+   * @param model the id of the model to set
    */
-  public void setModel(SensorModel model) {
-    this.model = model;
+  public void setModelId(String model) {
+    this.modelId = model;
   }
 
   /**
-   * @param name
-   *          the name to set
+   * @param name the name to set
    */
   public void setName(String name) {
     this.name = name;
@@ -287,32 +278,21 @@ public class Sensor {
   }
 
   /**
-   * @param owner
-   *          the owner to set
+   * @param ownerId the id of the owner to set
    */
-  public void setOwner(Organization owner) {
-    this.owner = owner;
+  public void setOrganizationId(String ownerId) {
+    this.ownerId = ownerId;
   }
 
   /**
-   * @param properties
-   *          the properties to set
+   * @param properties the properties to set
    */
   public void setProperties(Set<Property> properties) {
     this.properties = properties;
   }
 
   /**
-   * @param sensorLocation
-   *          the sensorLocation to set
-   */
-  public void setSensorLocation(SensorLocation sensorLocation) {
-    this.sensorLocation = sensorLocation;
-  }
-
-  /**
-   * @param uri
-   *          the uri to set
+   * @param uri the uri to set
    */
   public void setUri(String uri) {
     this.uri = uri;
@@ -325,8 +305,8 @@ public class Sensor {
    */
   @Override
   public String toString() {
-    return "Sensor [id=" + getId() + ", name=" + name + ", uri=" + uri + ", location="
-        + sensorLocation + ", model=" + model + ", properties=" + properties + "]";
+    return "Sensor [id=" + id + ", name=" + name + ", uri=" + uri + ", modelId=" + modelId
+        + ", properties=" + properties + "]";
   }
 
 }

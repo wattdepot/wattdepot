@@ -22,13 +22,13 @@ import java.util.ArrayList;
 
 /**
  * MeasurementTypeList - Attempt at getting a list across the wire.
- *
+ * 
  * @author Cam Moore
- *
+ * 
  */
 public class MeasurementTypeList {
   private ArrayList<MeasurementType> types;
-  
+
   /**
    * Default Constructor.
    */

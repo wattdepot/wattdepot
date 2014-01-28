@@ -4,18 +4,18 @@
 <!-- Generated Oct 29, 2013 12:06:15 PM by Hibernate Tools 3.4.0.CR1 -->
 <hibernate-mapping default-lazy="false">
     <class name="org.wattdepot.common.domainmodel.Organization" table="ORGANIZATION">
-        <id name="id" type="java.lang.String">
-            <column name="ID" />
+        <id name="slug" type="java.lang.String">
+            <column name="SLUG" />
             <generator class="assigned" />
         </id>
         <property name="name" type = "java.lang.String">
             <column name="NAME" />
         </property>
-        <set name="users" table="USERINFO" inverse="false" lazy="false">
+        <set name="users" table="USERSINFO">
             <key>
                 <column name="USERGROUP_ID" />
             </key>
-            <one-to-many class="org.wattdepot.common.domainmodel.UserInfo" />
+            <element column="USERID" type="java.lang.String"/>
         </set>
     </class>
 </hibernate-mapping>

@@ -21,14 +21,15 @@ package org.wattdepot.common.domainmodel;
 import java.util.ArrayList;
 
 /**
- * SensorList - Attempt at getting a list across the wire.
- *
+ * SensorList - List of Sensors. Gets around a Jackson problem of converting
+ * ArrayLists to JSON and back.
+ * 
  * @author Cam Moore
- *
+ * 
  */
 public class SensorList {
   private ArrayList<Sensor> sensors;
-  
+
   /**
    * Default Constructor.
    */
