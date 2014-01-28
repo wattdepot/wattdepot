@@ -44,16 +44,21 @@ public class CollectorProcessDefinitionsServerResource extends WattDepotServerRe
   @Override
   public CollectorProcessDefinitionList retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/collector-process-definitions/");
-    CollectorProcessDefinitionList ret = new CollectorProcessDefinitionList();
-    try {
-      for (CollectorProcessDefinition sp : depot.getCollectorProcessDefinitions(orgId)) {
-        ret.getDefinitions().add(sp);
+    if (isInRole(orgId)) {
+      CollectorProcessDefinitionList ret = new CollectorProcessDefinitionList();
+      try {
+        for (CollectorProcessDefinition sp : depot.getCollectorProcessDefinitions(orgId)) {
+          ret.getDefinitions().add(sp);
+        }
       }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization id.");
+      }
+      return ret;
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId
-          + " is not a defined Organization id.");
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+      return null;
     }
-    return ret;
   }
 }

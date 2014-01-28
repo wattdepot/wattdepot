@@ -20,6 +20,7 @@ package org.wattdepot.server.http.api;
 
 import java.util.logging.Level;
 
+import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.OrganizationList;
 import org.wattdepot.common.http.api.OrganizationsResource;
@@ -31,7 +32,8 @@ import org.wattdepot.common.http.api.OrganizationsResource;
  * @author Cam Moore
  * 
  */
-public class OrganizationsServerResource extends WattDepotServerResource implements OrganizationsResource {
+public class OrganizationsServerResource extends WattDepotServerResource implements
+    OrganizationsResource {
 
   /*
    * (non-Javadoc)
@@ -42,8 +44,14 @@ public class OrganizationsServerResource extends WattDepotServerResource impleme
   public OrganizationList retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/organizations/");
     OrganizationList ret = new OrganizationList();
-    for (Organization o : depot.getOrganizations()) {
-      ret.getOrganizations().add(o);
+    if (isInRole(Organization.ADMIN_GROUP.getId())) {
+      for (Organization o : depot.getOrganizations()) {
+        ret.getOrganizations().add(o);
+      }
+    }
+    else {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Non Admins can't view Organizations");
+        return null;
     }
     return ret;
   }

@@ -50,47 +50,51 @@ public class CollectorProcessDefinitionPutServerResource extends WattDepotServer
   public void store(CollectorProcessDefinition definition) {
     getLogger().log(Level.INFO,
         "PUT /wattdepot/{" + orgId + "}/collector-process-definition/ with " + definition);
-    try {
-      depot.getOrganization(orgId);
-    }
-    catch (IdNotFoundException e1) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");
-    }
-    try {
-      if (!depot.getCollectorProcessDefinitionIds(orgId).contains(definition.getId())) {
-        try {
-          Sensor s = depot.getSensor(definition.getSensorId(), orgId);
-          if (s != null) {
-            depot.defineCollectorProcessDefinition(definition.getId(), definition.getName(),
-                s.getId(), definition.getPollingInterval(), definition.getDepositoryId(),
-                definition.getProperties(), orgId);
+    if (isInRole(orgId)) {
+      try {
+        depot.getOrganization(orgId);
+      }
+      catch (IdNotFoundException e1) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");
+      }
+      try {
+        if (!depot.getCollectorProcessDefinitionIds(orgId).contains(definition.getId())) {
+          try {
+            Sensor s = depot.getSensor(definition.getSensorId(), orgId);
+            if (s != null) {
+              depot.defineCollectorProcessDefinition(definition.getId(), definition.getName(),
+                  s.getId(), definition.getPollingInterval(), definition.getDepositoryId(),
+                  definition.getProperties(), orgId);
+            }
+            else {
+              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Sensor " + definition.getSensorId()
+                  + " is not defined.");
+            }
           }
-          else {
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Sensor " + definition.getSensorId()
-                + " is not defined.");
+          catch (UniqueIdException e) {
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          }
+          catch (MisMatchedOwnerException e) {
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          }
+          catch (IdNotFoundException e) {
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          }
+          catch (BadSlugException e) {
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
           }
         }
-        catch (UniqueIdException e) {
-          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-        }
-        catch (MisMatchedOwnerException e) {
-          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-        }
-        catch (IdNotFoundException e) {
-          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-        }
-        catch (BadSlugException e) {
-          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        else {
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+              "CollectorProcessDefinition " + definition.getName() + " is already defined.");
         }
       }
-      else {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
-            "CollectorProcessDefinition " + definition.getName() + " is already defined.");
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization id.");
       }
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId
-          + " is not a defined Organization id.");
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
     }
   }
 }

@@ -63,11 +63,25 @@ public class OrganizationServerResource extends WattDepotServerResource implemen
     getLogger()
         .log(Level.INFO, "GET /wattdepot/{" + orgId + "}/organization/{" + userGroupId + "}");
     Organization group = null;
-    try {
-      group = depot.getOrganization(userGroupId);
+    if (isInRole(orgId) && orgId.equals(userGroupId)) {
+      try {
+        group = depot.getOrganization(userGroupId);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");
+      }
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");
+    else if (isInRole(Organization.ADMIN_GROUP.getId())) {
+      try {
+        group = depot.getOrganization(userGroupId);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, userGroupId + " is not a defined Organization.");
+      }
+    }
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials, you cannot retrieve "
+          + userGroupId);
     }
     return group;
   }
@@ -81,20 +95,25 @@ public class OrganizationServerResource extends WattDepotServerResource implemen
   public void remove() {
     getLogger()
         .log(Level.INFO, "DEL /wattdepot/{" + orgId + "}/organization/{" + userGroupId + "}");
-    try {
-      depot.deleteOrganization(userGroupId);
-      WattDepotApplication app = (WattDepotApplication) getApplication();
-      // create the new Role for the group
-      String roleName = userGroupId;
-      Role role = app.getRole(roleName);
-      MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
-      app.getRoles().remove(role);
-      for (User user : realm.getUsers()) {
-        realm.findRoles(user).remove(role);
+    if (isInRole(Organization.ADMIN_GROUP.getId())) {
+      try {
+        depot.deleteOrganization(userGroupId);
+        WattDepotApplication app = (WattDepotApplication) getApplication();
+        // create the new Role for the group
+        String roleName = userGroupId;
+        Role role = app.getRole(roleName);
+        MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
+        app.getRoles().remove(role);
+        for (User user : realm.getUsers()) {
+          realm.findRoles(user).remove(role);
+        }
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Only administrators can delete Organizations.");
     }
   }
 
@@ -124,20 +143,25 @@ public class OrganizationServerResource extends WattDepotServerResource implemen
   public void update(Organization organization) {
     getLogger().log(Level.INFO,
         "POST /wattdepot/{" + orgId + "}/organization/{" + userGroupId + "} with " + organization);
-    try {
-      depot.updateOrganization(organization);
-      // update the Realm
-      WattDepotApplication app = (WattDepotApplication) getApplication();
-      // create the new Role for the group
-      String roleName = organization.getId();
-      Role role = app.getRole(roleName);
-      MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
-      for (String userId : organization.getUsers()) {
-        realm.map(getUser(userId), role);
+    if (isInRole(Organization.ADMIN_GROUP.getId())) {
+      try {
+        depot.updateOrganization(organization);
+        // update the Realm
+        WattDepotApplication app = (WattDepotApplication) getApplication();
+        // create the new Role for the group
+        String roleName = organization.getId();
+        Role role = app.getRole(roleName);
+        MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
+        for (String userId : organization.getUsers()) {
+          realm.map(getUser(userId), role);
+        }
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, organization + " isn't a defined Organization.");
       }
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, organization + " isn't a defined Organization.");
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Only administrators can modify Organizations.");
     }
   }
 }

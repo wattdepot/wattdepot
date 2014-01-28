@@ -17,47 +17,62 @@ See the [Organization domain model description](overview/domainmodel#organizatio
 
 Organization operations require administrator credentials.
 
+### GET /wattdepot/admin/
+
+Retrieve the web interface for managing Organizations and Users associated with a WattDepot server. Only administrators can do this.
+
+### GET /wattdepot/admin/organizations/
+
+Retrieve the list of defined organizations in a WattDepot server as a JSON string.
+
+### GET /wattdepot/{org-id}/organization/{org-id}
+
+Retrieve the Organization with the given {org-id} as a JSON string. This call allows members of the organization to retrieve their own organization.
+
+### PUT /wattdepot/admin/organization/
+
+Create a new organization. The request entity must be a valid JSON string representation of the new Organization. Only administrators can do this.
+
+### POST /wattdepot/admin/organization/{org-id}
+
+Update the organization with the given {org-id}. The request entity must be a valid JSON string representation of the updated Organization.  Only administrators can do this. The *id* of the organization is fixed and cannot be changed after it is created.
+
+### DELETE /wattdepot/admin/organization/{org-id}
+
+Delete the organization. Only administrators can do this. **WARNING**, this operation deletes all Users, Sensors, Collector Process Definitions, Depositories and Measurements belonging to this organization.
+
 ### GET /wattdepot/{org-id}/
 
-Retrieve the web interface for managing an organization associated with a WattDepot server.
-
-*(There should be more organization operations, right?)* 
+Retrieve the web interface for managing an organization associated with a WattDepot server. 
 
 -------------
 ## User
 
 See the [User domain model description](overview/domainmodel#user) for details about this concept.
 
+### GET /wattdepot/admin/users/
+
+Retrieve a representation of all the users associated with a WattDepot server as a JSON string. Only the administrator can do this.
+
 ### GET /wattdepot/{org-id}/user/{user-id}
 
-Retrieve a representation of a user.
-
-*(Who can do this? Anyone in the group?)*
+Retrieve a representation of a user as a JSON string. Members of the organization can do this.
 
 ### GET /wattdepot/{org-id}/users/
 
-Retrieve a representation of all users associated with this group.
-
-*(This was not in the API, but should be, right?)*
+Retrieve a representation of all users associated with this group as a JSON string. Members of the organization may do this.
 
 ### PUT /wattdepot/{org-id}/user/
 
-Create a new user.
-
-*(Restricted to the admin, right?)*
+Create a new user. The request entity must be a valid JSON string representation of the User. Only administrators can do this.
 
 ### POST /wattdepot/{org-id}/user/{user-id}
 
-Update this representation of a user.
-
-*(Who can do this? The user? The admin?)*
+Update this representation of a user. The request entity must be a valid JSON string representation of the updated User. Only administrators can do this. The *id* and *organization* of the User are fixed and cannot be changed.
 
 ### DELETE /wattdepot/{org-id}/user/{user-id}
 
-Delete this representation of a user.
-
-*(Who can do this? The user? The admin? What happens to the data sent by this user? )*
-
+Delete this representation of a user. Only administrators can do this. Deleting a user just removes them from the organization. No data is associated with an individual user, just their organization.
 
 ---------
 ## Sensor
@@ -66,47 +81,44 @@ See the [Sensor domain model description](overview/domainmodel#sensor) for detai
 
 ### GET /wattdepot/{org-id}/sensor/{sensor-id}
 
-Retrieve a representation of this sensor.
+Retrieve a representation of this sensor as a JSON string. Members of the organization may do this.
 
 ### GET /wattdepot/{org-id}/sensors/
 
-Retrieve a representation of all sensors associated with this group.
+Retrieve a representation of all sensors associated with this group as a JSON string. Members of the organization may do this.
 
 ### PUT /wattdepot/{org-id}/sensor/
 
-Create a new sensor.
+Create a new sensor. The request entity must be a valid JSON string representation of the Sensor. Members of the organization can do this.
 
 ### POST /wattdepot/{org-id}/sensor/{sensor-id}
 
-Update this representation of a sensor.
+Update this representation of a sensor. The request entity must be a valid JSON string representation of the updated Sensor. Members of the organization can do this. The *id* and *organization* of the Sensor are fixed and cannot be changed.
 
 ### DELETE /wattdepot/{org-id}/sensor/{sensor-id}
 
-Delete this sensor.
-
-*(What happens to all the measurements associated with this sensor?) Currently, they are deleted also due to constraint in the database.*
-
+Delete this sensor. Members of the organization can do this. All measurements created by the sensor are deleted.
 
 ----------
 ## Sensor Group
 
 See the [Sensor Group domain model description](overview/domainmodel#sensor-group) for details about this concept.
 
-### GET /wattdepot/{org-id}/sensor-group/{sensor-org-id}
+### GET /wattdepot/{org-id}/sensor-group/{sensor-group-id}
 
-Retrieve a representation of this sensor group.
+Retrieve a representation of this sensor group as a JSON string. Members of the organization may do this.
 
 ### PUT /wattdepot/{org-id}/sensor-group/
 
-Create a new sensor group.
+Create a new sensor group. The request entity must be a valid JSON string representation of the sensor group. Members of the organization can do this.
 
-### POST /wattdepot/{org-id}/sensor-group/{sensor-org-id}
+### POST /wattdepot/{org-id}/sensor-group/{sensor-group-id}
 
-Update the representation of this sensor group.
+Update the representation of this sensor group. The request entity must be a valid JSON string representation of the updated sensor group. Members of the organization can do this. The *id* and *organization* of the sensor group are fixed and cannot be changed.
 
-### DELETE /wattdepot/{org-id}/sensor-group/{sensor-org-id}
+### DELETE /wattdepot/{org-id}/sensor-group/{sensor-group-id}
 
-Delete this sensor group.
+Delete this sensor group. Members of the organization may do this. Deleting a sensor group has no affect on other objects in the WattDepot server.
 
 -----------
 ## Sensor Model

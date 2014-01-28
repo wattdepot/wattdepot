@@ -56,7 +56,7 @@ public class AdminServerResource extends WattDepotServerResource {
   @Get()
   public Representation toHtml() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/");
-    if (!isInRole(orgId) && !isInRole("admin")) {
+    if (!isInRole(orgId) && !isInRole(Organization.ADMIN_GROUP.getId())) {
       User user = getClientInfo().getUser();
       UserInfo info = null;
       try {

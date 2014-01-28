@@ -64,15 +64,20 @@ public class CollectorProcessDefinitionServerResource extends WattDepotServerRes
     getLogger().log(Level.INFO,
         "GET /wattdepot/{" + orgId + "}/CollectorProcessDefinition/{" + definitionId + "}");
     CollectorProcessDefinition process = null;
-    try {
-      process = depot.getCollectorProcessDefinition(definitionId, orgId);
+    if (isInRole(orgId)) {
+      try {
+        process = depot.getCollectorProcessDefinition(definitionId, orgId);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
+      if (process == null) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "CollectorProcessDefinition " + definitionId
+            + " is not defined.");
+      }
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-    }
-    if (process == null) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "CollectorProcessDefinition "
-          + definitionId + " is not defined.");
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
     }
     return process;
   }
@@ -86,14 +91,19 @@ public class CollectorProcessDefinitionServerResource extends WattDepotServerRes
   public void remove() {
     getLogger().log(Level.INFO,
         "DEL /wattdepot/{" + orgId + "}/collector-process-definition/{" + definitionId + "}");
-    try {
-      depot.deleteCollectorProcessDefinition(definitionId, orgId);
+    if (isInRole(orgId)) {
+      try {
+        depot.deleteCollectorProcessDefinition(definitionId, orgId);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
+      catch (MisMatchedOwnerException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-    }
-    catch (MisMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
     }
   }
 
@@ -110,23 +120,28 @@ public class CollectorProcessDefinitionServerResource extends WattDepotServerRes
         Level.INFO,
         "POST /wattdepot/{" + orgId + "}/collector-process-definition/{" + definitionId + "} with "
             + definition);
-    if (definition.getId().equals(definitionId)) {
-      try {
-        if (depot.getCollectorProcessDefinitionIds(orgId).contains(definition.getId())) {
-          try {
-            depot.updateCollectorProcessDefinition(definition);
-          }
-          catch (IdNotFoundException e) {
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+    if (isInRole(orgId)) {
+      if (definition.getId().equals(definitionId)) {
+        try {
+          if (depot.getCollectorProcessDefinitionIds(orgId).contains(definition.getId())) {
+            try {
+              depot.updateCollectorProcessDefinition(definition);
+            }
+            catch (IdNotFoundException e) {
+              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+            }
           }
         }
+        catch (IdNotFoundException e) {
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        }
       }
-      catch (IdNotFoundException e) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      else {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Ids do not match.");
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Ids do not match.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
     }
   }
 

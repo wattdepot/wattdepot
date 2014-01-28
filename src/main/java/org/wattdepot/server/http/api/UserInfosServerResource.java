@@ -21,6 +21,7 @@ package org.wattdepot.server.http.api;
 import java.util.logging.Level;
 
 import org.restlet.data.Status;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserInfoList;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -43,13 +44,26 @@ public class UserInfosServerResource extends WattDepotServerResource implements 
   public UserInfoList retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/users/");
     UserInfoList ret = new UserInfoList();
-    try {
-      for (UserInfo u : depot.getUsers(orgId)) {
-        ret.getUsers().add(u);
+    if (isInRole(orgId) || isInRole(Organization.ADMIN_GROUP.getId())) {
+      if (!orgId.equals(Organization.ADMIN_GROUP.getId())) {
+        try {
+          for (UserInfo u : depot.getUsers(orgId)) {
+            ret.getUsers().add(u);
+          }
+        }
+        catch (IdNotFoundException e) {
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization id.");
+        }
+      } 
+      else {
+        for (UserInfo u: depot.getUsers()) {
+          ret.getUsers().add(u);
+        }
       }
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization id.");
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials, you can not view the Users.");
+      return null;
     }
     return ret;
   }

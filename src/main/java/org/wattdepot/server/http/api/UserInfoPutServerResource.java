@@ -50,42 +50,45 @@ public class UserInfoPutServerResource extends WattDepotServerResource implement
   @Override
   public void store(UserInfo user) {
     getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/user/ with " + user);
-    if (orgId.equals(user.getOrganizationId()) || orgId.equals(Organization.ADMIN_GROUP_NAME)) {
-      try {
-        if (!depot.getUserIds(orgId).contains(user.getUid())) {
-          try {
-            UserInfo defined = depot.defineUserInfo(user.getUid(), user.getFirstName(),
-                user.getLastName(), user.getEmail(), user.getOrganizationId(), user.getProperties(),
-                user.getPassword());
-            // Add user to Realm
-            WattDepotApplication app = (WattDepotApplication) getApplication();
-            Role role = app.getRole(user.getOrganizationId());
-            if (role == null) {
-              role = new Role(user.getOrganizationId());
-              app.getRoles().add(role);
+    if (isInRole(orgId) || isInRole(Organization.ADMIN_GROUP.getId())) {
+      if (orgId.equals(user.getOrganizationId()) || orgId.equals(Organization.ADMIN_GROUP_NAME)) {
+        try {
+          if (!depot.getUserIds(orgId).contains(user.getUid())) {
+            try {
+              UserInfo defined = depot.defineUserInfo(user.getUid(), user.getFirstName(),
+                  user.getLastName(), user.getEmail(), user.getOrganizationId(),
+                  user.getProperties(), user.getPassword());
+              // Add user to Realm
+              WattDepotApplication app = (WattDepotApplication) getApplication();
+              Role role = app.getRole(user.getOrganizationId());
+              if (role == null) {
+                role = new Role(user.getOrganizationId());
+                app.getRoles().add(role);
+              }
+              MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
+              User u = new User(defined.getUid(), user.getPassword(), defined.getFirstName(),
+                  defined.getLastName(), defined.getEmail());
+              realm.getUsers().add(u);
+              realm.map(u, role);
             }
-            MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
-            User u = new User(defined.getUid(), user.getPassword(), defined.getFirstName(),
-                defined.getLastName(), defined.getEmail());
-            realm.getUsers().add(u);
-            realm.map(u, role);
-          }
-          catch (UniqueIdException e) {
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-          }
-          catch (IdNotFoundException e) {
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+            catch (UniqueIdException e) {
+              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+            }
+            catch (IdNotFoundException e) {
+              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+            }
           }
         }
+        catch (IdNotFoundException e) {
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization id.");
+        }
       }
-      catch (IdNotFoundException e) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization id.");
+      else {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "User " + user.getUid() + " is not in " + orgId);
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "User " + user.getUid() + " is not in "
-          + orgId);
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials, you cannot create a User.");
     }
   }
-
 }
