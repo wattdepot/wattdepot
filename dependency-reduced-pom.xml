@@ -4,7 +4,7 @@
   <groupId>org.wattdepot</groupId>
   <artifactId>wattdepot</artifactId>
   <name>WattDepot</name>
-  <version>3.0.0-M5</version>
+  <version>3.0.0-M7</version>
   <description>WattDepot is an open source, RESTful web service that collects electricity data (such as current power utilization or cumulative power utilization) from meters and stores it in a database.</description>
   <url>https://github.com/wattdepot/wattdepot/</url>
   <prerequisites>
@@ -83,6 +83,17 @@
               <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
             </configuration>
           </execution>
+          <execution>
+            <id>report</id>
+            <phase>site</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <configuration>
+              <dataFile>${jacoco.ut.execution.data.file}</dataFile>
+              <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -109,10 +120,6 @@
         </executions>
         <configuration>
           <excludeFilterFile>${findbugs.filter.file}</excludeFilterFile>
-          <excludes>
-            <exclude>**/datamodel/**</exclude>
-            <exclude>**/tinker/**</exclude>
-          </excludes>
         </configuration>
       </plugin>
       <plugin>
@@ -128,7 +135,6 @@
         </executions>
         <configuration>
           <configLocation>${checkstyle.filter.file}</configLocation>
-          <excludes>**/datamodel/**</excludes>
         </configuration>
       </plugin>
       <plugin>
@@ -147,9 +153,6 @@
           <linkXref>false</linkXref>
           <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
           <minimumTokens>100</minimumTokens>
-          <excludes>
-            <exclude>**/datamodel/**</exclude>
-          </excludes>
         </configuration>
       </plugin>
       <plugin>
@@ -179,10 +182,6 @@
               <version>${findbugs.plugin.version}</version>
               <configuration>
                 <excludeFilterFile>${findbugs.filter.file}</excludeFilterFile>
-                <excludes>
-                  <exclude>**/datamodel/**</exclude>
-                  <exclude>**/tinker/**</exclude>
-                </excludes>
               </configuration>
             </plugin>
             <plugin>
@@ -191,7 +190,6 @@
               <version>${checkstyle.plugin.version}</version>
               <configuration>
                 <configLocation>${checkstyle.filter.file}</configLocation>
-                <excludes>**/datamodel/**, **/tinker/**</excludes>
               </configuration>
             </plugin>
             <plugin>
@@ -211,10 +209,6 @@
                 <linkXref>false</linkXref>
                 <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
                 <minimumTokens>100</minimumTokens>
-                <excludes>
-                  <exclude>**/tinker/**</exclude>
-                  <exclude>**/datamodel/**</exclude>
-                </excludes>
               </configuration>
             </plugin>
             <plugin>
@@ -387,7 +381,7 @@
     <restlet.version>2.1.2</restlet.version>
     <config.dir>${basedir}</config.dir>
     <site.plugin.version>3.3</site.plugin.version>
-    <rabbitmq.version>3.2.1</rabbitmq.version>
+    <rabbitmq.version>3.2.2</rabbitmq.version>
     <tomcat.jdbc.version>7.0.42</tomcat.jdbc.version>
     <google-visualization-java.version>1.1.1</google-visualization-java.version>
     <commons-validator.version>1.4.0</commons-validator.version>
@@ -404,7 +398,7 @@
     <jacoco.ut.execution.data.file>${project.build.directory}/coverage-reports/jacoco-ut.exec</jacoco.ut.execution.data.file>
     <modbus-jamod.version>1.2</modbus-jamod.version>
     <oro.version>2.0.8</oro.version>
-    <hibernate-core.version>4.2.4.Final</hibernate-core.version>
+    <hibernate-core.version>4.2.0.Final</hibernate-core.version>
   </properties>
 </project>
 
