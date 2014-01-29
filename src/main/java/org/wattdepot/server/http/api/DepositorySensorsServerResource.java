@@ -59,30 +59,36 @@ public class DepositorySensorsServerResource extends WattDepotServerResource imp
    */
   @Override
   public SensorList retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId
-        + "}/sensors/");
-    Depository depository;
-    SensorList ret = null;
-    try {
-      depository = depot.getDepository(depositoryId, orgId);
-      if (depository != null) {
-        ret = new SensorList();
-        for (String sid : depot.listSensors(depositoryId, orgId)) {
-          Sensor s = depot.getSensor(sid, orgId);
-          ret.getSensors().add(s);
+    getLogger().log(Level.INFO,
+        "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/sensors/");
+    if (isInRole(orgId)) {
+      Depository depository;
+      SensorList ret = null;
+      try {
+        depository = depot.getDepository(depositoryId, orgId);
+        if (depository != null) {
+          ret = new SensorList();
+          for (String sid : depot.listSensors(depositoryId, orgId)) {
+            Sensor s = depot.getSensor(sid, orgId);
+            ret.getSensors().add(s);
+          }
+        }
+        else {
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " not defined.");
         }
       }
-      else {
+      catch (MisMatchedOwnerException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
+      catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " not defined.");
       }
+      return ret;
     }
-    catch (MisMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+      return null;
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " not defined.");
-    }
-    return ret;
   }
 
 }

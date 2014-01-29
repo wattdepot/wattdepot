@@ -66,30 +66,35 @@ public class DepositoryMeasurementPutServerResource extends WattDepotServerResou
         Level.INFO,
         "PUT /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/measurement/ with "
             + meas);
-    try {
-      Depository depository = depot.getDepository(depositoryId, orgId);
-      if (depository != null) {
-        Sensor sensor = depot.getSensor(meas.getSensorId(), orgId);
-        if (sensor != null) {
-          depot.putMeasurement(depositoryId, orgId, meas);
+    if (isInRole(orgId)) {
+      try {
+        Depository depository = depot.getDepository(depositoryId, orgId);
+        if (depository != null) {
+          Sensor sensor = depot.getSensor(meas.getSensorId(), orgId);
+          if (sensor != null) {
+            depot.putMeasurement(depositoryId, orgId, meas);
+          }
+          else {
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Sensor " + meas.getSensorId()
+                + " does not exist");
+          }
         }
         else {
-          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Sensor " + meas.getSensorId()
-              + " does not exist");
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " does not exist.");
         }
       }
-      else {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " does not exist.");
+      catch (MisMatchedOwnerException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
+      catch (MeasurementTypeException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
     }
-    catch (MisMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-    }
-    catch (MeasurementTypeException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-    }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
     }
   }
 }

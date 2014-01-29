@@ -47,42 +47,47 @@ public class SensorGroupPutServerResource extends WattDepotServerResource implem
   @Override
   public void store(SensorGroup sensorgroup) {
     getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/sensor-group/ with " + sensorgroup);
-    try {
-      depot.getOrganization(orgId);
-    }
-    catch (IdNotFoundException e1) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
-    }
-    try {
-      if (!depot.getSensorIds(orgId).contains(sensorgroup.getId())) {
-        if (!depot.getSensorGroupIds(orgId).contains(sensorgroup.getId())) {
-          try {
-            depot.defineSensorGroup(sensorgroup.getId(), sensorgroup.getName(),
-                sensorgroup.getSensors(), orgId);
+    if (isInRole(orgId)) {
+      try {
+        depot.getOrganization(orgId);
+      }
+      catch (IdNotFoundException e1) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+      }
+      try {
+        if (!depot.getSensorIds(orgId).contains(sensorgroup.getId())) {
+          if (!depot.getSensorGroupIds(orgId).contains(sensorgroup.getId())) {
+            try {
+              depot.defineSensorGroup(sensorgroup.getId(), sensorgroup.getName(),
+                  sensorgroup.getSensors(), orgId);
+            }
+            catch (UniqueIdException e) {
+              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+            }
+            catch (MisMatchedOwnerException e) {
+              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+            }
+            catch (IdNotFoundException e) {
+              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+            }
+            catch (BadSlugException e) {
+              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+            }
           }
-          catch (UniqueIdException e) {
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-          }
-          catch (MisMatchedOwnerException e) {
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-          }
-          catch (IdNotFoundException e) {
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-          }
-          catch (BadSlugException e) {
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          else {
+            depot.updateSensorGroup(sensorgroup);
           }
         }
         else {
-          depot.updateSensorGroup(sensorgroup);
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensorgroup.getId() + " is already used.");
         }
       }
-      else {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensorgroup.getId() + " is already used.");
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
       }
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
     }
   }
 }

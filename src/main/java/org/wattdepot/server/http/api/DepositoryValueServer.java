@@ -84,113 +84,119 @@ public class DepositoryValueServer extends WattDepotServerResource {
         "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/value/?sensor={"
             + sensorId + "}&start={" + start + "}&end={" + end + "}&timestamp={" + timestamp
             + "}&latest={" + latest + "}&earliest={" + earliest + "}&gap={" + gapSeconds + "}");
-    try {
-      Depository deposit = depot.getDepository(depositoryId, orgId);
-      if (deposit != null) {
-        try {
-          depot.getSensor(sensorId, orgId);
-          return calculateValue(sensorId, start, end, timestamp, earliest, latest);
-        }
-        catch (IdNotFoundException inf) {
+    if (isInRole(orgId)) {
+      try {
+        Depository deposit = depot.getDepository(depositoryId, orgId);
+        if (deposit != null) {
           try {
-            SensorGroup group = depot.getSensorGroup(sensorId, orgId);
-            InterpolatedValue val = null;
-            // this wont work for earliest or latest.
-            if (earliest != null) {
-              // find the last 'earliest' time
-              Date time = null;
-              for (String s : group.getSensors()) {
-                InterpolatedValue v = calculateValue(s, start, end, timestamp, earliest, latest);
-                if (time == null) {
-                  time = v.getDate();
-                }
-                else if (time.before(v.getDate())) {
-                  time = v.getDate();
-                }
-              }
-              // have the time get the value at time
-              for (String s : group.getSensors()) {
-                if (val == null) {
-                  val = calculateValue(s, null, null, DateConvert.convertDate(time).toString(),
-                      null, null);
-                }
-                else {
-                  val.setValue(val.getValue()
-                      + calculateValue(s, null, null, DateConvert.convertDate(time).toString(),
-                          null, null).getValue());
-                }
-              }
-            }
-            else if (latest != null) {
-              // find the first 'latest' time
-              Date time = null;
-              for (String s : group.getSensors()) {
-                InterpolatedValue v = calculateValue(s, start, end, timestamp, earliest, latest);
-                if (time == null) {
-                  time = v.getDate();
-                }
-                else if (time.after(v.getDate())) {
-                  time = v.getDate();
-                }
-              }
-              // have the time get the value at time
-              for (String s : group.getSensors()) {
-                if (val == null) {
-                  val = calculateValue(s, null, null, DateConvert.convertDate(time).toString(),
-                      null, null);
-                }
-                else {
-                  val.setValue(val.getValue()
-                      + calculateValue(s, null, null, DateConvert.convertDate(time).toString(),
-                          null, null).getValue());
-                }
-              }
-            }
-            else {
-              for (String s : group.getSensors()) {
-                if (val == null) {
-                  val = calculateValue(s, start, end, timestamp, earliest, latest);
-                }
-                else {
-                  val.setValue(val.getValue()
-                      + calculateValue(s, start, end, timestamp, earliest, latest).getValue());
-                }
-              }
-            }
-            return val;
+            depot.getSensor(sensorId, orgId);
+            return calculateValue(sensorId, start, end, timestamp, earliest, latest);
           }
-          catch (IdNotFoundException inf1) {
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Could not find sensor " + sensorId);
+          catch (IdNotFoundException inf) {
+            try {
+              SensorGroup group = depot.getSensorGroup(sensorId, orgId);
+              InterpolatedValue val = null;
+              // this wont work for earliest or latest.
+              if (earliest != null) {
+                // find the last 'earliest' time
+                Date time = null;
+                for (String s : group.getSensors()) {
+                  InterpolatedValue v = calculateValue(s, start, end, timestamp, earliest, latest);
+                  if (time == null) {
+                    time = v.getDate();
+                  }
+                  else if (time.before(v.getDate())) {
+                    time = v.getDate();
+                  }
+                }
+                // have the time get the value at time
+                for (String s : group.getSensors()) {
+                  if (val == null) {
+                    val = calculateValue(s, null, null, DateConvert.convertDate(time).toString(),
+                        null, null);
+                  }
+                  else {
+                    val.setValue(val.getValue()
+                        + calculateValue(s, null, null, DateConvert.convertDate(time).toString(),
+                            null, null).getValue());
+                  }
+                }
+              }
+              else if (latest != null) {
+                // find the first 'latest' time
+                Date time = null;
+                for (String s : group.getSensors()) {
+                  InterpolatedValue v = calculateValue(s, start, end, timestamp, earliest, latest);
+                  if (time == null) {
+                    time = v.getDate();
+                  }
+                  else if (time.after(v.getDate())) {
+                    time = v.getDate();
+                  }
+                }
+                // have the time get the value at time
+                for (String s : group.getSensors()) {
+                  if (val == null) {
+                    val = calculateValue(s, null, null, DateConvert.convertDate(time).toString(),
+                        null, null);
+                  }
+                  else {
+                    val.setValue(val.getValue()
+                        + calculateValue(s, null, null, DateConvert.convertDate(time).toString(),
+                            null, null).getValue());
+                  }
+                }
+              }
+              else {
+                for (String s : group.getSensors()) {
+                  if (val == null) {
+                    val = calculateValue(s, start, end, timestamp, earliest, latest);
+                  }
+                  else {
+                    val.setValue(val.getValue()
+                        + calculateValue(s, start, end, timestamp, earliest, latest).getValue());
+                  }
+                }
+              }
+              return val;
+            }
+            catch (IdNotFoundException inf1) {
+              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Could not find sensor " + sensorId);
+            }
           }
         }
+        else {
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Could not find depository " + depositoryId);
+        }
       }
-      else {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Could not find depository " + depositoryId);
+      catch (MisMatchedOwnerException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
+      catch (NoMeasurementException e1) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e1.getMessage());
+      }
+      catch (NumberFormatException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
+      catch (MeasurementGapException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
+      catch (ParseException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        e.printStackTrace();
+      }
+      catch (DatatypeConfigurationException e) {
+        setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
+      return null;
     }
-    catch (MisMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+      return null;
     }
-    catch (NoMeasurementException e1) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e1.getMessage());
-    }
-    catch (NumberFormatException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-    }
-    catch (MeasurementGapException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-    }
-    catch (ParseException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-      e.printStackTrace();
-    }
-    catch (DatatypeConfigurationException e) {
-      setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-    }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-    }
-    return null;
   }
 
   /**

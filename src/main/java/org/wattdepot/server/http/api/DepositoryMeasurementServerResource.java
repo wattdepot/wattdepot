@@ -63,20 +63,26 @@ public class DepositoryMeasurementServerResource extends WattDepotServerResource
         Level.INFO,
         "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/measurement/{" + measId
             + "}");
-    Measurement ret = null;
-    try {
-      Depository depository = depot.getDepository(depositoryId, orgId);
-      if (depository != null) {
-        ret = depot.getMeasurement(depositoryId, orgId, measId);
+    if (isInRole(orgId)) {
+      Measurement ret = null;
+      try {
+        Depository depository = depot.getDepository(depositoryId, orgId);
+        if (depository != null) {
+          ret = depot.getMeasurement(depositoryId, orgId, measId);
+        }
+        else {
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " does not exist.");
+        }
       }
-      else {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " does not exist.");
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
+      return ret;
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+      return null;
     }
-    return ret;
   }
 
   /*
@@ -108,11 +114,16 @@ public class DepositoryMeasurementServerResource extends WattDepotServerResource
         Level.INFO,
         "DEL /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/measurement/{" + measId
             + "}");
-    try {
-      depot.deleteMeasurement(depositoryId, orgId, measId);
+    if (isInRole(orgId)) {
+      try {
+        depot.deleteMeasurement(depositoryId, orgId, measId);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " does not exist.");
+      }
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " does not exist.");
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
     }
   }
 }

@@ -25,6 +25,7 @@ import org.restlet.resource.ResourceException;
 import org.restlet.security.MemoryRealm;
 import org.restlet.security.User;
 import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -60,11 +61,16 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
   public UserInfo retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/user/{" + userId + "}");
     UserInfo user = null;
-    try {
-      user = depot.getUser(userId, orgId);
+    if (isInRole(orgId) || isInRole(Organization.ADMIN_GROUP.getId())) {
+      try {
+        user = depot.getUser(userId, orgId);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "User " + userId + " is not defined.");
+      }
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "User " + userId + " is not defined.");
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credential, you cannot view " + userId);
     }
     return user;
   }
@@ -79,21 +85,26 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
   public void update(UserInfo user) {
     getLogger().log(Level.INFO,
         "POST /wattdepot/{" + orgId + "}/user/{" + userId + "} with " + user);
-    try {
-      depot.updateUserInfo(user);
-      UserPassword password = depot.getUserPassword(user.getUid(), user.getOrganizationId());
-      password.setPassword(user.getPassword());
-      depot.updateUserPassword(password);
-      WattDepotApplication app = (WattDepotApplication) getApplication();
-      MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
-      for (User u : realm.getUsers()) {
-        if (u.getIdentifier().equals(user.getUid())) {
-          u.setSecret(user.getPassword().toCharArray());
+    if (isInRole(Organization.ADMIN_GROUP.getId())) {
+      try {
+        depot.updateUserInfo(user);
+        UserPassword password = depot.getUserPassword(user.getUid(), user.getOrganizationId());
+        password.setPassword(user.getPassword());
+        depot.updateUserPassword(password);
+        WattDepotApplication app = (WattDepotApplication) getApplication();
+        MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
+        for (User u : realm.getUsers()) {
+          if (u.getIdentifier().equals(user.getUid())) {
+            u.setSecret(user.getPassword().toCharArray());
+          }
         }
       }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No User " + userId + " in WattDepot.");
+      }
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "No User " + userId + " in WattDepot.");
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Only administrators can update Users.");
     }
   }
 
@@ -105,11 +116,16 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
   @Override
   public void remove() {
     getLogger().log(Level.INFO, "DEL /wattdepot/{" + orgId + "}/user/{" + userId + "}");
-    try {
-      depot.deleteUser(userId, orgId);
+    if (isInRole(Organization.ADMIN_GROUP.getId())) {
+      try {
+        depot.deleteUser(userId, orgId);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Only administrators can delete Users.");
     }
   }
 

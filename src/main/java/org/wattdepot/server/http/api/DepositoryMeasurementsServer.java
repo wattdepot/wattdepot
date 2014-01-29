@@ -74,63 +74,68 @@ public class DepositoryMeasurementsServer extends WattDepotServerResource {
         Level.INFO,
         "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/measurements/?sensor={"
             + sensorId + "}&start={" + start + "}&end={" + end + "}");
-
-    if (start != null && end != null) {
-      MeasurementList ret = new MeasurementList();
-      try {
-        Depository depository = depot.getDepository(depositoryId, orgId);
-        if (depository != null) {
-          Date startDate = DateConvert.parseCalStringToDate(start);
-          Date endDate = DateConvert.parseCalStringToDate(end);
-          if (startDate != null && endDate != null) {
-            try {
-              Sensor sensor = depot.getSensor(sensorId, orgId);
-              for (Measurement meas : depot.getMeasurements(depositoryId, orgId, sensor.getId(),
-                  startDate, endDate)) {
-                ret.getMeasurements().add(meas);
-              }
-            }
-            catch (IdNotFoundException nf) {
+    if (isInRole(orgId)) {
+      if (start != null && end != null) {
+        MeasurementList ret = new MeasurementList();
+        try {
+          Depository depository = depot.getDepository(depositoryId, orgId);
+          if (depository != null) {
+            Date startDate = DateConvert.parseCalStringToDate(start);
+            Date endDate = DateConvert.parseCalStringToDate(end);
+            if (startDate != null && endDate != null) {
               try {
-                SensorGroup group = depot.getSensorGroup(sensorId, orgId);
-                for (String s : group.getSensors()) {
-                  Sensor sensor = depot.getSensor(s, orgId);
-                  for (Measurement meas : depot.getMeasurements(depositoryId, orgId,
-                      sensor.getId(), startDate, endDate)) {
-                    ret.getMeasurements().add(meas);
-                  }
+                Sensor sensor = depot.getSensor(sensorId, orgId);
+                for (Measurement meas : depot.getMeasurements(depositoryId, orgId, sensor.getId(),
+                    startDate, endDate)) {
+                  ret.getMeasurements().add(meas);
                 }
               }
-              catch (IdNotFoundException nf1) {
-                setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensorId + " is not defined");
+              catch (IdNotFoundException nf) {
+                try {
+                  SensorGroup group = depot.getSensorGroup(sensorId, orgId);
+                  for (String s : group.getSensors()) {
+                    Sensor sensor = depot.getSensor(s, orgId);
+                    for (Measurement meas : depot.getMeasurements(depositoryId, orgId,
+                        sensor.getId(), startDate, endDate)) {
+                      ret.getMeasurements().add(meas);
+                    }
+                  }
+                }
+                catch (IdNotFoundException nf1) {
+                  setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensorId + " is not defined");
+                }
               }
+            }
+            else {
+              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Start date and/or end date missing.");
             }
           }
           else {
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Start date and/or end date missing.");
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " is not defined.");
           }
         }
-        else {
-          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " is not defined.");
+        catch (IdNotFoundException e) {
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         }
+        catch (ParseException e) {
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        }
+        catch (DatatypeConfigurationException e) {
+          setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+        }
+        catch (MisMatchedOwnerException e) {
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        }
+        getLogger().info(ret.toString());
+        return ret;
       }
-      catch (IdNotFoundException e) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      else {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Missing start and/or end times.");
+        return null;
       }
-      catch (ParseException e) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-      }
-      catch (DatatypeConfigurationException e) {
-        setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-      }
-      catch (MisMatchedOwnerException e) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-      }
-      getLogger().info(ret.toString());
-      return ret;
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Missing start and/or end times.");
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
       return null;
     }
   }

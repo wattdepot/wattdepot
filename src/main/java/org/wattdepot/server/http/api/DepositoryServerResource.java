@@ -59,21 +59,27 @@ public class DepositoryServerResource extends WattDepotServerResource implements
   @Override
   public Depository retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}");
-    try {
-      depot.getOrganization(orgId);
+    if (isInRole(orgId)) {
+      try {
+        depot.getOrganization(orgId);
+      }
+      catch (IdNotFoundException e1) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");
+      }
+      Depository depo = null;
+      try {
+        depo = depot.getDepository(depositoryId, orgId);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Depository " + depositoryId
+            + " is not defined.");
+      }
+      return depo;
     }
-    catch (IdNotFoundException e1) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+      return null;
     }
-    Depository depo = null;
-    try {
-      depo = depot.getDepository(depositoryId, orgId);
-    }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Depository " + depositoryId
-          + " is not defined.");
-    }
-    return depo;
   }
 
   /*
@@ -86,13 +92,18 @@ public class DepositoryServerResource extends WattDepotServerResource implements
   public void update(Depository depository) {
     getLogger().log(Level.INFO,
         "POST /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "} with " + depository);
-    try {
-      depot.getOrganization(orgId);
+    if (isInRole(orgId)) {
+      try {
+        depot.getOrganization(orgId);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+      }
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Can't update a Depository.");
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
     }
-    setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Can't update a Depository.");
   }
 
   /*

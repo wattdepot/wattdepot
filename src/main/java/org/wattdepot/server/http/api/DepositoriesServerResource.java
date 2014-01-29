@@ -43,17 +43,22 @@ public class DepositoriesServerResource extends WattDepotServerResource implemen
   @Override
   public DepositoryList retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/depositories/");
-    DepositoryList list = new DepositoryList();
-    try {
-      for (Depository d : depot.getDepositories(orgId)) {
-        list.getDepositories().add(d);
+    if (isInRole(orgId)) {
+      DepositoryList list = new DepositoryList();
+      try {
+        for (Depository d : depot.getDepositories(orgId)) {
+          list.getDepositories().add(d);
+        }
       }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization id.");
+      }
+      return list;
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId
-          + " is not a defined Organization id.");
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+      return null;
     }
-    return list;
   }
 
 }
