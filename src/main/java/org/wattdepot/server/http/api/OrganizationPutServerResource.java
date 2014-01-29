@@ -49,7 +49,7 @@ public class OrganizationPutServerResource extends WattDepotServerResource imple
   @Override
   public void store(Organization usergroup) {
     getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/organization/ with " + usergroup);
-    if (!isInRole(Organization.ADMIN_GROUP.getId())) {
+    if (isInRole(Organization.ADMIN_GROUP.getId())) {
       if (!depot.getOrganizationIds().contains(usergroup.getId())) {
         try {
           Organization defined = depot.defineOrganization(usergroup.getId(), usergroup.getName(),
