@@ -159,23 +159,23 @@ See the [Collector domain model description](overview/domainmodel#collector) for
 
 ### GET /wattdepot/{org-id}/collector-process-definition/{collector-process-definition-id}
 
-Retrieve the representation of this Collector process definition instance.
+Retrieve the representation of this Collector process definition instance as a JSON string. Members of the organization may do this.
 
 ### GET /wattdepot/{org-id}/collector-process-definitions/
 
-Retrieve a list of representations of all Collector process definition instances associated with this group.
+Retrieve a list of representations of all Collector process definition instances associated with this group as a JSON string. Members of the organization may do this.
 
 ### PUT /wattdepot/{org-id}/collector-process-definition/
 
-Create a new representation of a collector's process definition.
+Create a new representation of a collector's process definition. The request entity must be a valid JSON string representation of the collector's process definition. Members of the organization can do this.
 
 ### POST /wattdepot/{org-id}/collector-process-definition/{collector-process-definition-id}
 
-Update a pre-existing collector's process definition.
+Update a pre-existing collector's process definition. The request entity must be a valid JSON string representation of the updated collector's process definition. Members of the organization can do this.
 
 ### DELETE /wattdepot/{org-id}/collector-process-definition/{collector-process-definition-id}
 
-Delete this process definition representation.
+Delete this process definition representation. Members of the organization can do this.
 
 
 -------------
@@ -185,25 +185,19 @@ See the [Depository domain model description](overview/domainmodel#depository) f
 
 ### GET /wattdepot/{org-id}/depository/{depository-id}
 
-Retrieve a representation of this depository.
+Retrieve a representation of this depository as a JSON string. Members of the organization may do this.
 
 ### GET /wattdepot/{org-id}/depositories/
 
-Retrieve a list of representations of all depositories associated with this group.
+Retrieve a list of representations of all depositories associated with this group as a JSON string. Members of the organization may do this.
 
 ### PUT /wattdepot/{org-id}/depository/
 
-Create a new depository. 
-
-### POST /wattdepot/{org-id}/depository/{depository-id}
-
-Update a pre-existing depository's representation.
+Create a new depository.  The request entity must be a valid JSON string representation of the depository. Members of the organization can do this.
 
 ### DELETE /wattdepot/{org-id}/depository/{depository-id}
 
-Delete this repository.
-
-*(All measurements in this repository will be lost?) Yes due to constraints in the database.*
+Delete this repository. Members of the organization can do this. All measurements in this depository are deleted.
 
 --------------
 ## Measurement
@@ -212,13 +206,13 @@ See the [Measurement domain model description](overview/domainmodel#measurement)
 
 ### GET /wattdepot/{org-id}/depository/{depository-id}/measurement/{measurement-id}
 
-Retrieve a representation of a single measurement in the depository. 
+Retrieve a representation of a single measurement in the depository as a JSON string. Members of the organization may do this.
 
-*(Question: shouldn't measurement-id be a timestamp?)*
+*(Question: shouldn't measurement-id be a timestamp?)* That doesn't provide enough information to get a single measurement.
 
 ### GET /wattdepot/{org-id}/depository/{depository-id}/measurements/?sensor={sensor-id}&start={start-timestamp}&end={end-timestamp}
 
-Retrieve a representation of the measurements in the depository for the given sensor from start to end. Can return an empty list. 
+Retrieve a representation of the measurements in the depository for the given sensor from start to end. Can return an empty list. If the {sensor-id} is a sensor group id, it will return all the measurements made by the sensors in the group. 
 
 ### GET /wattdepot/{org-id}/depository/{depository-id}/measurements/gviz/?sensor={sensor-id}&start={start-timestamp}&end={end-timestamp}
 
@@ -228,53 +222,25 @@ Retrieve a representation (in Google Visualization format) for the measurements 
 
 ### GET /wattdepot/{org-id}/depository/{depository-id}/sensors/
 
-Retrieve a representation of all the sensors that have stored measurements in this depository.
+Retrieve a representation of all the sensors that have stored measurements in this depository as a JSON string. Members of the organization may do this.
 
 ### PUT /wattdepot/{org-id}/depository/{depository-id}/measurement/
 
-Store a new measurement in this depository.
+Store a new measurement in this depository. The request entity must be a valid JSON string representation of the measurement. Members of the organization can do this.
 
 ### DELETE /wattdepot/{org-id}/depository/{depository-id}/measurement/{measurement-id}
 
-Delete this measurement.
-
-
-------------
-## Location
-
-See the [Sensor domain model description](overview/domainmodel#sensor) for details about locations, which are part of the Sensor description.
-
-*(Do we need to provide locations as an independent part of the API?  Why not just manipulate them directly as part of the Sensor representation? Wouldn't that be simpler and more easily understandable from the user side, given that locations have no meaning apart from the sensors they are associated with?)*
-
-### GET /wattdepot/{org-id}/location/{location-id}
-
-Retrieve a representation of a location.
-
-### GET /wattdepot/{org-id}/locations/
-
-Retrieve a representation of all locations associated with this group.
-
-### PUT /wattdepot/{org-id}/location/
-
-Create a new location.
-
-### POST /wattdepot/{org-id}/location/{location-id}
-
-Update this representation of a location.
-
-### DELETE /wattdepot/{org-id}/location/{location-id}
-
-Delete this location.
+Delete this measurement. Members of the organization can do this.
 
 
 ----------
-## Measured Value
+## Interpolated Value
 
-See the [Measured Value domain model description](overview/domainmodel#measured-value) for details about this concept.
+See the [Interpolated Value domain model description](overview/domainmodel#interpolated-value) for details about this concept.
 
 ### GET /wattdepot/{org-id}/depository/{depository-id}/value/?sensor={sensor-id}&start={start-timestamp}&end={end-timestamp}&timestamp={timestamp}&gap={gapSeconds}
 
-Calculate and return the measured value for the given sensor. This is a complicated call there are several different valid calls.
+Calculate and return the interpolated value for the given sensor or sensor group. If {sensor-id} is a sensor group id then the values are summed for all the sensors in the group. This is a complicated call there are several different valid calls.
 
 * If timestamp is supplied then returns the interpolated value at the given time.
 * If start and end are supplied then returns the difference between the interpolated value at end and the interpolated value at start.

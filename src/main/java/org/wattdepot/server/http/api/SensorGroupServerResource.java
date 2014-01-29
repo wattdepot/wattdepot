@@ -61,19 +61,25 @@ public class SensorGroupServerResource extends WattDepotServerResource implement
   public SensorGroup retrieve() {
     getLogger().log(Level.INFO,
         "GET /wattdepot/{" + orgId + "}/sensor-group/{" + sensorGroupId + "}");
-    SensorGroup group = null;
-    try {
-      group = depot.getSensorGroup(sensorGroupId, orgId);
-    }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-    }
-    if (group == null) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "SensorGroup " + sensorGroupId
-          + " is not defined.");
+    if (isInRole(orgId)) {
+      SensorGroup group = null;
+      try {
+        group = depot.getSensorGroup(sensorGroupId, orgId);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
+      if (group == null) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "SensorGroup " + sensorGroupId
+            + " is not defined.");
 
+      }
+      return group;
     }
-    return group;
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+      return null;
+    }
   }
 
   /*
@@ -84,24 +90,30 @@ public class SensorGroupServerResource extends WattDepotServerResource implement
    */
   @Override
   public void update(SensorGroup sensorgroup) {
-    getLogger().log(Level.INFO, "POST /wattdepot/{" + orgId + "}/sensor-group/ with " + sensorgroup);
-    try {
-      depot.getOrganization(orgId);
-    }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
-    }
-    try {
-      if (depot.getSensorGroupIds(orgId).contains(sensorgroup.getId())) {
-        depot.updateSensorGroup(sensorgroup);
+    getLogger()
+        .log(Level.INFO, "POST /wattdepot/{" + orgId + "}/sensor-group/ with " + sensorgroup);
+    if (isInRole(orgId)) {
+      try {
+        depot.getOrganization(orgId);
       }
-      else {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Can't update undefined SensorGroup "
-            + sensorgroup.getName());
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+      }
+      try {
+        if (depot.getSensorGroupIds(orgId).contains(sensorgroup.getId())) {
+          depot.updateSensorGroup(sensorgroup);
+        }
+        else {
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Can't update undefined SensorGroup "
+              + sensorgroup.getName());
+        }
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
       }
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
     }
   }
 
@@ -114,14 +126,19 @@ public class SensorGroupServerResource extends WattDepotServerResource implement
   public void remove() {
     getLogger().log(Level.INFO,
         "DEL /wattdepot/{" + orgId + "}/sensor-group/{" + sensorGroupId + "}");
-    try {
-      depot.deleteSensorGroup(sensorGroupId, orgId);
+    if (isInRole(orgId)) {
+      try {
+        depot.deleteSensorGroup(sensorGroupId, orgId);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
+      catch (MisMatchedOwnerException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-    }
-    catch (MisMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
     }
   }
 

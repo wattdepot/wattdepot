@@ -57,14 +57,19 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
   @Override
   public void remove() {
     getLogger().log(Level.INFO, "DEL /wattdepot/{" + orgId + "}/sensor/{" + sensorId + "}");
-    try {
-      depot.deleteSensor(sensorId, orgId);
+    if (isInRole(orgId)) {
+      try {
+        depot.deleteSensor(sensorId, orgId);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
+      catch (MisMatchedOwnerException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-    }
-    catch (MisMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
     }
   }
 
@@ -76,20 +81,26 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
   @Override
   public Sensor retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/sensor/{" + sensorId + "}");
-    Sensor sensor = null;
-    try {
-      sensor = depot.getSensor(sensorId, orgId);
+    if (isInRole(orgId)) {
+      Sensor sensor = null;
+      try {
+        sensor = depot.getSensor(sensorId, orgId);
+      }
+      catch (MisMatchedOwnerException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Sensor " + sensorId + " is not defined.");
+      }
+      if (sensor == null) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Sensor " + sensorId + " is not defined.");
+      }
+      return sensor;
     }
-    catch (MisMatchedOwnerException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+      return null;
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Sensor " + sensorId + " is not defined.");
-    }
-    if (sensor == null) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Sensor " + sensorId + " is not defined.");
-    }
-    return sensor;
   }
 
   /*
@@ -124,8 +135,7 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
         }
       }
       catch (IdNotFoundException e) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId
-            + " is not a defined Organization id.");
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization id.");
       }
     }
     else {

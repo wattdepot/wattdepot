@@ -43,15 +43,21 @@ public class SensorsServerResource extends WattDepotServerResource implements Se
   @Override
   public SensorList retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/sensors/");
-    SensorList ret = new SensorList();
-    try {
-      for (Sensor s : depot.getSensors(orgId)) {
-        ret.getSensors().add(s);
+    if (isInRole(orgId)) {
+      SensorList ret = new SensorList();
+      try {
+        for (Sensor s : depot.getSensors(orgId)) {
+          ret.getSensors().add(s);
+        }
       }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization id.");
+      }
+      return ret;
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization id.");
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+      return null;
     }
-    return ret;
   }
 }

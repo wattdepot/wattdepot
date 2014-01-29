@@ -24,6 +24,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.MeasurementType;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.http.api.MeasurementTypeResource;
 
@@ -81,7 +82,7 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
   public void update(MeasurementType measurementType) {
     getLogger().log(Level.INFO,
         "POST /wattdepot/measurement-type/{" + typeSlug + "} with " + measurementType);
-    if (isInRole("admin")) {
+    if (isInRole(Organization.ADMIN_GROUP.getId())) {
       MeasurementType mt;
       try {
         mt = depot.getMeasurementType(measurementType.getId());
@@ -107,7 +108,7 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
   @Override
   public void remove() {
     getLogger().log(Level.INFO, "DEL /wattdepot/measurement-type/{" + typeSlug + "}");
-    if (isInRole("admin")) {
+    if (isInRole(Organization.ADMIN_GROUP.getId())) {
       try {
         depot.deleteMeasurementType(typeSlug);
       }

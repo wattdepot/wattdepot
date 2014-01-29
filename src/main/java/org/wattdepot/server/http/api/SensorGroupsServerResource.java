@@ -44,16 +44,22 @@ public class SensorGroupsServerResource extends WattDepotServerResource implemen
   @Override
   public SensorGroupList retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/sensor-groups/");
-    SensorGroupList ret = new SensorGroupList();
-    try {
-      for (SensorGroup sg : depot.getSensorGroups(orgId)) {
-        ret.getGroups().add(sg);
+    if (isInRole(orgId)) {
+      SensorGroupList ret = new SensorGroupList();
+      try {
+        for (SensorGroup sg : depot.getSensorGroups(orgId)) {
+          ret.getGroups().add(sg);
+        }
       }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+      }
+      return ret;
     }
-    catch (IdNotFoundException e) {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+      return null;
     }
-    return ret;
   }
 
 }

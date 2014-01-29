@@ -95,19 +95,19 @@ Measurements are made by Sensors and collected by Collectors.  A Measurement inc
 
 Sensors can either measure phenomena as they occur, or predict phenomena that may or may not occur.  Sensors can provide measurements for phenomena with a timestamp in the future.  It is the responsibility of clients to check the sensor associated with a measurement to determine its validity and meaning.
 
-## Measured Value
+## Interpolated Value
 
-Measured Values are different from Measurements. Measurements are the "raw data" in WattDepot.  For example, a Collector may obtain a power measurement from a Sensor every 10 seconds.
+Interpolated Values are different from Measurements. Measurements are the "raw data" in WattDepot.  For example, a Collector may obtain a power measurement from a Sensor every 10 seconds.
 
 Unfortunately, WattDepot clients often want to know a value at a specific timestamp regardless of whether or not a Collector has obtained a Measurement at that timestamp.  For example, a client might want a visualization that shows the power being consumed by a building every hour on the hour.
 
-For this use case, WattDepot provides Measured Values.  Measured Values differ from Measurements in that WattDepot will interpolate in the cases where there does not exist a Measurement corresponding to the precise timestamp requested by the client. (In real life, this is the case virtually all of the time).
+For this use case, WattDepot provides Interpolated Values.  Interpolated Values differ from Measurements in that WattDepot will interpolate in the cases where there does not exist a Measurement corresponding to the precise timestamp requested by the client. (In real life, this is the case virtually all of the time).
 
-WattDepot supports two kinds of Measured Values: point values and difference values. 
+WattDepot supports two kinds of Interpolated Values: point values and difference values. 
 
 Point values are calculated for a single timestamp. If there exists a Measurement corresponding to the timestamp, WattDepot will return that value. If the timestamp is between two Measurements, WattDepot
 calculates the linear interpolated value and returns it.  If the timestamp is not bounded by two Measurements, then WattDepot will return an error.
 
 For difference values, WattDepot gets the point values for the starting timestamp and the ending timestamp and returns the difference.
 
-It is the responsibility of the client to assess the validity of Measured Values returned by WattDepot.
+It is the responsibility of the client to assess the validity of Interpolated Values returned by WattDepot.
