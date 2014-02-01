@@ -80,7 +80,6 @@ public class UnitsHelper {
       
     }
     catch (UnsupportedEncodingException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     return type + " (" + s1 + ")";

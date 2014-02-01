@@ -41,7 +41,7 @@ public class Sensor implements IDomainModel {
   /** Additional properties of the sensor. */
   private Set<Property> properties;
   /** The owner of this sensor. */
-  private String ownerId;
+  private String orgId;
 
   /**
    * Default constructor.
@@ -75,7 +75,7 @@ public class Sensor implements IDomainModel {
     this.uri = uri;
     this.modelId = modelId;
     this.properties = properties;
-    this.ownerId = ownerId;
+    this.orgId = ownerId;
   }
 
   /**
@@ -129,12 +129,12 @@ public class Sensor implements IDomainModel {
     else if (!modelId.equals(other.modelId)) {
       return false;
     }
-    if (ownerId == null) {
-      if (other.ownerId != null) {
+    if (orgId == null) {
+      if (other.orgId != null) {
         return false;
       }
     }
-    else if (!ownerId.equals(other.ownerId)) {
+    else if (!orgId.equals(other.orgId)) {
       return false;
     }
     if (properties == null) {
@@ -181,7 +181,7 @@ public class Sensor implements IDomainModel {
    * @return the id of the owner
    */
   public String getOrganizationId() {
-    return ownerId;
+    return orgId;
   }
 
   /**
@@ -223,7 +223,7 @@ public class Sensor implements IDomainModel {
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     result = prime * result + ((name == null) ? 0 : name.hashCode());
     result = prime * result + ((modelId == null) ? 0 : modelId.hashCode());
-    result = prime * result + ((ownerId == null) ? 0 : ownerId.hashCode());
+    result = prime * result + ((orgId == null) ? 0 : orgId.hashCode());
     result = prime * result + ((properties == null) ? 0 : properties.hashCode());
     result = prime * result + ((uri == null) ? 0 : uri.hashCode());
     return result;
@@ -237,8 +237,8 @@ public class Sensor implements IDomainModel {
    *         ADMIN_GROUP.
    */
   public boolean isOwner(Organization group) {
-    if (ownerId != null
-        && (ownerId.equals(group.getId()) || group.equals(Organization.ADMIN_GROUP))) {
+    if (orgId != null
+        && (orgId.equals(group.getId()) || group.equals(Organization.ADMIN_GROUP))) {
       return true;
     }
     return false;
@@ -281,7 +281,7 @@ public class Sensor implements IDomainModel {
    * @param ownerId the id of the owner to set
    */
   public void setOrganizationId(String ownerId) {
-    this.ownerId = ownerId;
+    this.orgId = ownerId;
   }
 
   /**
@@ -306,7 +306,7 @@ public class Sensor implements IDomainModel {
   @Override
   public String toString() {
     return "Sensor [id=" + id + ", name=" + name + ", uri=" + uri + ", modelId=" + modelId
-        + ", properties=" + properties + "]";
+        + ", properties=" + properties + ", organizationId=" + orgId + "]";
   }
 
 }

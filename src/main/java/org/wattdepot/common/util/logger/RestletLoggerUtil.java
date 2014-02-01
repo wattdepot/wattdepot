@@ -36,7 +36,6 @@ public final class RestletLoggerUtil {
     // System.out.println("In useFileHandler");
     for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements();) {
       String logName = en.nextElement();
-//      System.out.println("logName is: '" + logName + "'");
       if ((logName.startsWith("com.noelios") || logName.startsWith("org.restlet") || "global"
           .equals(logName))
           && (logManager.getLogger(logName) != null)) {
@@ -98,6 +97,17 @@ public final class RestletLoggerUtil {
           logger.removeHandler(handler);
         }
       }
+    }
+  }
+  
+  /**
+   * Utility for printing out the known/defined logger names.
+   */
+  public static void showLoggers() {
+    LogManager logManager = LogManager.getLogManager();
+    for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements();) {
+      String logName = en.nextElement();
+      System.out.println("logger name = '" + logName + "'");
     }
   }
 }

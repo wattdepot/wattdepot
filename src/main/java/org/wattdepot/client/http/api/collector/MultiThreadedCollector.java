@@ -56,25 +56,17 @@ public abstract class MultiThreadedCollector extends TimerTask {
   /**
    * Initializes the MultiThreadedCollector.
    * 
-   * @param serverUri
-   *          The URI for the WattDepot server.
-   * @param username
-   *          The name of a user defined in the WattDepot server.
-   * @param orgId
-   *          the id of the organization the user is in.
-   * @param password
-   *          The password for the user.
-   * @param collectorId
-   *          The CollectorProcessDefinitionId used to initialize this
-   *          collector.
-   * @param debug
-   *          flag for debugging messages.
-   * @throws BadCredentialException
-   *           if the user or password don't match the credentials in WattDepot.
-   * @throws IdNotFoundException
-   *           if the processId is not defined.
-   * @throws BadSensorUriException
-   *           if the Sensor's URI isn't valid.
+   * @param serverUri The URI for the WattDepot server.
+   * @param username The name of a user defined in the WattDepot server.
+   * @param orgId the id of the organization the user is in.
+   * @param password The password for the user.
+   * @param collectorId The CollectorProcessDefinitionId used to initialize this
+   *        collector.
+   * @param debug flag for debugging messages.
+   * @throws BadCredentialException if the user or password don't match the
+   *         credentials in WattDepot.
+   * @throws IdNotFoundException if the processId is not defined.
+   * @throws BadSensorUriException if the Sensor's URI isn't valid.
    */
   public MultiThreadedCollector(String serverUri, String username, String orgId, String password,
       String collectorId, boolean debug) throws BadCredentialException, IdNotFoundException,
@@ -87,28 +79,18 @@ public abstract class MultiThreadedCollector extends TimerTask {
   }
 
   /**
-   * @param serverUri
-   *          The URI for the WattDepot server.
-   * @param username
-   *          The name of a user defined in the WattDepot server.
-   * @param orgId
-   *          the id of the user's organization.
-   * @param password
-   *          The password for the user.
-   * @param sensorId
-   *          The id of the Sensor to poll.
-   * @param pollingInterval
-   *          The polling interval in seconds.
-   * @param depository
-   *          The Depository to store the measurements.
-   * @param debug
-   *          flag for debugging messages.
-   * @throws BadCredentialException
-   *           if the user or password don't match the credentials in WattDepot.
-   * @throws BadSensorUriException
-   *           if the Sensor's URI isn't valid.
-   * @throws IdNotFoundException
-   *           if there is a problem with the sensorId.
+   * @param serverUri The URI for the WattDepot server.
+   * @param username The name of a user defined in the WattDepot server.
+   * @param orgId the id of the user's organization.
+   * @param password The password for the user.
+   * @param sensorId The id of the Sensor to poll.
+   * @param pollingInterval The polling interval in seconds.
+   * @param depository The Depository to store the measurements.
+   * @param debug flag for debugging messages.
+   * @throws BadCredentialException if the user or password don't match the
+   *         credentials in WattDepot.
+   * @throws BadSensorUriException if the Sensor's URI isn't valid.
+   * @throws IdNotFoundException if there is a problem with the sensorId.
    */
   public MultiThreadedCollector(String serverUri, String username, String orgId, String password,
       String sensorId, Long pollingInterval, Depository depository, boolean debug)
@@ -134,25 +116,17 @@ public abstract class MultiThreadedCollector extends TimerTask {
   }
 
   /**
-   * @param serverUri
-   *          The URI for the WattDepot server.
-   * @param username
-   *          The name of a user defined in the WattDepot server.
-   * @param orgId
-   *          the user's organization id.
-   * @param password
-   *          The password for the user.
-   * @param collectorId
-   *          The CollectorProcessDefinitionId used to initialize this
-   *          collector.
-   * @param debug
-   *          flag for debugging messages.
+   * @param serverUri The URI for the WattDepot server.
+   * @param username The name of a user defined in the WattDepot server.
+   * @param orgId the user's organization id.
+   * @param password The password for the user.
+   * @param collectorId The CollectorProcessDefinitionId used to initialize this
+   *        collector.
+   * @param debug flag for debugging messages.
    * @param debug
    * @return true if sensor starts successfully.
-   * @throws InterruptedException
-   *           If sleep is interrupted for some reason.
-   * @throws BadCredentialException
-   *           if the username and password are invalid.
+   * @throws InterruptedException If sleep is interrupted for some reason.
+   * @throws BadCredentialException if the username and password are invalid.
    */
   public static boolean start(String serverUri, String username, String orgId, String password,
       String collectorId, boolean debug) throws InterruptedException, BadCredentialException {
@@ -239,6 +213,29 @@ public abstract class MultiThreadedCollector extends TimerTask {
           e.printStackTrace();
         }
       }
+      else if (model.getName().equals(SensorModelHelper.STRESS)) {
+        Timer t = new Timer();
+        try {
+          StressCollector collector = new StressCollector(serverUri, username, orgId, password, collectorId, debug);
+          if (collector.isValid()) {
+            System.out.format("Started polling %s sensor at %s%n", sensor.getName(),
+                Tstamp.makeTimestamp());
+            t.schedule(collector, 0, definition.getPollingInterval() * 1000);
+          }
+          else {
+            System.err.format("Cannot poll %s sensor%n", sensor.getName());
+            return false;
+          }
+        }
+        catch (IdNotFoundException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        catch (BadSensorUriException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
     }
     catch (IdNotFoundException e) {
       System.err.println(e.getMessage());
@@ -248,10 +245,9 @@ public abstract class MultiThreadedCollector extends TimerTask {
   }
 
   /**
-   * @throws BadSensorUriException
-   *           if the Sensor's URI isn't valid.
-   * @throws IdNotFoundException
-   *           if there is a problem with the Collector Process Definition.
+   * @throws BadSensorUriException if the Sensor's URI isn't valid.
+   * @throws IdNotFoundException if there is a problem with the Collector
+   *         Process Definition.
    */
   private void validate() throws BadSensorUriException, IdNotFoundException {
     Sensor s = client.getSensor(definition.getSensorId());
