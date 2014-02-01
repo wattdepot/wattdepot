@@ -34,8 +34,8 @@ import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.DepositoryList;
-import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementList;
 import org.wattdepot.common.domainmodel.MeasurementType;
@@ -75,6 +75,7 @@ import org.wattdepot.common.http.api.SensorResource;
 import org.wattdepot.common.http.api.SensorsResource;
 import org.wattdepot.common.util.DateConvert;
 import org.wattdepot.common.util.logger.WattDepotLogger;
+import org.wattdepot.common.util.logger.WattDepotLoggerUtil;
 
 /**
  * WattDepotClient - high-level Java implementation that communicates with a
@@ -129,6 +130,7 @@ public class WattDepotClient implements WattDepotInterface {
 
     ClientResource client = null;
     client = makeClient(orgId + "/");
+    WattDepotLoggerUtil.removeClientLoggerHandlers();
     try {
       client.head();
       if (client.getLocationRef() != null) {
@@ -145,6 +147,7 @@ public class WattDepotClient implements WattDepotInterface {
     catch (ResourceException e) {
       throw new BadCredentialException(e.getMessage() + " username and or password are not corect.");
     }
+    WattDepotLoggerUtil.removeClientLoggerHandlers();
   }
 
   /*
