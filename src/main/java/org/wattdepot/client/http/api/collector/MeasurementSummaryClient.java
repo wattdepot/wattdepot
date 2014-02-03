@@ -23,6 +23,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -61,6 +62,8 @@ public class MeasurementSummaryClient extends TimerTask {
   private Sensor sensor;
   /** The time of the earliest measurement. */
   private Date earliest;
+  /** Flag for using a window. */
+  private boolean windowP;
 
   /**
    * @param serverUri The URI for the WattDepot server.
@@ -102,6 +105,8 @@ public class MeasurementSummaryClient extends TimerTask {
     options.addOption("c", "collector", true, "Collector Process Definition Id");
     options.addOption("m", "milliseconds", true, "Number of milliseconds to sleep between polls.");
     options.addOption("d", "debug", false, "Displays sensor data as it is sent to the server.");
+    options.addOption("w", "windowing", false,
+        "Use a window instead of getting all the measurements.");
 
     CommandLine cmd = null;
     String serverUri = null;
@@ -111,6 +116,7 @@ public class MeasurementSummaryClient extends TimerTask {
     String collectorId = null;
     Integer milliSeconds = null;
     boolean debug = false;
+    boolean windowP = false;
 
     CommandLineParser parser = new PosixParser();
     HelpFormatter formatter = new HelpFormatter();
@@ -162,35 +168,34 @@ public class MeasurementSummaryClient extends TimerTask {
       milliSeconds = 1000;
     }
     debug = cmd.hasOption("d");
+    windowP = cmd.hasOption("w");
     if (debug) {
-      System.out.println("Stress Test Collector:");
+      System.out.println("Measurement Summary Client:");
       System.out.println("    WattDepotServer: " + serverUri);
       System.out.println("    Username: " + username);
       System.out.println("    OrganizationId: " + organizationId);
       System.out.println("    Password :" + password);
       System.out.println("    CPD Id: " + collectorId);
       System.out.println("    MilliSeconds: " + milliSeconds);
+      System.out.println("    Windowing: " + windowP);
     }
     Timer t = new Timer();
     try {
       MeasurementSummaryClient c = new MeasurementSummaryClient(serverUri, username,
           organizationId, password, collectorId, debug);
+      c.windowP = windowP;
       System.out.format("Started MeasurementSummaryClient at %s%n", Tstamp.makeTimestamp());
       t.schedule(c, 0, milliSeconds);
     }
     catch (BadCredentialException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     catch (IdNotFoundException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     catch (BadSensorUriException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
-
   }
 
   /*
@@ -201,14 +206,27 @@ public class MeasurementSummaryClient extends TimerTask {
   @Override
   public void run() {
     Date now = new Date();
-    MeasurementList meas = client.getMeasurements(depository, sensor, this.earliest, now);
-    if (debug) {
-      try {
-        System.out.println("At " + DateConvert.convertDate(now) + " there are "
-            + meas.getMeasurements().size() + " measurements.");
+    MeasurementList meas = null;
+    if (windowP) {
+      XMLGregorianCalendar end = Tstamp.makeTimestamp(now.getTime());
+      XMLGregorianCalendar start = Tstamp.incrementSeconds(end, -30);
+      meas = client.getMeasurements(depository, sensor, DateConvert.convertXMLCal(start),
+          DateConvert.convertXMLCal(end));
+      if (debug) {
+        System.out
+            .println("At " + end + " there are " + meas.getMeasurements().size()
+                + " measurements in the window. Query took "
+                + Tstamp.diff(end, Tstamp.makeTimestamp()));
       }
-      catch (DatatypeConfigurationException e) {
-        e.printStackTrace();
+    }
+    else {
+      meas = client.getMeasurements(depository, sensor, this.earliest, now);
+      if (debug) {
+        XMLGregorianCalendar start = Tstamp.makeTimestamp(now.getTime());
+        XMLGregorianCalendar end = Tstamp.makeTimestamp();
+        System.out.println("Query started at " + start + " there are "
+            + meas.getMeasurements().size() + " measurements. Query ended at " + end + ". Took "
+            + Tstamp.diff(start, end));
       }
     }
   }
