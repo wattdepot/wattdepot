@@ -185,25 +185,11 @@ public class API {
       + Labels.SENSOR_GROUPS + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/location/</b> URI to store SensorLocations. Use PUT
-   * requests.
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/value/</b> URI to get all
+   * the measured value. Use GET requests.
    */
-  public static final String SENSOR_LOCATION_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.LOCATION + "/";
-
-  /**
-   * <b>/wattdepot/{org-id}/location/{location-id}</b> URI to manipulate
-   * SensorLocations. Supports GET, POST, and DELETE requests.
-   */
-  public static final String SENSOR_LOCATION_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.LOCATION + "/" + Labels.LOCATION_ID_VAR;
-
-  /**
-   * <b>/wattdepot/{org-id}/locations/</b> URI to get all defined
-   * SensorLocations. Use GET requests.
-   */
-  public static final String SENSOR_LOCATIONS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.LOCATIONS + "/";
+  public static final String SENSOR_MEASUREMENT_SUMMARY_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR
+      + "/" + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.SUMMARY + "/";
 
   /**
    * <b>/wattdepot/public/sensor-model/</b> URI for storing new SensorModels.
