@@ -40,6 +40,13 @@ public class API {
   public static final String ADMIN_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/";
 
   /**
+   * <b>/wattdepot/{org-id}/summary/</b> URI for the Organization Summary User
+   * Interface. Supports GET requests.
+   */
+  public static final String ORGANIZATION_SUMMARY_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.SUMMARY + "/";
+
+  /**
    * <b>/wattdepot/{org-id}/collector-process-definition/</b> URI for storing
    * CollectorProcessDefinition. Use PUT requests.
    */

@@ -34,6 +34,7 @@ import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Property;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.domainmodel.SensorMeasurementSummary;
 import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
@@ -2401,6 +2402,21 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.saveOrUpdate(impl);
     session.getTransaction().commit();
     session.close();
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.server.WattDepotPersistence#getSummary(java.lang.String,
+   * java.lang.String, java.lang.String, java.util.Date, java.util.Date)
+   */
+  @Override
+  public SensorMeasurementSummary getSummary(String depotId, String orgId, String sensorId,
+      Date start, Date end) throws IdNotFoundException {
+    List<Measurement> list = getMeasurements(depotId, orgId, sensorId, start, end);
+    SensorMeasurementSummary ret = new SensorMeasurementSummary(sensorId, depotId, start, end,
+        list.size());
+    return ret;
   }
 
 }

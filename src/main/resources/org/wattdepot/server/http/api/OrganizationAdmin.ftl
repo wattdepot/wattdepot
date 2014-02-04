@@ -13,12 +13,6 @@
 <script src="https://code.jquery.com/jquery.js"></script>
 <script src="/webroot/dist/js/bootstrap.min.js"></script>
 <script src="/webroot/dist/js/wattdepot-organization-admin.js"></script>
-<script> 
-$(function(){
-  //$("#modal-dialogs").load("/webroot/dist/dialogs.html"); 
-  //$("#navigation-bar").load("/webroot/dist/navbar.html");
-});
-</script> 
 
 </head>
 <body>
@@ -38,7 +32,7 @@ $(function(){
   <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     <ul class="nav navbar-nav">
       <li class="active"><a href="#">Definitions</a></li>
-      <li><a href="/wattdepot/admin/summary/">Logs/Information/Summary</a></li>
+      <li><a href="/wattdepot/${orgId}/summary/">Measurement, Depository Summary</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li><a href="#">${orgId}</a></li>

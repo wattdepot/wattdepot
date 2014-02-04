@@ -31,6 +31,7 @@ import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Property;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.domainmodel.SensorMeasurementSummary;
 import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
@@ -511,6 +512,19 @@ public abstract class WattDepotPersistence {
   }
 
   /**
+   * @param depotId The depository id.
+   * @param orgId The organization id.
+   * @param sensorId The Sensor id.
+   * @param start The start of the period.
+   * @param end The end of the period.
+   * @return The SensorMeasurementSummary for the given sensor, depository and
+   *         period.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract SensorMeasurementSummary getSummary(String depotId, String orgId, String sensorId,
+      Date start, Date end) throws IdNotFoundException;
+
+  /**
    * @param id the unique id for the UserInfo.
    * @param orgId the id of the organization the user is in.
    * @return The UserInfo with the given id.
@@ -535,16 +549,16 @@ public abstract class WattDepotPersistence {
   public abstract UserPassword getUserPassword(String id, String orgId) throws IdNotFoundException;
 
   /**
+   * @return All the known/defined UserInfos.
+   */
+  public abstract List<UserInfo> getUsers();
+
+  /**
    * @param orgId the id of the organization the user is in.
    * @return The known/defined UserInfos in the given organization.
    * @throws IdNotFoundException if orgId is not defined.
    */
   public abstract List<UserInfo> getUsers(String orgId) throws IdNotFoundException;
-
-  /**
-   * @return All the known/defined UserInfos.
-   */
-  public abstract List<UserInfo> getUsers();
 
   /**
    * @param depotId the id of the depository.
