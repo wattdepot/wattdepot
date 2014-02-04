@@ -3,6 +3,7 @@ package org.wattdepot.common.util.logger;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
@@ -23,6 +24,25 @@ public final class RestletLoggerUtil {
     // Do nothing.
   }
 
+  /**
+   * Forces all Loggers to use the Console for logging output.
+   */
+  public static void useConsoleHandler() {
+    LogManager logManager = LogManager.getLogManager();
+    for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements();) {
+      String logName = en.nextElement();
+      System.out.println("reseting " + logName);
+      Logger logger = logManager.getLogger(logName);
+      // remove the old handlers
+      Handler[] handlers = logger.getHandlers();
+      for (Handler handler : handlers) {
+        logger.removeHandler(handler);
+      }
+      ConsoleHandler handler = new ConsoleHandler();
+      logger.addHandler(handler);
+    }
+  }
+  
   /**
    * Adjusts the Restlet Loggers so that they send their output to a file, not the console.
    * 
@@ -107,7 +127,13 @@ public final class RestletLoggerUtil {
     LogManager logManager = LogManager.getLogManager();
     for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements();) {
       String logName = en.nextElement();
-      System.out.println("logger name = '" + logName + "'");
+      Logger logger = logManager.getLogger(logName);
+      Logger parent = logger.getParent();
+      System.out.print("logger name = '" + logName + "'");
+      if (parent != null) {
+        System.out.print(" parent = '" + parent.getName() + "'");
+      }
+      System.out.println();
     }
   }
 }
