@@ -91,14 +91,14 @@ public class MeasurementRateSummary {
    * @return the timestamp
    */
   public Date getTimestamp() {
-    return timestamp;
+    return new Date(timestamp.getTime());
   }
 
   /**
    * @param timestamp the timestamp to set
    */
   public void setTimestamp(Date timestamp) {
-    this.timestamp = timestamp;
+    this.timestamp = new Date(timestamp.getTime());
   }
 
   /**
