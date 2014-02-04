@@ -18,11 +18,6 @@
  */
 package org.wattdepot.server.http.api;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
-import java.util.logging.LogManager;
-
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
@@ -133,31 +128,31 @@ public class WattDepotComponent extends Component {
     app.getContext().setDefaultEnroler(realm.getEnroler());
     app.getContext().setDefaultVerifier(realm.getVerifier());
 
-    Properties props = new Properties();
-    InputStream inputStream = this.getClass().getClassLoader()
-        .getResourceAsStream("log.properties");
-    if (inputStream != null) {
-      try {
-        props.load(inputStream);
-      }
-      catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-    }
-    // // // Configure the log service
-    getLogService().setLoggerName("WattDepot.AccessLog");
-    try {
-      LogManager.getLogManager().readConfiguration(inputStream);
-    }
-    catch (SecurityException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+//    Properties props = new Properties();
+//    InputStream inputStream = this.getClass().getClassLoader()
+//        .getResourceAsStream("log.properties");
+//    if (inputStream != null) {
+//      try {
+//        props.load(inputStream);
+//      }
+//      catch (IOException e) {
+//        // TODO Auto-generated catch block
+//        e.printStackTrace();
+//      }
+//    }
+//    // // // Configure the log service
+//    getLogService().setLoggerName("WattDepot.AccessLog");
+//    try {
+//      LogManager.getLogManager().readConfiguration(inputStream);
+//    }
+//    catch (SecurityException e) {
+//      // TODO Auto-generated catch block
+//      e.printStackTrace();
+//    }
+//    catch (IOException e) {
+//      // TODO Auto-generated catch block
+//      e.printStackTrace();
+//    }
     //
     // getLogService().setLogPropertiesRef("log.properties");
 

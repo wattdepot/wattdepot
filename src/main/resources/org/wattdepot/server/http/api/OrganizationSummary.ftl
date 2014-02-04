@@ -33,8 +33,8 @@
   <!-- Collect the nav links, forms, and other content for toggling -->
   <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     <ul class="nav navbar-nav">
-      <li class="active"><a href="#">Definitions</a></li>
-      <li><a href="/wattdepot/${orgId}/summary/">Measurement, Depository Summary</a></li>
+      <li><a href="/wattdepot/${orgId}/">Definitions</a></li>
+      <li class="active"><a href="/wattdepot/${orgId}/summary/">Measurement, Depository Summary</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li><a href="#">${orgId}</a></li>
@@ -45,56 +45,30 @@
   <div class="container">
     <table class="table">
       <thead>
-        <tr><th colspan="3">One minute summary</th></tr>
-        <tr><th>Sensor Id</th><th>Depository</th><th>Num Measurements</th></tr>
+        <tr><th colspan="3">Measurement Rate Summary</th></tr>
+        <tr>
+          <th>Depository</th>
+          <th>Sensor Id</th>
+          <th colspan="2">Last Minute</th>
+          <th colspan="2">Last 15 Minutes</th>
+          <th colspan="2">Last Hour</th>
+          <th colspan="2">Last Day</th>
+        </tr>
       </thead>
       <tbody>
-      <#list minuteSummaries as m>
-        <tr><td>${m.sensorId}</td><td>${m.depositoryId}</td><td>${m.numMeasurements}</td></tr>
-      </#list>
-      </tbody>
-    </table>
-    <table class="table">
-      <thead>
-        <tr><th colspan="3">One hour summary</th></tr>
-        <tr><th>Sensor Id</th><th>Depository</th><th>Num Measurements</th></tr>
-      </thead>
-      <tbody>
-      <#list hourSummaries as m>
-        <tr><td>${m.sensorId}</td><td>${m.depositoryId}</td><td>${m.numMeasurements}</td></tr>
-      </#list>
-      </tbody>
-    </table>
-    <table class="table">
-      <thead>
-        <tr><th colspan="3">One day summary</th></tr>
-        <tr><th>Sensor Id</th><th>Depository</th><th>Num Measurements</th></tr>
-      </thead>
-      <tbody>
-      <#list daySummaries as m>
-        <tr><td>${m.sensorId}</td><td>${m.depositoryId}</td><td>${m.numMeasurements}</td></tr>
-      </#list>
-      </tbody>
-    </table>
-    <table class="table">
-      <thead>
-        <tr><th colspan="3">One week summary</th></tr>
-        <tr><th>Sensor Id</th><th>Depository</th><th>Num Measurements</th></tr>
-      </thead>
-      <tbody>
-      <#list weekSummaries as m>
-        <tr><td>${m.sensorId}</td><td>${m.depositoryId}</td><td>${m.numMeasurements}</td></tr>
-      </#list>
-      </tbody>
-    </table>
-    <table class="table">
-      <thead>
-        <tr><th colspan="3">One month summary</th></tr>
-        <tr><th>Sensor Id</th><th>Depository</th><th>Num Measurements</th></tr>
-      </thead>
-      <tbody>
-      <#list monthSummaries as m>
-        <tr><td>${m.sensorId}</td><td>${m.depositoryId}</td><td>${m.numMeasurements}</td></tr>
+      <#list summaries as s>
+        <tr>
+          <td>${s.depositoryId}</td>
+          <td>${s.sensorId}</td>
+          <td>${s.oneMinuteCount} meas</td>
+          <td>${s.oneMinuteRate} meas/sec</td>
+          <td>${s.fifteenMinuteCount} meas</td>
+          <td>${s.fifteenMinuteRate} meas/sec</td>
+          <td>${s.hourCount} meas</td>
+          <td>${s.hourRate} meas/sec</td>
+          <td>${s.dayCount} meas</td>
+          <td>${s.dayRate} meas/sec.</td>
+        </tr>
       </#list>
       </tbody>
     </table>

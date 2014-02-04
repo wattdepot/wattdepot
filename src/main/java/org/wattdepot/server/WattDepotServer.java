@@ -18,8 +18,6 @@
  */
 package org.wattdepot.server;
 
-import static org.wattdepot.server.ServerProperties.LOGGING_LEVEL_KEY;
-
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
@@ -30,9 +28,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.wattdepot.common.util.logger.HTTPClientHelperFilter;
-import org.wattdepot.common.util.logger.RestletLoggerUtil;
-import org.wattdepot.common.util.logger.WattDepotLogger;
+import org.wattdepot.common.util.logger.LoggerUtil;
 import org.wattdepot.server.http.api.WattDepotComponent;
 
 /**
@@ -99,17 +95,12 @@ public class WattDepotServer {
    */
   public static WattDepotServer newInstance(ServerProperties properties)
       throws Exception {
-    // System.out.println("starting.");
-    // RestletLoggerUtil.showLoggers();
     int port = Integer.parseInt(properties.get(ServerProperties.PORT_KEY));
     WattDepotServer server = new WattDepotServer();
     // System.out.println("WattDepotServer.");
     // RestletLoggerUtil.showLoggers();
     boolean enableLogging = Boolean.parseBoolean(properties
         .get(ServerProperties.ENABLE_LOGGING_KEY));
-    // RestletLoggerUtil.removeRestletLoggers();
-    server.logger = WattDepotLogger.getLogger("org.wattdepot.server",
-        properties.get(ServerProperties.SERVER_HOME_DIR));
     server.serverProperties = properties;
     server.hostName = server.serverProperties.getFullHost();
 
@@ -117,9 +108,6 @@ public class WattDepotServer {
     String depotClass = properties.get(ServerProperties.WATT_DEPOT_IMPL_KEY);
     server.depot = (WattDepotPersistence) Class.forName(depotClass)
         .getConstructor(ServerProperties.class).newInstance(properties);
-    // System.out.println("WattDepotPersistence.");
-    // RestletLoggerUtil.showLoggers();
-    // System.out.println("WattDepotPersistence.");
     if (server.depot.getSessionOpen() != server.depot.getSessionClose()) {
       throw new RuntimeException("opens and closed mismatched.");
     }
@@ -133,23 +121,32 @@ public class WattDepotServer {
     }
     server.depot.setServerProperties(properties);
     server.restletServer = new WattDepotComponent(server.depot, port);
-    // System.out.println("WattDepotComponent.");
-    // RestletLoggerUtil.showLoggers();
-    // System.out.println("WattDepotComponent.");
-
     server.logger = server.restletServer.getLogger();
-    server.logger.setFilter(new HTTPClientHelperFilter());
 
     // Set up logging.
     if (enableLogging) {
-      // RestletLoggerUtil.removeRestletLoggers();
-      // RestletLoggerUtil.useFileHandler(server.serverProperties.get(SERVER_HOME_DIR));
-      WattDepotLogger.setLoggingLevel(server.logger,
-          server.serverProperties.get(LOGGING_LEVEL_KEY));
+      LoggerUtil.useConsoleHandler();
+      Logger base = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
+      base = base.getParent();
+      Level newLevel = Level.INFO;
+      String level = properties.get(ServerProperties.LOGGING_LEVEL_KEY);
+      try {
+        newLevel = Level.parse(level);
+      }
+      catch (Exception e) {
+        base.info("Couldn't set Logging level to: " + level);
+      }
+      base.setLevel(newLevel);
+
       server.logger.warning("Starting WattDepot server.");
       server.logger.warning("Host: " + server.hostName);
       server.logger.info(server.serverProperties.echoProperties());
-      // Logger hibernate = Logger.getLogger("org.hibernate");
+    }
+    else {
+      LoggerUtil.useConsoleHandler();
+      Logger base = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
+      base = base.getParent();
+      base.setLevel(Level.SEVERE);
     }
     server.restletServer.start();
 
@@ -236,22 +233,14 @@ public class WattDepotServer {
     if (cmd.hasOption("d")) {
       directoryName = cmd.getOptionValue("d");
     }
-    // this sets the 'global' logger
-    Logger global = LogManager.getLogManager().getLogger(
-        Logger.GLOBAL_LOGGER_NAME);
-    Logger parent = global.getParent();
-    if (parent != null) {
-      parent.setLevel(Level.INFO);
-    }
-    // RestletLoggerUtil.showLoggers();
+    LoggerUtil.disableLogging();
     if ((directoryName == null) || (directoryName.length() == 0)) {
       WattDepotServer.newInstance();
     }
     else {
       WattDepotServer.newInstance(directoryName);
     }
-//    RestletLoggerUtil.showLoggers();
-    RestletLoggerUtil.useConsoleHandler();
+    LoggerUtil.useConsoleHandler();
   }
 
 }

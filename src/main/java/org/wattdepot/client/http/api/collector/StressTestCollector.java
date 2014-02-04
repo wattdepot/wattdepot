@@ -19,6 +19,7 @@
 package org.wattdepot.client.http.api.collector;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -34,10 +35,15 @@ import org.wattdepot.client.http.api.WattDepotClient;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.MeasurementType;
+import org.wattdepot.common.domainmodel.Property;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.BadSensorUriException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementTypeException;
+import org.wattdepot.common.util.SensorModelHelper;
 import org.wattdepot.common.util.logger.WattDepotLoggerUtil;
 import org.wattdepot.common.util.tstamp.Tstamp;
 
@@ -86,11 +92,14 @@ public class StressTestCollector extends TimerTask {
    * @throws IdNotFoundException if the processId is not defined.
    * @throws BadSensorUriException if the Sensor's URI isn't valid.
    */
-  public StressTestCollector(String serverUri, String username, String orgId, String password,
-      String collectorId, boolean debug) throws BadCredentialException, IdNotFoundException,
-      BadSensorUriException {
+  public StressTestCollector(String serverUri, String username, String orgId,
+      String password, String collectorId, boolean debug)
+      throws BadCredentialException, IdNotFoundException, BadSensorUriException {
     this.client = new WattDepotClient(serverUri, username, orgId, password);
     this.debug = debug;
+    if (!client.isDefinedCollectorProcessDefinition(collectorId)) {
+      initializeStressTestItems(collectorId);
+    }
     this.definition = client.getCollectorProcessDefinition(collectorId);
     this.depository = client.getDepository(definition.getDepositoryId());
 
@@ -102,16 +111,25 @@ public class StressTestCollector extends TimerTask {
   public static void main(String[] args) {
     WattDepotLoggerUtil.removeClientLoggerHandlers();
     Options options = new Options();
-    options.addOption("h", false, "Usage: StressTestCollector -s <server uri> -u <username>"
-        + " -p <password> -o <orgId> -c <collectorId> -n <num sim sensors> -m <millisecond sleep> [-d]");
-    options.addOption("s", "server", true, "WattDepot Server URI. (http://server.wattdepot.org)");
+    options
+        .addOption(
+            "h",
+            false,
+            "Usage: StressTestCollector -s <server uri> -u <username>"
+                + " -p <password> -o <orgId> -c <collectorId> -n <num sim sensors> -m <millisecond sleep> [-d]");
+    options.addOption("s", "server", true,
+        "WattDepot Server URI. (http://server.wattdepot.org)");
     options.addOption("u", "username", true, "Username");
     options.addOption("o", "organizationId", true, "User's Organization id.");
     options.addOption("p", "password", true, "Password");
-    options.addOption("c", "collector", true, "Collector Process Definition Id");
-    options.addOption("n", "numberOfSensors", true, "Number of Simulated Sensors");
-    options.addOption("m", "milliseconds", true, "Number of milliseconds to sleep between measurements.");
-    options.addOption("d", "debug", false, "Displays sensor data as it is sent to the server.");
+    options
+        .addOption("c", "collector", true, "Collector Process Definition Id");
+    options.addOption("n", "numberOfSensors", true,
+        "Number of Simulated Sensors");
+    options.addOption("m", "milliseconds", true,
+        "Number of milliseconds to sleep between measurements.");
+    options.addOption("d", "debug", false,
+        "Displays sensor data as it is sent to the server.");
 
     CommandLine cmd = null;
     String serverUri = null;
@@ -129,7 +147,8 @@ public class StressTestCollector extends TimerTask {
       cmd = parser.parse(options, args);
     }
     catch (ParseException e) {
-      System.err.println("Command line parsing failed. Reason: " + e.getMessage() + ". Exiting.");
+      System.err.println("Command line parsing failed. Reason: "
+          + e.getMessage() + ". Exiting.");
       System.exit(1);
     }
     if (cmd.hasOption("h")) {
@@ -193,10 +212,11 @@ public class StressTestCollector extends TimerTask {
     for (int i = 0; i < numSensors; i++) {
       Timer t = new Timer();
       try {
-        StressTestCollector collector = new StressTestCollector(serverUri, username, organizationId,
-            password, collectorId, debug);
-        System.out.format("Started StressTestCollector at %s%n", Tstamp.makeTimestamp());
-        t.schedule(collector, 0, milliSeconds); 
+        StressTestCollector collector = new StressTestCollector(serverUri,
+            username, organizationId, password, collectorId, debug);
+        System.out.format("Started StressTestCollector at %s%n",
+            Tstamp.makeTimestamp());
+        t.schedule(collector, 0, milliSeconds);
         Thread.sleep(1000 / numSensors);
       }
       catch (BadCredentialException e) {
@@ -219,8 +239,10 @@ public class StressTestCollector extends TimerTask {
    */
   private Measurement generateFakeMeasurement() {
     Date now = new Date();
-    Unit<?> unit = Unit.valueOf(this.depository.getMeasurementType().getUnits());
-    Measurement ret = new Measurement(this.definition.getSensorId(), now, wattHours++, unit);
+    Unit<?> unit = Unit
+        .valueOf(this.depository.getMeasurementType().getUnits());
+    Measurement ret = new Measurement(this.definition.getSensorId(), now,
+        wattHours++, unit);
     return ret;
   }
 
@@ -237,8 +259,8 @@ public class StressTestCollector extends TimerTask {
         this.client.putMeasurement(depository, meas);
       }
       catch (MeasurementTypeException e) {
-        System.err.format("%s does not store %s measurements%n", depository.getName(),
-            meas.getMeasurementType());
+        System.err.format("%s does not store %s measurements%n",
+            depository.getName(), meas.getMeasurementType());
       }
       if (debug) {
         System.out.println(meas);
@@ -246,4 +268,38 @@ public class StressTestCollector extends TimerTask {
     }
   }
 
+  /**
+   * Ensures that there is a StressTest sensor, depository, and collector
+   * process definition.
+   * @param collectorId the id of the collector to define.
+   */
+  private void initializeStressTestItems(String collectorId) {
+    SensorModel model = SensorModelHelper.models.get(SensorModelHelper.STRESS);
+    Sensor stressSensor = new Sensor("Stress Test Sensor",
+        "http://stress.test.sensor", model.getId(), client.getOrganizationId());
+    if (!client.isDefinedSensor(stressSensor.getId())) {
+      client.putSensor(stressSensor);
+    }
+    MeasurementType measType = null;
+    if (client.isDefinedMeasurementType("energy-wh")) {
+      try {
+        measType = client.getMeasurementType("energy-wh");
+        Depository depository = new Depository("Stress Test Energy", measType,
+            client.getOrganizationId());
+        if (!client.isDefinedDepository(depository.getId())) {
+          client.putDepository(depository);
+        }
+        CollectorProcessDefinition cpd = new CollectorProcessDefinition(
+            collectorId, "Stress Test Collector", stressSensor.getId(), 1L,
+            depository.getId(), new HashSet<Property>(),
+            client.getOrganizationId());
+        if (!client.isDefinedCollectorProcessDefinition(cpd.getId())) {
+          client.putCollectorProcessDefinition(cpd);
+        }
+      }
+      catch (IdNotFoundException e) { // NOPMD
+        // can't happen
+      }
+    }
+  }
 }

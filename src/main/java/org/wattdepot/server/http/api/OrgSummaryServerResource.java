@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.ext.freemarker.TemplateRepresentation;
@@ -34,14 +32,12 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.Get;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.domainmodel.MeasurementRateSummary;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Sensor;
-import org.wattdepot.common.domainmodel.SensorMeasurementSummary;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.API;
-import org.wattdepot.common.util.DateConvert;
-import org.wattdepot.common.util.tstamp.Tstamp;
 
 /**
  * OrgSummaryServerResource - Summary Web page generator for WattDepot
@@ -66,40 +62,16 @@ public class OrgSummaryServerResource extends WattDepotServerResource {
       try {
         List<Depository> depos = depot.getDepositories(orgId);
         List<Sensor> sensors = new ArrayList<Sensor>();
-        List<SensorMeasurementSummary> minuteSummaries = new ArrayList<SensorMeasurementSummary>();
-        List<SensorMeasurementSummary> hourSummaries = new ArrayList<SensorMeasurementSummary>();
-        List<SensorMeasurementSummary> daySummaries = new ArrayList<SensorMeasurementSummary>();
-        List<SensorMeasurementSummary> weekSummaries = new ArrayList<SensorMeasurementSummary>();
-        List<SensorMeasurementSummary> monthSummaries = new ArrayList<SensorMeasurementSummary>();
-        XMLGregorianCalendar now = Tstamp.makeTimestamp();
-        XMLGregorianCalendar minAgo = Tstamp.incrementMinutes(now, -1);
-        XMLGregorianCalendar hourAgo = Tstamp.incrementHours(now, -1);
-        XMLGregorianCalendar dayAgo = Tstamp.incrementDays(now, -1);
-//        XMLGregorianCalendar weekAgo = Tstamp.incrementDays(now, -7);
-//        XMLGregorianCalendar monthAgo = Tstamp.incrementDays(now, -30);
-
+        List<MeasurementRateSummary> summaries = new ArrayList<MeasurementRateSummary>();
         for (Depository d : depos) {
           for (String sensorId : depot.listSensors(d.getId(), orgId)) {
             sensors.add(depot.getSensor(sensorId, orgId));
-            minuteSummaries.add(depot.getSummary(d.getId(), orgId, sensorId,
-                DateConvert.convertXMLCal(minAgo), DateConvert.convertXMLCal(now)));
-            hourSummaries.add(depot.getSummary(d.getId(), orgId, sensorId,
-                DateConvert.convertXMLCal(hourAgo), DateConvert.convertXMLCal(now)));
-            daySummaries.add(depot.getSummary(d.getId(), orgId, sensorId,
-                DateConvert.convertXMLCal(dayAgo), DateConvert.convertXMLCal(now)));
-//            weekSummaries.add(depot.getSummary(d.getId(), orgId, sensorId,
-//                DateConvert.convertXMLCal(weekAgo), DateConvert.convertXMLCal(now)));
-//            monthSummaries.add(depot.getSummary(d.getId(), orgId, sensorId,
-//                DateConvert.convertXMLCal(monthAgo), DateConvert.convertXMLCal(now)));
+            summaries.add(depot.getRateSummary(d.getId(), orgId, sensorId));
           }
         }
         dataModel.put("depositories", depos);
         dataModel.put("sensors", sensors);
-        dataModel.put("minuteSummaries", minuteSummaries);
-        dataModel.put("hourSummaries", hourSummaries);
-        dataModel.put("daySummaries", daySummaries);
-        dataModel.put("weekSummaries", weekSummaries);
-        dataModel.put("monthSummaries", monthSummaries);
+        dataModel.put("summaries", summaries);
         rep = new ClientResource(LocalReference.createClapReference(getClass().getPackage())
             + "/OrganizationSummary.ftl").get();
       }

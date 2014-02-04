@@ -6,6 +6,7 @@ import java.util.Enumeration;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -17,10 +18,10 @@ import java.util.logging.SimpleFormatter;
  * @author Philip Johnson
  * @author Robert Brewer
  */
-public final class RestletLoggerUtil {
+public final class LoggerUtil {
 
   /** Make this class non-instantiable. */
-  private RestletLoggerUtil() {
+  private LoggerUtil() {
     // Do nothing.
   }
 
@@ -31,16 +32,25 @@ public final class RestletLoggerUtil {
     LogManager logManager = LogManager.getLogManager();
     for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements();) {
       String logName = en.nextElement();
-      System.out.println("reseting " + logName);
       Logger logger = logManager.getLogger(logName);
       // remove the old handlers
       Handler[] handlers = logger.getHandlers();
       for (Handler handler : handlers) {
         logger.removeHandler(handler);
       }
-      ConsoleHandler handler = new ConsoleHandler();
-      logger.addHandler(handler);
     }
+    Logger logger = logManager.getLogger("");
+    ConsoleHandler handler = new ConsoleHandler();
+    logger.addHandler(handler);
+  }
+  
+  /**
+   * Removes all the handlers from all the defined loggers. This should 
+   */
+  public static void disableLogging() {
+    Logger base = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
+    base = base.getParent();
+    base.setLevel(Level.SEVERE);
   }
   
   /**

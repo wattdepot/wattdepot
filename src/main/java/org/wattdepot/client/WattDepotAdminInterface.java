@@ -83,7 +83,8 @@ public interface WattDepotAdminInterface {
    * @return The UserPassword with the given id.
    * @throws IdNotFoundException if the id does not exist.
    */
-  public UserPassword getUserPassword(String id, String orgId) throws IdNotFoundException;
+  public UserPassword getUserPassword(String id, String orgId)
+      throws IdNotFoundException;
 
   /**
    * Stores the given user in the WattDepot Server.
@@ -91,6 +92,25 @@ public interface WattDepotAdminInterface {
    * @param user The UserInfo to store.
    */
   public void putUser(UserInfo user);
+
+  /**
+   * Checks to see if the given id is a defined Organization's id.
+   * 
+   * @param id the id to check.
+   * @return true if there is a defined Organization with the given id, false
+   *         otherwise.
+   */
+  public boolean isDefinedOrganization(String id);
+
+  /**
+   * Checks to see if the given id and orgId is a defined UserInfo id.
+   * 
+   * @param id the id to check.
+   * @param orgId the organization id.
+   * @return true if there is a defined UserInfo with the given id and orgId, false
+   *         otherwise.
+   */
+  public boolean isDefinedUserInfo(String id, String orgId);
 
   /**
    * Stores the given Organization in the WattDepot Server.
