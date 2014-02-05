@@ -2152,10 +2152,11 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     session.beginTransaction();
     DepositoryImpl depot = retrieveDepository(session, depotId, orgId);
+    SensorImpl sensor = retrieveSensor(session, sensorId, orgId);
     @SuppressWarnings("unchecked")
     List<MeasurementImpl> result = (List<MeasurementImpl>) session
-        .createQuery("FROM MeasurementImpl WHERE depository = :depot")
-        .setParameter("depot", depot).list();
+        .createQuery("FROM MeasurementImpl WHERE depository = :depot AND sensor = :sensor")
+        .setParameter("depot", depot).setParameter("sensor", sensor).list();
     for (MeasurementImpl mi : result) {
       ret.add(mi.toMeasurement());
     }
@@ -2516,22 +2517,74 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     ret.setDepositoryId(depotId);
     ret.setSensorId(sensorId);
     ret.setTimestamp(DateConvert.convertXMLCal(now));
-    List<Measurement> list = getMeasurements(depotId, orgId, sensorId,
+    Long count = getMeasurementsCount(depotId, orgId, sensorId,
         DateConvert.convertXMLCal(minAgo), DateConvert.convertXMLCal(now));
-    ret.setOneMinuteCount(list.size());
-    ret.setOneMinuteRate(list.size() / 60.0);
-    list = getMeasurements(depotId, orgId, sensorId,
+    ret.setOneMinuteCount(count);
+    ret.setOneMinuteRate(count / 60.0);
+    count = getMeasurementsCount(depotId, orgId, sensorId,
         DateConvert.convertXMLCal(fifteenAgo), DateConvert.convertXMLCal(now));
-    ret.setFifteenMinuteCount(list.size());
-    ret.setFifteenMinuteRate(list.size() / (15 * 60.0));
-    list = getMeasurements(depotId, orgId, sensorId,
+    ret.setFifteenMinuteCount(count);
+    ret.setFifteenMinuteRate(count / (15 * 60.0));
+    count = getMeasurementsCount(depotId, orgId, sensorId,
         DateConvert.convertXMLCal(hourAgo), DateConvert.convertXMLCal(now));
-    ret.setHourCount(list.size());
-    ret.setHourRate(list.size() / (60.0 * 60.0));
-    list = getMeasurements(depotId, orgId, sensorId,
+    ret.setHourCount(count);
+    ret.setHourRate(count / (60.0 * 60.0));
+    count = getMeasurementsCount(depotId, orgId, sensorId,
         DateConvert.convertXMLCal(dayAgo), DateConvert.convertXMLCal(now));
-    ret.setDayCount(list.size());
-    ret.setDayRate(list.size() / (24.0 * 60.0 * 60.0));
+    ret.setDayCount(count);
+    ret.setDayRate(count / (24.0 * 60.0 * 60.0));
+    return ret;
+  }
+
+  /* (non-Javadoc)
+   * @see org.wattdepot.server.WattDepotPersistence#getMeasurementsCount(java.lang.String, java.lang.String, java.lang.String)
+   */
+  @Override
+  public Long getMeasurementsCount(String depotId, String orgId,
+      String sensorId) throws IdNotFoundException {
+    getOrganization(orgId);
+    getDepository(depotId, orgId);
+    getSensor(sensorId, orgId);
+    Long ret = null;
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    session.beginTransaction();
+    DepositoryImpl depot = retrieveDepository(session, depotId, orgId);
+    SensorImpl sensor = retrieveSensor(session, sensorId, orgId);
+    @SuppressWarnings("unchecked")
+    List<Long> result = (List<Long>) session
+        .createQuery("SELECT count(*) FROM MeasurementImpl WHERE depository = :depot AND sensor = :sensor")
+        .setParameter("depot", depot).setParameter("sensor", sensor).list();
+    ret = result.get(0);
+    session.getTransaction().commit();
+    session.close();
+
+    return ret;
+  }
+
+  /* (non-Javadoc)
+   * @see org.wattdepot.server.WattDepotPersistence#getMeasurementsCount(java.lang.String, java.lang.String, java.lang.String, java.util.Date, java.util.Date)
+   */
+  @Override
+  public Long getMeasurementsCount(String depotId, String orgId,
+      String sensorId, Date start, Date end) throws IdNotFoundException {
+    getOrganization(orgId);
+    getDepository(depotId, orgId);
+    getSensor(sensorId, orgId);
+    Long ret = null;
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    session.beginTransaction();
+    DepositoryImpl depot = retrieveDepository(session, depotId, orgId);
+    SensorImpl sensor = retrieveSensor(session, sensorId, orgId);
+    @SuppressWarnings("unchecked")
+    List<Long> result = (List<Long>) session
+        .createQuery(
+            "SELECT count(*) FROM MeasurementImpl WHERE timestamp >= :start AND timestamp <= :end AND depository = :depository AND sensor = :sensor")
+        .setParameter("start", start).setParameter("end", end)
+        .setParameter("depository", depot).setParameter("sensor", sensor)
+        .list();
+    ret = result.get(0);
+    session.getTransaction().commit();
+    session.close();
     return ret;
   }
 

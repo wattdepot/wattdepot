@@ -36,19 +36,19 @@ public class MeasurementRateSummary {
   /** The time of the summary. */
   private Date timestamp;
   /** Number of measurements in the last minute. */
-  private Integer oneMinuteCount;
+  private Long oneMinuteCount;
   /** The rate of measurements per second in the last minute. */
   private Double oneMinuteRate;
   /** Number of measurements in the last fifteen minutes. */
-  private Integer fifteenMinuteCount;
+  private Long fifteenMinuteCount;
   /** The rate of measurements per second in the last fifteen minutes. */
   private Double fifteenMinuteRate;
   /** Number of measurements in the last hour. */
-  private Integer hourCount;
+  private Long hourCount;
   /** The rate of measurements per second in the last hour. */
   private Double hourRate;
   /** Number of measurements in the last day. */
-  private Integer dayCount;
+  private Long dayCount;
   /** The rate of measurements per second in the last day. */
   private Double dayRate;
 
@@ -104,14 +104,14 @@ public class MeasurementRateSummary {
   /**
    * @return the oneMinuteCount
    */
-  public Integer getOneMinuteCount() {
+  public Long getOneMinuteCount() {
     return oneMinuteCount;
   }
 
   /**
    * @param oneMinuteCount the oneMinuteCount to set
    */
-  public void setOneMinuteCount(Integer oneMinuteCount) {
+  public void setOneMinuteCount(Long oneMinuteCount) {
     this.oneMinuteCount = oneMinuteCount;
   }
 
@@ -132,14 +132,14 @@ public class MeasurementRateSummary {
   /**
    * @return the fifteenMinuteCount
    */
-  public Integer getFifteenMinuteCount() {
+  public Long getFifteenMinuteCount() {
     return fifteenMinuteCount;
   }
 
   /**
    * @param fifteenMinuteCount the fifteenMinuteCount to set
    */
-  public void setFifteenMinuteCount(Integer fifteenMinuteCount) {
+  public void setFifteenMinuteCount(Long fifteenMinuteCount) {
     this.fifteenMinuteCount = fifteenMinuteCount;
   }
 
@@ -160,14 +160,14 @@ public class MeasurementRateSummary {
   /**
    * @return the hourCount
    */
-  public Integer getHourCount() {
+  public Long getHourCount() {
     return hourCount;
   }
 
   /**
    * @param hourCount the hourCount to set
    */
-  public void setHourCount(Integer hourCount) {
+  public void setHourCount(Long hourCount) {
     this.hourCount = hourCount;
   }
 
@@ -188,14 +188,14 @@ public class MeasurementRateSummary {
   /**
    * @return the dayCount
    */
-  public Integer getDayCount() {
+  public Long getDayCount() {
     return dayCount;
   }
 
   /**
    * @param dayCount the dayCount to set
    */
-  public void setDayCount(Integer dayCount) {
+  public void setDayCount(Long dayCount) {
     this.dayCount = dayCount;
   }
 

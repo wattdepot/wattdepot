@@ -413,6 +413,29 @@ public abstract class WattDepotPersistence {
       throws IdNotFoundException;
 
   /**
+   * @param depotId the id of the Depository storing the measurements.
+   * @param orgId the Organziation's id.
+   * @param sensorId the id of the Sensor.
+   * @return A count of all the measurements made by the Sensor.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract Long getMeasurementsCount(String depotId,
+      String orgId, String sensorId) throws IdNotFoundException;
+
+  /**
+   * @param depotId the id of the Depository storing the measurements.
+   * @param orgId the Organziation's id.
+   * @param sensorId The id of the Sensor.
+   * @param start The start of the interval.
+   * @param end The end of the interval.
+   * @return A count of the measurements in the interval.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract Long getMeasurementsCount(String depotId,
+      String orgId, String sensorId, Date start, Date end)
+      throws IdNotFoundException;
+
+  /**
    * @param id The unique id for the MeasurementType.
    * @return The MeasurementType with the given id.
    * @throws IdNotFoundException if the id is not defined.
