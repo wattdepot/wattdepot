@@ -146,6 +146,9 @@ public class Labels {
   /** The label for the start timestamp. */
   public static final String START = "start";
 
+  /** The label for getting a summary. */
+  public static final String SUMMARY = "summary";
+
   /** The label for the timestamp. */
   public static final String TIMESTAMP = "timestamp";
 

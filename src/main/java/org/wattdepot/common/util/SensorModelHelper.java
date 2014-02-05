@@ -36,11 +36,14 @@ public class SensorModelHelper {
   public static final String SHARK = "Shark";
   /** The Modbus protocol name. */
   public static final String MODBUS = "Modbus";
+  /** Stress test Model. */
+  public static final String STRESS = "Stress";
   /** Holds the default SensorModels. */
   public static final Map<String, SensorModel> models = new HashMap<String, SensorModel>();
   
   static {
     models.put(EGAUGE, new SensorModel(EGAUGE, "xml", EGAUGE, "1.0"));
     models.put(SHARK, new SensorModel(SHARK, MODBUS, SHARK, "1.03"));
+    models.put(STRESS, new SensorModel(STRESS, "stress", "stress-test", "1.0"));
   }
 }

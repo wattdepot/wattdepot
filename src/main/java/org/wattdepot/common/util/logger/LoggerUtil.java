@@ -3,8 +3,10 @@ package org.wattdepot.common.util.logger;
 import java.io.File;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -16,13 +18,41 @@ import java.util.logging.SimpleFormatter;
  * @author Philip Johnson
  * @author Robert Brewer
  */
-public final class RestletLoggerUtil {
+public final class LoggerUtil {
 
   /** Make this class non-instantiable. */
-  private RestletLoggerUtil() {
+  private LoggerUtil() {
     // Do nothing.
   }
 
+  /**
+   * Forces all Loggers to use the Console for logging output.
+   */
+  public static void useConsoleHandler() {
+    LogManager logManager = LogManager.getLogManager();
+    for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements();) {
+      String logName = en.nextElement();
+      Logger logger = logManager.getLogger(logName);
+      // remove the old handlers
+      Handler[] handlers = logger.getHandlers();
+      for (Handler handler : handlers) {
+        logger.removeHandler(handler);
+      }
+    }
+    Logger logger = logManager.getLogger("");
+    ConsoleHandler handler = new ConsoleHandler();
+    logger.addHandler(handler);
+  }
+  
+  /**
+   * Removes all the handlers from all the defined loggers. This should 
+   */
+  public static void disableLogging() {
+    Logger base = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
+    base = base.getParent();
+    base.setLevel(Level.SEVERE);
+  }
+  
   /**
    * Adjusts the Restlet Loggers so that they send their output to a file, not the console.
    * 
@@ -36,7 +66,6 @@ public final class RestletLoggerUtil {
     // System.out.println("In useFileHandler");
     for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements();) {
       String logName = en.nextElement();
-//      System.out.println("logName is: '" + logName + "'");
       if ((logName.startsWith("com.noelios") || logName.startsWith("org.restlet") || "global"
           .equals(logName))
           && (logManager.getLogger(logName) != null)) {
@@ -98,6 +127,23 @@ public final class RestletLoggerUtil {
           logger.removeHandler(handler);
         }
       }
+    }
+  }
+  
+  /**
+   * Utility for printing out the known/defined logger names.
+   */
+  public static void showLoggers() {
+    LogManager logManager = LogManager.getLogManager();
+    for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements();) {
+      String logName = en.nextElement();
+      Logger logger = logManager.getLogger(logName);
+      Logger parent = logger.getParent();
+      System.out.print("logger name = '" + logName + "'");
+      if (parent != null) {
+        System.out.print(" parent = '" + parent.getName() + "'");
+      }
+      System.out.println();
     }
   }
 }

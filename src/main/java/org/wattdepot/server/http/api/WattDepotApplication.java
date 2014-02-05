@@ -54,8 +54,7 @@ public class WattDepotApplication extends Application {
   }
 
   /**
-   * @param id
-   *          The WebSession id.
+   * @param id The WebSession id.
    * @return The WebSession with the given id or null.
    */
   public WebSession getWebSession(String id) {
@@ -66,10 +65,8 @@ public class WattDepotApplication extends Application {
    * Creates a new WebSession for the given user with their password. If their
    * password doesn't match returns null.
    * 
-   * @param username
-   *          The unique id for the user.
-   * @param password
-   *          Their password.
+   * @param username The unique id for the user.
+   * @param password Their password.
    * @return A new WebSession or null if the password doesn't match the password
    *         in the persistent store.
    */
@@ -93,8 +90,7 @@ public class WattDepotApplication extends Application {
   /**
    * Removes the WebSession from the application.
    * 
-   * @param id
-   *          The id of the session.
+   * @param id The id of the session.
    * @return The old WebSession if it existed or null.
    */
   public WebSession removeWebSession(String id) {
@@ -109,8 +105,7 @@ public class WattDepotApplication extends Application {
   }
 
   /**
-   * @param depot
-   *          the depot to set
+   * @param depot the depot to set
    */
   public void setDepot(WattDepotPersistence depot) {
     this.depot = depot;
@@ -124,8 +119,7 @@ public class WattDepotApplication extends Application {
   }
 
   /**
-   * @param component
-   *          the component to set
+   * @param component the component to set
    */
   public void setComponent(WattDepotComponent component) {
     this.component = component;
@@ -166,10 +160,14 @@ public class WattDepotApplication extends Application {
     // router.attach("/wattdepot/login/", LoginServerResource.class);
     // Group administration UI.
     router.attach(API.ADMIN_URI, AdminServerResource.class);
+    router.attach(API.ORGANIZATION_SUMMARY_URI, OrgSummaryServerResource.class);
     // CollectorProcessDefinition
-    router.attach(API.COLLECTOR_PROCESS_DEFINITION_PUT_URI, CollectorProcessDefinitionPutServerResource.class);
-    router.attach(API.COLLECTOR_PROCESS_DEFINITION_URI, CollectorProcessDefinitionServerResource.class);
-    router.attach(API.COLLECTOR_PROCESS_DEFINITIONS_URI, CollectorProcessDefinitionsServerResource.class);
+    router.attach(API.COLLECTOR_PROCESS_DEFINITION_PUT_URI,
+        CollectorProcessDefinitionPutServerResource.class);
+    router.attach(API.COLLECTOR_PROCESS_DEFINITION_URI,
+        CollectorProcessDefinitionServerResource.class);
+    router.attach(API.COLLECTOR_PROCESS_DEFINITIONS_URI,
+        CollectorProcessDefinitionsServerResource.class);
     // Depositories and Measurements
     router.attach(API.DEPOSITORY_PUT_URI, DepositoryPutServerResource.class);
     router.attach(API.DEPOSITORY_URI, DepositoryServerResource.class);
@@ -191,6 +189,8 @@ public class WattDepotApplication extends Application {
     router.attach(API.SENSOR_PUT_URI, SensorPutServerResource.class);
     router.attach(API.SENSOR_URI, SensorServerResource.class);
     router.attach(API.SENSORS_URI, SensorsServerResource.class);
+    // Sensor Measurement Summary
+    router.attach(API.SENSOR_MEASUREMENT_SUMMARY_URI, SensorMeasurementServerResource.class);
     // SensorGroups
     router.attach(API.SENSOR_GROUP_PUT_URI, SensorGroupPutServerResource.class);
     router.attach(API.SENSOR_GROUP_URI, SensorGroupServerResource.class);

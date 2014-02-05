@@ -314,4 +314,32 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
     }
   }
 
+  /* (non-Javadoc)
+   * @see org.wattdepot.client.WattDepotAdminInterface#isDefinedOrganization(java.lang.String)
+   */
+  @Override
+  public boolean isDefinedOrganization(String id) {
+    try {
+      getOrganization(id);
+      return true;
+    }
+    catch (IdNotFoundException e) {
+      return false;
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see org.wattdepot.client.WattDepotAdminInterface#isDefinedUserInfo(java.lang.String, java.lang.String)
+   */
+  @Override
+  public boolean isDefinedUserInfo(String id, String orgId) {
+    try {
+      getUser(id, orgId);
+      return true;
+    }
+    catch (IdNotFoundException e) {
+      return false;
+    }
+  }
+
 }

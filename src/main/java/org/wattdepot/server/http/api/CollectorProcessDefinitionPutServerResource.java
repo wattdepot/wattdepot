@@ -22,11 +22,13 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.exception.BadSlugException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
+import org.wattdepot.common.http.api.API;
 import org.wattdepot.common.http.api.CollectorProcessDefinitionPutResource;
 
 /**
@@ -48,8 +50,10 @@ public class CollectorProcessDefinitionPutServerResource extends WattDepotServer
    */
   @Override
   public void store(CollectorProcessDefinition definition) {
-    getLogger().log(Level.INFO,
-        "PUT /wattdepot/{" + orgId + "}/collector-process-definition/ with " + definition);
+    getLogger().log(
+        Level.INFO,
+        "PUT " + API.BASE_URI + "{" + orgId + "}/" + Labels.COLLECTOR_PROCESS_DEFINITION
+            + "/ with " + definition);
     if (isInRole(orgId)) {
       try {
         depot.getOrganization(orgId);

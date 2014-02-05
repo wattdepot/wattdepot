@@ -40,25 +40,34 @@ public class API {
   public static final String ADMIN_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/";
 
   /**
+   * <b>/wattdepot/{org-id}/summary/</b> URI for the Organization Summary User
+   * Interface. Supports GET requests.
+   */
+  public static final String ORGANIZATION_SUMMARY_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.SUMMARY + "/";
+
+  /**
    * <b>/wattdepot/{org-id}/collector-process-definition/</b> URI for storing
    * CollectorProcessDefinition. Use PUT requests.
    */
-  public static final String COLLECTOR_PROCESS_DEFINITION_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR
-      + "/" + Labels.COLLECTOR_PROCESS_DEFINITION + "/";
+  public static final String COLLECTOR_PROCESS_DEFINITION_PUT_URI = BASE_URI
+      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.COLLECTOR_PROCESS_DEFINITION + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/collector-process-definition/</b> URI for manipulating
-   * CollectorProcessDefinition. Supports GET, POST, and DELETE requests.
+   * <b>/wattdepot/{org-id}/collector-process-definition/{collector-process-
+   * definition-id}</b> URI for manipulating CollectorProcessDefinition.
+   * Supports GET, POST, and DELETE requests.
    */
-  public static final String COLLECTOR_PROCESS_DEFINITION_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.COLLECTOR_PROCESS_DEFINITION + "/" + Labels.COLLECTOR_PROCESS_DEFINITION_ID_VAR;
+  public static final String COLLECTOR_PROCESS_DEFINITION_URI = BASE_URI
+      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.COLLECTOR_PROCESS_DEFINITION + "/"
+      + Labels.COLLECTOR_PROCESS_DEFINITION_ID_VAR;
 
   /**
-   * <b>/wattdepot/{org-id}/collector-process-definitions/</b> URI for getting all the
-   * defined CollectorProcessDefinition. Use GET requests.
+   * <b>/wattdepot/{org-id}/collector-process-definitions/</b> URI for getting
+   * all the defined CollectorProcessDefinition. Use GET requests.
    */
-  public static final String COLLECTOR_PROCESS_DEFINITIONS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.COLLECTOR_PROCESS_DEFINITIONS + "/";
+  public static final String COLLECTOR_PROCESS_DEFINITIONS_URI = BASE_URI
+      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.COLLECTOR_PROCESS_DEFINITIONS + "/";
 
   /**
    * <b>/wattdepot/{org-id}/depositories/</b> URI for getting all Depositories.
@@ -183,25 +192,11 @@ public class API {
       + Labels.SENSOR_GROUPS + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/location/</b> URI to store SensorLocations. Use PUT
-   * requests.
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/value/</b> URI to get all
+   * the measured value. Use GET requests.
    */
-  public static final String SENSOR_LOCATION_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.LOCATION + "/";
-
-  /**
-   * <b>/wattdepot/{org-id}/location/{location-id}</b> URI to manipulate
-   * SensorLocations. Supports GET, POST, and DELETE requests.
-   */
-  public static final String SENSOR_LOCATION_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.LOCATION + "/" + Labels.LOCATION_ID_VAR;
-
-  /**
-   * <b>/wattdepot/{org-id}/locations/</b> URI to get all defined
-   * SensorLocations. Use GET requests.
-   */
-  public static final String SENSOR_LOCATIONS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.LOCATIONS + "/";
+  public static final String SENSOR_MEASUREMENT_SUMMARY_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR
+      + "/" + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.SUMMARY + "/";
 
   /**
    * <b>/wattdepot/public/sensor-model/</b> URI for storing new SensorModels.
@@ -252,11 +247,11 @@ public class API {
       + Labels.USER_PASSWORD + "/" + Labels.USER_PASSWORD_ID_VAR;
 
   /**
-   * <b>/wattdepot/{org-id}/user/</b> URI for putting UserInfos.
-   * Supports PUT requests.
+   * <b>/wattdepot/{org-id}/user/</b> URI for putting UserInfos. Supports PUT
+   * requests.
    */
-  public static final String USER_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/" + Labels.USER
-      + "/";
+  public static final String USER_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.USER + "/";
 
   /**
    * <b>/wattdepot/{org-id}/user/{user-id}</b> URI for manipulating UserInfos.
@@ -266,8 +261,8 @@ public class API {
       + "/" + Labels.USER_ID_VAR;
 
   /**
-   * <b>/wattdepot/{org-id}/users/</b> URI for getting the UserInfos in the organization.
-   * Supports GET requests.
+   * <b>/wattdepot/{org-id}/users/</b> URI for getting the UserInfos in the
+   * organization. Supports GET requests.
    */
   public static final String USERS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/" + Labels.USERS
       + "/";

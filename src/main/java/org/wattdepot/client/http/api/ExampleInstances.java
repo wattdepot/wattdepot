@@ -50,15 +50,17 @@ public class ExampleInstances {
    */
   public ExampleInstances() {
     ClientProperties props = new ClientProperties();
-    String serverURL = "http://" + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
+    String serverURL = "http://"
+        + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
         + props.get(ClientProperties.PORT_KEY) + "/";
     try {
-      admin = new WattDepotAdminClient(serverURL, props.get(ClientProperties.USER_NAME),
-          Organization.ADMIN_GROUP_NAME, props.get(ClientProperties.USER_PASSWORD));
+      admin = new WattDepotAdminClient(serverURL,
+          props.get(ClientProperties.USER_NAME), Organization.ADMIN_GROUP_NAME,
+          props.get(ClientProperties.USER_PASSWORD));
     }
     catch (Exception e) {
-      System.out.println("Failed with " + props.get(ClientProperties.USER_NAME) + " and "
-          + props.get(ClientProperties.USER_PASSWORD));
+      System.out.println("Failed with " + props.get(ClientProperties.USER_NAME)
+          + " and " + props.get(ClientProperties.USER_PASSWORD));
     }
     if (admin != null) {
       setUpOrganization();
@@ -82,28 +84,27 @@ public class ExampleInstances {
    * organziation.
    */
   private void setUpOrganization() {
-    Organization org = new Organization("uh", "University of Hawaii, Manoa", new HashSet<String>());
-    UserInfo user1 = new UserInfo("cmoore", "Cam", "Moore", "cmoore@hawaii.edu", org.getId(),
-        new HashSet<Property>(), "secret1");
-    UserInfo user2 = new UserInfo("johnson", "Philip", "Johnson", "philipmjohnson@gmail.com",
-        org.getId(), new HashSet<Property>(), "secret2");
+    Organization org = new Organization("uh", "University of Hawaii, Manoa",
+        new HashSet<String>());
+    UserInfo user1 = new UserInfo("cmoore", "Cam", "Moore",
+        "cmoore@hawaii.edu", org.getId(), new HashSet<Property>(), "secret1");
+    UserInfo user2 = new UserInfo("johnson", "Philip", "Johnson",
+        "philipmjohnson@gmail.com", org.getId(), new HashSet<Property>(),
+        "secret2");
     org.getUsers().add(user1.getUid());
     org.getUsers().add(user2.getUid());
     // check to see if the instances are defined in WattDepot
-    try {
-      Organization defined = admin.getOrganization(org.getId());
-      if (defined == null) {
-        admin.putUser(user1);
-        admin.putUser(user2);
-        admin.putOrganization(org);
-      }
-    }
-    catch (IdNotFoundException e) {
-      // not defined so put it.
+    if (!admin.isDefinedOrganization(org.getId())
+        && !admin.isDefinedUserInfo(user1.getUid(), org.getId())
+        && !admin.isDefinedUserInfo(user2.getUid(), org.getId())) {
+      // Add the organization and users
+      // 1st add 'empty' organization
       org.setUsers(new HashSet<String>());
       admin.putOrganization(org);
+      // 2nd add users
       admin.putUser(user1);
       admin.putUser(user2);
+      // 3rd update organization
       org.add(user1.getUid());
       org.add(user2.getUid());
       admin.updateOrganization(org);
@@ -117,73 +118,64 @@ public class ExampleInstances {
   private void setUpItems() {
     Sensor telco = new Sensor("Ilima 6th telco", "http://telco", "shark",
         cmoore.getOrganizationId());
-    try {
-      cmoore.getSensor(telco.getId());
-    }
-    catch (IdNotFoundException e) {
+    // NOTE: we can use either client to test and store the sensor.
+    if (!cmoore.isDefinedSensor(telco.getId())) {
       johnson.putSensor(telco);
     }
     Sensor elect = new Sensor("Ilima 6th electrical", "http://elect", "shark",
         cmoore.getOrganizationId());
-    try {
-      johnson.getSensor(elect.getId());
-    }
-    catch (IdNotFoundException e) {
+    if (!johnson.isDefinedSensor(elect.getId())) {
       cmoore.putSensor(elect);
     }
     Set<String> sensors = new HashSet<String>();
     sensors.add(telco.getId());
     sensors.add(elect.getId());
-    SensorGroup ilima6 = new SensorGroup("Ilima 6th", sensors, cmoore.getOrganizationId());
-    try {
-      cmoore.getSensorGroup(ilima6.getId());
-    }
-    catch (IdNotFoundException e) {
+    SensorGroup ilima6 = new SensorGroup("Ilima 6th", sensors,
+        cmoore.getOrganizationId());
+    if (!cmoore.isDefinedSensorGroup(ilima6.getId())) {
       johnson.putSensorGroup(ilima6);
     }
     MeasurementType e = null;
     MeasurementType p = null;
-    try {
-      e = cmoore.getMeasurementType("energy-wh");
-      p = johnson.getMeasurementType("power-w");
+    if (cmoore.isDefinedMeasurementType("energy-wh")) {
+      try {
+        e = cmoore.getMeasurementType("energy-wh");
+      }
+      catch (IdNotFoundException e1) { // NOPMD
+        // can't happen
+      }
     }
-    catch (IdNotFoundException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace();
+    if (johnson.isDefinedMeasurementType("power-w")) {
+      try {
+        p = johnson.getMeasurementType("power-w");
+      }
+      catch (IdNotFoundException e1) { // NOPMD
+        // can't happen
+      }
     }
     Depository energy = null;
     if (e != null) {
       energy = new Depository("Ilima Energy", e, cmoore.getOrganizationId());
-      try {
-        cmoore.getDepository(energy.getId());
-      }
-      catch (IdNotFoundException e1) {
+      if (!cmoore.isDefinedDepository(energy.getId())) {
         johnson.putDepository(energy);
       }
       CollectorProcessDefinition energyCPD1 = new CollectorProcessDefinition(
-          "Ilima 6th telco energy", telco.getId(), 10L, energy.getId(), energy.getOrganizationId());
+          "Ilima 6th telco energy", telco.getId(), 10L, energy.getId(),
+          energy.getOrganizationId());
       CollectorProcessDefinition energyCPD2 = new CollectorProcessDefinition(
-          "Ilima 6th elect energy", elect.getId(), 10L, energy.getId(), energy.getOrganizationId());
-      try {
-        cmoore.getCollectorProcessDefinition(energyCPD2.getId());
-      }
-      catch (IdNotFoundException e1) {
+          "Ilima 6th elect energy", elect.getId(), 10L, energy.getId(),
+          energy.getOrganizationId());
+      if (!cmoore.isDefinedCollectorProcessDefinition(energyCPD2.getId())) {
         cmoore.putCollectorProcessDefinition(energyCPD2);
       }
-      try {
-        cmoore.getCollectorProcessDefinition(energyCPD1.getId());
-      }
-      catch (IdNotFoundException e1) {
+      if (!cmoore.isDefinedCollectorProcessDefinition(energyCPD1.getId())) {
         cmoore.putCollectorProcessDefinition(energyCPD1);
       }
-
     }
     if (p != null) {
-      Depository power = new Depository("Ilima Power", p, cmoore.getOrganizationId());
-      try {
-        johnson.getDepository(power.getId());
-      }
-      catch (IdNotFoundException e1) {
+      Depository power = new Depository("Ilima Power", p,
+          cmoore.getOrganizationId());
+      if (!johnson.isDefinedDepository(power.getId())) {
         johnson.putDepository(power);
       }
     }

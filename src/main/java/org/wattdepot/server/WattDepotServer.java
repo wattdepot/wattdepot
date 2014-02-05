@@ -18,9 +18,8 @@
  */
 package org.wattdepot.server;
 
-import static org.wattdepot.server.ServerProperties.LOGGING_LEVEL_KEY;
-import static org.wattdepot.server.ServerProperties.SERVER_HOME_DIR;
-
+import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
@@ -29,9 +28,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.wattdepot.common.util.logger.HTTPClientHelperFilter;
-import org.wattdepot.common.util.logger.RestletLoggerUtil;
-import org.wattdepot.common.util.logger.WattDepotLogger;
+import org.wattdepot.common.util.logger.LoggerUtil;
 import org.wattdepot.server.http.api.WattDepotComponent;
 
 /**
@@ -82,7 +79,8 @@ public class WattDepotServer {
    * @throws Exception
    *           if there is a problem starting the server.
    */
-  public static WattDepotServer newInstance(String serverSubdir) throws Exception {
+  public static WattDepotServer newInstance(String serverSubdir)
+      throws Exception {
     return newInstance(new ServerProperties(serverSubdir));
   }
 
@@ -95,19 +93,18 @@ public class WattDepotServer {
    * @throws Exception
    *           if there is a problem starting the server.
    */
-  public static WattDepotServer newInstance(ServerProperties properties) throws Exception {
+  public static WattDepotServer newInstance(ServerProperties properties)
+      throws Exception {
     int port = Integer.parseInt(properties.get(ServerProperties.PORT_KEY));
     WattDepotServer server = new WattDepotServer();
+    // System.out.println("WattDepotServer.");
+    // RestletLoggerUtil.showLoggers();
     boolean enableLogging = Boolean.parseBoolean(properties
         .get(ServerProperties.ENABLE_LOGGING_KEY));
-    server.logger = WattDepotLogger.getLogger("org.wattdepot.server",
-        properties.get(ServerProperties.SERVER_HOME_DIR));
-    if (enableLogging) {
-      RestletLoggerUtil.removeRestletLoggers();
-    }
     server.serverProperties = properties;
     server.hostName = server.serverProperties.getFullHost();
 
+    // Get the WattDepotPersistence implementation.
     String depotClass = properties.get(ServerProperties.WATT_DEPOT_IMPL_KEY);
     server.depot = (WattDepotPersistence) Class.forName(depotClass)
         .getConstructor(ServerProperties.class).newInstance(properties);
@@ -125,17 +122,31 @@ public class WattDepotServer {
     server.depot.setServerProperties(properties);
     server.restletServer = new WattDepotComponent(server.depot, port);
     server.logger = server.restletServer.getLogger();
-    server.logger.setFilter(new HTTPClientHelperFilter());
 
     // Set up logging.
     if (enableLogging) {
-      RestletLoggerUtil.useFileHandler(server.serverProperties.get(SERVER_HOME_DIR));
-      WattDepotLogger
-          .setLoggingLevel(server.logger, server.serverProperties.get(LOGGING_LEVEL_KEY));
+      LoggerUtil.useConsoleHandler();
+      Logger base = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
+      base = base.getParent();
+      Level newLevel = Level.INFO;
+      String level = properties.get(ServerProperties.LOGGING_LEVEL_KEY);
+      try {
+        newLevel = Level.parse(level);
+      }
+      catch (Exception e) {
+        base.info("Couldn't set Logging level to: " + level);
+      }
+      base.setLevel(newLevel);
+
       server.logger.warning("Starting WattDepot server.");
       server.logger.warning("Host: " + server.hostName);
       server.logger.info(server.serverProperties.echoProperties());
-      // Logger hibernate = Logger.getLogger("org.hibernate");
+    }
+    else {
+      LoggerUtil.useConsoleHandler();
+      Logger base = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
+      base = base.getParent();
+      base.setLevel(Level.SEVERE);
     }
     server.restletServer.start();
 
@@ -198,8 +209,9 @@ public class WattDepotServer {
   public static void main(String[] args) throws Exception {
     Options options = new Options();
     options.addOption("h", "help", false, "Print this message");
-    options.addOption("d", "directoryName", true,
-        "subdirectory under ~/.wattdepot where this server's files are to be kept.");
+    options
+        .addOption("d", "directoryName", true,
+            "subdirectory under ~/.wattdepot where this server's files are to be kept.");
 
     CommandLine cmd = null;
     String directoryName = null;
@@ -210,7 +222,8 @@ public class WattDepotServer {
       cmd = parser.parse(options, args);
     }
     catch (ParseException e) {
-      System.err.println("Command line parsing failed. Reason: " + e.getMessage() + ". Exiting.");
+      System.err.println("Command line parsing failed. Reason: "
+          + e.getMessage() + ". Exiting.");
       System.exit(1);
     }
     if (cmd.hasOption("h")) {
@@ -220,13 +233,14 @@ public class WattDepotServer {
     if (cmd.hasOption("d")) {
       directoryName = cmd.getOptionValue("d");
     }
-
+    LoggerUtil.disableLogging();
     if ((directoryName == null) || (directoryName.length() == 0)) {
       WattDepotServer.newInstance();
     }
     else {
       WattDepotServer.newInstance(directoryName);
     }
+    LoggerUtil.useConsoleHandler();
   }
 
 }

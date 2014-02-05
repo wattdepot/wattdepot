@@ -58,7 +58,7 @@ public class SensorModelServerResource extends WattDepotServerResource implement
    */
   @Override
   public SensorModel retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/sensormodel/{" + sensorModelId + "}");
+    getLogger().log(Level.INFO, "GET /wattdepot/public/sensor-model/{" + sensorModelId + "}");
     SensorModel model = null;
     try {
       model = depot.getSensorModel(sensorModelId);
@@ -79,7 +79,7 @@ public class SensorModelServerResource extends WattDepotServerResource implement
   @Override
   public void update(SensorModel sensormodel) {
     getLogger().log(Level.INFO,
-        "POST /wattdepot/sensormodel/{" + sensorModelId + "} with " + sensormodel);
+        "POST /wattdepot/public/sensor-model/{" + sensorModelId + "} with " + sensormodel);
     try {
       depot.updateSensorModel(sensormodel);
     }
@@ -95,7 +95,7 @@ public class SensorModelServerResource extends WattDepotServerResource implement
    */
   @Override
   public void remove() {
-    getLogger().log(Level.INFO, "DEL /wattdepot/sensormodel/{" + sensorModelId + "}");
+    getLogger().log(Level.INFO, "DEL /wattdepot/public/sensor-model/{" + sensorModelId + "}");
     try {
       depot.deleteSensorModel(sensorModelId);
     }

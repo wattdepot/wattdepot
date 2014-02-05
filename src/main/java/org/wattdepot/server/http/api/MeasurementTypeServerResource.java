@@ -59,7 +59,7 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
    */
   @Override
   public MeasurementType retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/measurement-type/{" + typeSlug + "}");
+    getLogger().log(Level.INFO, "GET /wattdepot/public/measurement-type/{" + typeSlug + "}");
     MeasurementType mt = null;
     try {
       mt = depot.getMeasurementType(typeSlug);
@@ -81,7 +81,7 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
   @Override
   public void update(MeasurementType measurementType) {
     getLogger().log(Level.INFO,
-        "POST /wattdepot/measurement-type/{" + typeSlug + "} with " + measurementType);
+        "POST /wattdepot/public/measurement-type/{" + typeSlug + "} with " + measurementType);
     if (isInRole(Organization.ADMIN_GROUP.getId())) {
       MeasurementType mt;
       try {
@@ -107,7 +107,7 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
    */
   @Override
   public void remove() {
-    getLogger().log(Level.INFO, "DEL /wattdepot/measurement-type/{" + typeSlug + "}");
+    getLogger().log(Level.INFO, "DEL /wattdepot/public/measurement-type/{" + typeSlug + "}");
     if (isInRole(Organization.ADMIN_GROUP.getId())) {
       try {
         depot.deleteMeasurementType(typeSlug);

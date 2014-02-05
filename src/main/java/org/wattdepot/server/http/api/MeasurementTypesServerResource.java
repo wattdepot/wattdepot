@@ -41,7 +41,7 @@ public class MeasurementTypesServerResource extends WattDepotServerResource impl
    */
   @Override
   public MeasurementTypeList retrieve() {
-    getLogger().log(Level.INFO, "GET /wattdepot/measurementtypes/");
+    getLogger().log(Level.INFO, "GET /wattdepot/public/measurement-types/");
     MeasurementTypeList list = new MeasurementTypeList();
     for (MeasurementType mt : depot.getMeasurementTypes()) {
       list.getMeasurementTypes().add(mt);

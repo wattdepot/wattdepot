@@ -49,8 +49,10 @@ public class WattDepotComponent extends Component {
   /**
    * Sets up the WattDepotComponent with the given WattDepot.
    * 
-   * @param depot The persitent store.
-   * @param port the port number on which the restlet server listens.
+   * @param depot
+   *          The persitent store.
+   * @param port
+   *          the port number on which the restlet server listens.
    */
   public WattDepotComponent(WattDepotPersistence depot, int port) {
     setName("WattDepot HTTP API Server");
@@ -74,8 +76,10 @@ public class WattDepotComponent extends Component {
     Representation rep = app.getConverterService().toRepresentation(source);
     @SuppressWarnings("rawtypes")
     ObjectMapper mapper = ((JacksonRepresentation) rep).getObjectMapper();
-    mapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);
-    mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    mapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS,
+        false);
+    mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,
+        false);
     getDefaultHost().attachDefault(app);
     app.setComponent(this);
 
@@ -97,17 +101,18 @@ public class WattDepotComponent extends Component {
           User user = null;
           if (userId.equals(UserInfo.ROOT.getUid())) {
             // There isn't a UserInfo stored in persistence for ROOT.
-            user = new User(UserInfo.ROOT.getUid(), StrongAES.getInstance().decrypt(
-                up.getEncryptedPassword()), UserInfo.ROOT.getFirstName(),
-                UserInfo.ROOT.getLastName(), UserInfo.ROOT.getEmail());
+            user = new User(UserInfo.ROOT.getUid(), StrongAES.getInstance()
+                .decrypt(up.getEncryptedPassword()),
+                UserInfo.ROOT.getFirstName(), UserInfo.ROOT.getLastName(),
+                UserInfo.ROOT.getEmail());
           }
           else {
             UserInfo info;
             try {
               info = app.getDepot().getUser(userId, group.getId());
               user = new User(info.getUid(), StrongAES.getInstance().decrypt(
-                  up.getEncryptedPassword()), info.getFirstName(), info.getLastName(),
-                  info.getEmail());
+                  up.getEncryptedPassword()), info.getFirstName(),
+                  info.getLastName(), info.getEmail());
             }
             catch (IdNotFoundException e) {
               e.printStackTrace();
@@ -123,35 +128,33 @@ public class WattDepotComponent extends Component {
     app.getContext().setDefaultEnroler(realm.getEnroler());
     app.getContext().setDefaultVerifier(realm.getVerifier());
 
-    // Properties props = new Properties();
-    // InputStream inputStream =
-    // this.getClass().getClassLoader().getResourceAsStream("log.properties");
-    // if (inputStream != null) {
-    // try {
-    // props.load(inputStream);
-    // }
-    // catch (IOException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-    // }
-    // // // Configure the log service
-    // getLogService().setLoggerName("WattDepot.AccessLog");
-    // try {
-    // LogManager.getLogManager().readConfiguration(
-    // inputStream);
-    // }
-    // catch (SecurityException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
-    // catch (IOException e) {
-    // // TODO Auto-generated catch block
-    // e.printStackTrace();
-    // }
+//    Properties props = new Properties();
+//    InputStream inputStream = this.getClass().getClassLoader()
+//        .getResourceAsStream("log.properties");
+//    if (inputStream != null) {
+//      try {
+//        props.load(inputStream);
+//      }
+//      catch (IOException e) {
+//        // TODO Auto-generated catch block
+//        e.printStackTrace();
+//      }
+//    }
+//    // // // Configure the log service
+//    getLogService().setLoggerName("WattDepot.AccessLog");
+//    try {
+//      LogManager.getLogManager().readConfiguration(inputStream);
+//    }
+//    catch (SecurityException e) {
+//      // TODO Auto-generated catch block
+//      e.printStackTrace();
+//    }
+//    catch (IOException e) {
+//      // TODO Auto-generated catch block
+//      e.printStackTrace();
+//    }
     //
-    // getLogService().setLogPropertiesRef(
-    // "log.properties");
+    // getLogService().setLogPropertiesRef("log.properties");
 
   }
 
