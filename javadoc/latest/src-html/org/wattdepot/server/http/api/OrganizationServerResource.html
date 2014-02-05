@@ -71,84 +71,108 @@
 <span class="sourceLineNo">063</span>    getLogger()<a name="line.63"></a>
 <span class="sourceLineNo">064</span>        .log(Level.INFO, "GET /wattdepot/{" + orgId + "}/organization/{" + userGroupId + "}");<a name="line.64"></a>
 <span class="sourceLineNo">065</span>    Organization group = null;<a name="line.65"></a>
-<span class="sourceLineNo">066</span>    try {<a name="line.66"></a>
-<span class="sourceLineNo">067</span>      group = depot.getOrganization(userGroupId);<a name="line.67"></a>
-<span class="sourceLineNo">068</span>    }<a name="line.68"></a>
-<span class="sourceLineNo">069</span>    catch (IdNotFoundException e) {<a name="line.69"></a>
-<span class="sourceLineNo">070</span>      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");<a name="line.70"></a>
-<span class="sourceLineNo">071</span>    }<a name="line.71"></a>
-<span class="sourceLineNo">072</span>    return group;<a name="line.72"></a>
-<span class="sourceLineNo">073</span>  }<a name="line.73"></a>
-<span class="sourceLineNo">074</span><a name="line.74"></a>
-<span class="sourceLineNo">075</span>  /*<a name="line.75"></a>
-<span class="sourceLineNo">076</span>   * (non-Javadoc)<a name="line.76"></a>
-<span class="sourceLineNo">077</span>   * <a name="line.77"></a>
-<span class="sourceLineNo">078</span>   * @see org.wattdepot.restlet.UserGroupResource#remove()<a name="line.78"></a>
-<span class="sourceLineNo">079</span>   */<a name="line.79"></a>
-<span class="sourceLineNo">080</span>  @Override<a name="line.80"></a>
-<span class="sourceLineNo">081</span>  public void remove() {<a name="line.81"></a>
-<span class="sourceLineNo">082</span>    getLogger()<a name="line.82"></a>
-<span class="sourceLineNo">083</span>        .log(Level.INFO, "DEL /wattdepot/{" + orgId + "}/organization/{" + userGroupId + "}");<a name="line.83"></a>
-<span class="sourceLineNo">084</span>    try {<a name="line.84"></a>
-<span class="sourceLineNo">085</span>      depot.deleteOrganization(userGroupId);<a name="line.85"></a>
-<span class="sourceLineNo">086</span>      WattDepotApplication app = (WattDepotApplication) getApplication();<a name="line.86"></a>
-<span class="sourceLineNo">087</span>      // create the new Role for the group<a name="line.87"></a>
-<span class="sourceLineNo">088</span>      String roleName = userGroupId;<a name="line.88"></a>
-<span class="sourceLineNo">089</span>      Role role = app.getRole(roleName);<a name="line.89"></a>
-<span class="sourceLineNo">090</span>      MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");<a name="line.90"></a>
-<span class="sourceLineNo">091</span>      app.getRoles().remove(role);<a name="line.91"></a>
-<span class="sourceLineNo">092</span>      for (User user : realm.getUsers()) {<a name="line.92"></a>
-<span class="sourceLineNo">093</span>        realm.findRoles(user).remove(role);<a name="line.93"></a>
-<span class="sourceLineNo">094</span>      }<a name="line.94"></a>
-<span class="sourceLineNo">095</span>    }<a name="line.95"></a>
-<span class="sourceLineNo">096</span>    catch (IdNotFoundException e) {<a name="line.96"></a>
-<span class="sourceLineNo">097</span>      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());<a name="line.97"></a>
-<span class="sourceLineNo">098</span>    }<a name="line.98"></a>
-<span class="sourceLineNo">099</span>  }<a name="line.99"></a>
-<span class="sourceLineNo">100</span><a name="line.100"></a>
-<span class="sourceLineNo">101</span>  /**<a name="line.101"></a>
-<span class="sourceLineNo">102</span>   * @param userId The id of the UserInfo instance.<a name="line.102"></a>
-<span class="sourceLineNo">103</span>   * @return The Restlet User that corresponds to the given UserInfo.<a name="line.103"></a>
-<span class="sourceLineNo">104</span>   */<a name="line.104"></a>
-<span class="sourceLineNo">105</span>  private User getUser(String userId) {<a name="line.105"></a>
-<span class="sourceLineNo">106</span>    WattDepotApplication app = (WattDepotApplication) getApplication();<a name="line.106"></a>
-<span class="sourceLineNo">107</span>    MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");<a name="line.107"></a>
-<span class="sourceLineNo">108</span>    for (User user : realm.getUsers()) { // loop through all the Restlet users<a name="line.108"></a>
-<span class="sourceLineNo">109</span>      if (user.getIdentifier().equals(userId)) {<a name="line.109"></a>
-<span class="sourceLineNo">110</span>        return user;<a name="line.110"></a>
-<span class="sourceLineNo">111</span>      }<a name="line.111"></a>
-<span class="sourceLineNo">112</span>    }<a name="line.112"></a>
-<span class="sourceLineNo">113</span>    return null;<a name="line.113"></a>
-<span class="sourceLineNo">114</span>  }<a name="line.114"></a>
-<span class="sourceLineNo">115</span><a name="line.115"></a>
-<span class="sourceLineNo">116</span>  /*<a name="line.116"></a>
-<span class="sourceLineNo">117</span>   * (non-Javadoc)<a name="line.117"></a>
-<span class="sourceLineNo">118</span>   * <a name="line.118"></a>
-<span class="sourceLineNo">119</span>   * @see<a name="line.119"></a>
-<span class="sourceLineNo">120</span>   * org.wattdepot.common.http.api.OrganizationResource#update(org.wattdepot<a name="line.120"></a>
-<span class="sourceLineNo">121</span>   * .common.domainmodel.Organization)<a name="line.121"></a>
-<span class="sourceLineNo">122</span>   */<a name="line.122"></a>
-<span class="sourceLineNo">123</span>  @Override<a name="line.123"></a>
-<span class="sourceLineNo">124</span>  public void update(Organization organization) {<a name="line.124"></a>
-<span class="sourceLineNo">125</span>    getLogger().log(Level.INFO,<a name="line.125"></a>
-<span class="sourceLineNo">126</span>        "POST /wattdepot/{" + orgId + "}/organization/{" + userGroupId + "} with " + organization);<a name="line.126"></a>
-<span class="sourceLineNo">127</span>    try {<a name="line.127"></a>
-<span class="sourceLineNo">128</span>      depot.updateOrganization(organization);<a name="line.128"></a>
-<span class="sourceLineNo">129</span>      // update the Realm<a name="line.129"></a>
-<span class="sourceLineNo">130</span>      WattDepotApplication app = (WattDepotApplication) getApplication();<a name="line.130"></a>
-<span class="sourceLineNo">131</span>      // create the new Role for the group<a name="line.131"></a>
-<span class="sourceLineNo">132</span>      String roleName = organization.getId();<a name="line.132"></a>
-<span class="sourceLineNo">133</span>      Role role = app.getRole(roleName);<a name="line.133"></a>
-<span class="sourceLineNo">134</span>      MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");<a name="line.134"></a>
-<span class="sourceLineNo">135</span>      for (String userId : organization.getUsers()) {<a name="line.135"></a>
-<span class="sourceLineNo">136</span>        realm.map(getUser(userId), role);<a name="line.136"></a>
-<span class="sourceLineNo">137</span>      }<a name="line.137"></a>
-<span class="sourceLineNo">138</span>    }<a name="line.138"></a>
-<span class="sourceLineNo">139</span>    catch (IdNotFoundException e) {<a name="line.139"></a>
-<span class="sourceLineNo">140</span>      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, organization + " isn't a defined Organization.");<a name="line.140"></a>
-<span class="sourceLineNo">141</span>    }<a name="line.141"></a>
-<span class="sourceLineNo">142</span>  }<a name="line.142"></a>
-<span class="sourceLineNo">143</span>}<a name="line.143"></a>
+<span class="sourceLineNo">066</span>    if (isInRole(orgId) &amp;&amp; orgId.equals(userGroupId)) {<a name="line.66"></a>
+<span class="sourceLineNo">067</span>      try {<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        group = depot.getOrganization(userGroupId);<a name="line.68"></a>
+<span class="sourceLineNo">069</span>      }<a name="line.69"></a>
+<span class="sourceLineNo">070</span>      catch (IdNotFoundException e) {<a name="line.70"></a>
+<span class="sourceLineNo">071</span>        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");<a name="line.71"></a>
+<span class="sourceLineNo">072</span>      }<a name="line.72"></a>
+<span class="sourceLineNo">073</span>    }<a name="line.73"></a>
+<span class="sourceLineNo">074</span>    else if (isInRole(Organization.ADMIN_GROUP.getId())) {<a name="line.74"></a>
+<span class="sourceLineNo">075</span>      try {<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        group = depot.getOrganization(userGroupId);<a name="line.76"></a>
+<span class="sourceLineNo">077</span>      }<a name="line.77"></a>
+<span class="sourceLineNo">078</span>      catch (IdNotFoundException e) {<a name="line.78"></a>
+<span class="sourceLineNo">079</span>        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, userGroupId + " is not a defined Organization.");<a name="line.79"></a>
+<span class="sourceLineNo">080</span>      }<a name="line.80"></a>
+<span class="sourceLineNo">081</span>    }<a name="line.81"></a>
+<span class="sourceLineNo">082</span>    else {<a name="line.82"></a>
+<span class="sourceLineNo">083</span>      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials, you cannot retrieve "<a name="line.83"></a>
+<span class="sourceLineNo">084</span>          + userGroupId);<a name="line.84"></a>
+<span class="sourceLineNo">085</span>    }<a name="line.85"></a>
+<span class="sourceLineNo">086</span>    return group;<a name="line.86"></a>
+<span class="sourceLineNo">087</span>  }<a name="line.87"></a>
+<span class="sourceLineNo">088</span><a name="line.88"></a>
+<span class="sourceLineNo">089</span>  /*<a name="line.89"></a>
+<span class="sourceLineNo">090</span>   * (non-Javadoc)<a name="line.90"></a>
+<span class="sourceLineNo">091</span>   * <a name="line.91"></a>
+<span class="sourceLineNo">092</span>   * @see org.wattdepot.restlet.UserGroupResource#remove()<a name="line.92"></a>
+<span class="sourceLineNo">093</span>   */<a name="line.93"></a>
+<span class="sourceLineNo">094</span>  @Override<a name="line.94"></a>
+<span class="sourceLineNo">095</span>  public void remove() {<a name="line.95"></a>
+<span class="sourceLineNo">096</span>    getLogger()<a name="line.96"></a>
+<span class="sourceLineNo">097</span>        .log(Level.INFO, "DEL /wattdepot/{" + orgId + "}/organization/{" + userGroupId + "}");<a name="line.97"></a>
+<span class="sourceLineNo">098</span>    if (isInRole(Organization.ADMIN_GROUP.getId())) {<a name="line.98"></a>
+<span class="sourceLineNo">099</span>      try {<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        depot.deleteOrganization(userGroupId);<a name="line.100"></a>
+<span class="sourceLineNo">101</span>        WattDepotApplication app = (WattDepotApplication) getApplication();<a name="line.101"></a>
+<span class="sourceLineNo">102</span>        // create the new Role for the group<a name="line.102"></a>
+<span class="sourceLineNo">103</span>        String roleName = userGroupId;<a name="line.103"></a>
+<span class="sourceLineNo">104</span>        Role role = app.getRole(roleName);<a name="line.104"></a>
+<span class="sourceLineNo">105</span>        MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");<a name="line.105"></a>
+<span class="sourceLineNo">106</span>        app.getRoles().remove(role);<a name="line.106"></a>
+<span class="sourceLineNo">107</span>        for (User user : realm.getUsers()) {<a name="line.107"></a>
+<span class="sourceLineNo">108</span>          realm.findRoles(user).remove(role);<a name="line.108"></a>
+<span class="sourceLineNo">109</span>        }<a name="line.109"></a>
+<span class="sourceLineNo">110</span>      }<a name="line.110"></a>
+<span class="sourceLineNo">111</span>      catch (IdNotFoundException e) {<a name="line.111"></a>
+<span class="sourceLineNo">112</span>        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());<a name="line.112"></a>
+<span class="sourceLineNo">113</span>      }<a name="line.113"></a>
+<span class="sourceLineNo">114</span>    }<a name="line.114"></a>
+<span class="sourceLineNo">115</span>    else {<a name="line.115"></a>
+<span class="sourceLineNo">116</span>      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Only administrators can delete Organizations.");<a name="line.116"></a>
+<span class="sourceLineNo">117</span>    }<a name="line.117"></a>
+<span class="sourceLineNo">118</span>  }<a name="line.118"></a>
+<span class="sourceLineNo">119</span><a name="line.119"></a>
+<span class="sourceLineNo">120</span>  /**<a name="line.120"></a>
+<span class="sourceLineNo">121</span>   * @param userId The id of the UserInfo instance.<a name="line.121"></a>
+<span class="sourceLineNo">122</span>   * @return The Restlet User that corresponds to the given UserInfo.<a name="line.122"></a>
+<span class="sourceLineNo">123</span>   */<a name="line.123"></a>
+<span class="sourceLineNo">124</span>  private User getUser(String userId) {<a name="line.124"></a>
+<span class="sourceLineNo">125</span>    WattDepotApplication app = (WattDepotApplication) getApplication();<a name="line.125"></a>
+<span class="sourceLineNo">126</span>    MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");<a name="line.126"></a>
+<span class="sourceLineNo">127</span>    for (User user : realm.getUsers()) { // loop through all the Restlet users<a name="line.127"></a>
+<span class="sourceLineNo">128</span>      if (user.getIdentifier().equals(userId)) {<a name="line.128"></a>
+<span class="sourceLineNo">129</span>        return user;<a name="line.129"></a>
+<span class="sourceLineNo">130</span>      }<a name="line.130"></a>
+<span class="sourceLineNo">131</span>    }<a name="line.131"></a>
+<span class="sourceLineNo">132</span>    return null;<a name="line.132"></a>
+<span class="sourceLineNo">133</span>  }<a name="line.133"></a>
+<span class="sourceLineNo">134</span><a name="line.134"></a>
+<span class="sourceLineNo">135</span>  /*<a name="line.135"></a>
+<span class="sourceLineNo">136</span>   * (non-Javadoc)<a name="line.136"></a>
+<span class="sourceLineNo">137</span>   * <a name="line.137"></a>
+<span class="sourceLineNo">138</span>   * @see<a name="line.138"></a>
+<span class="sourceLineNo">139</span>   * org.wattdepot.common.http.api.OrganizationResource#update(org.wattdepot<a name="line.139"></a>
+<span class="sourceLineNo">140</span>   * .common.domainmodel.Organization)<a name="line.140"></a>
+<span class="sourceLineNo">141</span>   */<a name="line.141"></a>
+<span class="sourceLineNo">142</span>  @Override<a name="line.142"></a>
+<span class="sourceLineNo">143</span>  public void update(Organization organization) {<a name="line.143"></a>
+<span class="sourceLineNo">144</span>    getLogger().log(Level.INFO,<a name="line.144"></a>
+<span class="sourceLineNo">145</span>        "POST /wattdepot/{" + orgId + "}/organization/{" + userGroupId + "} with " + organization);<a name="line.145"></a>
+<span class="sourceLineNo">146</span>    if (isInRole(Organization.ADMIN_GROUP.getId())) {<a name="line.146"></a>
+<span class="sourceLineNo">147</span>      try {<a name="line.147"></a>
+<span class="sourceLineNo">148</span>        depot.updateOrganization(organization);<a name="line.148"></a>
+<span class="sourceLineNo">149</span>        // update the Realm<a name="line.149"></a>
+<span class="sourceLineNo">150</span>        WattDepotApplication app = (WattDepotApplication) getApplication();<a name="line.150"></a>
+<span class="sourceLineNo">151</span>        // create the new Role for the group<a name="line.151"></a>
+<span class="sourceLineNo">152</span>        String roleName = organization.getId();<a name="line.152"></a>
+<span class="sourceLineNo">153</span>        Role role = app.getRole(roleName);<a name="line.153"></a>
+<span class="sourceLineNo">154</span>        MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");<a name="line.154"></a>
+<span class="sourceLineNo">155</span>        for (String userId : organization.getUsers()) {<a name="line.155"></a>
+<span class="sourceLineNo">156</span>          realm.map(getUser(userId), role);<a name="line.156"></a>
+<span class="sourceLineNo">157</span>        }<a name="line.157"></a>
+<span class="sourceLineNo">158</span>      }<a name="line.158"></a>
+<span class="sourceLineNo">159</span>      catch (IdNotFoundException e) {<a name="line.159"></a>
+<span class="sourceLineNo">160</span>        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, organization + " isn't a defined Organization.");<a name="line.160"></a>
+<span class="sourceLineNo">161</span>      }<a name="line.161"></a>
+<span class="sourceLineNo">162</span>    }<a name="line.162"></a>
+<span class="sourceLineNo">163</span>    else {<a name="line.163"></a>
+<span class="sourceLineNo">164</span>      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Only administrators can modify Organizations.");<a name="line.164"></a>
+<span class="sourceLineNo">165</span>    }<a name="line.165"></a>
+<span class="sourceLineNo">166</span>  }<a name="line.166"></a>
+<span class="sourceLineNo">167</span>}<a name="line.167"></a>
 
 
 

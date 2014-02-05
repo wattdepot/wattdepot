@@ -49,7 +49,7 @@
 <span class="sourceLineNo">041</span>  /** Additional properties of the sensor. */<a name="line.41"></a>
 <span class="sourceLineNo">042</span>  private Set&lt;Property&gt; properties;<a name="line.42"></a>
 <span class="sourceLineNo">043</span>  /** The owner of this sensor. */<a name="line.43"></a>
-<span class="sourceLineNo">044</span>  private String ownerId;<a name="line.44"></a>
+<span class="sourceLineNo">044</span>  private String orgId;<a name="line.44"></a>
 <span class="sourceLineNo">045</span><a name="line.45"></a>
 <span class="sourceLineNo">046</span>  /**<a name="line.46"></a>
 <span class="sourceLineNo">047</span>   * Default constructor.<a name="line.47"></a>
@@ -83,7 +83,7 @@
 <span class="sourceLineNo">075</span>    this.uri = uri;<a name="line.75"></a>
 <span class="sourceLineNo">076</span>    this.modelId = modelId;<a name="line.76"></a>
 <span class="sourceLineNo">077</span>    this.properties = properties;<a name="line.77"></a>
-<span class="sourceLineNo">078</span>    this.ownerId = ownerId;<a name="line.78"></a>
+<span class="sourceLineNo">078</span>    this.orgId = ownerId;<a name="line.78"></a>
 <span class="sourceLineNo">079</span>  }<a name="line.79"></a>
 <span class="sourceLineNo">080</span><a name="line.80"></a>
 <span class="sourceLineNo">081</span>  /**<a name="line.81"></a>
@@ -137,12 +137,12 @@
 <span class="sourceLineNo">129</span>    else if (!modelId.equals(other.modelId)) {<a name="line.129"></a>
 <span class="sourceLineNo">130</span>      return false;<a name="line.130"></a>
 <span class="sourceLineNo">131</span>    }<a name="line.131"></a>
-<span class="sourceLineNo">132</span>    if (ownerId == null) {<a name="line.132"></a>
-<span class="sourceLineNo">133</span>      if (other.ownerId != null) {<a name="line.133"></a>
+<span class="sourceLineNo">132</span>    if (orgId == null) {<a name="line.132"></a>
+<span class="sourceLineNo">133</span>      if (other.orgId != null) {<a name="line.133"></a>
 <span class="sourceLineNo">134</span>        return false;<a name="line.134"></a>
 <span class="sourceLineNo">135</span>      }<a name="line.135"></a>
 <span class="sourceLineNo">136</span>    }<a name="line.136"></a>
-<span class="sourceLineNo">137</span>    else if (!ownerId.equals(other.ownerId)) {<a name="line.137"></a>
+<span class="sourceLineNo">137</span>    else if (!orgId.equals(other.orgId)) {<a name="line.137"></a>
 <span class="sourceLineNo">138</span>      return false;<a name="line.138"></a>
 <span class="sourceLineNo">139</span>    }<a name="line.139"></a>
 <span class="sourceLineNo">140</span>    if (properties == null) {<a name="line.140"></a>
@@ -189,7 +189,7 @@
 <span class="sourceLineNo">181</span>   * @return the id of the owner<a name="line.181"></a>
 <span class="sourceLineNo">182</span>   */<a name="line.182"></a>
 <span class="sourceLineNo">183</span>  public String getOrganizationId() {<a name="line.183"></a>
-<span class="sourceLineNo">184</span>    return ownerId;<a name="line.184"></a>
+<span class="sourceLineNo">184</span>    return orgId;<a name="line.184"></a>
 <span class="sourceLineNo">185</span>  }<a name="line.185"></a>
 <span class="sourceLineNo">186</span><a name="line.186"></a>
 <span class="sourceLineNo">187</span>  /**<a name="line.187"></a>
@@ -231,7 +231,7 @@
 <span class="sourceLineNo">223</span>    result = prime * result + ((id == null) ? 0 : id.hashCode());<a name="line.223"></a>
 <span class="sourceLineNo">224</span>    result = prime * result + ((name == null) ? 0 : name.hashCode());<a name="line.224"></a>
 <span class="sourceLineNo">225</span>    result = prime * result + ((modelId == null) ? 0 : modelId.hashCode());<a name="line.225"></a>
-<span class="sourceLineNo">226</span>    result = prime * result + ((ownerId == null) ? 0 : ownerId.hashCode());<a name="line.226"></a>
+<span class="sourceLineNo">226</span>    result = prime * result + ((orgId == null) ? 0 : orgId.hashCode());<a name="line.226"></a>
 <span class="sourceLineNo">227</span>    result = prime * result + ((properties == null) ? 0 : properties.hashCode());<a name="line.227"></a>
 <span class="sourceLineNo">228</span>    result = prime * result + ((uri == null) ? 0 : uri.hashCode());<a name="line.228"></a>
 <span class="sourceLineNo">229</span>    return result;<a name="line.229"></a>
@@ -245,8 +245,8 @@
 <span class="sourceLineNo">237</span>   *         ADMIN_GROUP.<a name="line.237"></a>
 <span class="sourceLineNo">238</span>   */<a name="line.238"></a>
 <span class="sourceLineNo">239</span>  public boolean isOwner(Organization group) {<a name="line.239"></a>
-<span class="sourceLineNo">240</span>    if (ownerId != null<a name="line.240"></a>
-<span class="sourceLineNo">241</span>        &amp;&amp; (ownerId.equals(group.getId()) || group.equals(Organization.ADMIN_GROUP))) {<a name="line.241"></a>
+<span class="sourceLineNo">240</span>    if (orgId != null<a name="line.240"></a>
+<span class="sourceLineNo">241</span>        &amp;&amp; (orgId.equals(group.getId()) || group.equals(Organization.ADMIN_GROUP))) {<a name="line.241"></a>
 <span class="sourceLineNo">242</span>      return true;<a name="line.242"></a>
 <span class="sourceLineNo">243</span>    }<a name="line.243"></a>
 <span class="sourceLineNo">244</span>    return false;<a name="line.244"></a>
@@ -289,7 +289,7 @@
 <span class="sourceLineNo">281</span>   * @param ownerId the id of the owner to set<a name="line.281"></a>
 <span class="sourceLineNo">282</span>   */<a name="line.282"></a>
 <span class="sourceLineNo">283</span>  public void setOrganizationId(String ownerId) {<a name="line.283"></a>
-<span class="sourceLineNo">284</span>    this.ownerId = ownerId;<a name="line.284"></a>
+<span class="sourceLineNo">284</span>    this.orgId = ownerId;<a name="line.284"></a>
 <span class="sourceLineNo">285</span>  }<a name="line.285"></a>
 <span class="sourceLineNo">286</span><a name="line.286"></a>
 <span class="sourceLineNo">287</span>  /**<a name="line.287"></a>
@@ -314,7 +314,7 @@
 <span class="sourceLineNo">306</span>  @Override<a name="line.306"></a>
 <span class="sourceLineNo">307</span>  public String toString() {<a name="line.307"></a>
 <span class="sourceLineNo">308</span>    return "Sensor [id=" + id + ", name=" + name + ", uri=" + uri + ", modelId=" + modelId<a name="line.308"></a>
-<span class="sourceLineNo">309</span>        + ", properties=" + properties + "]";<a name="line.309"></a>
+<span class="sourceLineNo">309</span>        + ", properties=" + properties + ", organizationId=" + orgId + "]";<a name="line.309"></a>
 <span class="sourceLineNo">310</span>  }<a name="line.310"></a>
 <span class="sourceLineNo">311</span><a name="line.311"></a>
 <span class="sourceLineNo">312</span>}<a name="line.312"></a>

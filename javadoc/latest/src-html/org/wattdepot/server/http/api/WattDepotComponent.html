@@ -57,113 +57,116 @@
 <span class="sourceLineNo">049</span>  /**<a name="line.49"></a>
 <span class="sourceLineNo">050</span>   * Sets up the WattDepotComponent with the given WattDepot.<a name="line.50"></a>
 <span class="sourceLineNo">051</span>   * <a name="line.51"></a>
-<span class="sourceLineNo">052</span>   * @param depot The persitent store.<a name="line.52"></a>
-<span class="sourceLineNo">053</span>   * @param port the port number on which the restlet server listens.<a name="line.53"></a>
-<span class="sourceLineNo">054</span>   */<a name="line.54"></a>
-<span class="sourceLineNo">055</span>  public WattDepotComponent(WattDepotPersistence depot, int port) {<a name="line.55"></a>
-<span class="sourceLineNo">056</span>    setName("WattDepot HTTP API Server");<a name="line.56"></a>
-<span class="sourceLineNo">057</span>    setDescription("WattDepot RESTful server.");<a name="line.57"></a>
-<span class="sourceLineNo">058</span>    setAuthor("Cam Moore");<a name="line.58"></a>
-<span class="sourceLineNo">059</span>    getLogService().setLoggerName("org.wattdepot.server");<a name="line.59"></a>
-<span class="sourceLineNo">060</span>    // Add a CLAP client connector<a name="line.60"></a>
-<span class="sourceLineNo">061</span>    getClients().add(Protocol.CLAP);<a name="line.61"></a>
-<span class="sourceLineNo">062</span>    getClients().add(Protocol.FILE);<a name="line.62"></a>
-<span class="sourceLineNo">063</span>    getClients().add(Protocol.HTTP);<a name="line.63"></a>
-<span class="sourceLineNo">064</span><a name="line.64"></a>
-<span class="sourceLineNo">065</span>    // Adds a HTTP server connector<a name="line.65"></a>
-<span class="sourceLineNo">066</span>    Server server = getServers().add(Protocol.HTTP, port);<a name="line.66"></a>
-<span class="sourceLineNo">067</span>    server.getContext().getParameters().set("tracing", "true");<a name="line.67"></a>
-<span class="sourceLineNo">068</span><a name="line.68"></a>
-<span class="sourceLineNo">069</span>    WattDepotApplication app = new WattDepotApplication();<a name="line.69"></a>
-<span class="sourceLineNo">070</span>    app.setDepot(depot);<a name="line.70"></a>
-<span class="sourceLineNo">071</span>    // configure the JacksonRepresentation so that it uses ISO-8601 compliant<a name="line.71"></a>
-<span class="sourceLineNo">072</span>    // notation<a name="line.72"></a>
-<span class="sourceLineNo">073</span>    MeasurementImpl source = new MeasurementImpl();<a name="line.73"></a>
-<span class="sourceLineNo">074</span>    Representation rep = app.getConverterService().toRepresentation(source);<a name="line.74"></a>
-<span class="sourceLineNo">075</span>    @SuppressWarnings("rawtypes")<a name="line.75"></a>
-<span class="sourceLineNo">076</span>    ObjectMapper mapper = ((JacksonRepresentation) rep).getObjectMapper();<a name="line.76"></a>
-<span class="sourceLineNo">077</span>    mapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS, false);<a name="line.77"></a>
-<span class="sourceLineNo">078</span>    mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES, false);<a name="line.78"></a>
-<span class="sourceLineNo">079</span>    getDefaultHost().attachDefault(app);<a name="line.79"></a>
-<span class="sourceLineNo">080</span>    app.setComponent(this);<a name="line.80"></a>
-<span class="sourceLineNo">081</span><a name="line.81"></a>
-<span class="sourceLineNo">082</span>    // Set up the security realm<a name="line.82"></a>
-<span class="sourceLineNo">083</span>    MemoryRealm realm = new MemoryRealm();<a name="line.83"></a>
-<span class="sourceLineNo">084</span>    realm.setName("WattDepot Security");<a name="line.84"></a>
-<span class="sourceLineNo">085</span>    getRealms().add(realm);<a name="line.85"></a>
-<span class="sourceLineNo">086</span>    for (Organization group : app.getDepot().getOrganizations()) {<a name="line.86"></a>
-<span class="sourceLineNo">087</span>      app.getRoles().add(new Role(group.getId()));<a name="line.87"></a>
-<span class="sourceLineNo">088</span>      for (String userId : group.getUsers()) {<a name="line.88"></a>
-<span class="sourceLineNo">089</span>        UserPassword up = null;<a name="line.89"></a>
-<span class="sourceLineNo">090</span>        try {<a name="line.90"></a>
-<span class="sourceLineNo">091</span>          up = app.getDepot().getUserPassword(userId, group.getId());<a name="line.91"></a>
-<span class="sourceLineNo">092</span>        }<a name="line.92"></a>
-<span class="sourceLineNo">093</span>        catch (IdNotFoundException e) {<a name="line.93"></a>
-<span class="sourceLineNo">094</span>          e.printStackTrace();<a name="line.94"></a>
-<span class="sourceLineNo">095</span>        }<a name="line.95"></a>
-<span class="sourceLineNo">096</span>        if (up != null) {<a name="line.96"></a>
-<span class="sourceLineNo">097</span>          User user = null;<a name="line.97"></a>
-<span class="sourceLineNo">098</span>          if (userId.equals(UserInfo.ROOT.getUid())) {<a name="line.98"></a>
-<span class="sourceLineNo">099</span>            // There isn't a UserInfo stored in persistence for ROOT.<a name="line.99"></a>
-<span class="sourceLineNo">100</span>            user = new User(UserInfo.ROOT.getUid(), StrongAES.getInstance().decrypt(<a name="line.100"></a>
-<span class="sourceLineNo">101</span>                up.getEncryptedPassword()), UserInfo.ROOT.getFirstName(),<a name="line.101"></a>
-<span class="sourceLineNo">102</span>                UserInfo.ROOT.getLastName(), UserInfo.ROOT.getEmail());<a name="line.102"></a>
-<span class="sourceLineNo">103</span>          }<a name="line.103"></a>
-<span class="sourceLineNo">104</span>          else {<a name="line.104"></a>
-<span class="sourceLineNo">105</span>            UserInfo info;<a name="line.105"></a>
-<span class="sourceLineNo">106</span>            try {<a name="line.106"></a>
-<span class="sourceLineNo">107</span>              info = app.getDepot().getUser(userId, group.getId());<a name="line.107"></a>
-<span class="sourceLineNo">108</span>              user = new User(info.getUid(), StrongAES.getInstance().decrypt(<a name="line.108"></a>
-<span class="sourceLineNo">109</span>                  up.getEncryptedPassword()), info.getFirstName(), info.getLastName(),<a name="line.109"></a>
-<span class="sourceLineNo">110</span>                  info.getEmail());<a name="line.110"></a>
-<span class="sourceLineNo">111</span>            }<a name="line.111"></a>
-<span class="sourceLineNo">112</span>            catch (IdNotFoundException e) {<a name="line.112"></a>
-<span class="sourceLineNo">113</span>              e.printStackTrace();<a name="line.113"></a>
-<span class="sourceLineNo">114</span>            }<a name="line.114"></a>
-<span class="sourceLineNo">115</span>          }<a name="line.115"></a>
-<span class="sourceLineNo">116</span>          realm.getUsers().add(user);<a name="line.116"></a>
-<span class="sourceLineNo">117</span>          realm.map(user, app.getRole(group.getId()));<a name="line.117"></a>
-<span class="sourceLineNo">118</span>        }<a name="line.118"></a>
-<span class="sourceLineNo">119</span>      }<a name="line.119"></a>
-<span class="sourceLineNo">120</span>    }<a name="line.120"></a>
-<span class="sourceLineNo">121</span><a name="line.121"></a>
-<span class="sourceLineNo">122</span>    // Set the realm's default enroler and verifier<a name="line.122"></a>
-<span class="sourceLineNo">123</span>    app.getContext().setDefaultEnroler(realm.getEnroler());<a name="line.123"></a>
-<span class="sourceLineNo">124</span>    app.getContext().setDefaultVerifier(realm.getVerifier());<a name="line.124"></a>
-<span class="sourceLineNo">125</span><a name="line.125"></a>
-<span class="sourceLineNo">126</span>    // Properties props = new Properties();<a name="line.126"></a>
-<span class="sourceLineNo">127</span>    // InputStream inputStream =<a name="line.127"></a>
-<span class="sourceLineNo">128</span>    // this.getClass().getClassLoader().getResourceAsStream("log.properties");<a name="line.128"></a>
-<span class="sourceLineNo">129</span>    // if (inputStream != null) {<a name="line.129"></a>
-<span class="sourceLineNo">130</span>    // try {<a name="line.130"></a>
-<span class="sourceLineNo">131</span>    // props.load(inputStream);<a name="line.131"></a>
-<span class="sourceLineNo">132</span>    // }<a name="line.132"></a>
-<span class="sourceLineNo">133</span>    // catch (IOException e) {<a name="line.133"></a>
-<span class="sourceLineNo">134</span>    // // TODO Auto-generated catch block<a name="line.134"></a>
-<span class="sourceLineNo">135</span>    // e.printStackTrace();<a name="line.135"></a>
-<span class="sourceLineNo">136</span>    // }<a name="line.136"></a>
-<span class="sourceLineNo">137</span>    // }<a name="line.137"></a>
-<span class="sourceLineNo">138</span>    // // // Configure the log service<a name="line.138"></a>
-<span class="sourceLineNo">139</span>    // getLogService().setLoggerName("WattDepot.AccessLog");<a name="line.139"></a>
-<span class="sourceLineNo">140</span>    // try {<a name="line.140"></a>
-<span class="sourceLineNo">141</span>    // LogManager.getLogManager().readConfiguration(<a name="line.141"></a>
-<span class="sourceLineNo">142</span>    // inputStream);<a name="line.142"></a>
-<span class="sourceLineNo">143</span>    // }<a name="line.143"></a>
-<span class="sourceLineNo">144</span>    // catch (SecurityException e) {<a name="line.144"></a>
-<span class="sourceLineNo">145</span>    // // TODO Auto-generated catch block<a name="line.145"></a>
-<span class="sourceLineNo">146</span>    // e.printStackTrace();<a name="line.146"></a>
-<span class="sourceLineNo">147</span>    // }<a name="line.147"></a>
-<span class="sourceLineNo">148</span>    // catch (IOException e) {<a name="line.148"></a>
-<span class="sourceLineNo">149</span>    // // TODO Auto-generated catch block<a name="line.149"></a>
-<span class="sourceLineNo">150</span>    // e.printStackTrace();<a name="line.150"></a>
-<span class="sourceLineNo">151</span>    // }<a name="line.151"></a>
-<span class="sourceLineNo">152</span>    //<a name="line.152"></a>
-<span class="sourceLineNo">153</span>    // getLogService().setLogPropertiesRef(<a name="line.153"></a>
-<span class="sourceLineNo">154</span>    // "log.properties");<a name="line.154"></a>
-<span class="sourceLineNo">155</span><a name="line.155"></a>
-<span class="sourceLineNo">156</span>  }<a name="line.156"></a>
-<span class="sourceLineNo">157</span><a name="line.157"></a>
-<span class="sourceLineNo">158</span>}<a name="line.158"></a>
+<span class="sourceLineNo">052</span>   * @param depot<a name="line.52"></a>
+<span class="sourceLineNo">053</span>   *          The persitent store.<a name="line.53"></a>
+<span class="sourceLineNo">054</span>   * @param port<a name="line.54"></a>
+<span class="sourceLineNo">055</span>   *          the port number on which the restlet server listens.<a name="line.55"></a>
+<span class="sourceLineNo">056</span>   */<a name="line.56"></a>
+<span class="sourceLineNo">057</span>  public WattDepotComponent(WattDepotPersistence depot, int port) {<a name="line.57"></a>
+<span class="sourceLineNo">058</span>    setName("WattDepot HTTP API Server");<a name="line.58"></a>
+<span class="sourceLineNo">059</span>    setDescription("WattDepot RESTful server.");<a name="line.59"></a>
+<span class="sourceLineNo">060</span>    setAuthor("Cam Moore");<a name="line.60"></a>
+<span class="sourceLineNo">061</span>    getLogService().setLoggerName("org.wattdepot.server");<a name="line.61"></a>
+<span class="sourceLineNo">062</span>    // Add a CLAP client connector<a name="line.62"></a>
+<span class="sourceLineNo">063</span>    getClients().add(Protocol.CLAP);<a name="line.63"></a>
+<span class="sourceLineNo">064</span>    getClients().add(Protocol.FILE);<a name="line.64"></a>
+<span class="sourceLineNo">065</span>    getClients().add(Protocol.HTTP);<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>    // Adds a HTTP server connector<a name="line.67"></a>
+<span class="sourceLineNo">068</span>    Server server = getServers().add(Protocol.HTTP, port);<a name="line.68"></a>
+<span class="sourceLineNo">069</span>    server.getContext().getParameters().set("tracing", "true");<a name="line.69"></a>
+<span class="sourceLineNo">070</span><a name="line.70"></a>
+<span class="sourceLineNo">071</span>    WattDepotApplication app = new WattDepotApplication();<a name="line.71"></a>
+<span class="sourceLineNo">072</span>    app.setDepot(depot);<a name="line.72"></a>
+<span class="sourceLineNo">073</span>    // configure the JacksonRepresentation so that it uses ISO-8601 compliant<a name="line.73"></a>
+<span class="sourceLineNo">074</span>    // notation<a name="line.74"></a>
+<span class="sourceLineNo">075</span>    MeasurementImpl source = new MeasurementImpl();<a name="line.75"></a>
+<span class="sourceLineNo">076</span>    Representation rep = app.getConverterService().toRepresentation(source);<a name="line.76"></a>
+<span class="sourceLineNo">077</span>    @SuppressWarnings("rawtypes")<a name="line.77"></a>
+<span class="sourceLineNo">078</span>    ObjectMapper mapper = ((JacksonRepresentation) rep).getObjectMapper();<a name="line.78"></a>
+<span class="sourceLineNo">079</span>    mapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS,<a name="line.79"></a>
+<span class="sourceLineNo">080</span>        false);<a name="line.80"></a>
+<span class="sourceLineNo">081</span>    mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,<a name="line.81"></a>
+<span class="sourceLineNo">082</span>        false);<a name="line.82"></a>
+<span class="sourceLineNo">083</span>    getDefaultHost().attachDefault(app);<a name="line.83"></a>
+<span class="sourceLineNo">084</span>    app.setComponent(this);<a name="line.84"></a>
+<span class="sourceLineNo">085</span><a name="line.85"></a>
+<span class="sourceLineNo">086</span>    // Set up the security realm<a name="line.86"></a>
+<span class="sourceLineNo">087</span>    MemoryRealm realm = new MemoryRealm();<a name="line.87"></a>
+<span class="sourceLineNo">088</span>    realm.setName("WattDepot Security");<a name="line.88"></a>
+<span class="sourceLineNo">089</span>    getRealms().add(realm);<a name="line.89"></a>
+<span class="sourceLineNo">090</span>    for (Organization group : app.getDepot().getOrganizations()) {<a name="line.90"></a>
+<span class="sourceLineNo">091</span>      app.getRoles().add(new Role(group.getId()));<a name="line.91"></a>
+<span class="sourceLineNo">092</span>      for (String userId : group.getUsers()) {<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        UserPassword up = null;<a name="line.93"></a>
+<span class="sourceLineNo">094</span>        try {<a name="line.94"></a>
+<span class="sourceLineNo">095</span>          up = app.getDepot().getUserPassword(userId, group.getId());<a name="line.95"></a>
+<span class="sourceLineNo">096</span>        }<a name="line.96"></a>
+<span class="sourceLineNo">097</span>        catch (IdNotFoundException e) {<a name="line.97"></a>
+<span class="sourceLineNo">098</span>          e.printStackTrace();<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        }<a name="line.99"></a>
+<span class="sourceLineNo">100</span>        if (up != null) {<a name="line.100"></a>
+<span class="sourceLineNo">101</span>          User user = null;<a name="line.101"></a>
+<span class="sourceLineNo">102</span>          if (userId.equals(UserInfo.ROOT.getUid())) {<a name="line.102"></a>
+<span class="sourceLineNo">103</span>            // There isn't a UserInfo stored in persistence for ROOT.<a name="line.103"></a>
+<span class="sourceLineNo">104</span>            user = new User(UserInfo.ROOT.getUid(), StrongAES.getInstance()<a name="line.104"></a>
+<span class="sourceLineNo">105</span>                .decrypt(up.getEncryptedPassword()),<a name="line.105"></a>
+<span class="sourceLineNo">106</span>                UserInfo.ROOT.getFirstName(), UserInfo.ROOT.getLastName(),<a name="line.106"></a>
+<span class="sourceLineNo">107</span>                UserInfo.ROOT.getEmail());<a name="line.107"></a>
+<span class="sourceLineNo">108</span>          }<a name="line.108"></a>
+<span class="sourceLineNo">109</span>          else {<a name="line.109"></a>
+<span class="sourceLineNo">110</span>            UserInfo info;<a name="line.110"></a>
+<span class="sourceLineNo">111</span>            try {<a name="line.111"></a>
+<span class="sourceLineNo">112</span>              info = app.getDepot().getUser(userId, group.getId());<a name="line.112"></a>
+<span class="sourceLineNo">113</span>              user = new User(info.getUid(), StrongAES.getInstance().decrypt(<a name="line.113"></a>
+<span class="sourceLineNo">114</span>                  up.getEncryptedPassword()), info.getFirstName(),<a name="line.114"></a>
+<span class="sourceLineNo">115</span>                  info.getLastName(), info.getEmail());<a name="line.115"></a>
+<span class="sourceLineNo">116</span>            }<a name="line.116"></a>
+<span class="sourceLineNo">117</span>            catch (IdNotFoundException e) {<a name="line.117"></a>
+<span class="sourceLineNo">118</span>              e.printStackTrace();<a name="line.118"></a>
+<span class="sourceLineNo">119</span>            }<a name="line.119"></a>
+<span class="sourceLineNo">120</span>          }<a name="line.120"></a>
+<span class="sourceLineNo">121</span>          realm.getUsers().add(user);<a name="line.121"></a>
+<span class="sourceLineNo">122</span>          realm.map(user, app.getRole(group.getId()));<a name="line.122"></a>
+<span class="sourceLineNo">123</span>        }<a name="line.123"></a>
+<span class="sourceLineNo">124</span>      }<a name="line.124"></a>
+<span class="sourceLineNo">125</span>    }<a name="line.125"></a>
+<span class="sourceLineNo">126</span><a name="line.126"></a>
+<span class="sourceLineNo">127</span>    // Set the realm's default enroler and verifier<a name="line.127"></a>
+<span class="sourceLineNo">128</span>    app.getContext().setDefaultEnroler(realm.getEnroler());<a name="line.128"></a>
+<span class="sourceLineNo">129</span>    app.getContext().setDefaultVerifier(realm.getVerifier());<a name="line.129"></a>
+<span class="sourceLineNo">130</span><a name="line.130"></a>
+<span class="sourceLineNo">131</span>//    Properties props = new Properties();<a name="line.131"></a>
+<span class="sourceLineNo">132</span>//    InputStream inputStream = this.getClass().getClassLoader()<a name="line.132"></a>
+<span class="sourceLineNo">133</span>//        .getResourceAsStream("log.properties");<a name="line.133"></a>
+<span class="sourceLineNo">134</span>//    if (inputStream != null) {<a name="line.134"></a>
+<span class="sourceLineNo">135</span>//      try {<a name="line.135"></a>
+<span class="sourceLineNo">136</span>//        props.load(inputStream);<a name="line.136"></a>
+<span class="sourceLineNo">137</span>//      }<a name="line.137"></a>
+<span class="sourceLineNo">138</span>//      catch (IOException e) {<a name="line.138"></a>
+<span class="sourceLineNo">139</span>//        // TODO Auto-generated catch block<a name="line.139"></a>
+<span class="sourceLineNo">140</span>//        e.printStackTrace();<a name="line.140"></a>
+<span class="sourceLineNo">141</span>//      }<a name="line.141"></a>
+<span class="sourceLineNo">142</span>//    }<a name="line.142"></a>
+<span class="sourceLineNo">143</span>//    // // // Configure the log service<a name="line.143"></a>
+<span class="sourceLineNo">144</span>//    getLogService().setLoggerName("WattDepot.AccessLog");<a name="line.144"></a>
+<span class="sourceLineNo">145</span>//    try {<a name="line.145"></a>
+<span class="sourceLineNo">146</span>//      LogManager.getLogManager().readConfiguration(inputStream);<a name="line.146"></a>
+<span class="sourceLineNo">147</span>//    }<a name="line.147"></a>
+<span class="sourceLineNo">148</span>//    catch (SecurityException e) {<a name="line.148"></a>
+<span class="sourceLineNo">149</span>//      // TODO Auto-generated catch block<a name="line.149"></a>
+<span class="sourceLineNo">150</span>//      e.printStackTrace();<a name="line.150"></a>
+<span class="sourceLineNo">151</span>//    }<a name="line.151"></a>
+<span class="sourceLineNo">152</span>//    catch (IOException e) {<a name="line.152"></a>
+<span class="sourceLineNo">153</span>//      // TODO Auto-generated catch block<a name="line.153"></a>
+<span class="sourceLineNo">154</span>//      e.printStackTrace();<a name="line.154"></a>
+<span class="sourceLineNo">155</span>//    }<a name="line.155"></a>
+<span class="sourceLineNo">156</span>    //<a name="line.156"></a>
+<span class="sourceLineNo">157</span>    // getLogService().setLogPropertiesRef("log.properties");<a name="line.157"></a>
+<span class="sourceLineNo">158</span><a name="line.158"></a>
+<span class="sourceLineNo">159</span>  }<a name="line.159"></a>
+<span class="sourceLineNo">160</span><a name="line.160"></a>
+<span class="sourceLineNo">161</span>}<a name="line.161"></a>
 
 
 

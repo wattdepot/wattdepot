@@ -67,33 +67,39 @@
 <span class="sourceLineNo">059</span>   */<a name="line.59"></a>
 <span class="sourceLineNo">060</span>  @Override<a name="line.60"></a>
 <span class="sourceLineNo">061</span>  public SensorList retrieve() {<a name="line.61"></a>
-<span class="sourceLineNo">062</span>    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId<a name="line.62"></a>
-<span class="sourceLineNo">063</span>        + "}/sensors/");<a name="line.63"></a>
-<span class="sourceLineNo">064</span>    Depository depository;<a name="line.64"></a>
-<span class="sourceLineNo">065</span>    SensorList ret = null;<a name="line.65"></a>
-<span class="sourceLineNo">066</span>    try {<a name="line.66"></a>
-<span class="sourceLineNo">067</span>      depository = depot.getDepository(depositoryId, orgId);<a name="line.67"></a>
-<span class="sourceLineNo">068</span>      if (depository != null) {<a name="line.68"></a>
-<span class="sourceLineNo">069</span>        ret = new SensorList();<a name="line.69"></a>
-<span class="sourceLineNo">070</span>        for (String sid : depot.listSensors(depositoryId, orgId)) {<a name="line.70"></a>
-<span class="sourceLineNo">071</span>          Sensor s = depot.getSensor(sid, orgId);<a name="line.71"></a>
-<span class="sourceLineNo">072</span>          ret.getSensors().add(s);<a name="line.72"></a>
-<span class="sourceLineNo">073</span>        }<a name="line.73"></a>
-<span class="sourceLineNo">074</span>      }<a name="line.74"></a>
-<span class="sourceLineNo">075</span>      else {<a name="line.75"></a>
-<span class="sourceLineNo">076</span>        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " not defined.");<a name="line.76"></a>
-<span class="sourceLineNo">077</span>      }<a name="line.77"></a>
-<span class="sourceLineNo">078</span>    }<a name="line.78"></a>
-<span class="sourceLineNo">079</span>    catch (MisMatchedOwnerException e) {<a name="line.79"></a>
-<span class="sourceLineNo">080</span>      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());<a name="line.80"></a>
-<span class="sourceLineNo">081</span>    }<a name="line.81"></a>
-<span class="sourceLineNo">082</span>    catch (IdNotFoundException e) {<a name="line.82"></a>
-<span class="sourceLineNo">083</span>      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " not defined.");<a name="line.83"></a>
-<span class="sourceLineNo">084</span>    }<a name="line.84"></a>
-<span class="sourceLineNo">085</span>    return ret;<a name="line.85"></a>
-<span class="sourceLineNo">086</span>  }<a name="line.86"></a>
-<span class="sourceLineNo">087</span><a name="line.87"></a>
-<span class="sourceLineNo">088</span>}<a name="line.88"></a>
+<span class="sourceLineNo">062</span>    getLogger().log(Level.INFO,<a name="line.62"></a>
+<span class="sourceLineNo">063</span>        "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/sensors/");<a name="line.63"></a>
+<span class="sourceLineNo">064</span>    if (isInRole(orgId)) {<a name="line.64"></a>
+<span class="sourceLineNo">065</span>      Depository depository;<a name="line.65"></a>
+<span class="sourceLineNo">066</span>      SensorList ret = null;<a name="line.66"></a>
+<span class="sourceLineNo">067</span>      try {<a name="line.67"></a>
+<span class="sourceLineNo">068</span>        depository = depot.getDepository(depositoryId, orgId);<a name="line.68"></a>
+<span class="sourceLineNo">069</span>        if (depository != null) {<a name="line.69"></a>
+<span class="sourceLineNo">070</span>          ret = new SensorList();<a name="line.70"></a>
+<span class="sourceLineNo">071</span>          for (String sid : depot.listSensors(depositoryId, orgId)) {<a name="line.71"></a>
+<span class="sourceLineNo">072</span>            Sensor s = depot.getSensor(sid, orgId);<a name="line.72"></a>
+<span class="sourceLineNo">073</span>            ret.getSensors().add(s);<a name="line.73"></a>
+<span class="sourceLineNo">074</span>          }<a name="line.74"></a>
+<span class="sourceLineNo">075</span>        }<a name="line.75"></a>
+<span class="sourceLineNo">076</span>        else {<a name="line.76"></a>
+<span class="sourceLineNo">077</span>          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " not defined.");<a name="line.77"></a>
+<span class="sourceLineNo">078</span>        }<a name="line.78"></a>
+<span class="sourceLineNo">079</span>      }<a name="line.79"></a>
+<span class="sourceLineNo">080</span>      catch (MisMatchedOwnerException e) {<a name="line.80"></a>
+<span class="sourceLineNo">081</span>        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());<a name="line.81"></a>
+<span class="sourceLineNo">082</span>      }<a name="line.82"></a>
+<span class="sourceLineNo">083</span>      catch (IdNotFoundException e) {<a name="line.83"></a>
+<span class="sourceLineNo">084</span>        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " not defined.");<a name="line.84"></a>
+<span class="sourceLineNo">085</span>      }<a name="line.85"></a>
+<span class="sourceLineNo">086</span>      return ret;<a name="line.86"></a>
+<span class="sourceLineNo">087</span>    }<a name="line.87"></a>
+<span class="sourceLineNo">088</span>    else {<a name="line.88"></a>
+<span class="sourceLineNo">089</span>      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");<a name="line.89"></a>
+<span class="sourceLineNo">090</span>      return null;<a name="line.90"></a>
+<span class="sourceLineNo">091</span>    }<a name="line.91"></a>
+<span class="sourceLineNo">092</span>  }<a name="line.92"></a>
+<span class="sourceLineNo">093</span><a name="line.93"></a>
+<span class="sourceLineNo">094</span>}<a name="line.94"></a>
 
 
 
