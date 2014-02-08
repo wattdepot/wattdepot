@@ -486,8 +486,6 @@ public class TestWattDepotClient {
       }
     }
     list = test.getSensorGroups();
-    System.out.println(list.getGroups().get(0));
-    System.out.println(group);
     assertTrue(list.getGroups().contains(group));
     try {
       // get instance (READ)
