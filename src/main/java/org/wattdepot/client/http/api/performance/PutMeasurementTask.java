@@ -189,6 +189,9 @@ public class PutMeasurementTask extends TimerTask {
         Long endTime = System.nanoTime();
         Long diff = endTime - startTime;
         totalTime += diff;
+        if (debug) {
+          System.out.println("put time = " + (diff / 1E9) + " seconds.");
+        }
         if (minPutTime > diff) {
           minPutTime = diff;
         }

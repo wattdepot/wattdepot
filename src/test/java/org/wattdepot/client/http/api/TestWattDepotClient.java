@@ -67,6 +67,7 @@ import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.DateConvert;
 import org.wattdepot.common.util.UnitsHelper;
 import org.wattdepot.common.util.logger.WattDepotLogger;
+import org.wattdepot.common.util.logger.WattDepotLoggerUtil;
 import org.wattdepot.server.WattDepotServer;
 
 /**
@@ -123,6 +124,7 @@ public class TestWattDepotClient {
    */
   @Before
   public void setUp() {
+    WattDepotLoggerUtil.removeClientLoggerHandlers();
     // Set up the test instances.
     Set<Property> properties = new HashSet<Property>();
     properties.add(new Property("isAdmin", "no they are not"));
