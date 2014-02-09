@@ -62,6 +62,9 @@ public class FindMeasurementThroughput extends TimerTask {
   private DescriptiveStatistics averageMinPutTime;
   private DescriptiveStatistics averageMaxPutTime;
 
+  private Long measPerSec;
+  private Long calculatedMeasPerSec;
+
   /**
    * Initializes the RampingMeasurements instance.
    * 
@@ -75,20 +78,22 @@ public class FindMeasurementThroughput extends TimerTask {
    * @throws IdNotFoundException if the processId is not defined.
    * @throws BadSensorUriException if the Sensor's URI isn't valid.
    */
-  public FindMeasurementThroughput(String serverUri, String username,
-      String orgId, String password, boolean debug)
-      throws BadCredentialException, IdNotFoundException, BadSensorUriException {
+  public FindMeasurementThroughput(String serverUri, String username, String orgId,
+      String password, boolean debug) throws BadCredentialException, IdNotFoundException,
+      BadSensorUriException {
     this.serverUri = serverUri;
     this.username = username;
     this.orgId = orgId;
     this.password = password;
     this.debug = debug;
     this.numChecks = 0;
+    this.measPerSec = 1l;
+    this.calculatedMeasPerSec = 1l;
     this.averageMaxPutTime = new DescriptiveStatistics();
     this.averageMinPutTime = new DescriptiveStatistics();
     this.averagePutTime = new DescriptiveStatistics();
     this.timer = new Timer("throughput");
-    this.sampleTask =  new PutMeasurementTask(serverUri, username, orgId, password, debug);
+    this.sampleTask = new PutMeasurementTask(serverUri, username, orgId, password, debug);
     // Starting at 1 meas/second
     this.timer.schedule(sampleTask, 0, 1000);
   }
@@ -96,11 +101,13 @@ public class FindMeasurementThroughput extends TimerTask {
   /**
    * @param args command line arguments -s <server uri> -u <username> -p
    *        <password> -o <orgId> -n <numSamples> [-d].
-   * @throws BadSensorUriException if there is a problem with the WattDepot sensor definition.
+   * @throws BadSensorUriException if there is a problem with the WattDepot
+   *         sensor definition.
    * @throws IdNotFoundException if there is a problem with the organization id.
    * @throws BadCredentialException if the credentials are not valid.
    */
-  public static void main(String[] args) throws BadCredentialException, IdNotFoundException, BadSensorUriException {
+  public static void main(String[] args) throws BadCredentialException, IdNotFoundException,
+      BadSensorUriException {
     WattDepotLoggerUtil.removeClientLoggerHandlers();
     Options options = new Options();
     CommandLine cmd = null;
@@ -111,25 +118,21 @@ public class FindMeasurementThroughput extends TimerTask {
     Integer numSamples = null;
     boolean debug = false;
 
-    options.addOption("h", false,
-        "Usage: FindMeasurementThroughput -s <server uri> -u <username>"
-            + " -p <password> -o <orgId> [-d]");
-    options.addOption("s", "server", true,
-        "WattDepot Server URI. (http://server.wattdepot.org)");
+    options.addOption("h", false, "Usage: FindMeasurementThroughput -s <server uri> -u <username>"
+        + " -p <password> -o <orgId> [-d]");
+    options.addOption("s", "server", true, "WattDepot Server URI. (http://server.wattdepot.org)");
     options.addOption("u", "username", true, "Username");
     options.addOption("o", "organizationId", true, "User's Organization id.");
     options.addOption("p", "password", true, "Password");
     options.addOption("n", "numSamples", true, "Number of puts to sample.");
-    options.addOption("d", "debug", false,
-        "Displays statistics as the Measurements are stored.");
+    options.addOption("d", "debug", false, "Displays statistics as the Measurements are stored.");
     CommandLineParser parser = new PosixParser();
     HelpFormatter formatter = new HelpFormatter();
     try {
       cmd = parser.parse(options, args);
     }
     catch (ParseException e) {
-      System.err.println("Command line parsing failed. Reason: "
-          + e.getMessage() + ". Exiting.");
+      System.err.println("Command line parsing failed. Reason: " + e.getMessage() + ". Exiting.");
       System.exit(1);
     }
     if (cmd.hasOption("h")) {
@@ -177,8 +180,8 @@ public class FindMeasurementThroughput extends TimerTask {
     }
 
     Timer t = new Timer("monitoring");
-    t.schedule(new FindMeasurementThroughput(serverUri, username,
-        organizationId, password, debug), 0, numSamples * 1000);
+    t.schedule(new FindMeasurementThroughput(serverUri, username, organizationId, password, debug),
+        0, numSamples * 1000);
   }
 
   /*
@@ -199,26 +202,38 @@ public class FindMeasurementThroughput extends TimerTask {
       averagePutTime.addValue((sampleTask.getAveragePutTime() / 1E9));
       averageMinPutTime.addValue((sampleTask.getMinPutTime() / 1E9));
       averageMaxPutTime.addValue((sampleTask.getMaxPutTime() / 1E9));
-      System.out.println("Min put time = " + (sampleTask.getMinPutTime() / 1E9));
+      calculatedMeasPerSec = calculatePutRate(averagePutTime);
+      measPerSec = calculatedMeasPerSec;
+//      System.out.println("Min put time = " + (sampleTask.getMinPutTime() / 1E9));
       System.out.println("Ave put time = " + (sampleTask.getAveragePutTime() / 1E9));
-      System.out.println("Max put time = " + (sampleTask.getMaxPutTime() / 1E9));
-      System.out.println("Max put rate = " + calculatePutRate(averageMinPutTime));
-      System.out.println("Ave put rate = " + calculatePutRate(averagePutTime));
-      System.out.println("Min put rate = " + calculatePutRate(averageMaxPutTime));
-      try {
-        this.sampleTask =  new PutMeasurementTask(serverUri, username, orgId, password, debug);
-      }
-      catch (BadCredentialException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-      catch (IdNotFoundException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-      catch (BadSensorUriException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+//      System.out.println("Max put time = " + (sampleTask.getMaxPutTime() / 1E9));
+//      System.out.println("Max put rate = " + calculatePutRate(averageMinPutTime));
+      System.out.println("Ave put rate = " + calculatedMeasPerSec);
+//      System.out.println("Min put rate = " + calculatePutRate(averageMaxPutTime));
+      this.timer = new Timer("throughput");
+//      if (debug) {
+        System.out.println("Starting " + measPerSec + " threads @ 1 meas/s");
+//      }
+      for (int i = 0; i < measPerSec; i++) {
+        try {
+          this.sampleTask = new PutMeasurementTask(serverUri, username, orgId, password, debug);
+          timer.schedule(sampleTask, 0, 1000);
+          if (debug) {
+            System.out.println("Starting task " + i);
+          }
+        }
+        catch (BadCredentialException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        catch (IdNotFoundException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        catch (BadSensorUriException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
       }
     }
 
@@ -226,7 +241,8 @@ public class FindMeasurementThroughput extends TimerTask {
 
   /**
    * @param stats the DescriptiveStatistics to calculate the mean put time.
-   * @return The estimated put rate based upon the time it takes to put a single measurement.
+   * @return The estimated put rate based upon the time it takes to put a single
+   *         measurement.
    */
   private Long calculatePutRate(DescriptiveStatistics stats) {
     double putTime = stats.getMean();

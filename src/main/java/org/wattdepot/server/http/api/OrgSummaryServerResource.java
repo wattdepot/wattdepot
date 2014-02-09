@@ -26,6 +26,7 @@ import java.util.logging.Level;
 
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
+import org.restlet.data.Status;
 import org.restlet.ext.freemarker.TemplateRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
@@ -60,13 +61,28 @@ public class OrgSummaryServerResource extends WattDepotServerResource {
       Representation rep = null;
       TemplateRepresentation template = null;
       try {
+//        Long startTime = System.nanoTime();
         List<Depository> depos = depot.getDepositories(orgId);
+//        Long endTime = System.nanoTime();
+//        Long diff = endTime - startTime;
+//        getLogger().log(Level.INFO,
+//            "getDepositories took " + (diff / 1E9) + " seconds");
         List<Sensor> sensors = new ArrayList<Sensor>();
         List<MeasurementRateSummary> summaries = new ArrayList<MeasurementRateSummary>();
         for (Depository d : depos) {
           for (String sensorId : depot.listSensors(d.getId(), orgId)) {
+//            startTime = System.nanoTime();
             sensors.add(depot.getSensor(sensorId, orgId));
+//            endTime = System.nanoTime();
+//            diff = endTime - startTime;
+//            getLogger().log(Level.INFO,
+//                "getSensor took " + (diff / 1E9) + " seconds");
+//            startTime = System.nanoTime();
             summaries.add(depot.getRateSummary(d.getId(), orgId, sensorId));
+//            endTime = System.nanoTime();
+//            diff = endTime - startTime;
+//            getLogger().log(Level.INFO,
+//                "getRateSummary took " + (diff / 1E9) + " seconds");
           }
         }
         dataModel.put("depositories", depos);
@@ -76,12 +92,14 @@ public class OrgSummaryServerResource extends WattDepotServerResource {
             + "/OrganizationSummary.ftl").get();
       }
       catch (IdNotFoundException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        return null;
       }
       catch (MisMatchedOwnerException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        return null;
       }
       template = new TemplateRepresentation(rep, dataModel, MediaType.TEXT_HTML);
       return template;
