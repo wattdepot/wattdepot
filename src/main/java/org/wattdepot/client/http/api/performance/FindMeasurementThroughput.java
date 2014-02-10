@@ -204,16 +204,22 @@ public class FindMeasurementThroughput extends TimerTask {
       this.averageMaxPutTime.addValue((sampleTask.getMaxPutTime() / 1E9));
       this.calculatedMeasPerSec = calculatePutRate(averagePutTime);
       this.measPerSec = calculatedMeasPerSec;
-//      System.out.println("Min put time = " + (sampleTask.getMinPutTime() / 1E9));
-      System.out.println("Ave put time = " + (this.sampleTask.getAveragePutTime() / 1E9));
-//      System.out.println("Max put time = " + (sampleTask.getMaxPutTime() / 1E9));
-//      System.out.println("Max put rate = " + calculatePutRate(averageMinPutTime));
+      // System.out.println("Min put time = " + (sampleTask.getMinPutTime() /
+      // 1E9));
+      System.out.println("Ave put time = " + (this.sampleTask.getAveragePutTime() / 1E9) + " => "
+          + Math.round(1.0 / (this.sampleTask.getAveragePutTime() / 1E9)) + " meas/sec.");
+      // System.out.println("Max put time = " + (sampleTask.getMaxPutTime() /
+      // 1E9));
+      // System.out.println("Max put rate = " +
+      // calculatePutRate(averageMinPutTime));
       System.out.println("Ave put rate = " + this.calculatedMeasPerSec);
-//      System.out.println("Min put rate = " + calculatePutRate(averageMaxPutTime));
+      // System.out.println("Min put rate = " +
+      // calculatePutRate(averageMaxPutTime));
       this.timer = new Timer("throughput");
-//      if (debug) {
-        System.out.println("Starting " + this.measPerSec + " threads @ 1 meas/s");
-//      }
+      // if (debug) {
+      // System.out.println("Starting " + this.measPerSec +
+      // " threads @ 1 meas/s");
+      // }
       for (int i = 0; i < measPerSec; i++) {
         try {
           this.sampleTask = new PutMeasurementTask(serverUri, username, orgId, password, debug);
@@ -222,7 +228,7 @@ public class FindMeasurementThroughput extends TimerTask {
             System.out.println("Starting task " + i);
           }
         }
-        catch (BadCredentialException e) {  // NOPMD
+        catch (BadCredentialException e) { // NOPMD
           // should not happen.
         }
         catch (IdNotFoundException e) { // NOPMD
