@@ -192,27 +192,27 @@ public class FindMeasurementThroughput extends TimerTask {
   @Override
   public void run() {
     // wake up to check the stats.
-    if (numChecks == 0) {
+    if (this.numChecks == 0) {
       // haven't actually run so do nothing.
-      numChecks++;
+      this.numChecks++;
     }
     else {
       this.timer.cancel();
-      numChecks++;
-      averagePutTime.addValue((sampleTask.getAveragePutTime() / 1E9));
-      averageMinPutTime.addValue((sampleTask.getMinPutTime() / 1E9));
-      averageMaxPutTime.addValue((sampleTask.getMaxPutTime() / 1E9));
-      calculatedMeasPerSec = calculatePutRate(averagePutTime);
-      measPerSec = calculatedMeasPerSec;
+      this.numChecks++;
+      this.averagePutTime.addValue((sampleTask.getAveragePutTime() / 1E9));
+      this.averageMinPutTime.addValue((sampleTask.getMinPutTime() / 1E9));
+      this.averageMaxPutTime.addValue((sampleTask.getMaxPutTime() / 1E9));
+      this.calculatedMeasPerSec = calculatePutRate(averagePutTime);
+      this.measPerSec = calculatedMeasPerSec;
 //      System.out.println("Min put time = " + (sampleTask.getMinPutTime() / 1E9));
-      System.out.println("Ave put time = " + (sampleTask.getAveragePutTime() / 1E9));
+      System.out.println("Ave put time = " + (this.sampleTask.getAveragePutTime() / 1E9));
 //      System.out.println("Max put time = " + (sampleTask.getMaxPutTime() / 1E9));
 //      System.out.println("Max put rate = " + calculatePutRate(averageMinPutTime));
-      System.out.println("Ave put rate = " + calculatedMeasPerSec);
+      System.out.println("Ave put rate = " + this.calculatedMeasPerSec);
 //      System.out.println("Min put rate = " + calculatePutRate(averageMaxPutTime));
       this.timer = new Timer("throughput");
 //      if (debug) {
-        System.out.println("Starting " + measPerSec + " threads @ 1 meas/s");
+        System.out.println("Starting " + this.measPerSec + " threads @ 1 meas/s");
 //      }
       for (int i = 0; i < measPerSec; i++) {
         try {
@@ -222,21 +222,17 @@ public class FindMeasurementThroughput extends TimerTask {
             System.out.println("Starting task " + i);
           }
         }
-        catch (BadCredentialException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+        catch (BadCredentialException e) {  // NOPMD
+          // should not happen.
         }
-        catch (IdNotFoundException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+        catch (IdNotFoundException e) { // NOPMD
+          // should not happen.
         }
-        catch (BadSensorUriException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+        catch (BadSensorUriException e) { // NOPMD
+          // should not happen
         }
       }
     }
-
   }
 
   /**
