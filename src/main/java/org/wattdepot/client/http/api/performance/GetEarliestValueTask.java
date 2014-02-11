@@ -18,12 +18,9 @@
  */
 package org.wattdepot.client.http.api.performance;
 
-import java.util.Date;
-
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.BadSensorUriException;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.exception.NoMeasurementException;
 
 /**
  * GetLatestValueTask gets the latest value from the WattDepot Server.
@@ -31,12 +28,8 @@ import org.wattdepot.common.exception.NoMeasurementException;
  * @author Cam Moore
  * 
  */
-public class GetValueDateDateTask extends PerformanceTimedTask {
+public class GetEarliestValueTask extends PerformanceTimedTask {
 
-  /** The start time of the value to retrieve. */
-  private Date start;
-  /** The end time of the value to retrieve. */
-  private Date end;
   /**
    * Initializes the GetLatestValueTask.
    * 
@@ -50,15 +43,9 @@ public class GetValueDateDateTask extends PerformanceTimedTask {
    * @throws IdNotFoundException if the processId is not defined.
    * @throws BadSensorUriException if the Sensor's URI isn't valid.
    */
-  public GetValueDateDateTask(String serverUri, String username, String orgId, String password,
+  public GetEarliestValueTask(String serverUri, String username, String orgId, String password,
       boolean debug) throws BadCredentialException, IdNotFoundException, BadSensorUriException {
     super(serverUri, username, orgId, password, debug);
-    Date latest = client.getLatestValue(depository, sensor).getDate();
-    Date earliest = client.getEarliestValue(depository, sensor).getDate();
-    Long oneThird = (earliest.getTime() + latest.getTime()) / 2;
-    Long halfDiff = (latest.getTime() - earliest.getTime()) / 4;
-    this.start = new Date(oneThird - halfDiff);
-    this.end = new Date(oneThird + halfDiff);
   }
 
 
@@ -67,12 +54,7 @@ public class GetValueDateDateTask extends PerformanceTimedTask {
    */
   @Override
   public void clientTask() {
-    try {
-      this.client.getValue(depository, sensor, start, end);
-    }
-    catch (NoMeasurementException nme) {
-      nme.printStackTrace();
-    }
+    this.client.getEarliestValue(depository, sensor);
   }
 
 }

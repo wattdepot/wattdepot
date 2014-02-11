@@ -212,7 +212,7 @@ public class FindGetLatestValueThroughput extends TimerTask {
       // 1E9));
       // System.out.println("Max put rate = " +
       // calculateGetRate(averageMinGetTime));
-      System.out.println("Ave get latest value rate = " + this.calculatedGetsPerSec);
+      System.out.println("Setting rate to " + this.calculatedGetsPerSec);
       // System.out.println("Min put rate = " +
       // calculateGetRate(averageMaxGetTime));
       this.timer = new Timer("throughput");

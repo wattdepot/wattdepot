@@ -212,7 +212,7 @@ public class FindMeasurementThroughput extends TimerTask {
       // 1E9));
       // System.out.println("Max put rate = " +
       // calculatePutRate(averageMinPutTime));
-      System.out.println("Ave put rate = " + this.calculatedMeasPerSec);
+      System.out.println("Setting rate to " + this.calculatedMeasPerSec);
       // System.out.println("Min put rate = " +
       // calculatePutRate(averageMaxPutTime));
       this.timer = new Timer("throughput");

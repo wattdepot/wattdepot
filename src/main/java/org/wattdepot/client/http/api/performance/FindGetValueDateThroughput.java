@@ -207,13 +207,13 @@ public class FindGetValueDateThroughput extends TimerTask {
       this.getsPerSec = calculatedGetsPerSec;
 //       System.out.println("Min put time = " + (sampleTask.getMinTime() /
 //       1E9));
-      System.out.println("Ave get latest value time = " + (this.sampleTask.getAverageTime() / 1E9)
+      System.out.println("Ave get value (date) time = " + (this.sampleTask.getAverageTime() / 1E9)
           + " => " + Math.round(1.0 / (this.sampleTask.getAverageTime() / 1E9)) + " gets/sec.");
 //       System.out.println("Max put time = " + (sampleTask.getMaxTime() /
 //       1E9));
       // System.out.println("Max put rate = " +
       // calculateGetRate(averageMinGetTime));
-      System.out.println("Ave get latest value rate = " + this.calculatedGetsPerSec);
+      System.out.println("Setting rate to " + this.calculatedGetsPerSec);
       // System.out.println("Min put rate = " +
       // calculateGetRate(averageMaxGetTime));
       this.timer = new Timer("throughput");

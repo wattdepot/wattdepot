@@ -40,12 +40,12 @@ import org.wattdepot.common.util.logger.WattDepotLoggerUtil;
  * @author Cam Moore
  * 
  */
-public class FindGetValueDateDateThroughput extends TimerTask {
+public class FindGetEarliestValueThroughput extends TimerTask {
 
   /** Manages the GetLatestValueTasks. */
   private Timer timer;
-  /** The GetLatestValueTask we will sample. */
-  private GetValueDateDateTask sampleTask;
+  /** The GetEarliestValueTask we will sample. */
+  private GetEarliestValueTask sampleTask;
   /** The WattDepot server's URI. */
   private String serverUri;
   /** The WattDepot User. */
@@ -78,7 +78,7 @@ public class FindGetValueDateDateThroughput extends TimerTask {
    * @throws IdNotFoundException if the processId is not defined.
    * @throws BadSensorUriException if the Sensor's URI isn't valid.
    */
-  public FindGetValueDateDateThroughput(String serverUri, String username, String orgId,
+  public FindGetEarliestValueThroughput(String serverUri, String username, String orgId,
       String password, boolean debug) throws BadCredentialException, IdNotFoundException,
       BadSensorUriException {
     this.serverUri = serverUri;
@@ -93,7 +93,7 @@ public class FindGetValueDateDateThroughput extends TimerTask {
     this.averageMinGetTime = new DescriptiveStatistics();
     this.averageGetTime = new DescriptiveStatistics();
     this.timer = new Timer("throughput");
-    this.sampleTask = new GetValueDateDateTask(serverUri, username, orgId, password, debug);
+    this.sampleTask = new GetEarliestValueTask(serverUri, username, orgId, password, debug);
     // Starting at 1 get/second
     this.timer.schedule(sampleTask, 0, 1000);
   }
@@ -180,7 +180,7 @@ public class FindGetValueDateDateThroughput extends TimerTask {
     }
 
     Timer t = new Timer("monitoring");
-    t.schedule(new FindGetValueDateDateThroughput(serverUri, username, organizationId, password,
+    t.schedule(new FindGetEarliestValueThroughput(serverUri, username, organizationId, password,
         debug), 0, numSamples * 1000);
   }
 
@@ -206,7 +206,7 @@ public class FindGetValueDateDateThroughput extends TimerTask {
       this.getsPerSec = calculatedGetsPerSec;
       // System.out.println("Min put time = " + (sampleTask.getMinGetTime() /
       // 1E9));
-      System.out.println("Ave get value (date, date) time = " + (this.sampleTask.getAverageTime() / 1E9) + " => "
+      System.out.println("Ave get earliest value time = " + (this.sampleTask.getAverageTime() / 1E9) + " => "
           + Math.round(1.0 / (this.sampleTask.getAverageTime() / 1E9)) + " gets/sec.");
       // System.out.println("Max put time = " + (sampleTask.getMaxGetTime() /
       // 1E9));
@@ -222,7 +222,7 @@ public class FindGetValueDateDateThroughput extends TimerTask {
       // }
       for (int i = 0; i < getsPerSec; i++) {
         try {
-          this.sampleTask = new GetValueDateDateTask(serverUri, username, orgId, password, debug);
+          this.sampleTask = new GetEarliestValueTask(serverUri, username, orgId, password, debug);
           timer.schedule(sampleTask, 0, 1000);
           if (debug) {
             System.out.println("Starting task " + i);
