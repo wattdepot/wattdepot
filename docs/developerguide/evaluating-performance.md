@@ -15,6 +15,16 @@ There are several goals for WattDepot performance evaluation. We want to answer 
 5. What are the answers to all of these questions on different platform installations (local machine, Mopsa, Heroku, ...)?
 
 
+
+## Performance Evaluation Tools
+
+We have provided several tools to help evaluate WattDepot's performance for several low level operations. These operations are:
+
+* Put a measurement.
+* Get an interpolated value at a given time.
+* Get an interpolated value from a start time to an end time.
+
+
 ## Real World Scenarios
 
 We've used WattDepot in two distinct real world situations.  Supporting the Kukui Cup at University of Hawaii, Manoa and Hawaii Pacific University. <link to documentation?>
