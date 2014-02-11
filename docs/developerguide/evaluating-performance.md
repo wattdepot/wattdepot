@@ -55,8 +55,11 @@ First, start the WattDepot server. Use the Administration UI to ensure that you 
 Second, choose the tool performance evaluation you want to run, Measurements, Earliest value, Latest value, Value at a given time, or Value from one time to another. We do not recommend running more than two of these tools at the same time. They can overload your WattDepot server. 
 
 For example if you run the following:
+
     $ java -cp wattdepot-3.0.0-M9.jar org.wattdepot.client.http.api.performance.FindGetValueDateThroughput -s http://localhost:8192/ -u cmoore -p secret -o uh -n 15
+
 You should see something like:
+
     Starting the Apache HTTP client
     Stopping the HTTP client
     Ave get value (date) time = 0.04042766666666667 => 25 gets/sec.
@@ -71,6 +74,7 @@ You should see something like:
     Setting rate to 55
     Ave get value (date) time = 0.010520545454545454 => 95 gets/sec.
     Setting rate to 59
+
 Every 15 second two more lines are added to the output.  The output tells you what the average time it to perform the operation was and how many operations/second this results in. The second line tells you what the rate the tool is setting to get the next set of performance data.
 
 
