@@ -20,9 +20,58 @@ There are several goals for WattDepot performance evaluation. We want to answer 
 
 We have provided several tools to help evaluate WattDepot's performance for several low level operations. These operations are:
 
-* Put a measurement.
-* Get an interpolated value at a given time.
-* Get an interpolated value from a start time to an end time.
+* Put a measurement. Storing data in WattDepot.
+* Get the earliest value. Information about the measurements in WattDepot.
+* Get the latest value. This is typically how you would get the current power.
+* Get a value at a given time. This is generally how you would get the power or temperature at a given time.
+* Get a value from a start time to an end time. This is generally how you would calculate the Energy used.
+
+In the package
+    org.wattdepot.client.http.api.performance
+you will find five programs:
+    FindMeasurementThroughput    
+    FindGetEarliestValueThroughput
+    FindGetLatestValueThroughput
+    FindGetValueDateThroughput
+    FindGetValueDateDateThroughput
+
+Each of the programs have the same command line arguments.
+
+-s <server URI>
+: The URI to the WattDepot server. e.g. http://server.wattdepot.org:8192/
+-u <username>
+: The User Id of a defined WattDepot user.
+-p <password>
+: The User's password, used to connect to the WattDepot server.
+-o <organizationId>
+: The User's organization id.
+-n <numSeconds>
+: The number of seconds to run before checking the performance rates. We recommend values between 15 and 90. Shorter doesn't let the threads run often enough. Longer an you have to wait too long to see results.
+
+### Using the tools
+
+First, start the WattDepot server. Use the Administration UI to ensure that you have an Organization and user defined to run the performance evaluation.
+
+Second, choose the tool performance evaluation you want to run, Measurements, Earliest value, Latest value, Value at a given time, or Value from one time to another. We do not recommend running more than two of these tools at the same time. They can overload your WattDepot server. 
+
+For example if you run the following:
+    $ java -cp wattdepot-3.0.0-M9.jar org.wattdepot.client.http.api.performance.FindGetValueDateThroughput -s http://localhost:8192/ -u cmoore -p secret -o uh -n 15
+You should see something like:
+    Starting the Apache HTTP client
+    Stopping the HTTP client
+    Ave get value (date) time = 0.04042766666666667 => 25 gets/sec.
+    Setting rate to 25
+    Ave get value (date) time = 0.016198 => 62 gets/sec.
+    Setting rate to 35
+    Ave get value (date) time = 0.012042333333333334 => 83 gets/sec.
+    Setting rate to 44
+    Ave get value (date) time = 0.011197 => 89 gets/sec.
+    Setting rate to 50
+    Ave get value (date) time = 0.011237909090909092 => 89 gets/sec.
+    Setting rate to 55
+    Ave get value (date) time = 0.010520545454545454 => 95 gets/sec.
+    Setting rate to 59
+Every 15 second two more lines are added to the output.  The output tells you what the average time it to perform the operation was and how many operations/second this results in. The second line tells you what the rate the tool is setting to get the next set of performance data.
 
 
 ## Real World Scenarios
