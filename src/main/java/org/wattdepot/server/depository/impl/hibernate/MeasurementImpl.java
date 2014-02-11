@@ -30,6 +30,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Index;
 import org.wattdepot.common.domainmodel.Measurement;
 
 /**
@@ -52,6 +53,7 @@ public class MeasurementImpl {
   @ManyToOne
   private SensorImpl sensor;
   /** The time of the measurement. */
+  @Index(name = "IDX_MEAS_TIME")
   private Date timestamp;
   /** The value of the measurement. */
   private Double value;

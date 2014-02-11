@@ -10,7 +10,7 @@
 <link rel="stylesheet/less" type="text/css" href="/webroot/dist/css/style.less">
 <script src="/webroot/dist/js/less-1.3.0.min.js"></script>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="https://code.jquery.com/jquery.js"></script>
+<script src="/webroot/dist/js/jquery.js"></script>
 <script src="/webroot/dist/js/bootstrap.min.js"></script>
 <script src="/webroot/dist/js/wattdepot-organization-admin.js"></script>
 
