@@ -2156,7 +2156,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
         .createQuery(
             "FROM MeasurementImpl WHERE timestamp = :time AND depository = :depot AND sensor = :sensor")
         .setParameter("time", timestamp).setParameter("depot", depot)
-        .setParameter("sensor", sensor).list();
+        .setParameter("sensor", sensor).setMaxResults(1).list();
     if (result.size() > 0) {
       ret = result.get(0).getValue();
     }
@@ -2165,14 +2165,14 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       @SuppressWarnings("unchecked")
       List<MeasurementImpl> before = (List<MeasurementImpl>) session
           .createQuery(
-              "FROM MeasurementImpl WHERE timestamp <= :time AND depository = :depot AND sensor = :sensor")
+              "FROM MeasurementImpl WHERE timestamp <= :time AND depository = :depot AND sensor = :sensor ORDER BY timestamp desc")
           .setParameter("time", timestamp).setParameter("depot", depot)
-          .setParameter("sensor", sensor).list();
+          .setParameter("sensor", sensor).setMaxResults(1).list();
       @SuppressWarnings("unchecked")
       List<MeasurementImpl> after = (List<MeasurementImpl>) session
           .createQuery(
-              "FROM MeasurementImpl WHERE timestamp >= :time AND depository = :depot AND sensor = :sensor")
-          .setParameter("time", timestamp).setParameter("depot", depot)
+              "FROM MeasurementImpl WHERE timestamp >= :time AND depository = :depot AND sensor = :sensor ORDER BY timestamp asc")
+          .setParameter("time", timestamp).setMaxResults(1).setParameter("depot", depot)
           .setParameter("sensor", sensor).list();
       MeasurementImpl justBefore = null;
       for (MeasurementImpl b : before) {

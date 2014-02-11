@@ -1,5 +1,5 @@
 /**
- * PutMeasurementTask.java This file is part of WattDepot.
+ * GetLatestValueTask.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
  *
@@ -18,27 +18,20 @@
  */
 package org.wattdepot.client.http.api.performance;
 
-import java.util.Date;
-
-import javax.measure.unit.Unit;
-
-import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.BadSensorUriException;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.exception.MeasurementTypeException;
 
 /**
- * PutMeasurementTask stores a Measurement using the WattDepotClient. Records
- * the amount of time the puts take.
+ * GetLatestValueTask gets the latest value from the WattDepot Server.
  * 
  * @author Cam Moore
  * 
  */
-public class PutMeasurementTask extends PerformanceTimedTask {
+public class GetLatestValueTask extends PerformanceTimedTask {
 
   /**
-   * Initializes the PutMeasurementTask.
+   * Initializes the GetLatestValueTask.
    * 
    * @param serverUri The URI for the WattDepot server.
    * @param username The name of a user defined in the WattDepot server.
@@ -50,36 +43,18 @@ public class PutMeasurementTask extends PerformanceTimedTask {
    * @throws IdNotFoundException if the processId is not defined.
    * @throws BadSensorUriException if the Sensor's URI isn't valid.
    */
-  public PutMeasurementTask(String serverUri, String username, String orgId, String password,
-      boolean debug) throws BadCredentialException, IdNotFoundException,
-      BadSensorUriException {
+  public GetLatestValueTask(String serverUri, String username, String orgId, String password,
+      boolean debug) throws BadCredentialException, IdNotFoundException, BadSensorUriException {
     super(serverUri, username, orgId, password, debug);
   }
 
-  /**
-   * @return Generates a fake Measurement with the current time.
-   */
-  private Measurement generateFakeMeasurement() {
-    Date now = new Date();
-    Unit<?> unit = Unit.valueOf(this.depository.getMeasurementType().getUnits());
-    Measurement ret = new Measurement(this.definition.getSensorId(), now,
-        (25.0 - 50 * Math.random()) + 1000.0, unit);
-    return ret;
-  }
 
   /* (non-Javadoc)
    * @see org.wattdepot.client.http.api.performance.PerformanceTimedTask#clientTask()
    */
   @Override
   public void clientTask() {
-    Measurement meas = generateFakeMeasurement();
-    try {
-      this.client.putMeasurement(depository, meas);
-    }
-    catch (MeasurementTypeException e) { // NOPMD
-      // shouldn't happen
-      e.printStackTrace();
-    }
+    this.client.getLatestValue(depository, sensor);
   }
 
 }

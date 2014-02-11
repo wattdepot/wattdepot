@@ -1,5 +1,5 @@
 /**
- * PutMeasurementTask.java This file is part of WattDepot.
+ * GetLatestValueTask.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
  *
@@ -20,25 +20,24 @@ package org.wattdepot.client.http.api.performance;
 
 import java.util.Date;
 
-import javax.measure.unit.Unit;
-
-import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.BadSensorUriException;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.exception.MeasurementTypeException;
+import org.wattdepot.common.exception.NoMeasurementException;
 
 /**
- * PutMeasurementTask stores a Measurement using the WattDepotClient. Records
- * the amount of time the puts take.
+ * GetLatestValueTask gets the latest value from the WattDepot Server.
  * 
  * @author Cam Moore
  * 
  */
-public class PutMeasurementTask extends PerformanceTimedTask {
+public class GetValueDateTask extends PerformanceTimedTask {
+
+  /** The time of the value to retrieve. */
+  private Date timestamp;
 
   /**
-   * Initializes the PutMeasurementTask.
+   * Initializes the GetLatestValueTask.
    * 
    * @param serverUri The URI for the WattDepot server.
    * @param username The name of a user defined in the WattDepot server.
@@ -50,21 +49,13 @@ public class PutMeasurementTask extends PerformanceTimedTask {
    * @throws IdNotFoundException if the processId is not defined.
    * @throws BadSensorUriException if the Sensor's URI isn't valid.
    */
-  public PutMeasurementTask(String serverUri, String username, String orgId, String password,
-      boolean debug) throws BadCredentialException, IdNotFoundException,
-      BadSensorUriException {
+  public GetValueDateTask(String serverUri, String username, String orgId, String password,
+      boolean debug) throws BadCredentialException, IdNotFoundException, BadSensorUriException {
     super(serverUri, username, orgId, password, debug);
-  }
+    Date latest = client.getLatestValue(depository, sensor).getDate();
+    Date earliest = client.getEarliestValue(depository, sensor).getDate();
+    this.timestamp = new Date((latest.getTime() + earliest.getTime()) / 2);
 
-  /**
-   * @return Generates a fake Measurement with the current time.
-   */
-  private Measurement generateFakeMeasurement() {
-    Date now = new Date();
-    Unit<?> unit = Unit.valueOf(this.depository.getMeasurementType().getUnits());
-    Measurement ret = new Measurement(this.definition.getSensorId(), now,
-        (25.0 - 50 * Math.random()) + 1000.0, unit);
-    return ret;
   }
 
   /* (non-Javadoc)
@@ -72,13 +63,11 @@ public class PutMeasurementTask extends PerformanceTimedTask {
    */
   @Override
   public void clientTask() {
-    Measurement meas = generateFakeMeasurement();
     try {
-      this.client.putMeasurement(depository, meas);
+      this.client.getValue(depository, sensor, timestamp);
     }
-    catch (MeasurementTypeException e) { // NOPMD
-      // shouldn't happen
-      e.printStackTrace();
+    catch (NoMeasurementException nme) {
+      nme.printStackTrace();
     }
   }
 

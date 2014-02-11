@@ -165,8 +165,8 @@ public class RampingMeasurements extends TimerTask {
     this.timer = null;
     this.numRuns += 1;
     System.out.println("put " + task.getNumberOfRuns() + " measurements with average time of "
-        + (task.getAveragePutTime() / 1E9) + " seconds per put. Max of " + task.getMaxPutTime()
-        + " min " + task.getMinPutTime());
+        + (task.getAverageTime() / 1E9) + " seconds per put. Max of " + task.getMaxTime()
+        + " min " + task.getMinTime());
     if (this.milliseconds > 101) {
       this.milliseconds = this.milliseconds - 100;
       this.timer = new Timer("T-" + numRuns);
@@ -189,8 +189,8 @@ public class RampingMeasurements extends TimerTask {
     }
     else {
       System.out.println("put " + task.getNumberOfRuns() + " measurements with average time of "
-          + (task.getAveragePutTime() / 1E9) + " seconds per put. Max of " + task.getMaxPutTime()
-          + " min " + task.getMinPutTime());
+          + (task.getAverageTime() / 1E9) + " seconds per put. Max of " + task.getMaxTime()
+          + " min " + task.getMinTime());
       System.out.println("Done.");
     }
 

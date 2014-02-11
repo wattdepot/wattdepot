@@ -1,7 +1,7 @@
 /**
- * FindMeasurementThroughput.java This file is part of WattDepot.
+ * FindGetLatestValueThroughput.java This file is part of WattDepot.
  *
- * Copyright (C) 2013  Cam Moore
+ * Copyright (C) 2014  Cam Moore
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,18 +34,18 @@ import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.util.logger.WattDepotLoggerUtil;
 
 /**
- * FindMeasurementThroughput - Attempts to determine the maximum rate of storing
- * Measurements in a WattDepot installation.
+ * FindGetLatestValueThroughput - Attempts to determine the maximum rate of
+ * getting the Latest value for a Sensor in a WattDepot installation.
  * 
  * @author Cam Moore
  * 
  */
-public class FindMeasurementThroughput extends TimerTask {
+public class FindGetValueDateDateThroughput extends TimerTask {
 
-  /** Manages the PutMeasurementTasks. */
+  /** Manages the GetLatestValueTasks. */
   private Timer timer;
-  /** The PutMeasurementTask we will sample. */
-  private PutMeasurementTask sampleTask;
+  /** The GetLatestValueTask we will sample. */
+  private GetValueDateDateTask sampleTask;
   /** The WattDepot server's URI. */
   private String serverUri;
   /** The WattDepot User. */
@@ -58,15 +58,15 @@ public class FindMeasurementThroughput extends TimerTask {
   private boolean debug;
   /** The number of times we've checked the stats. */
   private Integer numChecks;
-  private DescriptiveStatistics averagePutTime;
-  private DescriptiveStatistics averageMinPutTime;
-  private DescriptiveStatistics averageMaxPutTime;
+  private DescriptiveStatistics averageGetTime;
+  private DescriptiveStatistics averageMinGetTime;
+  private DescriptiveStatistics averageMaxGetTime;
 
-  private Long measPerSec;
-  private Long calculatedMeasPerSec;
+  private Long getsPerSec;
+  private Long calculatedGetsPerSec;
 
   /**
-   * Initializes the FindMeasurementThroughput instance.
+   * Initializes the FindGetLatestValueThroughput instance.
    * 
    * @param serverUri The URI for the WattDepot server.
    * @param username The name of a user defined in the WattDepot server.
@@ -78,7 +78,7 @@ public class FindMeasurementThroughput extends TimerTask {
    * @throws IdNotFoundException if the processId is not defined.
    * @throws BadSensorUriException if the Sensor's URI isn't valid.
    */
-  public FindMeasurementThroughput(String serverUri, String username, String orgId,
+  public FindGetValueDateDateThroughput(String serverUri, String username, String orgId,
       String password, boolean debug) throws BadCredentialException, IdNotFoundException,
       BadSensorUriException {
     this.serverUri = serverUri;
@@ -87,14 +87,14 @@ public class FindMeasurementThroughput extends TimerTask {
     this.password = password;
     this.debug = debug;
     this.numChecks = 0;
-    this.measPerSec = 1l;
-    this.calculatedMeasPerSec = 1l;
-    this.averageMaxPutTime = new DescriptiveStatistics();
-    this.averageMinPutTime = new DescriptiveStatistics();
-    this.averagePutTime = new DescriptiveStatistics();
+    this.getsPerSec = 1l;
+    this.calculatedGetsPerSec = 1l;
+    this.averageMaxGetTime = new DescriptiveStatistics();
+    this.averageMinGetTime = new DescriptiveStatistics();
+    this.averageGetTime = new DescriptiveStatistics();
     this.timer = new Timer("throughput");
-    this.sampleTask = new PutMeasurementTask(serverUri, username, orgId, password, debug);
-    // Starting at 1 meas/second
+    this.sampleTask = new GetValueDateDateTask(serverUri, username, orgId, password, debug);
+    // Starting at 1 get/second
     this.timer.schedule(sampleTask, 0, 1000);
   }
 
@@ -171,7 +171,7 @@ public class FindMeasurementThroughput extends TimerTask {
     }
     debug = cmd.hasOption("d");
     if (debug) {
-      System.out.println("Measurement Throughput:");
+      System.out.println("GetLatestValue Throughput:");
       System.out.println("    WattDepotServer: " + serverUri);
       System.out.println("    Username: " + username);
       System.out.println("    OrganizationId: " + organizationId);
@@ -180,8 +180,8 @@ public class FindMeasurementThroughput extends TimerTask {
     }
 
     Timer t = new Timer("monitoring");
-    t.schedule(new FindMeasurementThroughput(serverUri, username, organizationId, password, debug),
-        0, numSamples * 1000);
+    t.schedule(new FindGetValueDateDateThroughput(serverUri, username, organizationId, password,
+        debug), 0, numSamples * 1000);
   }
 
   /*
@@ -199,30 +199,30 @@ public class FindMeasurementThroughput extends TimerTask {
     else {
       this.timer.cancel();
       this.numChecks++;
-      this.averagePutTime.addValue((sampleTask.getAverageTime() / 1E9));
-      this.averageMinPutTime.addValue((sampleTask.getMinTime() / 1E9));
-      this.averageMaxPutTime.addValue((sampleTask.getMaxTime() / 1E9));
-      this.calculatedMeasPerSec = calculatePutRate(averagePutTime);
-      this.measPerSec = calculatedMeasPerSec;
-      // System.out.println("Min put time = " + (sampleTask.getMinPutTime() /
+      this.averageGetTime.addValue((sampleTask.getAverageTime() / 1E9));
+      this.averageMinGetTime.addValue((sampleTask.getMinTime() / 1E9));
+      this.averageMaxGetTime.addValue((sampleTask.getMaxTime() / 1E9));
+      this.calculatedGetsPerSec = calculateGetRate(averageGetTime);
+      this.getsPerSec = calculatedGetsPerSec;
+      // System.out.println("Min put time = " + (sampleTask.getMinGetTime() /
       // 1E9));
-      System.out.println("Ave put time = " + (this.sampleTask.getAverageTime() / 1E9) + " => "
-          + Math.round(1.0 / (this.sampleTask.getAverageTime() / 1E9)) + " meas/sec.");
-      // System.out.println("Max put time = " + (sampleTask.getMaxPutTime() /
+      System.out.println("Ave get latest value time = " + (this.sampleTask.getAverageTime() / 1E9) + " => "
+          + Math.round(1.0 / (this.sampleTask.getAverageTime() / 1E9)) + " gets/sec.");
+      // System.out.println("Max put time = " + (sampleTask.getMaxGetTime() /
       // 1E9));
       // System.out.println("Max put rate = " +
-      // calculatePutRate(averageMinPutTime));
-      System.out.println("Ave put rate = " + this.calculatedMeasPerSec);
+      // calculateGetRate(averageMinGetTime));
+      System.out.println("Ave get latest value rate = " + this.calculatedGetsPerSec);
       // System.out.println("Min put rate = " +
-      // calculatePutRate(averageMaxPutTime));
+      // calculateGetRate(averageMaxGetTime));
       this.timer = new Timer("throughput");
       // if (debug) {
       // System.out.println("Starting " + this.measPerSec +
       // " threads @ 1 meas/s");
       // }
-      for (int i = 0; i < measPerSec; i++) {
+      for (int i = 0; i < getsPerSec; i++) {
         try {
-          this.sampleTask = new PutMeasurementTask(serverUri, username, orgId, password, debug);
+          this.sampleTask = new GetValueDateDateTask(serverUri, username, orgId, password, debug);
           timer.schedule(sampleTask, 0, 1000);
           if (debug) {
             System.out.println("Starting task " + i);
@@ -246,7 +246,7 @@ public class FindMeasurementThroughput extends TimerTask {
    * @return The estimated put rate based upon the time it takes to put a single
    *         measurement.
    */
-  private Long calculatePutRate(DescriptiveStatistics stats) {
+  private Long calculateGetRate(DescriptiveStatistics stats) {
     double putTime = stats.getMean();
     Long ret = null;
     double numPuts = 1.0 / putTime;
