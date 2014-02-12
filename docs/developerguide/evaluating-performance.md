@@ -27,8 +27,11 @@ We have provided several tools to help evaluate WattDepot's performance for seve
 * Get a value from a start time to an end time. This is generally how you would calculate the Energy used.
 
 In the package
+
     org.wattdepot.client.http.api.performance
+
 you will find five programs:
+
     FindMeasurementThroughput    
     FindGetEarliestValueThroughput
     FindGetLatestValueThroughput
@@ -37,20 +40,27 @@ you will find five programs:
 
 Each of the programs have the same command line arguments.
 
--s <server URI>
+* -s <server URI>
 : The URI to the WattDepot server. e.g. http://server.wattdepot.org:8192/
--u <username>
+
+* -u <username>
 : The User Id of a defined WattDepot user.
--p <password>
+
+* -p <password>
 : The User's password, used to connect to the WattDepot server.
--o <organizationId>
+
+* -o <organizationId>
 : The User's organization id.
--n <numSeconds>
-: The number of seconds to run before checking the performance rates. We recommend values between 15 and 90. Shorter doesn't let the threads run often enough. Longer an you have to wait too long to see results.
+
+* -n <numSeconds>
+: The number of seconds to run before checking the performance rates. We recommend values between 15 and 90. Shorter doesn't let the threads run often enough for a good average. Longer an you have to wait too long to see results.
+
+The programs start a monitoring thread that wakes up every *numSeconds* and checks the average time it took to perform the operation. The monitoring thread then calculates a new rate for the number of operations per second. The new rate is the average of the previous average times. Since it is an average of averages, the rate should slowly converge on the maximum rate possible. The monitoring thread then starts up the new rate worker threads that perform the operation once a second.
+
 
 ### Using the tools
 
-First, start the WattDepot server. Use the Administration UI to ensure that you have an Organization and user defined to run the performance evaluation.
+First, start the WattDepot server. Use the Administration UI to ensure that you have an Organization and User defined to run the performance evaluation.
 
 Second, choose the tool performance evaluation you want to run, Measurements, Earliest value, Latest value, Value at a given time, or Value from one time to another. We do not recommend running more than two of these tools at the same time. They can overload your WattDepot server. 
 
@@ -75,7 +85,9 @@ You should see something like:
     Ave get value (date) time = 0.010520545454545454 => 95 gets/sec.
     Setting rate to 59
 
-Every 15 second two more lines are added to the output.  The output tells you what the average time it to perform the operation was and how many operations/second this results in. The second line tells you what the rate the tool is setting to get the next set of performance data.
+Every 15 second two more lines are added to the output.  The output tells you what the average time it to perform the operation was and how many operations/second this results in. The second line tells you what the rate the tool is setting to get the next set of performance data. 
+
+The above data shows that we can perform about 90 get value at a given time operations per second.
 
 
 ## Real World Scenarios
