@@ -60,9 +60,13 @@ The programs start a monitoring thread that wakes up every *numSeconds* and chec
 
 ### Using the tools
 
-First, start the WattDepot server. Use the Administration UI to ensure that you have an Organization and User defined to run the performance evaluation.
-
-Second, choose the tool performance evaluation you want to run, Measurements, Earliest value, Latest value, Value at a given time, or Value from one time to another. We do not recommend running more than two of these tools at the same time. They can overload your WattDepot server. 
+1. Install WattDepot following the [installation instructions](installationguide/installation). You need to install version 3.0.0-M9 or above.
+2. For performance testing we recommend you reduce the logging to a minimum. In the wattdepot-server.properties file change the *wattdepot-server.loggin.level* to SEVERE.
+3. [Start the WattDepot server](installationguide/installation#Run the server). 
+4. Define an Organization and User to use in the performance testing. Remember the User's password, we'll use it later.
+5. Choose the performance evaluation(s) you want to run, Measurements, Earliest value, Latest value, Value at a given time, or Value from one time to another. 
+  * We do not recommend running more than three of these tools at the same time. They can overload your WattDepot server.
+  * We recommend you run the Measurements with the Get Values. This simulates a more realistic scenario, getting values while measurements are being added to the Server.  
 
 For example if you run the following:
 
@@ -88,6 +92,19 @@ You should see something like:
 Every 15 second two more lines are added to the output.  The output tells you what the average time it to perform the operation was and how many operations/second this results in. The second line tells you what the rate the tool is setting to get the next set of performance data. 
 
 The above data shows that we can perform about 90 get value at a given time operations per second.
+
+6. Record your results.
+
+### Methodology
+
+#### Setting up performance evaluation
+
+5. In a new shell start up the StressTestCollector.
+    
+    $ java -cp wattdepot-*version*.jar org.wattdepot.client.http.api.collector.StressTestCollector -s *server URI* -u *userId* -p *password* -o *organizationId* -n *numThreads* -m *sleep*
+
+6. Open the 
+
 
 
 ## Real World Scenarios
@@ -134,19 +151,6 @@ PowerMeter calls *server_url + "/depository/power/value/gviz/?sensor=" + source 
 #### WattDepot Queries
 
 
-## Methodology
-
-### Setting up performance evaluation
-
-1. Install WattDepot following the [installation instructions](installationguide/installation). You need to install version 3.0.0-M8 or above.
-2. For performance testing we recommend you reduce the logging to a minimum. In the wattdepot-server.properties file change the *wattdepot-server.loggin.level* to SEVERE.
-3. [Start the WattDepot server](installationguide/installation#Run the server). 
-4. Define an Organization and User to use in the performance testing. Remember the User's password, we'll use it later.
-5. In a new shell start up the StressTestCollector.
-    
-    $ java -cp wattdepot-*version*.jar org.wattdepot.client.http.api.collector.StressTestCollector -s *server URI* -u *userId* -p *password* -o *organizationId* -n *numThreads* -m *sleep*
-
-6. Open the 
 
 ## Results
 
