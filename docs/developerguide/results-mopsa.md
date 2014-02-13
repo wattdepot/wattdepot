@@ -23,4 +23,16 @@ The second runs were with the Put Measurements running and a single Get tool run
 | Put Measurement        | 24.7 puts / second.         |
 
 
+The second set of tests were run from my Windows PC at home in Kailua. It is a Windows 7 Home Premium machine with a Intel Core i7-3770 3.4 GHz CPU with 16 GB Ram. My desktop is connected to RoadRunner cable Internet.
+
+The test I ran were just single performance tools running alone.
+
+| Performance Tool       | Average operations / second |
+| ---------------------- | --------------------------- |
+| Put Measurement        | 14.4 puts / second.         |
+| Get Value (date)       | 15.2 gets / second.         |
+| Get Value (date, date) | 13.6 gets / second.         |
+| Get Earliest Value     | 14.2 gets / second.         |
+| Get Latest Value       | 15.4 gets / second.         |
+
 
