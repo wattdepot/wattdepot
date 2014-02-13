@@ -136,7 +136,7 @@ public class GetDateValueThroughput extends TimerTask {
       System.exit(1);
     }
     if (cmd.hasOption("h")) {
-      formatter.printHelp("RampingMeasurements", options);
+      formatter.printHelp("GetDateValueThroughput", options);
       System.exit(0);
     }
     if (cmd.hasOption("s")) {
