@@ -93,18 +93,7 @@ Every 15 second two more lines are added to the output.  The output tells you wh
 
 The above data shows that we can perform about 90 get value at a given time operations per second.
 
-6. Record your results.
-
-### Methodology
-
-#### Setting up performance evaluation
-
-5. In a new shell start up the StressTestCollector.
-    
-    $ java -cp wattdepot-*version*.jar org.wattdepot.client.http.api.collector.StressTestCollector -s *server URI* -u *userId* -p *password* -o *organizationId* -n *numThreads* -m *sleep*
-
-6. Open the 
-
+Record your results.
 
 
 ## Real World Scenarios
@@ -153,5 +142,5 @@ PowerMeter calls *server_url + "/depository/power/value/gviz/?sensor=" + source 
 
 
 ## Results
+[Feb 12th 2014 Mopsa Server](developerguide/results-mopsa)
 
-what the results of prior performance evaluation runs have been.
