@@ -1,5 +1,5 @@
 /**
- * FindMeasurementThroughput.java This file is part of WattDepot.
+ * PutThroughput.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -34,18 +34,18 @@ import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.util.logger.WattDepotLoggerUtil;
 
 /**
- * FindMeasurementThroughput - Attempts to determine the maximum rate of storing
+ * PutThroughput - Attempts to determine the maximum rate of storing
  * Measurements in a WattDepot installation.
  * 
  * @author Cam Moore
  * 
  */
-public class FindMeasurementThroughput extends TimerTask {
+public class PutThroughput extends TimerTask {
 
-  /** Manages the PutMeasurementTasks. */
+  /** Manages the PutTasks. */
   private Timer timer;
-  /** The PutMeasurementTask we will sample. */
-  private PutMeasurementTask sampleTask;
+  /** The PutTask we will sample. */
+  private PutTask sampleTask;
   /** The WattDepot server's URI. */
   private String serverUri;
   /** The WattDepot User. */
@@ -66,7 +66,7 @@ public class FindMeasurementThroughput extends TimerTask {
   private Long calculatedMeasPerSec;
 
   /**
-   * Initializes the FindMeasurementThroughput instance.
+   * Initializes the PutThroughput instance.
    * 
    * @param serverUri The URI for the WattDepot server.
    * @param username The name of a user defined in the WattDepot server.
@@ -78,7 +78,7 @@ public class FindMeasurementThroughput extends TimerTask {
    * @throws IdNotFoundException if the processId is not defined.
    * @throws BadSensorUriException if the Sensor's URI isn't valid.
    */
-  public FindMeasurementThroughput(String serverUri, String username, String orgId,
+  public PutThroughput(String serverUri, String username, String orgId,
       String password, boolean debug) throws BadCredentialException, IdNotFoundException,
       BadSensorUriException {
     this.serverUri = serverUri;
@@ -93,7 +93,7 @@ public class FindMeasurementThroughput extends TimerTask {
     this.averageMinPutTime = new DescriptiveStatistics();
     this.averagePutTime = new DescriptiveStatistics();
     this.timer = new Timer("throughput");
-    this.sampleTask = new PutMeasurementTask(serverUri, username, orgId, password, debug);
+    this.sampleTask = new PutTask(serverUri, username, orgId, password, debug);
     // Starting at 1 meas/second
     this.timer.schedule(sampleTask, 0, 1000);
   }
@@ -118,7 +118,7 @@ public class FindMeasurementThroughput extends TimerTask {
     Integer numSamples = null;
     boolean debug = false;
 
-    options.addOption("h", false, "Usage: FindMeasurementThroughput -s <server uri> -u <username>"
+    options.addOption("h", false, "Usage: PutThroughput -s <server uri> -u <username>"
         + " -p <password> -o <orgId> [-d]");
     options.addOption("s", "server", true, "WattDepot Server URI. (http://server.wattdepot.org)");
     options.addOption("u", "username", true, "Username");
@@ -136,7 +136,7 @@ public class FindMeasurementThroughput extends TimerTask {
       System.exit(1);
     }
     if (cmd.hasOption("h")) {
-      formatter.printHelp("RampingMeasurements", options);
+      formatter.printHelp("PutThroughput", options);
       System.exit(0);
     }
     if (cmd.hasOption("s")) {
@@ -171,16 +171,16 @@ public class FindMeasurementThroughput extends TimerTask {
     }
     debug = cmd.hasOption("d");
     if (debug) {
-      System.out.println("Measurement Throughput:");
+      System.out.println("Put Throughput:");
       System.out.println("    WattDepotServer: " + serverUri);
       System.out.println("    Username: " + username);
       System.out.println("    OrganizationId: " + organizationId);
-      System.out.println("    Password: " + password);
+      System.out.println("    Password: ********");
       System.out.println("    Samples: " + numSamples);
     }
 
     Timer t = new Timer("monitoring");
-    t.schedule(new FindMeasurementThroughput(serverUri, username, organizationId, password, debug),
+    t.schedule(new PutThroughput(serverUri, username, organizationId, password, debug),
         0, numSamples * 1000);
   }
 
@@ -222,7 +222,7 @@ public class FindMeasurementThroughput extends TimerTask {
       // }
       for (int i = 0; i < measPerSec; i++) {
         try {
-          this.sampleTask = new PutMeasurementTask(serverUri, username, orgId, password, debug);
+          this.sampleTask = new PutTask(serverUri, username, orgId, password, debug);
           timer.schedule(sampleTask, 0, 1000);
           if (debug) {
             System.out.println("Starting task " + i);

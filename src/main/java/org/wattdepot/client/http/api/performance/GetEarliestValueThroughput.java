@@ -1,5 +1,5 @@
 /**
- * FindGetLatestValueThroughput.java This file is part of WattDepot.
+ * GetEarliestValueThroughput.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
  *
@@ -34,15 +34,15 @@ import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.util.logger.WattDepotLoggerUtil;
 
 /**
- * FindGetLatestValueThroughput - Attempts to determine the maximum rate of
- * getting the Latest value for a Sensor in a WattDepot installation.
+ * GetEarliestValueThroughput - Attempts to determine the maximum rate of
+ * getting the Earliest value for a Sensor in a WattDepot installation.
  * 
  * @author Cam Moore
  * 
  */
-public class FindGetEarliestValueThroughput extends TimerTask {
+public class GetEarliestValueThroughput extends TimerTask {
 
-  /** Manages the GetLatestValueTasks. */
+  /** Manages the GetEarliestValueTasks. */
   private Timer timer;
   /** The GetEarliestValueTask we will sample. */
   private GetEarliestValueTask sampleTask;
@@ -66,7 +66,7 @@ public class FindGetEarliestValueThroughput extends TimerTask {
   private Long calculatedGetsPerSec;
 
   /**
-   * Initializes the FindGetLatestValueThroughput instance.
+   * Initializes the FindGetEarliestValueThroughput instance.
    * 
    * @param serverUri The URI for the WattDepot server.
    * @param username The name of a user defined in the WattDepot server.
@@ -78,7 +78,7 @@ public class FindGetEarliestValueThroughput extends TimerTask {
    * @throws IdNotFoundException if the processId is not defined.
    * @throws BadSensorUriException if the Sensor's URI isn't valid.
    */
-  public FindGetEarliestValueThroughput(String serverUri, String username, String orgId,
+  public GetEarliestValueThroughput(String serverUri, String username, String orgId,
       String password, boolean debug) throws BadCredentialException, IdNotFoundException,
       BadSensorUriException {
     this.serverUri = serverUri;
@@ -171,16 +171,16 @@ public class FindGetEarliestValueThroughput extends TimerTask {
     }
     debug = cmd.hasOption("d");
     if (debug) {
-      System.out.println("GetLatestValue Throughput:");
+      System.out.println("GetEarliestValue Throughput:");
       System.out.println("    WattDepotServer: " + serverUri);
       System.out.println("    Username: " + username);
       System.out.println("    OrganizationId: " + organizationId);
-      System.out.println("    Password: " + password);
+      System.out.println("    Password: ********");
       System.out.println("    Samples: " + numSamples);
     }
 
     Timer t = new Timer("monitoring");
-    t.schedule(new FindGetEarliestValueThroughput(serverUri, username, organizationId, password,
+    t.schedule(new GetEarliestValueThroughput(serverUri, username, organizationId, password,
         debug), 0, numSamples * 1000);
   }
 
