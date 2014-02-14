@@ -114,9 +114,9 @@ public interface WattDepotInterface {
   public void deleteSensorModel(SensorModel model) throws IdNotFoundException;
 
   /**
-   * @return The defined CollectorProcessDefinitionDatas.
+   * @return The defined CollectorProcessDefinitions.
    */
-  public CollectorProcessDefinitionList getCollectorProcessDefinition();
+  public CollectorProcessDefinitionList getCollectorProcessDefinitions();
 
   /**
    * Retrieves the CollectorProcessDefinitionData with the given id from the

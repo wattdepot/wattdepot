@@ -321,7 +321,7 @@ public class WattDepotClient implements WattDepotInterface {
    * org.wattdepot.client.WattDepotInterface#getCollectorProcessDefinitions()
    */
   @Override
-  public CollectorProcessDefinitionList getCollectorProcessDefinition() {
+  public CollectorProcessDefinitionList getCollectorProcessDefinitions() {
     ClientResource client = makeClient(this.organizationId + "/"
         + Labels.COLLECTOR_PROCESS_DEFINITIONS + "/");
     CollectorProcessDefinitionsResource resource = client

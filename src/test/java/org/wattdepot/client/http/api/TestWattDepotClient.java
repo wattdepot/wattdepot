@@ -580,7 +580,7 @@ public class TestWattDepotClient {
   public void testCollectorProcessDefinition() {
     CollectorProcessDefinition data = testCPD;
     // Get list
-    CollectorProcessDefinitionList list = test.getCollectorProcessDefinition();
+    CollectorProcessDefinitionList list = test.getCollectorProcessDefinitions();
     assertNotNull(list);
     assertTrue(list.getDefinitions().size() == 0);
     try {
@@ -596,7 +596,7 @@ public class TestWattDepotClient {
         test.putCollectorProcessDefinition(data);
       }
     }
-    list = test.getCollectorProcessDefinition();
+    list = test.getCollectorProcessDefinitions();
     assertTrue(list.getDefinitions().contains(data));
     try {
       // get instance (READ)
@@ -610,7 +610,7 @@ public class TestWattDepotClient {
       catch (Exception e) { // NOPMD
         // we expect this
       }
-      list = test.getCollectorProcessDefinition();
+      list = test.getCollectorProcessDefinitions();
       assertNotNull(list);
       assertTrue(list.getDefinitions().size() == 1);
       // delete instance (DELETE)
