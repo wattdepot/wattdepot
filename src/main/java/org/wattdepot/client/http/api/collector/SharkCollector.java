@@ -187,7 +187,7 @@ public class SharkCollector extends MultiThreadedCollector {
   }
 
   /**
-   * Processes the command line arguments and starts the eGauge Collector.
+   * Processes the command line arguments and starts the Shark Collector.
    * 
    * @param args
    *          command line arguments.
