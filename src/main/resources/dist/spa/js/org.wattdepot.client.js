@@ -60,7 +60,7 @@ org.WattDepot.Client = function(url) {
       if (xhr.readyState == 4) {
         if (xhr.status == 200) {
           returnThisCallback(xhr.responseText);
-		}
+        }
         else {
           if (errorHandler) {
             errorHandler(xhr);
@@ -88,7 +88,7 @@ org.WattDepot.Client = function(url) {
           obj[xml.attributes[j].nodeName] = xml.attributes[j].nodeValue;  
         }  
       }      
-    }	
+    }
     // check child node  
     if (xml.hasChildNodes()) {
       for(var i = 0; i < xml.childNodes.length; i++) {
@@ -99,9 +99,9 @@ org.WattDepot.Client = function(url) {
         }
         if (xml.childNodes[i].nodeType != 3 || selfClosed) {
           //check if this node name is existed in obj, if not, add 
-          //this node as a property to current obj		  
-          if (typeof(obj[xml.childNodes[i].nodeName]) == 'undefined') {	
-            obj[xml.childNodes[i].nodeName] = xmlToJson(xml.childNodes[i]);			
+          //this node as a property to current obj
+          if (typeof(obj[xml.childNodes[i].nodeName]) == 'undefined') {
+            obj[xml.childNodes[i].nodeName] = xmlToJson(xml.childNodes[i]);
           }
           else {
             //check if there is the array for this node name, if not, create 
@@ -265,8 +265,8 @@ org.WattDepot.Client = function(url) {
     var min = tstamp.substr(0, 2);
     tstamp = tstamp.substr(tstamp.indexOf(":", 0) + 1, tstamp.length);
     var sec = tstamp.substr(0, 2);
-	tstamp = tstamp.substr(tstamp.indexOf(".", 0) + 1, tstamp.length);
-	var milisec = tstamp.substr(0, 3);
+    tstamp = tstamp.substr(tstamp.indexOf(".", 0) + 1, tstamp.length);
+    var milisec = tstamp.substr(0, 3);
     return new Date(year, month - 1, day, hr, min, sec, milisec);
   }
   
@@ -288,7 +288,7 @@ org.WattDepot.Client = function(url) {
    */
   function getServerHealth(callback, errorHandler) {
     var xhr = createXmlHttpRequest();
-    var setting = createGetAjaxSetting(serverUrl + "health");	
+    var setting = createGetAjaxSetting(serverUrl + "health");
     ajaxSend(xhr, setting, callback, errorHandler);
   }
  
@@ -299,7 +299,7 @@ org.WattDepot.Client = function(url) {
    */
   function getAllSource(callback, errorHandler) {
     var xhr = createXmlHttpRequest();
-    var setting = createGetAjaxSetting(serverUrl + "wattdepot/admin/sensors/");	
+    var setting = createGetAjaxSetting(serverUrl + "wattdepot/admin/sensors/");
     ajaxSend(xhr, setting, callback, errorHandler);
   }
   
@@ -313,7 +313,7 @@ org.WattDepot.Client = function(url) {
    */
   function getSourceDetail(source, callback, errorHandler) {
     var xhr = createXmlHttpRequest();
-    var setting = createGetAjaxSetting(serverUrl + "wattdepot/admin/sensor/" + source);	
+    var setting = createGetAjaxSetting(serverUrl + "wattdepot/admin/sensor/" + source);
     ajaxSend(xhr, setting, callback, errorHandler);
   }
   
@@ -327,7 +327,7 @@ org.WattDepot.Client = function(url) {
    */
   function getSourceSummary(source, callback, errorHandler) {
     var xhr = createXmlHttpRequest();
-    var setting = createGetAjaxSetting(serverUrl + "wattdepot/admin/sensor/" + source);	
+    var setting = createGetAjaxSetting(serverUrl + "wattdepot/admin/sensor/" + source);
     ajaxSend(xhr, setting, callback, errorHandler);
   }
   
@@ -341,7 +341,7 @@ org.WattDepot.Client = function(url) {
    */
    function getSourceSensorData(source, callback, errorHandler) {
     var xhr = createXmlHttpRequest();
-    var setting = createGetAjaxSetting(serverUrl + "wattdepot/admin/sensors/" + source + "/sensordata/");	
+    var setting = createGetAjaxSetting(serverUrl + "wattdepot/admin/sensors/" + source + "/sensordata/");
     ajaxSend(xhr, setting, callback, errorHandler);
   }
   
@@ -355,7 +355,7 @@ org.WattDepot.Client = function(url) {
     */
    function getSourceEarliestSensorData(source, callback, errorHandler) {
      var xhr = createXmlHttpRequest();
-     var setting = createGetAjaxSetting(serverUrl + "wattdepot/admin/depository/power/value/?sensor=" + source + "&earliest=true");	
+     var setting = createGetAjaxSetting(serverUrl + "wattdepot/admin/depository/power/value/?sensor=" + source + "&earliest=true");
      ajaxSend(xhr, setting, callback, errorHandler);
    }
    
@@ -369,7 +369,7 @@ org.WattDepot.Client = function(url) {
    */
   function getSourceLatestSensorData(source, callback, errorHandler) {
     var xhr = createXmlHttpRequest();
-    var setting = createGetAjaxSetting(serverUrl + "wattdepot/admin/depository/power/value/?sensor=" + source + "&latest=true");	
+    var setting = createGetAjaxSetting(serverUrl + "wattdepot/admin/depository/power/value/?sensor=" + source + "&latest=true");
     ajaxSend(xhr, setting, callback, errorHandler);
   }
   
@@ -384,7 +384,7 @@ org.WattDepot.Client = function(url) {
    */
   function getSourceSensorDataAt(source, timestamp, callback, errorHandler) {
     var xhr = createXmlHttpRequest();
-    var setting = createGetAjaxSetting(serverUrl + "wattdepot/admin/sensors/" + source + "/sensordata/" + timestamp);	
+    var setting = createGetAjaxSetting(serverUrl + "wattdepot/admin/sensors/" + source + "/sensordata/" + timestamp);
     ajaxSend(xhr, setting, callback, errorHandler);
   }
   
@@ -401,7 +401,7 @@ org.WattDepot.Client = function(url) {
   function getSourceSensorDataBetween(source, startTime, endTime, callback, errorHandler) {
     var xhr = createXmlHttpRequest();
     var urlString = serverUrl + "sources/" + source + "/sensordata/?startTime=" + startTime + "&endTime=" + endTime + "&fetchAll=true";
-    var setting = createGetAjaxSetting(urlString);	
+    var setting = createGetAjaxSetting(urlString);
     ajaxSend(xhr, setting, callback, errorHandler);
   }
   
@@ -416,7 +416,7 @@ org.WattDepot.Client = function(url) {
    */
   function getSourcePowerDataAt(source, timestamp, callback, errorHandler) {
     var xhr = createXmlHttpRequest();
-    var setting = createGetAjaxSetting(serverUrl + "sources/" + source + "/power/" + timestamp);	
+    var setting = createGetAjaxSetting(serverUrl + "sources/" + source + "/power/" + timestamp);
     ajaxSend(xhr, setting, callback, errorHandler);
   }
   
@@ -458,19 +458,19 @@ org.WattDepot.Client = function(url) {
     getJsonNode : getJsonNode,
   
     getUnit : getUnit,
-	
+
     getPropertyValue : getPropertyValue,
-	
+
     getSourceNameFromLink : getSourceNameFromLink,
-	
+
     getTimestampFromDate : getTimestampFromDate,
 
     convertTimestampToDate : convertTimestampToDate,
 
     convertToKW : convertToKW,
-	
+
     getSourceNodeByName : getSourceNodeByName,
-	
+
     getAllSource : getAllSource,
   
     getSourceSensorData : getSourceSensorData,
@@ -480,17 +480,17 @@ org.WattDepot.Client = function(url) {
     getSourceEarliestSensorData : getSourceEarliestSensorData,
 
     getServerHealth : getServerHealth,
-	
+
     getSourceDetail : getSourceDetail,
-	
+
     getSourceSummary : getSourceSummary,
-	
+
     getSourceSensorDataAt : getSourceSensorDataAt,
-	
+
     getSourceSensorDataBetween : getSourceSensorDataBetween,
-	
+
     getSourcePowerDataAt : getSourcePowerDataAt,
-	
+
     getSourceEnergyDataBetween : getSourceEnergyDataBetween,
     
     getCarbonDataBetween : getCarbonDataBetween
