@@ -49,10 +49,9 @@
         <tr>
           <th>Depository</th>
           <th>Sensor Id</th>
+          <th>As of</th>
+          <th>Latest Value</th>
           <th colspan="2">Last Minute</th>
-          <th colspan="2">Last 15 Minutes</th>
-          <th colspan="2">Last Hour</th>
-          <th colspan="2">Last Day</th>
           <th>Total Count</th>
         </tr>
       </thead>
@@ -61,14 +60,10 @@
         <tr>
           <td>${s.depositoryId}</td>
           <td>${s.sensorId}</td>
+          <td>${s.timestamp?datetime}</td>
+          <td>${s.latestValue} ${s.type.getUnits()}</td>
           <td>${s.oneMinuteCount} meas</td>
           <td>${s.oneMinuteRate} meas/sec</td>
-          <td>${s.fifteenMinuteCount} meas</td>
-          <td>${s.fifteenMinuteRate} meas/sec</td>
-          <td>${s.hourCount} meas</td>
-          <td>${s.hourRate} meas/sec</td>
-          <td>${s.dayCount} meas</td>
-          <td>${s.dayRate} meas/sec.</td>
           <td>${s.totalCount} meas</td>
         </tr>
       </#list>

@@ -576,9 +576,10 @@ public abstract class WattDepotPersistence {
    * @param sensorId The Sensor id.
    * @return The current MeasurementRateSummary.
    * @throws IdNotFoundException if there is a problem with the ids.
+   * @throws NoMeasurementException if there aren't any measurements.
    */
   public abstract MeasurementRateSummary getRateSummary(String depotId,
-      String orgId, String sensorId) throws IdNotFoundException;
+      String orgId, String sensorId) throws IdNotFoundException, NoMeasurementException;
 
   /**
    * @param id the unique id for the UserInfo.
