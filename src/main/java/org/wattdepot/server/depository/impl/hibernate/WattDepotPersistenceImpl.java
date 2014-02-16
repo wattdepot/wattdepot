@@ -2442,26 +2442,26 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     ret.setDepositoryId(depotId);
     ret.setSensorId(sensorId);
     ret.setTimestamp(DateConvert.convertXMLCal(now));
-    Long startTime = System.nanoTime();    
+//    Long startTime = System.nanoTime();    
     Long count = getMeasurementsCount(depotId, orgId, sensorId, DateConvert.convertXMLCal(minAgo),
         DateConvert.convertXMLCal(now));
-    Long endTime = System.nanoTime();
-    Long diff = endTime - startTime;
-    System.out.println("getMeasurementCount(minAgo) took " + (diff / 1E9) + " seconds");
+//    Long endTime = System.nanoTime();
+//    Long diff = endTime - startTime;
+//    System.out.println("getMeasurementCount(minAgo) took " + (diff / 1E9) + " seconds");
     ret.setOneMinuteCount(count);
     ret.setOneMinuteRate(count / 60.0);
-    startTime = System.nanoTime();   
+//    startTime = System.nanoTime();   
     InterpolatedValue val = getLatestMeasuredValue(depotId, orgId, sensorId);
-    endTime = System.nanoTime();
-    diff = endTime - startTime;
-    System.out.println("getLatestMeasuredValue() took " + (diff / 1E9) + " seconds");
+//    endTime = System.nanoTime();
+//    diff = endTime - startTime;
+//    System.out.println("getLatestMeasuredValue() took " + (diff / 1E9) + " seconds");
     ret.setLatestValue(val.getValue());
     ret.setType(val.getMeasurementType());
-    startTime = System.nanoTime();   
+//    startTime = System.nanoTime();   
     count = getMeasurementsCount(depotId, orgId, sensorId);
-    endTime = System.nanoTime();
-    diff = endTime - startTime;
-    System.out.println("getMeasurementsCount(total) took " + (diff / 1E9) + " seconds");
+//    endTime = System.nanoTime();
+//    diff = endTime - startTime;
+//    System.out.println("getMeasurementsCount(total) took " + (diff / 1E9) + " seconds");
     ret.setTotalCount(count);
     return ret;
   }
