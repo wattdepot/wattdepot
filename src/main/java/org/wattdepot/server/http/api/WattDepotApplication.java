@@ -161,6 +161,7 @@ public class WattDepotApplication extends Application {
     // Group administration UI.
     router.attach(API.ADMIN_URI, AdminServerResource.class);
     router.attach(API.ORGANIZATION_SUMMARY_URI, OrgSummaryServerResource.class);
+    router.attach(API.ORGANIZATION_VISUALIZE_URI, OrgVisualizerServerResource.class);
     // CollectorProcessDefinition
     router.attach(API.COLLECTOR_PROCESS_DEFINITION_PUT_URI,
         CollectorProcessDefinitionPutServerResource.class);
