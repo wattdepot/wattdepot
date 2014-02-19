@@ -33,12 +33,12 @@ class Depository:
 
 class Sensor:
     """Define the Sensor used in wattdepot."""
-    def __init__(self, id, name, uri, modelId, ownerId):
+    def __init__(self, id, name, uri, modelId, organizationId):
         self.id = id
         self.name = name
         self.uri = uri
         self.modelId = modelId
-        self.ownerId = ownerId
+        self.organizationId = organizationId
             
 class Measurement:
     """Define the Measurement used in Wattdepot."""
@@ -66,8 +66,7 @@ class WattdepotClient:
     def get_depositories(self):
         """returns a list of depositories of the server."""
         url = "%s/depositories/" % (self.server_url)
-        response = self.session.get(url)
-        return response.text
+        return self._process_lists(url, "depositories")
     
     def get_depository(self, depository_id):
         """returns a list of depositories of the server."""
@@ -85,25 +84,24 @@ class WattdepotClient:
         obj = json.loads(response.text)
         return MeasurementType(obj["id"], obj["name"], obj["units"])
       
-    def create_depository(self, depository_id, depository_name, measurement_type_id):
+    def create_depository(self, id, name, measurement_type_id):
         """create a depository."""
         measurement_type = self.get_measurement_type(measurement_type_id)
-        depository = Depository(depository_id, depository_name, measurement_type, self.orgid)
+        depository = Depository(id, name, measurement_type, self.orgid)
         url = "%s/depository/" % (self.server_url)
         self.session.put(url, jsonpickle.encode(depository))
         
     def get_sensors(self):
         """returns a list of sensors of the server."""
         url = "%s/sensors/" % (self.server_url)
-        response = self.session.get(url)
-        return response.text
-    
+        return self._process_lists(url, "sensors")
+
     def get_sensor(self, sensor_id):
         """returns the sensor."""
-        url = "%s/sensor/%s" % (self.server_uri, sensor_id)
+        url = "%s/sensor/%s" % (self.server_url, sensor_id)
         response = self.session.get(url)
         obj = json.loads(response.text)
-        return Sensor(obj["id"], obj["name"], obj["uri"], obj["modelId"], obj["ownerId"])
+        return Sensor(obj["id"], obj["name"], obj["uri"], obj["modelId"], obj["organizationId"])
 
     def create_sensor(self, id, name, uri, modelId):
         """create a sensor."""
@@ -116,14 +114,14 @@ class WattdepotClient:
         self.session.params = {'sensor': sensor_id,
                           'latest': "true"}
         url = "%s/depository/%s/value/" % (self.server_url,depository_id)
-        return self._process_value(url, sensor_id)
+        return self._process_value(url)
 
     def get_value(self, depository_id, sensor_id, timestamp):
         """Return the resource usage for the timestamp."""
         self.session.params = {'sensor': sensor_id,
                           'timestamp': timestamp}
         url = "%s/depository/%s/value/" % (self.server_url,depository_id)
-        return self._process_value(url, sensor_id)
+        return self._process_value(url)
     
     def get_measurements(self, depository_id, sensor_id, start, end):
         """returns the list of measurements."""
@@ -144,17 +142,31 @@ class WattdepotClient:
         url = "%s/depository/%s/measurement/" % (self.server_url, depository_id)
         self.session.put(url, jsonpickle.encode(measurement))
 
-    def _process_value(self, url, sensor_id):
+    def _process_value(self, url):
         """send the request and process the value returned from the response."""
         try:
             response = self.session.get(url)
             usage = self._get_value_from_json(response.text)
             return abs(int(round(float(usage))))
         except Timeout:
-            print 'Wattdepot data retrieval for team %s error: connection timeout.' % sensor_id
+            print 'Wattdepot data retrieval for %s returns error: connection timeout.' % url
 
         return 0
 
+    def _process_lists(self, url, type):
+        """returns a list of ids from json response."""
+        try:
+            response = self.session.get(url)
+            objs = json.loads(response.text)
+            ids = []
+            for obj in objs[type]:
+                ids.append(obj["id"])
+            return ids
+        except Timeout:
+            print 'Wattdepot data retrieval for %s returns error: connection timeout.' % url
+
+        return 0
+    
     def _get_value_from_json(self, json_response):
         """get the usage from the JSON response"""
         value_object = json.loads(json_response)
