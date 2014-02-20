@@ -35,6 +35,7 @@
     <ul class="nav navbar-nav">
       <li><a href="/wattdepot/${orgId}/">Definitions</a></li>
       <li class="active"><a href="/wattdepot/${orgId}/summary/">Measurement, Depository Summary</a></li>
+      <li><a href="/wattdepot/${orgId}/visualize/">Measurement Visualization</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li><a href="#">${orgId}</a></li>

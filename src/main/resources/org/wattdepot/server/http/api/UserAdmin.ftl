@@ -34,7 +34,8 @@
   <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     <ul class="nav navbar-nav">
       <li class="active"><a href="#">Definitions</a></li>
-      <li><a href="/wattdepot/admin/summary/">Logs/Information/Summary</a></li>
+      <li><a href="/wattdepot/admin/summary/">Measurement, Depository Summary</a></li>
+      <li><a href="/wattdepot/admin/visualize/">Measurement Visualization</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li><a href="#">${orgId}</a></li>

@@ -202,5 +202,8 @@ public class Labels {
 
   /** The label for sampling internal. */
   public static final String INTERVAL = "interval";
+  
+  /** The label for visualizing interpolated values. */
+  public static final String VISUALIZE = "visualize";
 
 }
