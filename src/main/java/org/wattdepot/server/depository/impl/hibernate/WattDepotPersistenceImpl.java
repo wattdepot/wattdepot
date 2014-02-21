@@ -1994,11 +1994,15 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     SensorImpl sensor = retrieveSensor(session, sensorId, orgId);
     @SuppressWarnings("unchecked")
     List<MeasurementImpl> result = (List<MeasurementImpl>) session
-        .createQuery(
-            "FROM MeasurementImpl WHERE depository = :depot AND sensor = :sensor "
-                + "AND timestamp IN (SELECT min(timestamp) FROM MeasurementImpl WHERE "
-                + "depository = :depot AND sensor = :sensor)").setParameter("depot", depot)
-        .setParameter("sensor", sensor).list();
+    .createQuery(
+        "FROM MeasurementImpl WHERE depository = :depot AND sensor = :sensor ORDER BY timestamp asc")
+    .setParameter("depot", depot).setParameter("sensor", sensor).setMaxResults(1).list();
+//    List<MeasurementImpl> result = (List<MeasurementImpl>) session
+//        .createQuery(
+//            "FROM MeasurementImpl WHERE depository = :depot AND sensor = :sensor "
+//                + "AND timestamp IN (SELECT min(timestamp) FROM MeasurementImpl WHERE "
+//                + "depository = :depot AND sensor = :sensor)").setParameter("depot", depot)
+//        .setParameter("sensor", sensor).list();
     if (result.size() > 0) {
       MeasurementImpl meas = result.get(0);
       value = new InterpolatedValue(sensorId, meas.getValue(), depot.getType().toMeasurementType(),
@@ -2030,10 +2034,15 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     @SuppressWarnings("unchecked")
     List<MeasurementImpl> result = (List<MeasurementImpl>) session
         .createQuery(
-            "FROM MeasurementImpl WHERE depository = :depot AND sensor = :sensor "
-                + "AND timestamp IN (SELECT max(timestamp) FROM MeasurementImpl WHERE "
-                + "depository = :depot AND sensor = :sensor)").setParameter("depot", depot)
-        .setParameter("sensor", sensor).list();
+            "FROM MeasurementImpl WHERE depository = :depot AND sensor = :sensor ORDER BY timestamp desc")
+        .setParameter("depot", depot).setParameter("sensor", sensor).setMaxResults(1).list();
+
+//    List<MeasurementImpl> result = (List<MeasurementImpl>) session
+//        .createQuery(
+//            "FROM MeasurementImpl WHERE depository = :depot AND sensor = :sensor "
+//                + "AND timestamp IN (SELECT max(timestamp) FROM MeasurementImpl WHERE "
+//                + "depository = :depot AND sensor = :sensor)").setParameter("depot", depot)
+//        .setParameter("sensor", sensor).list();
     if (result.size() > 0) {
       MeasurementImpl meas = result.get(0);
       value = new InterpolatedValue(sensorId, meas.getValue(), depot.getType().toMeasurementType(),
