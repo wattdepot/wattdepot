@@ -244,15 +244,20 @@ public class GetLatestValueThroughput extends TimerTask {
         }
         catch (BadCredentialException e) { // NOPMD
           // should not happen.
+          e.printStackTrace();
         }
         catch (IdNotFoundException e) { // NOPMD
           // should not happen.
+          e.printStackTrace()
+          ;
         }
         catch (BadSensorUriException e) { // NOPMD
           // should not happen
+          e.printStackTrace();
         }
         catch (InterruptedException e) { // NOPMD
           // should not happen
+          e.printStackTrace();
         }
       }
     }

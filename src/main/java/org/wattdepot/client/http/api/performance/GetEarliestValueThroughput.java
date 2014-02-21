@@ -197,7 +197,7 @@ public class GetEarliestValueThroughput extends TimerTask {
       // haven't actually run so do nothing.
       this.numChecks++;
       // should I put a bogus first rate so we don't start too fast?
-      this.averageGetTime.addValue(1.0); // took 1 second per so we start with a
+      // this.averageGetTime.addValue(1.0); // took 1 second per so we start with a
                                          // low average.
     }
     else {
@@ -230,13 +230,13 @@ public class GetEarliestValueThroughput extends TimerTask {
         try {
           if (this.sampleTask == null) {
             this.sampleTask = new GetEarliestValueTask(serverUri, username, orgId, password, debug);
-            timer.schedule(sampleTask, 0, 1000);
+            this.timer.schedule(sampleTask, 0, 1000);
             if (debug) {
               System.out.println("Starting task " + i);
             }
           }
           else {
-            timer.schedule(new GetEarliestValueTask(serverUri, username, orgId, password, debug),
+            this.timer.schedule(new GetEarliestValueTask(serverUri, username, orgId, password, debug),
                 0, 1000);
             if (debug) {
               System.out.println("Starting task " + i);
@@ -246,15 +246,19 @@ public class GetEarliestValueThroughput extends TimerTask {
         }
         catch (BadCredentialException e) { // NOPMD
           // should not happen.
+          e.printStackTrace();
         }
         catch (IdNotFoundException e) { // NOPMD
           // should not happen.
+          e.printStackTrace();
         }
         catch (BadSensorUriException e) { // NOPMD
           // should not happen
+          e.printStackTrace();
         }
         catch (InterruptedException e) {  // NOPMD
           // should not happen
+          e.printStackTrace();
         }
       }
     }
