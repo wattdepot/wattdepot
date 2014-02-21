@@ -253,9 +253,8 @@ public class GetIntervalValueThroughput extends TimerTask {
         catch (BadSensorUriException e) { // NOPMD
           // should not happen
         }
-        catch (InterruptedException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+        catch (InterruptedException e) {  // NOPMD
+          // should not happen
         }
       }
     }

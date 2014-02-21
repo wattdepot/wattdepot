@@ -83,6 +83,8 @@ public class ServerProperties {
   public static final String CHECK_SESSIONS = "wattdepot-server.check.sessions";
   /** The logging level key. */
   public static final String LOGGING_LEVEL_KEY = "wattdepot-server.logging.level";
+  /** Enable timing of Server operations. */
+  public static final String SERVER_TIMING_KEY = "wattdepot-server.enable.timing";
   /** The WattDepot implementation class during testing. */
   public static final String TEST_WATT_DEPOT_IMPL_KEY = "wattdepot-server.test.wattdepot.impl";
   /** The wattdepot server port key during testing. */
@@ -96,8 +98,10 @@ public class ServerProperties {
   /** The heroku database URL. */
   public static final String HEROKU_DATABASE_URL_KEY = "wattdepot-server.heroku.db.url";
 
-  private static String FALSE = "false";
-  private static String TRUE = "true";
+  /** String for false. */
+  public static final String FALSE = "false";
+  /** String for true. */
+  public static final String TRUE = "true";
 
   /** Where we store the properties. */
   private Properties properties;
@@ -201,7 +205,7 @@ public class ServerProperties {
   }
 
   /**
-   * Reads in the properties in ~/.wattdepot/server/wattdepot-server.properties
+   * Reads in the properties in ~/.wattdepot3/server/wattdepot-server.properties
    * if this file exists, and provides default values for all properties not
    * mentioned in this file. Will also add any pre-existing System properties
    * that start with "wattdepot-server.".
@@ -239,12 +243,13 @@ public class ServerProperties {
     properties.setProperty(DB_CONNECTION_URL, "jdbc:postgresql://localhost:5432/wattdepot");
     properties.setProperty(DB_USER_NAME, "myuser");
     properties.setProperty(DB_PASSWORD, "secret");
-    properties.setProperty(DB_SHOW_SQL, "false");
+    properties.setProperty(DB_SHOW_SQL, FALSE);
     properties.setProperty(DB_TABLE_UPDATE, "update");
     properties.setProperty(ENABLE_LOGGING_KEY, TRUE);
     properties.setProperty(CHECK_SESSIONS, FALSE);
     properties.setProperty(LOGGING_LEVEL_KEY, "INFO");
     properties.setProperty(CONTEXT_ROOT_KEY, "wattdepot");
+    properties.setProperty(SERVER_TIMING_KEY, FALSE);
     properties.setProperty(TEST_PORT_KEY, defaultTestPort);
     properties.setProperty(TEST_WATT_DEPOT_IMPL_KEY, defaultWattDepotImpl);
     properties.setProperty(USE_HEROKU_KEY, FALSE);

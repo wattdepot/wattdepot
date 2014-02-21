@@ -240,6 +240,7 @@ public class GetLatestValueThroughput extends TimerTask {
               System.out.println("Starting task " + i);
             }
           }
+          Thread.sleep(10);
         }
         catch (BadCredentialException e) { // NOPMD
           // should not happen.
@@ -248,6 +249,9 @@ public class GetLatestValueThroughput extends TimerTask {
           // should not happen.
         }
         catch (BadSensorUriException e) { // NOPMD
+          // should not happen
+        }
+        catch (InterruptedException e) { // NOPMD
           // should not happen
         }
       }
