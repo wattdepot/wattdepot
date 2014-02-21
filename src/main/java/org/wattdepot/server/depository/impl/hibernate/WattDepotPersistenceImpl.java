@@ -2287,14 +2287,14 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       @SuppressWarnings("unchecked")
       List<MeasurementImpl> before = (List<MeasurementImpl>) session
           .createQuery(
-              "FROM MeasurementImpl WHERE timestamp <= :time AND depository = :depot AND sensor = :sensor")
+              "FROM MeasurementImpl WHERE timestamp <= :time AND depository = :depot AND sensor = :sensor ORDER BY timestamp desc")
           .setParameter("time", timestamp).setParameter("depot", depot)
-          .setParameter("sensor", sensor).list();
+          .setParameter("sensor", sensor).setMaxResults(1).list();
       @SuppressWarnings("unchecked")
       List<MeasurementImpl> after = (List<MeasurementImpl>) session
           .createQuery(
-              "FROM MeasurementImpl WHERE timestamp >= :time AND depository = :depot AND sensor = :sensor")
-          .setParameter("time", timestamp).setParameter("depot", depot)
+              "FROM MeasurementImpl WHERE timestamp >= :time AND depository = :depot AND sensor = :sensor ORDER BY timestamp asc")
+          .setParameter("time", timestamp).setMaxResults(1).setParameter("depot", depot)
           .setParameter("sensor", sensor).list();
       MeasurementImpl justBefore = null;
       for (MeasurementImpl b : before) {
@@ -2435,53 +2435,36 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    */
   @Override
   public MeasurementRateSummary getRateSummary(String depotId, String orgId, String sensorId)
-      throws IdNotFoundException {
+      throws IdNotFoundException, NoMeasurementException {
     XMLGregorianCalendar now = Tstamp.makeTimestamp();
     XMLGregorianCalendar minAgo = Tstamp.incrementMinutes(now, -1);
-    XMLGregorianCalendar fifteenAgo = Tstamp.incrementMinutes(now, -15);
-    XMLGregorianCalendar hourAgo = Tstamp.incrementHours(now, -1);
-    XMLGregorianCalendar dayAgo = Tstamp.incrementDays(now, -1);
     MeasurementRateSummary ret = new MeasurementRateSummary();
     ret.setDepositoryId(depotId);
     ret.setSensorId(sensorId);
     ret.setTimestamp(DateConvert.convertXMLCal(now));
-//    Long startTime = System.nanoTime();    
+    // Long startTime = System.nanoTime();
     Long count = getMeasurementsCount(depotId, orgId, sensorId, DateConvert.convertXMLCal(minAgo),
         DateConvert.convertXMLCal(now));
-//    Long endTime = System.nanoTime();
-//    Long diff = endTime - startTime;
-//    System.out.println("getMeasurementCount(minAgo) took " + (diff / 1E9) + " seconds");
+    // Long endTime = System.nanoTime();
+    // Long diff = endTime - startTime;
+    // System.out.println("getMeasurementCount(minAgo) took " + (diff / 1E9) +
+    // " seconds");
     ret.setOneMinuteCount(count);
     ret.setOneMinuteRate(count / 60.0);
-//    startTime = System.nanoTime();   
-    count = getMeasurementsCount(depotId, orgId, sensorId, DateConvert.convertXMLCal(fifteenAgo),
-        DateConvert.convertXMLCal(now));
-//    endTime = System.nanoTime();
-//    diff = endTime - startTime;
-//    System.out.println("getMeasurementCount(15minAgo) took " + (diff / 1E9) + " seconds");
-    ret.setFifteenMinuteCount(count);
-    ret.setFifteenMinuteRate(count / (15 * 60.0));
-//    startTime = System.nanoTime();   
-    count = getMeasurementsCount(depotId, orgId, sensorId, DateConvert.convertXMLCal(hourAgo),
-        DateConvert.convertXMLCal(now));
-//    endTime = System.nanoTime();
-//    diff = endTime - startTime;
-//    System.out.println("getMeasurementCount(hourAgo) took " + (diff / 1E9) + " seconds");
-    ret.setHourCount(count);
-    ret.setHourRate(count / (60.0 * 60.0));
-//    startTime = System.nanoTime();   
-    count = getMeasurementsCount(depotId, orgId, sensorId, DateConvert.convertXMLCal(dayAgo),
-        DateConvert.convertXMLCal(now));
-//    endTime = System.nanoTime();
-//    diff = endTime - startTime;
-//    System.out.println("getMeasurementCount(dayAgo) took " + (diff / 1E9) + " seconds");
-    ret.setDayCount(count);
-    ret.setDayRate(count / (24.0 * 60.0 * 60.0));
-//    startTime = System.nanoTime();   
+    // startTime = System.nanoTime();
+    InterpolatedValue val = getLatestMeasuredValue(depotId, orgId, sensorId);
+    // endTime = System.nanoTime();
+    // diff = endTime - startTime;
+    // System.out.println("getLatestMeasuredValue() took " + (diff / 1E9) +
+    // " seconds");
+    ret.setLatestValue(val.getValue());
+    ret.setType(val.getMeasurementType());
+    // startTime = System.nanoTime();
     count = getMeasurementsCount(depotId, orgId, sensorId);
-//    endTime = System.nanoTime();
-//    diff = endTime - startTime;
-//    System.out.println("getMeasurementsCount(total) took " + (diff / 1E9) + " seconds");
+    // endTime = System.nanoTime();
+    // diff = endTime - startTime;
+    // System.out.println("getMeasurementsCount(total) took " + (diff / 1E9) +
+    // " seconds");
     ret.setTotalCount(count);
     return ret;
   }

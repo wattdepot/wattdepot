@@ -47,6 +47,13 @@ public class API {
       + Labels.SUMMARY + "/";
 
   /**
+   * <b>/wattdepot/{org-id}/visualize/</b> URI for the Organization Visualization User
+   * Interface. Supports GET requests.
+   */
+  public static final String ORGANIZATION_VISUALIZE_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.VISUALIZE + "/";
+
+  /**
    * <b>/wattdepot/{org-id}/collector-process-definition/</b> URI for storing
    * CollectorProcessDefinition. Use PUT requests.
    */

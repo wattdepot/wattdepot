@@ -1,5 +1,5 @@
 /**
- * FindGetLatestValueThroughput.java This file is part of WattDepot.
+ * GetIntervalValueThroughput.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
  *
@@ -34,18 +34,18 @@ import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.util.logger.WattDepotLoggerUtil;
 
 /**
- * FindGetLatestValueThroughput - Attempts to determine the maximum rate of
- * getting the Latest value for a Sensor in a WattDepot installation.
+ * GetIntervalValueThroughput - Attempts to determine the maximum rate of
+ * getting the value for an interval for a Sensor in a WattDepot installation.
  * 
  * @author Cam Moore
  * 
  */
-public class FindGetEarliestValueThroughput extends TimerTask {
+public class GetIntervalValueThroughput extends TimerTask {
 
-  /** Manages the GetLatestValueTasks. */
+  /** Manages the GetIntervalValueTasks. */
   private Timer timer;
-  /** The GetEarliestValueTask we will sample. */
-  private GetEarliestValueTask sampleTask;
+  /** The GetIntervalValueTask we will sample. */
+  private GetIntervalValueTask sampleTask;
   /** The WattDepot server's URI. */
   private String serverUri;
   /** The WattDepot User. */
@@ -66,7 +66,7 @@ public class FindGetEarliestValueThroughput extends TimerTask {
   private Long calculatedGetsPerSec;
 
   /**
-   * Initializes the FindGetLatestValueThroughput instance.
+   * Initializes the GetIntervalValueThroughput instance.
    * 
    * @param serverUri The URI for the WattDepot server.
    * @param username The name of a user defined in the WattDepot server.
@@ -78,7 +78,7 @@ public class FindGetEarliestValueThroughput extends TimerTask {
    * @throws IdNotFoundException if the processId is not defined.
    * @throws BadSensorUriException if the Sensor's URI isn't valid.
    */
-  public FindGetEarliestValueThroughput(String serverUri, String username, String orgId,
+  public GetIntervalValueThroughput(String serverUri, String username, String orgId,
       String password, boolean debug) throws BadCredentialException, IdNotFoundException,
       BadSensorUriException {
     this.serverUri = serverUri;
@@ -93,7 +93,7 @@ public class FindGetEarliestValueThroughput extends TimerTask {
     this.averageMinGetTime = new DescriptiveStatistics();
     this.averageGetTime = new DescriptiveStatistics();
     this.timer = new Timer("throughput");
-    this.sampleTask = new GetEarliestValueTask(serverUri, username, orgId, password, debug);
+    this.sampleTask = new GetIntervalValueTask(serverUri, username, orgId, password, debug);
     // Starting at 1 get/second
     this.timer.schedule(sampleTask, 0, 1000);
   }
@@ -118,14 +118,14 @@ public class FindGetEarliestValueThroughput extends TimerTask {
     Integer numSamples = null;
     boolean debug = false;
 
-    options.addOption("h", false, "Usage: FindMeasurementThroughput -s <server uri> -u <username>"
+    options.addOption("h", false, "Usage: GetIntervalValueThroughput -s <server uri> -u <username>"
         + " -p <password> -o <orgId> [-d]");
     options.addOption("s", "server", true, "WattDepot Server URI. (http://server.wattdepot.org)");
     options.addOption("u", "username", true, "Username");
     options.addOption("o", "organizationId", true, "User's Organization id.");
     options.addOption("p", "password", true, "Password");
     options.addOption("n", "numSamples", true, "Number of puts to sample.");
-    options.addOption("d", "debug", false, "Displays statistics as the Measurements are stored.");
+    options.addOption("d", "debug", false, "Displays statistics as the Gets are made.");
     CommandLineParser parser = new PosixParser();
     HelpFormatter formatter = new HelpFormatter();
     try {
@@ -136,7 +136,7 @@ public class FindGetEarliestValueThroughput extends TimerTask {
       System.exit(1);
     }
     if (cmd.hasOption("h")) {
-      formatter.printHelp("RampingMeasurements", options);
+      formatter.printHelp("GetIntervalValueThroughput", options);
       System.exit(0);
     }
     if (cmd.hasOption("s")) {
@@ -175,13 +175,14 @@ public class FindGetEarliestValueThroughput extends TimerTask {
       System.out.println("    WattDepotServer: " + serverUri);
       System.out.println("    Username: " + username);
       System.out.println("    OrganizationId: " + organizationId);
-      System.out.println("    Password: " + password);
+      System.out.println("    Password: ********");
       System.out.println("    Samples: " + numSamples);
     }
 
     Timer t = new Timer("monitoring");
-    t.schedule(new FindGetEarliestValueThroughput(serverUri, username, organizationId, password,
-        debug), 0, numSamples * 1000);
+    t.schedule(
+        new GetIntervalValueThroughput(serverUri, username, organizationId, password, debug), 0,
+        numSamples * 1000);
   }
 
   /*
@@ -195,19 +196,23 @@ public class FindGetEarliestValueThroughput extends TimerTask {
     if (this.numChecks == 0) {
       // haven't actually run so do nothing.
       this.numChecks++;
+      // should I put a bogus first rate so we don't start too fast?
+      this.averageGetTime.addValue(1.0); // took 1 second per so we start with a
+                                         // low average.
     }
     else {
       this.timer.cancel();
       this.numChecks++;
-      this.averageGetTime.addValue((sampleTask.getAverageTime() / 1E9));
+      Double aveTime = sampleTask.getAverageTime();
+      this.averageGetTime.addValue((aveTime / 1E9));
       this.averageMinGetTime.addValue((sampleTask.getMinTime() / 1E9));
       this.averageMaxGetTime.addValue((sampleTask.getMaxTime() / 1E9));
       this.calculatedGetsPerSec = calculateGetRate(averageGetTime);
       this.getsPerSec = calculatedGetsPerSec;
       // System.out.println("Min put time = " + (sampleTask.getMinGetTime() /
       // 1E9));
-      System.out.println("Ave get earliest value time = " + (this.sampleTask.getAverageTime() / 1E9) + " => "
-          + Math.round(1.0 / (this.sampleTask.getAverageTime() / 1E9)) + " gets/sec.");
+      System.out.println("Ave get value (date, date) time = " + (aveTime / 1E9) + " => "
+          + Math.round(1.0 / (aveTime / 1E9)) + " gets/sec.");
       // System.out.println("Max put time = " + (sampleTask.getMaxGetTime() /
       // 1E9));
       // System.out.println("Max put rate = " +
@@ -216,17 +221,28 @@ public class FindGetEarliestValueThroughput extends TimerTask {
       // System.out.println("Min put rate = " +
       // calculateGetRate(averageMaxGetTime));
       this.timer = new Timer("throughput");
+      this.sampleTask = null;
       // if (debug) {
       // System.out.println("Starting " + this.measPerSec +
       // " threads @ 1 meas/s");
       // }
       for (int i = 0; i < getsPerSec; i++) {
         try {
-          this.sampleTask = new GetEarliestValueTask(serverUri, username, orgId, password, debug);
-          timer.schedule(sampleTask, 0, 1000);
-          if (debug) {
-            System.out.println("Starting task " + i);
+          if (sampleTask == null) {
+            this.sampleTask = new GetIntervalValueTask(serverUri, username, orgId, password, debug);
+            timer.schedule(sampleTask, 0, 1000);
+            if (debug) {
+              System.out.println("Starting task " + i);
+            }
           }
+          else {
+            timer.schedule(new GetIntervalValueTask(serverUri, username, orgId, password, debug),
+                0, 1000);
+            if (debug) {
+              System.out.println("Starting task " + i);
+            }
+          }
+          Thread.sleep(10);
         }
         catch (BadCredentialException e) { // NOPMD
           // should not happen.
@@ -235,6 +251,9 @@ public class FindGetEarliestValueThroughput extends TimerTask {
           // should not happen.
         }
         catch (BadSensorUriException e) { // NOPMD
+          // should not happen
+        }
+        catch (InterruptedException e) {  // NOPMD
           // should not happen
         }
       }

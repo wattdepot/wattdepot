@@ -1,5 +1,5 @@
 /**
- * GetLatestValueTask.java This file is part of WattDepot.
+ * GetEarliestValueTask.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
  *
@@ -23,7 +23,7 @@ import org.wattdepot.common.exception.BadSensorUriException;
 import org.wattdepot.common.exception.IdNotFoundException;
 
 /**
- * GetLatestValueTask gets the latest value from the WattDepot Server.
+ * GetEarliestValueTask gets the earliest value from the WattDepot Server.
  * 
  * @author Cam Moore
  * 
@@ -31,7 +31,7 @@ import org.wattdepot.common.exception.IdNotFoundException;
 public class GetEarliestValueTask extends PerformanceTimedTask {
 
   /**
-   * Initializes the GetLatestValueTask.
+   * Initializes the GetEarliestValueTask.
    * 
    * @param serverUri The URI for the WattDepot server.
    * @param username The name of a user defined in the WattDepot server.

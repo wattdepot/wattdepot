@@ -1,5 +1,5 @@
 /**
- * FindGetLatestValueThroughput.java This file is part of WattDepot.
+ * GetDateValueThroughput.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
  *
@@ -34,18 +34,18 @@ import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.util.logger.WattDepotLoggerUtil;
 
 /**
- * FindGetLatestValueThroughput - Attempts to determine the maximum rate of
- * getting the Latest value for a Sensor in a WattDepot installation.
+ * GetDateValueThroughput - Attempts to determine the maximum rate of getting
+ * the value at a date for a Sensor in a WattDepot installation.
  * 
  * @author Cam Moore
  * 
  */
-public class FindGetLatestValueThroughput extends TimerTask {
+public class GetDateValueThroughput extends TimerTask {
 
-  /** Manages the GetLatestValueTasks. */
+  /** Manages the GetDateValueTasks. */
   private Timer timer;
-  /** The GetLatestValueTask we will sample. */
-  private GetLatestValueTask sampleTask;
+  /** The GetDateValueTask we will sample. */
+  private GetDateValueTask sampleTask;
   /** The WattDepot server's URI. */
   private String serverUri;
   /** The WattDepot User. */
@@ -66,7 +66,7 @@ public class FindGetLatestValueThroughput extends TimerTask {
   private Long calculatedGetsPerSec;
 
   /**
-   * Initializes the FindGetLatestValueThroughput instance.
+   * Initializes the GetDateValueThroughput instance.
    * 
    * @param serverUri The URI for the WattDepot server.
    * @param username The name of a user defined in the WattDepot server.
@@ -78,9 +78,8 @@ public class FindGetLatestValueThroughput extends TimerTask {
    * @throws IdNotFoundException if the processId is not defined.
    * @throws BadSensorUriException if the Sensor's URI isn't valid.
    */
-  public FindGetLatestValueThroughput(String serverUri, String username, String orgId,
-      String password, boolean debug) throws BadCredentialException, IdNotFoundException,
-      BadSensorUriException {
+  public GetDateValueThroughput(String serverUri, String username, String orgId, String password,
+      boolean debug) throws BadCredentialException, IdNotFoundException, BadSensorUriException {
     this.serverUri = serverUri;
     this.username = username;
     this.orgId = orgId;
@@ -93,7 +92,7 @@ public class FindGetLatestValueThroughput extends TimerTask {
     this.averageMinGetTime = new DescriptiveStatistics();
     this.averageGetTime = new DescriptiveStatistics();
     this.timer = new Timer("throughput");
-    this.sampleTask = new GetLatestValueTask(serverUri, username, orgId, password, debug);
+    this.sampleTask = new GetDateValueTask(serverUri, username, orgId, password, debug);
     // Starting at 1 get/second
     this.timer.schedule(sampleTask, 0, 1000);
   }
@@ -118,7 +117,7 @@ public class FindGetLatestValueThroughput extends TimerTask {
     Integer numSamples = null;
     boolean debug = false;
 
-    options.addOption("h", false, "Usage: FindMeasurementThroughput -s <server uri> -u <username>"
+    options.addOption("h", false, "Usage: GetDateValueThroughput -s <server uri> -u <username>"
         + " -p <password> -o <orgId> [-d]");
     options.addOption("s", "server", true, "WattDepot Server URI. (http://server.wattdepot.org)");
     options.addOption("u", "username", true, "Username");
@@ -136,7 +135,7 @@ public class FindGetLatestValueThroughput extends TimerTask {
       System.exit(1);
     }
     if (cmd.hasOption("h")) {
-      formatter.printHelp("RampingMeasurements", options);
+      formatter.printHelp("GetDateValueThroughput", options);
       System.exit(0);
     }
     if (cmd.hasOption("s")) {
@@ -171,17 +170,17 @@ public class FindGetLatestValueThroughput extends TimerTask {
     }
     debug = cmd.hasOption("d");
     if (debug) {
-      System.out.println("GetLatestValue Throughput:");
+      System.out.println("GetDateValue Throughput:");
       System.out.println("    WattDepotServer: " + serverUri);
       System.out.println("    Username: " + username);
       System.out.println("    OrganizationId: " + organizationId);
-      System.out.println("    Password: " + password);
+      System.out.println("    Password: ********");
       System.out.println("    Samples: " + numSamples);
     }
 
     Timer t = new Timer("monitoring");
-    t.schedule(new FindGetLatestValueThroughput(serverUri, username, organizationId, password,
-        debug), 0, numSamples * 1000);
+    t.schedule(new GetDateValueThroughput(serverUri, username, organizationId, password, debug), 0,
+        numSamples * 1000);
   }
 
   /*
@@ -195,20 +194,23 @@ public class FindGetLatestValueThroughput extends TimerTask {
     if (this.numChecks == 0) {
       // haven't actually run so do nothing.
       this.numChecks++;
+      // should I put a bogus first rate so we don't start too fast?
+      this.averageGetTime.addValue(1.0); // took 1 second per so we start with a low average.
     }
     else {
       this.timer.cancel();
       this.numChecks++;
-      this.averageGetTime.addValue((sampleTask.getAverageTime() / 1E9));
+      Double aveTime = sampleTask.getAverageTime();
+      this.averageGetTime.addValue((aveTime / 1E9));
       this.averageMinGetTime.addValue((sampleTask.getMinTime() / 1E9));
       this.averageMaxGetTime.addValue((sampleTask.getMaxTime() / 1E9));
       this.calculatedGetsPerSec = calculateGetRate(averageGetTime);
       this.getsPerSec = calculatedGetsPerSec;
-      // System.out.println("Min put time = " + (sampleTask.getMinGetTime() /
+      // System.out.println("Min put time = " + (sampleTask.getMinTime() /
       // 1E9));
-      System.out.println("Ave get latest value time = " + (this.sampleTask.getAverageTime() / 1E9) + " => "
-          + Math.round(1.0 / (this.sampleTask.getAverageTime() / 1E9)) + " gets/sec.");
-      // System.out.println("Max put time = " + (sampleTask.getMaxGetTime() /
+      System.out.println("Ave get value (date) time = " + (aveTime / 1E9) + " => "
+          + Math.round(1.0 / (aveTime / 1E9)) + " gets/sec.");
+      // System.out.println("Max put time = " + (sampleTask.getMaxTime() /
       // 1E9));
       // System.out.println("Max put rate = " +
       // calculateGetRate(averageMinGetTime));
@@ -216,26 +218,40 @@ public class FindGetLatestValueThroughput extends TimerTask {
       // System.out.println("Min put rate = " +
       // calculateGetRate(averageMaxGetTime));
       this.timer = new Timer("throughput");
+      this.sampleTask = null;
       // if (debug) {
       // System.out.println("Starting " + this.measPerSec +
       // " threads @ 1 meas/s");
       // }
-      for (int i = 0; i < getsPerSec; i++) {
-        try {
-          this.sampleTask = new GetLatestValueTask(serverUri, username, orgId, password, debug);
-          timer.schedule(sampleTask, 0, 1000);
-          if (debug) {
-            System.out.println("Starting task " + i);
+      if (getsPerSec < 200) {
+        for (int i = 0; i < getsPerSec; i++) {
+          try {
+            if (this.sampleTask == null) {
+              this.sampleTask = new GetDateValueTask(serverUri, username, orgId, password, debug);
+              timer.schedule(sampleTask, 0, 1000);
+              Thread.sleep(10);
+              // if (debug) {
+              // System.out.println("Starting task " + i);
+              // }
+            }
+            else {
+              timer.schedule(new GetDateValueTask(serverUri, username, orgId, password, debug), 0,
+                  1000);
+              Thread.sleep(10);
+            }
           }
-        }
-        catch (BadCredentialException e) { // NOPMD
-          // should not happen.
-        }
-        catch (IdNotFoundException e) { // NOPMD
-          // should not happen.
-        }
-        catch (BadSensorUriException e) { // NOPMD
-          // should not happen
+          catch (BadCredentialException e) { // NOPMD
+            // should not happen.
+          }
+          catch (IdNotFoundException e) { // NOPMD
+            // should not happen.
+          }
+          catch (BadSensorUriException e) { // NOPMD
+            // should not happen
+          }
+          catch (InterruptedException e) {  // NOPMD
+            // should not happen
+          }
         }
       }
     }

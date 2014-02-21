@@ -1,5 +1,5 @@
 /**
- * GetLatestValueTask.java This file is part of WattDepot.
+ * GetIntervalValueTask.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
  *
@@ -26,19 +26,19 @@ import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.NoMeasurementException;
 
 /**
- * GetLatestValueTask gets the latest value from the WattDepot Server.
+ * GetIntervalValueTask gets the value for the interval from the WattDepot Server.
  * 
  * @author Cam Moore
  * 
  */
-public class GetValueDateDateTask extends PerformanceTimedTask {
+public class GetIntervalValueTask extends PerformanceTimedTask {
 
   /** The start time of the value to retrieve. */
   private Date start;
   /** The end time of the value to retrieve. */
   private Date end;
   /**
-   * Initializes the GetLatestValueTask.
+   * Initializes the GetIntervalValueTask.
    * 
    * @param serverUri The URI for the WattDepot server.
    * @param username The name of a user defined in the WattDepot server.
@@ -50,7 +50,7 @@ public class GetValueDateDateTask extends PerformanceTimedTask {
    * @throws IdNotFoundException if the processId is not defined.
    * @throws BadSensorUriException if the Sensor's URI isn't valid.
    */
-  public GetValueDateDateTask(String serverUri, String username, String orgId, String password,
+  public GetIntervalValueTask(String serverUri, String username, String orgId, String password,
       boolean debug) throws BadCredentialException, IdNotFoundException, BadSensorUriException {
     super(serverUri, username, orgId, password, debug);
     Date latest = client.getLatestValue(depository, sensor).getDate();

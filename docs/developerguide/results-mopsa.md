@@ -39,3 +39,16 @@ The test I ran were just single performance tools running alone.
 | Get Latest Value       | 15.4 gets / second.         |
 
 
+On February 16th 2014 I started collecting the power and energy data from Hale Aloha, 80 collector processes running at 15 second sample intervals. This results in approximately 20 measurement puts per second.
+
+| Run | Date | Operation | Number of Measurements in DB |
+| --- | ----- | --------- | ---------------------------- |
+|  1  | 12/19/2014 | Get DateValue (45.9 / sec) | 1,600,000 |
+|     |            | Get IntervalValue (36.7 / sec) |      |
+|     |            | Get Earliest Value (47.4 / sec) | |
+|     |            | Get Latest Value (1 / sec) | |
+| --- | ---------- | -------------------------- | ------ |
+|  2  | 12/20/2014 | Get DateValue (34.7 / sec) | 2,111,806 |
+|     |            | Get IntervalValue (31.7 / sec) |      |
+|     |            | Get Earliest Value (35.0 / sec) | |
+|     |            | Get Latest Value (1 / sec) | |

@@ -35,22 +35,14 @@ public class MeasurementRateSummary {
   private String depositoryId;
   /** The time of the summary. */
   private Date timestamp;
+  /** The latest value. */
+  private Double latestValue;
+  /** The type of the measurements. */
+  private MeasurementType type;
   /** Number of measurements in the last minute. */
   private Long oneMinuteCount;
   /** The rate of measurements per second in the last minute. */
   private Double oneMinuteRate;
-  /** Number of measurements in the last fifteen minutes. */
-  private Long fifteenMinuteCount;
-  /** The rate of measurements per second in the last fifteen minutes. */
-  private Double fifteenMinuteRate;
-  /** Number of measurements in the last hour. */
-  private Long hourCount;
-  /** The rate of measurements per second in the last hour. */
-  private Double hourRate;
-  /** Number of measurements in the last day. */
-  private Long dayCount;
-  /** The rate of measurements per second in the last day. */
-  private Double dayRate;
   /** Total number of measurements. */
   private Long totalCount;
 
@@ -104,6 +96,34 @@ public class MeasurementRateSummary {
   }
 
   /**
+   * @return the latestValue
+   */
+  public Double getLatestValue() {
+    return latestValue;
+  }
+
+  /**
+   * @param latestValue the latestValue to set
+   */
+  public void setLatestValue(Double latestValue) {
+    this.latestValue = latestValue;
+  }
+
+  /**
+   * @return the type
+   */
+  public MeasurementType getType() {
+    return type;
+  }
+
+  /**
+   * @param type the type to set
+   */
+  public void setType(MeasurementType type) {
+    this.type = type;
+  }
+
+  /**
    * @return the oneMinuteCount
    */
   public Long getOneMinuteCount() {
@@ -132,90 +152,6 @@ public class MeasurementRateSummary {
   }
 
   /**
-   * @return the fifteenMinuteCount
-   */
-  public Long getFifteenMinuteCount() {
-    return fifteenMinuteCount;
-  }
-
-  /**
-   * @param fifteenMinuteCount the fifteenMinuteCount to set
-   */
-  public void setFifteenMinuteCount(Long fifteenMinuteCount) {
-    this.fifteenMinuteCount = fifteenMinuteCount;
-  }
-
-  /**
-   * @return the fifteenMinuteRate
-   */
-  public Double getFifteenMinuteRate() {
-    return fifteenMinuteRate;
-  }
-
-  /**
-   * @param fifteenMinuteRate the fifteenMinuteRate to set
-   */
-  public void setFifteenMinuteRate(Double fifteenMinuteRate) {
-    this.fifteenMinuteRate = fifteenMinuteRate;
-  }
-
-  /**
-   * @return the hourCount
-   */
-  public Long getHourCount() {
-    return hourCount;
-  }
-
-  /**
-   * @param hourCount the hourCount to set
-   */
-  public void setHourCount(Long hourCount) {
-    this.hourCount = hourCount;
-  }
-
-  /**
-   * @return the hourRate
-   */
-  public Double getHourRate() {
-    return hourRate;
-  }
-
-  /**
-   * @param hourRate the hourRate to set
-   */
-  public void setHourRate(Double hourRate) {
-    this.hourRate = hourRate;
-  }
-
-  /**
-   * @return the dayCount
-   */
-  public Long getDayCount() {
-    return dayCount;
-  }
-
-  /**
-   * @param dayCount the dayCount to set
-   */
-  public void setDayCount(Long dayCount) {
-    this.dayCount = dayCount;
-  }
-
-  /**
-   * @return the dayRate
-   */
-  public Double getDayRate() {
-    return dayRate;
-  }
-
-  /**
-   * @param dayRate the dayRate to set
-   */
-  public void setDayRate(Double dayRate) {
-    this.dayRate = dayRate;
-  }
-
-  /**
    * @return the totalCount
    */
   public Long getTotalCount() {
@@ -238,17 +174,12 @@ public class MeasurementRateSummary {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((dayCount == null) ? 0 : dayCount.hashCode());
-    result = prime * result + ((dayRate == null) ? 0 : dayRate.hashCode());
     result = prime * result + ((depositoryId == null) ? 0 : depositoryId.hashCode());
-    result = prime * result + ((fifteenMinuteCount == null) ? 0 : fifteenMinuteCount.hashCode());
-    result = prime * result + ((fifteenMinuteRate == null) ? 0 : fifteenMinuteRate.hashCode());
-    result = prime * result + ((hourCount == null) ? 0 : hourCount.hashCode());
-    result = prime * result + ((hourRate == null) ? 0 : hourRate.hashCode());
     result = prime * result + ((oneMinuteCount == null) ? 0 : oneMinuteCount.hashCode());
     result = prime * result + ((oneMinuteRate == null) ? 0 : oneMinuteRate.hashCode());
     result = prime * result + ((sensorId == null) ? 0 : sensorId.hashCode());
     result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
+    result = prime * result + ((latestValue == null) ? 0 : latestValue.hashCode());
     result = prime * result + ((totalCount == null) ? 0 : totalCount.hashCode());
     return result;
   }
@@ -270,20 +201,12 @@ public class MeasurementRateSummary {
       return false;
     }
     MeasurementRateSummary other = (MeasurementRateSummary) obj;
-    if (dayCount == null) {
-      if (other.dayCount != null) {
+    if (latestValue == null) {
+      if (other.latestValue != null) {
         return false;
       }
     }
-    else if (!dayCount.equals(other.dayCount)) {
-      return false;
-    }
-    if (dayRate == null) {
-      if (other.dayRate != null) {
-        return false;
-      }
-    }
-    else if (!dayRate.equals(other.dayRate)) {
+    else if (!latestValue.equals(other.latestValue)) {
       return false;
     }
     if (depositoryId == null) {
@@ -292,38 +215,6 @@ public class MeasurementRateSummary {
       }
     }
     else if (!depositoryId.equals(other.depositoryId)) {
-      return false;
-    }
-    if (fifteenMinuteCount == null) {
-      if (other.fifteenMinuteCount != null) {
-        return false;
-      }
-    }
-    else if (!fifteenMinuteCount.equals(other.fifteenMinuteCount)) {
-      return false;
-    }
-    if (fifteenMinuteRate == null) {
-      if (other.fifteenMinuteRate != null) {
-        return false;
-      }
-    }
-    else if (!fifteenMinuteRate.equals(other.fifteenMinuteRate)) {
-      return false;
-    }
-    if (hourCount == null) {
-      if (other.hourCount != null) {
-        return false;
-      }
-    }
-    else if (!hourCount.equals(other.hourCount)) {
-      return false;
-    }
-    if (hourRate == null) {
-      if (other.hourRate != null) {
-        return false;
-      }
-    }
-    else if (!hourRate.equals(other.hourRate)) {
       return false;
     }
     if (oneMinuteCount == null) {
@@ -377,10 +268,8 @@ public class MeasurementRateSummary {
   @Override
   public String toString() {
     return "MeasurementRateSummary [sensorId=" + sensorId + ", depositoryId=" + depositoryId
-        + ", timestamp=" + timestamp + ", oneMinuteCount=" + oneMinuteCount + ", oneMinuteRate="
-        + oneMinuteRate + ", fifteenMinuteCount=" + fifteenMinuteCount + ", fifteenMinuteRate="
-        + fifteenMinuteRate + ", hourCount=" + hourCount + ", hourRate=" + hourRate + ", dayCount="
-        + dayCount + ", dayRate=" + dayRate + ", totalCount=" + totalCount + "]";
+        + ", timestamp=" + timestamp + ", latest value =" + latestValue + ", oneMinuteCount="
+        + oneMinuteCount + ", oneMinuteRate=" + oneMinuteRate + ", totalCount=" + totalCount + "]";
   }
 
 }

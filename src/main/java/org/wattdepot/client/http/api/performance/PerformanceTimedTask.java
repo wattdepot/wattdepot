@@ -90,6 +90,9 @@ public abstract class PerformanceTimedTask extends TimerTask {
    * @return average put time.
    */
   public Double getAverageTime() {
+    if (debug) {
+      System.out.println(totalTime + " / " + numberOfRuns);
+    }
     return 1.0 * (totalTime) / numberOfRuns;
   }
 
@@ -174,9 +177,9 @@ public abstract class PerformanceTimedTask extends TimerTask {
     Long endTime = System.nanoTime();
     Long diff = endTime - startTime;
     totalTime += diff;
-//    if (debug) {
-//      System.out.println("time = " + (diff / 1E9) + " seconds.");
-//    }
+    if (debug) {
+      System.out.println("time = " + (diff / 1E9) + " seconds.");
+    }
     if (minGetTime > diff) {
       minGetTime = diff;
     }

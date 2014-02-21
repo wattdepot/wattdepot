@@ -24,6 +24,7 @@ import java.util.logging.Level;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Depository;
@@ -36,6 +37,7 @@ import org.wattdepot.common.exception.MeasurementGapException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.DateConvert;
+import org.wattdepot.server.ServerProperties;
 
 /**
  * DepositoryValueServerResource - ServerResouce that handles the GET
@@ -53,6 +55,8 @@ public class DepositoryValueServer extends WattDepotServerResource {
   private String latest;
   private String earliest;
   private String gapSeconds;
+  
+  private static DescriptiveStatistics averageGetTime = new DescriptiveStatistics();
 
   /*
    * (non-Javadoc)
@@ -84,13 +88,32 @@ public class DepositoryValueServer extends WattDepotServerResource {
         "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/value/?sensor={"
             + sensorId + "}&start={" + start + "}&end={" + end + "}&timestamp={" + timestamp
             + "}&latest={" + latest + "}&earliest={" + earliest + "}&gap={" + gapSeconds + "}");
+    Long startTime = null;
+    if (depot.getServerProperties().get(ServerProperties.SERVER_TIMING_KEY)
+        .equals(ServerProperties.TRUE)) {
+      startTime = System.nanoTime();
+    }
     if (isInRole(orgId)) {
       try {
         Depository deposit = depot.getDepository(depositoryId, orgId);
         if (deposit != null) {
           try {
             depot.getSensor(sensorId, orgId);
-            return calculateValue(sensorId, start, end, timestamp, earliest, latest);
+            InterpolatedValue val =  calculateValue(sensorId, start, end, timestamp, earliest, latest);
+            if (depot.getServerProperties().get(ServerProperties.SERVER_TIMING_KEY)
+                .equals(ServerProperties.TRUE)) {
+              Long endTime = System.nanoTime();
+              Long diff = endTime - startTime;
+              averageGetTime.addValue(diff / 1E9);
+              getLogger().log(
+                  Level.SEVERE,
+                  "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId
+                      + "}/value/?sensor={" + sensorId + "}&start={" + start + "}&end={" + end
+                      + "}&timestamp={" + timestamp + "}&latest={" + latest + "}&earliest={"
+                      + earliest + "}&gap={" + gapSeconds + "} took "
+                      + (diff / 1E9) + " seconds. Running average is " + averageGetTime.getMean());
+            }            
+            return val;
           }
           catch (IdNotFoundException inf) {
             try {
@@ -158,6 +181,18 @@ public class DepositoryValueServer extends WattDepotServerResource {
                   }
                 }
               }
+              if (depot.getServerProperties().get(ServerProperties.SERVER_TIMING_KEY)
+                  .equals(ServerProperties.TRUE)) {
+                Long endTime = System.nanoTime();
+                getLogger().log(
+                    Level.SEVERE,
+                    "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId
+                        + "}/value/?sensor={" + sensorId + "}&start={" + start + "}&end={" + end
+                        + "}&timestamp={" + timestamp + "}&latest={" + latest + "}&earliest={"
+                        + earliest + "}&gap={" + gapSeconds + "} took "
+                        + ((endTime - startTime) / 1E9) + " seconds.");
+              }
+
               return val;
             }
             catch (IdNotFoundException inf1) {

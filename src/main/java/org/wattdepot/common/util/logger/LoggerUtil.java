@@ -12,8 +12,9 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 /**
- * Provides a convenience method for Restlet logging that adjusts the output Handlers. Portions of
- * this code are adapted from http://hackystat-utilities.googlecode.com/
+ * Provides a convenience method for Restlet logging that adjusts the output
+ * Handlers. Portions of this code are adapted from
+ * http://hackystat-utilities.googlecode.com/
  * 
  * @author Philip Johnson
  * @author Robert Brewer
@@ -33,33 +34,38 @@ public final class LoggerUtil {
     for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements();) {
       String logName = en.nextElement();
       Logger logger = logManager.getLogger(logName);
-      // remove the old handlers
-      Handler[] handlers = logger.getHandlers();
-      for (Handler handler : handlers) {
-        logger.removeHandler(handler);
+      if (logger != null) {
+        // remove the old handlers
+        Handler[] handlers = logger.getHandlers();
+        for (Handler handler : handlers) {
+          logger.removeHandler(handler);
+        }
       }
     }
     Logger logger = logManager.getLogger("");
     ConsoleHandler handler = new ConsoleHandler();
     logger.addHandler(handler);
   }
-  
+
   /**
-   * Removes all the handlers from all the defined loggers. This should 
+   * Removes all the handlers from all the defined loggers. This should
    */
   public static void disableLogging() {
     Logger base = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
     base = base.getParent();
     base.setLevel(Level.SEVERE);
   }
-  
+
   /**
-   * Adjusts the Restlet Loggers so that they send their output to a file, not the console.
+   * Adjusts the Restlet Loggers so that they send their output to a file, not
+   * the console.
    * 
-   * @param serverHome Home directory for this server. Logging files are placed in
-   * [serverHome]/logs. If null, an IllegalArgumentException is thrown.
+   * @param serverHome Home directory for this server. Logging files are placed
+   *        in [serverHome]/logs. If null, an IllegalArgumentException is
+   *        thrown.
    * @throws IllegalArgumentException If serverHome is null.
-   * @throws RuntimeException If there are problems creating directories or opening log file.
+   * @throws RuntimeException If there are problems creating directories or
+   *         opening log file.
    */
   public static void useFileHandler(String serverHome) {
     LogManager logManager = LogManager.getLogManager();
@@ -67,21 +73,22 @@ public final class LoggerUtil {
     for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements();) {
       String logName = en.nextElement();
       if ((logName.startsWith("com.noelios") || logName.startsWith("org.restlet") || "global"
-          .equals(logName))
-          && (logManager.getLogger(logName) != null)) {
+          .equals(logName)) && (logManager.getLogger(logName) != null)) {
         // First, get rid of current Handlers
         Logger logger = logManager.getLogger(logName);
         logger.setFilter(new HTTPClientHelperFilter());
-//        System.out.println("logger is: " + logger + " name = " + logName);
+        // System.out.println("logger is: " + logger + " name = " + logName);
         logger = logger.getParent();
-//        System.out.println("parent logger is: " + logger);
+        // System.out.println("parent logger is: " + logger);
         Handler[] handlers = logger.getHandlers();
         for (Handler handler : handlers) {
           logger.removeHandler(handler);
         }
         // System.out.println("Removed handlers.");
-        // Define a handler that writes to the ~/.wattdepot3/<service>/logs directory
-        // Define a file handler that writes to the logs directory, creating it if nec.
+        // Define a handler that writes to the ~/.wattdepot3/<service>/logs
+        // directory
+        // Define a file handler that writes to the logs directory, creating it
+        // if nec.
         if (serverHome == null) {
           throw new IllegalArgumentException("Attempt to change Restlet logging to null filename");
         }
@@ -110,15 +117,15 @@ public final class LoggerUtil {
   }
 
   /**
-   * Adjusts the Restlet Loggers so that they dump their output rather than sending it to the
-   * console.
+   * Adjusts the Restlet Loggers so that they dump their output rather than
+   * sending it to the console.
    */
   public static void removeRestletLoggers() {
     LogManager logManager = LogManager.getLogManager();
     for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements();) {
       String logName = en.nextElement();
-      if ((logName.startsWith("com.noelios") || logName.startsWith("org.restlet") || "global"
-          .equals(logName) || logName.startsWith("org.hibernate"))
+      if ((logName.startsWith("com.noelios") || logName.startsWith("org.restlet")
+          || "global".equals(logName) || logName.startsWith("org.hibernate"))
           && (logManager.getLogger(logName) != null)) {
         Logger logger = logManager.getLogger(logName);
         logger = logger.getParent();
@@ -129,7 +136,7 @@ public final class LoggerUtil {
       }
     }
   }
-  
+
   /**
    * Utility for printing out the known/defined logger names.
    */

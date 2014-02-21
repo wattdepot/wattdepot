@@ -531,7 +531,7 @@ public class TestWattDepotPersistenceImpl {
         }
         try {
           impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId,
-              InstanceFactory.getTimeBetweenM1andM2(), 70L);
+              InstanceFactory.getTimeBetweenM1andM2(), 7L);
           fail("Should detect gap.");
         }
         catch (MeasurementGapException e) {
