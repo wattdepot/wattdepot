@@ -51,10 +51,10 @@ public class MeasurementImpl {
   private String id;
   /** The sensor that made the measurement. */
   @ManyToOne
-  @Index(name = "IDX_MEAS_SENSOR")
+  @Index(name = "IDX_MEASUREMENT")
   private SensorImpl sensor;
   /** The time of the measurement. */
-  @Index(name = "IDX_MEAS_TIME")
+  @Index(name = "IDX_MEASUREMENT")
   private Date timestamp;
   /** The value of the measurement. */
   private Double value;
@@ -62,7 +62,7 @@ public class MeasurementImpl {
   private String units;
   /** The Depository storing the measurement. */
   @ManyToOne
-  @Index(name = "IDX_MEAS_DEPOSITORY")
+  @Index(name = "IDX_MEASUREMENT")
   private DepositoryImpl depository;
 
   /**
