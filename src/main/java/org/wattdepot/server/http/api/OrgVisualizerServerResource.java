@@ -35,6 +35,7 @@ import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.API;
@@ -60,25 +61,32 @@ public class OrgVisualizerServerResource extends WattDepotServerResource {
       Representation rep = null;
       TemplateRepresentation template = null;
       try {
-        Long startTime = System.nanoTime();
+//        Long startTime = System.nanoTime();
         List<Depository> depos = depot.getDepositories(orgId);
-        Long endTime = System.nanoTime();
-        Long diff = endTime - startTime;
-        getLogger().log(Level.INFO,
-            "getDepositories took " + (diff / 1E9) + " seconds");
-        List<Sensor> sensors = new ArrayList<Sensor>();
+        List<Sensor> sensors = depot.getSensors(orgId);
+        List<SensorGroup> sensorGroups = depot.getSensorGroups(orgId);        
+//        Long endTime = System.nanoTime();
+//        Long diff = endTime - startTime;
+//        getLogger().log(Level.INFO,
+//            "getDepositories took " + (diff / 1E9) + " seconds");
+        Map<String, List<Sensor>> depoSensors = new HashMap<String, List<Sensor>>();
         for (Depository d : depos) {
+          List<Sensor> sensorList = new ArrayList<Sensor>();
+          depoSensors.put(d.getId(), sensorList);
           for (String sensorId : depot.listSensors(d.getId(), orgId)) {
-            startTime = System.nanoTime();
-            sensors.add(depot.getSensor(sensorId, orgId));
-            endTime = System.nanoTime();
-            diff = endTime - startTime;
-            getLogger().log(Level.INFO,
-                "getSensor took " + (diff / 1E9) + " seconds");
+//            startTime = System.nanoTime();
+            Sensor s = depot.getSensor(sensorId, orgId);
+//            endTime = System.nanoTime();
+//            diff = endTime - startTime;
+//            getLogger().log(Level.INFO,
+//                "getSensor took " + (diff / 1E9) + " seconds");
+            sensorList.add(s);
           }
         }
         dataModel.put("depositories", depos);
         dataModel.put("sensors", sensors);
+        dataModel.put("sensorgroups", sensorGroups);
+        dataModel.put("depoSensors", depoSensors);
         rep = new ClientResource(LocalReference.createClapReference(getClass().getPackage())
             + "/Visualizer.ftl").get();
       }

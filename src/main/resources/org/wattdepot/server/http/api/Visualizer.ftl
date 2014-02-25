@@ -101,7 +101,7 @@
               </div>
               <div class="col-xs-2 control-group">
                 <div class="col-xs-10">
-                  <select id="interval1">
+                  <select id="interval1" onchange="myFunction()">
                     <option value="5">5 mins</option>
                     <option value="15">15 mins</option>
                     <option value="30">30 mins</option>
@@ -129,6 +129,41 @@
     </div>
   </div>
 <script>
+
+function myFunction() {
+  alert("Something changed.");
+};
+
+var ORGID = "${orgId}";
+var DEPOSITORIES = {};
+<#list depositories as d>
+DEPOSITORIES["${d.id}"] = {"id": "${d.id}", "name": "${d.name}", "measurementType": "${d.measurementType.id}", "organizationId": "${d.organizationId}"};
+</#list>
+var SENSORS = {};
+<#list sensors as s>
+SENSORS["${s.id}"] = {"id": "${s.id}", "name": "${s.name}", "uri": "${s.uri}",  "modelId": "<#if s.getModelId()??>${s.modelId}</#if>", "organizationId": "${s.organizationId}", "properties" : [<#assign k = s.properties?size><#list s.properties as p>{"key":"${p.key}", "value":"${p.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]};
+</#list>
+var SENSORGROUPS = {};
+<#list sensorgroups as sg>
+SENSORGROUPS["${sg.id}"] = {"id": "${sg.id}", "name": "${sg.name}", "sensors": [
+<#assign sgLen = sg.sensors?size>
+<#list sg.sensors as s>
+{"id": "${s}"}<#if sgLen != 1>,</#if><#assign sgLen = sgLen - 1>
+</#list>
+], "organizationId": "${sg.organizationId}"};
+</#list>
+var DEPO_SENSORS = {};
+
+<#assign keys = depoSensors?keys>
+<#list keys as key>
+DEPO_SENSOR["${key}"] = [
+<#assign len = depoSensors[key]?size>
+<#list depoSensors[key] as s> 
+${s.id}<#if len != 1>, </#if><#assign len = len - 1>
+</#list>
+]
+</#list>
+
 </script>
 </body>
 </html>
