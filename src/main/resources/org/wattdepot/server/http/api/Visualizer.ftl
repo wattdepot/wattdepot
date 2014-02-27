@@ -4,16 +4,20 @@
 <title>WattDepot Organization Measurement Visualization</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Bootstrap -->
-<link rel="stylesheet" href="/webroot/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="/webroot/bower_components/bootstrap/dist/css/bootstrap.min.css">
 <!-- Optional theme -->
-<link rel="stylesheet" href="/webroot/dist/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="/webroot/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="/webroot/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
 <link rel="stylesheet/less" type="text/css" href="/webroot/dist/css/style.less">
 <script src="/webroot/dist/js/less-1.3.0.min.js"></script>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="/webroot/dist/js/jquery.js"></script>
-<script src="/webroot/dist/js/bootstrap.min.js"></script>
+<script src="/webroot/bower_components/jquery/dist/jquery.js"></script>
+<script src="/webroot//bower_components/moment/min/moment.min.js"></script>
+<script src="/webroot/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/webroot/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
 <script src="/webroot/dist/js/wattdepot-visualizer.js"></script>
-<script src="/webroot/dist/js/wattdepot-client.js"></script>
+<script src="/webroot/dist/js/org.wattdepot.client.js"></script>
+
 <script> 
 </script> 
 
@@ -50,11 +54,9 @@
       <div id="formLabels" class="row">
         <div class="col-xs-2">Show?</div>
         <div class="col-xs-2">Sensor:</div>
-        <div class="col-xs-7">
-          <div class="col-xs-5">Start Time:</div>
-          <div class="col-xs-5">End Time:</div>
-          <div class="col-xs-2">Interval:</div>
-        </div>
+        <div class="col-xs-3">Start Time:</div>
+        <div class="col-xs-3">End Time:</div>
+        <div class="col-xs-2">Sample Interval:</div>
       </div>
       <div id="visualizerFormsDiv">
         <div class="row form" id="form1">
@@ -66,7 +68,7 @@
                 </a>
               </div>
               <div class="col-xs-9">
-                <select id="depositorySelect1" class="col-xs-12 chzn-select" data-placehoder="Choose Depository...">
+                <select id="depositorySelect1" class="col-xs-12 chzn-select" data-placehoder="Choose Depository..." onchange="selectedDepository(1)">
                   <#list depositories as d>
                   <option value="${d.id}">${d.name}</option>
                   </#list>
@@ -75,49 +77,39 @@
             </div>
             <div id="sensorDiv1" class="col-xs-2 control-group">
               <select id="sensorSelect1" class="col-xs-12">
-                <#list sensors as s>
-                <option value="${s.id}">${s.name}</option>
-                </#list>
               </select>
             </div>
-            <div id="timeDiv1" class="col-xs-7">
-              <div class="col-xs-5 control-group">
-                <div class="input-append bootstrap-timepicker-component col-xs-5">
-                  <input type="text" id="startTimePicker1" class="timepicker-default input-small col-xs-12">
+            <div class="form-group col-xs-2">
+                <div class='input-group date' id='startdatetimepicker1'>
+                    <input type='text' class="form-control" data-format="MM/DD/YY HH:mm"/>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                    </span>
                 </div>
-                <span id="startTimePickerSpan1" class="glyphicon glyphicon-time col-xs-2"></span>
-                <div class="col-xs-5">
-                  <input type="text" value="current date" id="startDatePicker1" class="col-xs-12">
+            </div>
+            <div class="form-group col-xs-2">
+                <div class='input-group date' id='enddatetimepicker1'>
+                    <input type='text' class="form-control" data-format="MM/DD/YY HH:mm"/>
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
+                    </span>
                 </div>
-              </div>
-              <div class="col-xs-5 control-group">
-                <div class="input-append bootstrap-timepicker-component col-xs-5">
-                  <input type="text" id="endTimePicker1" class="timepicker-default input-small col-xs-12">
-                </div>
-                <span id="endTimePickerSpan1" class="glyphicon glyphicon-time col-xs-2"></span>
-                <div class="col-xs-5">
-                  <input type="text" value="current date" id="endDatePicker1" class="col-xs-12">
-                </div>
-              </div>
-              <div class="col-xs-2 control-group">
-                <div class="col-xs-10">
-                  <select id="interval1" onchange="myFunction()">
-                    <option value="5">5 mins</option>
-                    <option value="15">15 mins</option>
-                    <option value="30">30 mins</option>
-                    <option value="60">1 hr</option>
-                    <option value="120">2 hr</option>
-                    <option value="1400">1 Day</option>
-                    <option value="10080">1 Week</option>
-                    <option value="43200">1 Month</option>
-                  </select>
-                </div>
-                <div class="col-xs-2" id="removeDiv1">
-                  <a href="#" rel="tooltip" data-placement="left" title="Remove the data.">
-                    <button id="remove1" class="btn btn-xs"> - </button>
-                  </a>
-                </div>
-              </div>
+            </div>
+            <div class="col-xs-2 control-group">
+              <select id="dateInterval1">
+                <option value="date">Date Value</option>
+                <option value="interval">Interval Value</option>
+              </select>
+            </div>
+            <div class="col-xs-2 control-group">
+              <select id="interval1">
+                <option value="5">5 mins</option>
+                <option value="15">15 mins</option>
+                <option value="30">30 mins</option>
+                <option value="60">1 hr</option>
+                <option value="120">2 hr</option>
+                <option value="1400">1 Day</option>
+                <option value="10080">1 Week</option>
+                <option value="43200">1 Month</option>
+              </select>
             </div> 
           </div>
         </div>
@@ -129,6 +121,37 @@
     </div>
   </div>
 <script>
+$(document).ready(function() {
+    selectedDepository(1);
+});
+
+$(function () {
+    $('#startdatetimepicker1').datetimepicker();
+    $('#enddatetimepicker1').datetimepicker();
+});
+
+
+
+function selectedDepository(index) {
+    var depoId = $("#depositorySelect" + index + " option:selected").val();
+    var depoName = $("#depositorySelect" + index + " option:selected").text();
+    var sensors = DEPO_SENSORS[depoId];
+    updateSensorSelection(index, sensors);
+
+};
+
+function updateSensorSelection(index, sensors) {
+    var select = $("#sensorSelect" + index);
+    select.empty();
+    var length = sensors.length;
+    var i = 0;
+    for (i = 0; i < length; i++) {
+      select.append($("<option></option>")
+         .attr("value",sensors[i])
+         .text(SENSORS[sensors[i]].name)); 
+    }
+    
+};
 
 function myFunction() {
   alert("Something changed.");
@@ -156,10 +179,10 @@ var DEPO_SENSORS = {};
 
 <#assign keys = depoSensors?keys>
 <#list keys as key>
-DEPO_SENSOR["${key}"] = [
+DEPO_SENSORS["${key}"] = [
 <#assign len = depoSensors[key]?size>
 <#list depoSensors[key] as s> 
-${s.id}<#if len != 1>, </#if><#assign len = len - 1>
+"${s.id}"<#if len != 1>, </#if><#assign len = len - 1>
 </#list>
 ]
 </#list>
