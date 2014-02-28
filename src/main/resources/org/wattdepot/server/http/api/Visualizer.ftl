@@ -95,8 +95,8 @@
             </div>
             <div class="col-xs-2 control-group">
               <select id="dateInterval1">
-                <option value="date">Date Value</option>
-                <option value="interval">Interval Value</option>
+                <option value="instant">Instantaneous Value</option>
+                <option value="cumm">Cummulative Value</option>
               </select>
             </div>
             <div class="col-xs-2 control-group">
@@ -157,6 +157,29 @@ function myFunction() {
   alert("Something changed.");
 };
 
+  /*
+   * Get the timestamp string used in WattDepot server by given the date object in javascript.
+   * @param date A javascript date object.
+   * @return the timestamp string.
+   */
+  function getTimestampFromDate(date) {
+    function padZero(number, length) {
+      var str = '' + number;
+      while (str.length < length) {
+        str = '0' + str;
+      }
+      return str;
+    }
+
+    var timestamp = date.getFullYear() + '-' + padZero(date.getMonth() + 1, 2) + '-' + padZero(date.getDate(), 2);
+    timestamp = timestamp + 'T' + padZero(date.getHours(), 2) + ':' + padZero(date.getMinutes(), 2) + ':' + padZero(date.getSeconds(), 2);
+    timestamp = timestamp + '.' + padZero(date.getMilliseconds(), 3);
+    return timestamp;
+  }
+  
+
+
+
 var ORGID = "${orgId}";
 var DEPOSITORIES = {};
 <#list depositories as d>
@@ -186,7 +209,16 @@ DEPO_SENSORS["${key}"] = [
 </#list>
 ]
 </#list>
+var DEPO_SENSOR_INFO = {};
+<#assign depos = depotSensorInfo?keys>
+<#list depos as dep>
+DEPO_SENSOR_INFO["${dep}"] = {};
+<#assign sensorIds = depotSensorInfo[dep]?keys>
+<#list sensorIds as id>
+DEPO_SENSOR_INFO["${dep}"]["${id}"] = {"earliest" : "${depotSensorInfo[dep][id][0]?datetime?iso_local_ms}", "latest" : "${depotSensorInfo[dep][id][1]?datetime?iso_local_ms}"};
 
+</#list>
+</#list>
 </script>
 </body>
 </html>

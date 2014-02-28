@@ -24,9 +24,11 @@ import java.util.TimerTask;
 import org.wattdepot.client.http.api.WattDepotClient;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.DepositoryList;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.Property;
 import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorList;
 import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.BadSensorUriException;
@@ -98,13 +100,27 @@ public abstract class PerformanceTimedTask extends TimerTask {
     this.minGetTime = Long.MAX_VALUE;
     this.client = new WattDepotClient(serverUri, username, orgId, password);
     this.debug = debug;
-    this.collectorId = collectorId;
-    if (!client.isDefinedCollectorProcessDefinition(this.collectorId)) {
-      initializePerformanceItems(this.collectorId);
+    // need to find a depository and sensor with data.
+    DepositoryList depositories = client.getDepositories();
+    if (depositories != null) {
+      for (Depository d : depositories.getDepositories()) {
+        SensorList sensors = client.getDepositorySensors(d.getId());
+        if (sensors != null && sensors.getSensors().size() > 0) {
+          this.depository = d;
+          this.sensor = sensors.getSensors().get(0);
+          break;
+        }
+      }
     }
-    this.definition = client.getCollectorProcessDefinition(this.collectorId);
-    this.depository = client.getDepository(definition.getDepositoryId());
-    this.sensor = client.getSensor(definition.getSensorId());
+    else {
+      this.collectorId = collectorId;
+      if (!client.isDefinedCollectorProcessDefinition(this.collectorId)) {
+        initializePerformanceItems(this.collectorId);
+      }
+      this.definition = client.getCollectorProcessDefinition(this.collectorId);
+      this.depository = client.getDepository(definition.getDepositoryId());
+      this.sensor = client.getSensor(definition.getSensorId());
+    }
   }
 
   /**

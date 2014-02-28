@@ -195,7 +195,8 @@ public class GetDateValueThroughput extends TimerTask {
       // haven't actually run so do nothing.
       this.numChecks++;
       // should I put a bogus first rate so we don't start too fast?
-      // this.averageGetTime.addValue(1.0); // took 1 second per so we start with a low average.
+      // this.averageGetTime.addValue(1.0); // took 1 second per so we start with a
+                                         // low average.
     }
     else {
       this.timer.cancel();
@@ -252,7 +253,7 @@ public class GetDateValueThroughput extends TimerTask {
             e.printStackTrace();
             // should not happen
           }
-          catch (InterruptedException e) {  // NOPMD
+          catch (InterruptedException e) { // NOPMD
             e.printStackTrace();
             // should not happen
           }

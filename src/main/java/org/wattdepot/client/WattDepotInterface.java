@@ -56,8 +56,8 @@ public interface WattDepotInterface {
    * @throws IdNotFoundException if the CollectorProcessDefinitionData is not
    *         found in the server.
    */
-  public void deleteCollectorProcessDefinition(
-      CollectorProcessDefinition process) throws IdNotFoundException;
+  public void deleteCollectorProcessDefinition(CollectorProcessDefinition process)
+      throws IdNotFoundException;
 
   /**
    * Deletes the given Depository.
@@ -65,8 +65,7 @@ public interface WattDepotInterface {
    * @param depository the Depository to delete.
    * @throws IdNotFoundException if the Depository is not found in the server.
    */
-  public void deleteDepository(Depository depository)
-      throws IdNotFoundException;
+  public void deleteDepository(Depository depository) throws IdNotFoundException;
 
   /**
    * Deletes the given measurement from the given depository.
@@ -86,8 +85,7 @@ public interface WattDepotInterface {
    * @throws IdNotFoundException if the MeasurementType is not found in the
    *         Depository.
    */
-  public void deleteMeasurementType(MeasurementType type)
-      throws IdNotFoundException;
+  public void deleteMeasurementType(MeasurementType type) throws IdNotFoundException;
 
   /**
    * Deletes the given Sensor.
@@ -114,11 +112,6 @@ public interface WattDepotInterface {
   public void deleteSensorModel(SensorModel model) throws IdNotFoundException;
 
   /**
-   * @return The defined CollectorProcessDefinitions.
-   */
-  public CollectorProcessDefinitionList getCollectorProcessDefinitions();
-
-  /**
    * Retrieves the CollectorProcessDefinitionData with the given id from the
    * WattDepot Server.
    * 
@@ -129,6 +122,11 @@ public interface WattDepotInterface {
    */
   public CollectorProcessDefinition getCollectorProcessDefinition(String id)
       throws IdNotFoundException;
+
+  /**
+   * @return The defined CollectorProcessDefinitions.
+   */
+  public CollectorProcessDefinitionList getCollectorProcessDefinitions();
 
   /**
    * @return The defined Depositories.
@@ -145,6 +143,14 @@ public interface WattDepotInterface {
   public Depository getDepository(String id) throws IdNotFoundException;
 
   /**
+   * @param id The depository id.
+   * @return a SensorList of the sensors contributing measurements to the
+   *         depository.
+   * @throws IdNotFoundException if the id is not defined.
+   */
+  SensorList getDepositorySensors(String id) throws IdNotFoundException;
+
+  /**
    * @param depository The Depository storing the Measurements.
    * @param sensor The Sensor making the Measurements.
    * @return The earliest Value.
@@ -156,8 +162,7 @@ public interface WattDepotInterface {
    * @param group The SensorGroup whose sensors are making the Measurements.
    * @return The earliest Value.
    */
-  public InterpolatedValue getEarliestValue(Depository depository,
-      SensorGroup group);
+  public InterpolatedValue getEarliestValue(Depository depository, SensorGroup group);
 
   /**
    * @param depository The Depository storing the Measurements.
@@ -171,8 +176,7 @@ public interface WattDepotInterface {
    * @param group The SensorGroup whose sensors are making the Measurements.
    * @return The latest Value.
    */
-  public InterpolatedValue getLatestValue(Depository depository,
-      SensorGroup group);
+  public InterpolatedValue getLatestValue(Depository depository, SensorGroup group);
 
   /**
    * @param depository The Depository storing the Measurements.
@@ -182,8 +186,7 @@ public interface WattDepotInterface {
    * @return The Measurements stored in the depository made by the sensor
    *         between start and end.
    */
-  public MeasurementList getMeasurements(Depository depository, Sensor sensor,
-      Date start, Date end);
+  public MeasurementList getMeasurements(Depository depository, Sensor sensor, Date start, Date end);
 
   /**
    * @param depository The Depository storing the Measurements.
@@ -193,8 +196,8 @@ public interface WattDepotInterface {
    * @return The Measurements stored in the depository made by the sensor
    *         between start and end.
    */
-  public MeasurementList getMeasurements(Depository depository,
-      SensorGroup group, Date start, Date end);
+  public MeasurementList getMeasurements(Depository depository, SensorGroup group, Date start,
+      Date end);
 
   /**
    * @param id the unique id for the MeasurementType.
@@ -202,8 +205,7 @@ public interface WattDepotInterface {
    * @exception IdNotFoundException if the given id is not a MeasurementType's
    *            id.
    */
-  public MeasurementType getMeasurementType(String id)
-      throws IdNotFoundException;
+  public MeasurementType getMeasurementType(String id) throws IdNotFoundException;
 
   /**
    * @return The defined MeasurementTypes.
@@ -274,8 +276,8 @@ public interface WattDepotInterface {
    * @throws NoMeasurementException if there are no measurements around the
    *         start or end time.
    */
-  public Double getValue(Depository depository, Sensor sensor, Date start,
-      Date end) throws NoMeasurementException;
+  public Double getValue(Depository depository, Sensor sensor, Date start, Date end)
+      throws NoMeasurementException;
 
   /**
    * @param depository The Depository storing the measurements.
@@ -291,9 +293,8 @@ public interface WattDepotInterface {
    * @throws MeasurementGapException if the measurements around start or end are
    *         too far apart.
    */
-  public Double getValue(Depository depository, Sensor sensor, Date start,
-      Date end, Long gapSeconds) throws NoMeasurementException,
-      MeasurementGapException;
+  public Double getValue(Depository depository, Sensor sensor, Date start, Date end, Long gapSeconds)
+      throws NoMeasurementException, MeasurementGapException;
 
   /**
    * @param depository The Depository storing the measurements.
@@ -308,8 +309,8 @@ public interface WattDepotInterface {
    * @throws MeasurementGapException if the measurements around timestamp are
    *         too far apart.
    */
-  public Double getValue(Depository depository, Sensor sensor, Date timestamp,
-      Long gapSeconds) throws NoMeasurementException, MeasurementGapException;
+  public Double getValue(Depository depository, Sensor sensor, Date timestamp, Long gapSeconds)
+      throws NoMeasurementException, MeasurementGapException;
 
   /**
    * @param depository The Depository storing the measurements.
@@ -320,8 +321,8 @@ public interface WattDepotInterface {
    * @throws NoMeasurementException if there aren't any measurements around the
    *         timestamp.
    */
-  public Double getValue(Depository depository, SensorGroup group,
-      Date timestamp) throws NoMeasurementException;
+  public Double getValue(Depository depository, SensorGroup group, Date timestamp)
+      throws NoMeasurementException;
 
   /**
    * @param depository The Depository storing the measurements.
@@ -333,8 +334,8 @@ public interface WattDepotInterface {
    * @throws NoMeasurementException if there are no measurements around the
    *         start or end time.
    */
-  public Double getValue(Depository depository, SensorGroup group, Date start,
-      Date end) throws NoMeasurementException;
+  public Double getValue(Depository depository, SensorGroup group, Date start, Date end)
+      throws NoMeasurementException;
 
   /**
    * @param depository The Depository storing the measurements.
@@ -350,9 +351,8 @@ public interface WattDepotInterface {
    * @throws MeasurementGapException if the measurements around start or end are
    *         too far apart.
    */
-  public Double getValue(Depository depository, SensorGroup group, Date start,
-      Date end, Long gapSeconds) throws NoMeasurementException,
-      MeasurementGapException;
+  public Double getValue(Depository depository, SensorGroup group, Date start, Date end,
+      Long gapSeconds) throws NoMeasurementException, MeasurementGapException;
 
   /**
    * @param depository The Depository storing the measurements.
@@ -367,9 +367,8 @@ public interface WattDepotInterface {
    * @throws MeasurementGapException if the measurements around timestamp are
    *         too far apart.
    */
-  public Double getValue(Depository depository, SensorGroup group,
-      Date timestamp, Long gapSeconds) throws NoMeasurementException,
-      MeasurementGapException;
+  public Double getValue(Depository depository, SensorGroup group, Date timestamp, Long gapSeconds)
+      throws NoMeasurementException, MeasurementGapException;
 
   /**
    * Checks to see if the given id is a defined CollectorProcessDefinition id.
@@ -483,8 +482,7 @@ public interface WattDepotInterface {
    * 
    * @param process The CollectorProcessDefinitionData to update.
    */
-  public void updateCollectorProcessDefinition(
-      CollectorProcessDefinition process);
+  public void updateCollectorProcessDefinition(CollectorProcessDefinition process);
 
   /**
    * Updates the given Depository in the WattDepot Server.
