@@ -68,7 +68,7 @@
                 </a>
               </div>
               <div class="col-xs-9">
-                <select id="depositorySelect1" class="col-xs-12 chzn-select" data-placehoder="Choose Depository..." onchange="selectedDepository(1)">
+                <select id="depositorySelect1" class="col-xs-12 chzn-select" data-placehoder="Choose Depository..." onchange="selectedDepository(1)" data-toggle="tooltip" title="Choose Depository...">
                   <#list depositories as d>
                   <option value="${d.id}">${d.name}</option>
                   </#list>
@@ -76,7 +76,7 @@
               </div>
             </div>
             <div id="sensorDiv1" class="col-xs-2 control-group">
-              <select id="sensorSelect1" class="col-xs-12">
+              <select id="sensorSelect1" class="col-xs-12" onchange="selectedSensor(1)">
               </select>
             </div>
             <div class="form-group col-xs-2">
@@ -85,6 +85,7 @@
                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
                     </span>
                 </div>
+                <div id="startInfo1"></div>
             </div>
             <div class="form-group col-xs-2">
                 <div class='input-group date' id='enddatetimepicker1'>
@@ -92,6 +93,7 @@
                     <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
                     </span>
                 </div>
+                <div id="endInfo1"></div>
             </div>
             <div class="col-xs-2 control-group">
               <select id="dateInterval1">
@@ -117,10 +119,17 @@
       <div id="controlPanelButtonRow" class="row">
         <div class="col-xs-8 control-group">
           <button id="visualizeButton" class="col-xs-2 btn btn-primary" onclick="visualize();" diabled>Visualize!</button>
+        </div>
+        <div class="col-xs-3"></div>
+        <div class="col-xs-1 control-group">
+          <button id="addRowButton" class="btn btn-primary" onclick="addRow();" data-toggle="tooltip" data-placement="left" title="Add another row"><span class="glyphicon glyphicon-plus"></span></button>
+        </div>
       </div>
     </div>
   </div>
 <script>
+var numRows = 1;
+
 $(document).ready(function() {
     selectedDepository(1);
 });
@@ -130,13 +139,80 @@ $(function () {
     $('#enddatetimepicker1').datetimepicker();
 });
 
+function addRow() {
+    numRows++;
+    insertRowHTML(numRows);
+};
 
+function insertRowHTML(index) {
+    $('#visualizerFormsDiv').append(
+        '<div class="row form" id="form'+index+'">'
+        +'  <div class="row">'
+        +'    <div id="depositoryDiv' + index + '" class="col-xs-2 control-group">'
+        +'      <div class="col-xs-2">'
+        +'        <input type="checkbox" class="col-xs-11" id="show' + index +'"/>'
+        +'      </div>'
+        +'      <div class="col-xs-9">'
+        +'        <select id="depositorySelect' + index + '" class="col-xs-12 chzn-select" data-placehoder="Choose Depository..." onchange="selectedDepository('+index+')" data-toggle="tooltip" title="Choose Depository...">'
+        +'        </select>'
+        +'      </div>'
+        +'    </div>'
+        +'    <div id="sensorDiv' + index + '" class="col-xs-2 control-group">'
+        +'      <select id="sensorSelect' + index + '" class="col-xs-12" onchange="selectedSensor(' + index + ')">'
+        +'      </select>'
+        +'    </div>'
+        +'    <div class="form-group col-xs-2">'
+        +'        <div class="input-group date" id="startdatetimepicker' + index + '">'
+        +'            <input type="text" class="form-control" data-format="MM/DD/YY HH:mm"/>'
+        +'            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>'
+        +'            </span>'
+        +'        </div>'
+        +'        <div id="startInfo' + index + '"></div>'
+        +'    </div>'
+        +'    <div class="form-group col-xs-2">'
+        +'        <div class="input-group date" id="enddatetimepicker' + index + '">'
+        +'            <input type="text" class="form-control" data-format="MM/DD/YY HH:mm"/>'
+        +'            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>'
+        +'            </span>'
+        +'        </div>'
+        +'        <div id="endInfo' + index + '"></div>'
+        +'    </div>'
+        +'    <div class="col-xs-2 control-group">'
+        +'      <select id="dateInterval' + index + '">'
+        +'        <option value="instant">Instantaneous Value</option>'
+        +'        <option value="cumm">Cummulative Value</option>'
+        +'      </select>'
+        +'    </div>'
+        +'    <div class="col-xs-2 control-group">'
+        +'      <select id="interval' + index + '">'
+        +'        <option value="5">5 mins</option>'
+        +'        <option value="15">15 mins</option>'
+        +'        <option value="30">30 mins</option>'
+        +'        <option value="60">1 hr</option>'
+        +'        <option value="120">2 hr</option>'
+        +'        <option value="1400">1 Day</option>'
+        +'        <option value="10080">1 Week</option>'
+        +'        <option value="43200">1 Month</option>'
+        +'      </select>'
+        +'    </div> '
+        +'  </div>'
+        +'</div>'
+        );
+
+    // set up the depository options.    
+    for(var key in DEPOSITORIES) {
+        $("#depositorySelect"+index).append("<option value=\"" + key + "\">" + DEPOSITORIES[key]['name'] + "</option>");
+    }
+    selectedDepository(index);
+    
+};
 
 function selectedDepository(index) {
     var depoId = $("#depositorySelect" + index + " option:selected").val();
     var depoName = $("#depositorySelect" + index + " option:selected").text();
     var sensors = DEPO_SENSORS[depoId];
     updateSensorSelection(index, sensors);
+    selectedSensor(index);
 
 };
 
@@ -151,6 +227,15 @@ function updateSensorSelection(index, sensors) {
          .text(SENSORS[sensors[i]].name)); 
     }
     
+};
+
+function selectedSensor(index) {
+    var depoId = $("#depositorySelect" + index + " option:selected").val();
+    var sensorId = $("#sensorSelect" + index + " option:selected").val();
+    $("#startInfo" + index).remove();    
+    $("#startdatetimepicker" + index).parent().append("<div id=\"startInfo" + index + "\"><small>Earliest: " + DEPO_SENSOR_INFO[depoId][sensorId]['earliest'] + "</small></div>");
+    $("#endInfo" + index).remove();    
+    $("#enddatetimepicker" + index).parent().append("<div id=\"endInfo" + index + "\"><small>Latest: " + DEPO_SENSOR_INFO[depoId][sensorId]['latest'] + "</small></div>");
 };
 
 function myFunction() {
