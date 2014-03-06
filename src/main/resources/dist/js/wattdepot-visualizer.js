@@ -1,8 +1,15 @@
 var numRows = 0;
 var activeIndex = []; // The array containing the form indexes of the active
 // form rows
-var dataQueries = []; // The queries and other related data to get the data from the WattDepot Server
 var numShow = 0;
+var loaded = false; // If the google visualization API has been loaded.
+var dataArray = []; // The array of data tables retrieved from the queries
+var numFinished = 0; // The number of queries finished
+var canceled = false; // If the queries have been canceled.
+var numDataPointsRetrieved; // The number of data points that have been retrieved in the current visualization query.
+var totalNumPoints; // The total number of points needed for a visualization request.
+var averageTimePerPoint; // The average time it takes to get a single data point.
+var dataQueries = []; // The queries and other related data to get the data from the WattDepot Server
 var maxQuerySize = 100; // The maximum size of a single query to the WattDepot
 // server. Any larger query will be split.
 var maxQuerySize = 100; // The maximum size of a single query to the WattDepot
@@ -784,7 +791,8 @@ function visualize() {
     });
   }
 
-  currentVisID = "foo"+numVisExecuted;
+  $('#linkSpace').val(getUrl()+gatherVariables());
+  currentVisID = $('#linkSpace').val()+numVisExecuted;
   numVisExecuted++;
 
   // Send the queries

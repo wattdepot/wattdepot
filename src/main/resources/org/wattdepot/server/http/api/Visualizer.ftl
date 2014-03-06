@@ -15,6 +15,7 @@
 <script src="/webroot/bower_components/moment/min/moment.min.js"></script>
 <script src="/webroot/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/webroot/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+<script src="/webroot/dist/js/wattdepot-permalink.js"></script>
 <script src="/webroot/dist/js/wattdepot-visualizer.js"></script>
 <script src="/webroot/dist/js/org.wattdepot.client.js"></script>
 <script type='text/javascript' src='http://www.google.com/jsapi'></script>
@@ -70,63 +71,11 @@
         <div class="col-xs-2">Sample Frequency:</div>
       </div>
       <div id="visualizerFormsDiv">
-<!--        <div class="row form" id="form1">
-            <div id="depositoryDiv1" class="col-xs-3 control-group">
-              <div class="col-xs-2">
-                <label class="checkbox"><input type="checkbox" id="show1" value="now"></label>
-              </div>
-              <div class="col-xs-9">
-                <select id="depositorySelect1" class="col-xs-12" data-placehoder="Choose Depository..." onchange="selectedDepository(1)" data-toggle="tooltip" title="Choose Depository...">
-                  <#list depositories as d>
-                  <option value="${d.id}">${d.name}</option>
-                  </#list>
-                </select>
-              </div>
-            </div>
-            <div id="sensorDiv1" class="col-xs-2 control-group">
-              <select id="sensorSelect1" class="col-xs-12" onchange="selectedSensor(1)">
-              </select>
-            </div>
-            <div class="form-group col-xs-2">
-                <div class='input-group date' id='startdatetimepicker1'>
-                    <input type='text' class="form-control" data-format="MM/DD/YY HH:mm"/>
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                </div>
-                <div id="startInfo1"></div>
-            </div>
-            <div class="form-group col-xs-2">
-                <div class='input-group date' id='enddatetimepicker1'>
-                    <input type='text' class="form-control" data-format="MM/DD/YY HH:mm"/>
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                </div>
-                <div id="endInfo1"></div>
-                <div><label class="checkbox"><input type="checkbox" id="endTimeNow1" value="now">Now</label></div>
-            </div>
-            <div class="col-xs-2 control-group">
-              <select id="dataInterval1">
-                <option value="point">Point Value</option>
-                <option value="interval">Cummulative Value</option>
-              </select>
-            </div>
-            <div class="col-xs-1 control-group">
-              <select id="interval1">
-                <option value="5">5 mins</option>
-                <option value="15">15 mins</option>
-                <option value="30">30 mins</option>
-                <option value="60">1 hr</option>
-                <option value="120">2 hr</option>
-                <option value="1400">1 Day</option>
-                <option value="10080">1 Week</option>
-                <option value="43200">1 Month</option>
-              </select>
-            </div> 
-          </div> -->
       </div>
       <div id="controlPanelButtonRow" class="row">
         <div class="col-xs-8 control-group">
           <button id="visualizeButton" class="col-xs-2 btn btn-primary" onclick="visualize();" diabled>Visualize!</button>
+          <div class="col-xs-10 control-group" id="permalink" style="display:none">Share URL:<input id="linkSpace" class="input-large" type="text" placeholder="Your Permalink" style="width:80%"></div>
         </div>
         <div class="col-xs-3"></div>
         <div class="col-xs-1 control-group">
