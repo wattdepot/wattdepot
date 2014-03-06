@@ -548,7 +548,6 @@ function getDate(id, index) {
     $('#' + id + 'datetimepicker' + index).unwrap();
     $('#' + id + 'datetimepicker' + index).removeClass('invalid');
   }
-  console.log(time.toDate());
   return time.toDate();
 }
 

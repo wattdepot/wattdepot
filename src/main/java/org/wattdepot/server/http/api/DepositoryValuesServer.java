@@ -97,7 +97,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
                 intervalMinutes);
 
             Sensor sensor = depot.getSensor(sensorId, orgId);
-            if (sensor != null) {
+            if (sensor != null && timestampList != null) {
               for (int i = 0; i < timestampList.size(); i++) {
                 Date timestamp = DateConvert.convertXMLCal(timestampList.get(i));
                 Double value = depot.getValue(depositoryId, orgId, sensor.getId(), timestamp);
@@ -117,7 +117,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
               if (group != null) {
                 for (String s : group.getSensors()) {
                   Sensor sens = depot.getSensor(s, orgId);
-                  if (sens != null) {
+                  if (sens != null && timestampList != null) {
                     for (int i = 0; i < timestampList.size(); i++) {
                       Date timestamp = DateConvert.convertXMLCal(timestampList.get(i));
                       Double value = depot.getValue(depositoryId, orgId, sens.getId(), timestamp);
