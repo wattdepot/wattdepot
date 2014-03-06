@@ -61,7 +61,7 @@ public class PutCollectorRate {
     String cpd = null;
     boolean debug = false;
 
-    options.addOption("h", false, "Usage: PutRate -s <server uri> -u <username>"
+    options.addOption("h", false, "Usage: PutCollectorRate -s <server uri> -u <username>"
         + " -p <password> -o <orgId> -mps <measurementsPerSecond> [-d]");
     options.addOption("s", "server", true, "WattDepot Server URI. (http://server.wattdepot.org)");
     options.addOption("u", "username", true, "Username");

@@ -100,20 +100,22 @@ public abstract class PerformanceTimedTask extends TimerTask {
     this.minGetTime = Long.MAX_VALUE;
     this.client = new WattDepotClient(serverUri, username, orgId, password);
     this.debug = debug;
-    // need to find a depository and sensor with data.
-    DepositoryList depositories = client.getDepositories();
-    if (depositories != null) {
-      for (Depository d : depositories.getDepositories()) {
-        SensorList sensors = client.getDepositorySensors(d.getId());
-        if (sensors != null && sensors.getSensors().size() > 0) {
-          this.depository = d;
-          this.sensor = sensors.getSensors().get(0);
-          break;
+    this.collectorId = collectorId;
+    if (!client.isDefinedCollectorProcessDefinition(this.collectorId)) {
+      // need to find a depository and sensor with data.
+      DepositoryList depositories = client.getDepositories();
+      if (depositories != null) {
+        for (Depository d : depositories.getDepositories()) {
+          SensorList sensors = client.getDepositorySensors(d.getId());
+          if (sensors != null && sensors.getSensors().size() > 0) {
+            this.depository = d;
+            this.sensor = sensors.getSensors().get(0);
+            break;
+          }
         }
       }
     }
     else {
-      this.collectorId = collectorId;
       if (!client.isDefinedCollectorProcessDefinition(this.collectorId)) {
         initializePerformanceItems(this.collectorId);
       }
