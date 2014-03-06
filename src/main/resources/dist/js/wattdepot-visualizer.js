@@ -586,9 +586,9 @@ function splitQuery(server, depository, sensor, startTime, endTime, interval) {
   // Split the query
   while (tempTime < endTime) {
     query = new google.visualization.Query(server + ORGID + '/depository/'
-        + depository + '/values/gviz/?sensor=' + sensor + '&startTime='
-        + wdClient.getTimestampFromDate(startTime) + '&endTime='
-        + wdClient.getTimestampFromDate(tempTime) + '&samplingInterval='
+        + depository + '/values/gviz/?sensor=' + sensor + '&start='
+        + wdClient.getTimestampFromDate(startTime) + '&end='
+        + wdClient.getTimestampFromDate(tempTime) + '&interval='
         + interval);
     query.setQuery('select timePoint, ' + depository);
     query.setTimeout(queryTimeOut);
