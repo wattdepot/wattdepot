@@ -24,9 +24,11 @@ import java.util.TimerTask;
 import org.wattdepot.client.http.api.WattDepotClient;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.DepositoryList;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.Property;
 import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorList;
 import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.BadSensorUriException;
@@ -34,7 +36,7 @@ import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.util.SensorModelHelper;
 
 /**
- * GetLatestValueTask gets the latest value from the WattDepot Server.
+ * PerformanceTimedTask times a query from the WattDepot Server.
  * 
  * @author Cam Moore
  * 
@@ -55,7 +57,7 @@ public abstract class PerformanceTimedTask extends TimerTask {
   private Long numberOfRuns;
   private Long minGetTime;
   private Long maxGetTime;
-  private String collectorId = "performance-evaluation-collector";
+  private String collectorId;
 
   /**
    * Initializes the GetLatestValueTask.
@@ -72,18 +74,55 @@ public abstract class PerformanceTimedTask extends TimerTask {
    */
   public PerformanceTimedTask(String serverUri, String username, String orgId, String password,
       boolean debug) throws BadCredentialException, IdNotFoundException, BadSensorUriException {
+    this(serverUri, username, orgId, password, debug, "performance-evaluation-collector");
+  }
+
+  /**
+   * Initializes the GetLatestValueTask.
+   * 
+   * @param serverUri The URI for the WattDepot server.
+   * @param username The name of a user defined in the WattDepot server.
+   * @param orgId the id of the organization the user is in.
+   * @param password The password for the user.
+   * @param debug flag for debugging messages.
+   * @param collectorId the CollectorProcessDefinition id.
+   * @throws BadCredentialException if the user or password don't match the
+   *         credentials in WattDepot.
+   * @throws IdNotFoundException if the processId is not defined.
+   * @throws BadSensorUriException if the Sensor's URI isn't valid.
+   */
+  public PerformanceTimedTask(String serverUri, String username, String orgId, String password,
+      boolean debug, String collectorId) throws BadCredentialException, IdNotFoundException,
+      BadSensorUriException {
     this.totalTime = 0l;
     this.numberOfRuns = 0l;
     this.maxGetTime = -1l;
     this.minGetTime = Long.MAX_VALUE;
     this.client = new WattDepotClient(serverUri, username, orgId, password);
     this.debug = debug;
+    this.collectorId = collectorId;
     if (!client.isDefinedCollectorProcessDefinition(this.collectorId)) {
-      initializePerformanceItems(this.collectorId);
+      // need to find a depository and sensor with data.
+      DepositoryList depositories = client.getDepositories();
+      if (depositories != null) {
+        for (Depository d : depositories.getDepositories()) {
+          SensorList sensors = client.getDepositorySensors(d.getId());
+          if (sensors != null && sensors.getSensors().size() > 0) {
+            this.depository = d;
+            this.sensor = sensors.getSensors().get(0);
+            break;
+          }
+        }
+      }
     }
-    this.definition = client.getCollectorProcessDefinition(this.collectorId);
-    this.depository = client.getDepository(definition.getDepositoryId());
-    this.sensor = client.getSensor(definition.getSensorId());
+    else {
+      if (!client.isDefinedCollectorProcessDefinition(this.collectorId)) {
+        initializePerformanceItems(this.collectorId);
+      }
+      this.definition = client.getCollectorProcessDefinition(this.collectorId);
+      this.depository = client.getDepository(definition.getDepositoryId());
+      this.sensor = client.getSensor(definition.getSensorId());
+    }
   }
 
   /**

@@ -53,6 +53,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
   private String start;
   private String end;
   private String interval;
+  private String dataType;
 
   /*
    * (non-Javadoc)
@@ -67,6 +68,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
     this.end = getQuery().getValues(Labels.END);
     this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);
     this.interval = getQuery().getValues(Labels.INTERVAL);
+    this.dataType = getQuery().getValues(Labels.VALUE_TYPE);
   }
 
   /**
@@ -77,8 +79,10 @@ public class DepositoryValuesServer extends WattDepotServerResource {
   public MeasuredValueList doRetrieve() {
     getLogger().log(
         Level.INFO,
-        "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/values/?sensor={"
-            + sensorId + "}&start={" + start + "}&end={" + end + "}&interval={" + interval + "}");
+        "GET /wattdepot/{" + orgId + "}/" + Labels.DEPOSITORY + "/{" + depositoryId + "}/"
+            + Labels.VALUES + "/?" + Labels.SENSOR + "={" + sensorId + "}&" + Labels.START + "={"
+            + start + "}&" + Labels.END + "={" + end + "}&" + Labels.INTERVAL + "={" + interval
+            + "}&" + Labels.VALUE_TYPE + "={" + dataType + "}");
     if (isInRole(orgId)) {
       if (start != null && end != null && interval != null) {
         MeasuredValueList ret = new MeasuredValueList();
@@ -97,12 +101,30 @@ public class DepositoryValuesServer extends WattDepotServerResource {
                 intervalMinutes);
 
             Sensor sensor = depot.getSensor(sensorId, orgId);
-            if (sensor != null) {
+            if (sensor != null && timestampList != null) {
+              Date previous = null;
               for (int i = 0; i < timestampList.size(); i++) {
                 Date timestamp = DateConvert.convertXMLCal(timestampList.get(i));
-                Double value = depot.getValue(depositoryId, orgId, sensor.getId(), timestamp);
-                if (value == null) {
-                  value = new Double(0);
+                Double value = new Double(0);
+                if ("point".equals(dataType)) {
+                  try {
+                    value = depot.getValue(depositoryId, orgId, sensor.getId(), timestamp);
+                  }
+                  catch (NoMeasurementException e) { // NOPMD
+                    // no measurements around the time so return 0?
+                  }
+                }
+                else {
+                  if (previous != null) {
+                    try {
+                      value = depot.getValue(depositoryId, orgId, sensor.getId(), previous,
+                          timestamp);
+                    }
+                    catch (NoMeasurementException e) { // NOPMD
+                      // No measurements so return 0,
+                    }
+                  }
+                  previous = timestamp;
                 }
                 InterpolatedValue mValue = new InterpolatedValue(sensor.getId(), value,
                     depository.getMeasurementType(), timestamp);
@@ -113,16 +135,35 @@ public class DepositoryValuesServer extends WattDepotServerResource {
               }
             }
             else {
+              // TODO CAM this code doesn't work! Need to aggregate the values not just put them in.
               SensorGroup group = depot.getSensorGroup(sensorId, orgId);
               if (group != null) {
                 for (String s : group.getSensors()) {
                   Sensor sens = depot.getSensor(s, orgId);
-                  if (sens != null) {
+                  if (sens != null && timestampList != null) {
+                    Date previous = null;
                     for (int i = 0; i < timestampList.size(); i++) {
                       Date timestamp = DateConvert.convertXMLCal(timestampList.get(i));
-                      Double value = depot.getValue(depositoryId, orgId, sens.getId(), timestamp);
-                      if (value == null) {
-                        value = new Double(0);
+                      Double value = new Double(0);
+                      if ("point".equals(dataType)) {
+                        try {
+                          value = depot.getValue(depositoryId, orgId, sens.getId(), timestamp);
+                        }
+                        catch (NoMeasurementException e) { // NOPMD
+                          // No measurements so return 0;
+                        }                        
+                      }
+                      else {
+                        if (previous != null) {
+                          try {
+                            value = depot.getValue(depositoryId, orgId, sensor.getId(), previous,
+                                timestamp);
+                          }
+                          catch (NoMeasurementException e) { // NOPMD
+                            // No measurements so return 0,
+                          }
+                        }
+                        previous = timestamp;                        
                       }
                       InterpolatedValue mValue = new InterpolatedValue(sens.getId(), value,
                           depository.getMeasurementType(), timestamp);
@@ -152,9 +193,6 @@ public class DepositoryValuesServer extends WattDepotServerResource {
         catch (DatatypeConfigurationException e) {
           setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
         }
-        catch (NoMeasurementException e) {
-          setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-        }
         catch (IdNotFoundException e) {
           setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         }
@@ -171,5 +209,4 @@ public class DepositoryValuesServer extends WattDepotServerResource {
       return null;
     }
   }
-
 }

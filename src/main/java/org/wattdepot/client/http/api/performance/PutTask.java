@@ -57,6 +57,26 @@ public class PutTask extends PerformanceTimedTask {
   }
 
   /**
+   * Initializes the PutTask.
+   * 
+   * @param serverUri The URI for the WattDepot server.
+   * @param username The name of a user defined in the WattDepot server.
+   * @param orgId the id of the organization the user is in.
+   * @param password The password for the user.
+   * @param debug flag for debugging messages.
+   * @param cpd the CollectorProcessDefinition id.
+   * @throws BadCredentialException if the user or password don't match the
+   *         credentials in WattDepot.
+   * @throws IdNotFoundException if the processId is not defined.
+   * @throws BadSensorUriException if the Sensor's URI isn't valid.
+   */
+  public PutTask(String serverUri, String username, String orgId, String password,
+      boolean debug, String cpd) throws BadCredentialException, IdNotFoundException,
+      BadSensorUriException {
+    super(serverUri, username, orgId, password, debug, cpd);
+  }
+
+  /**
    * @return Generates a fake Measurement with the current time.
    */
   private Measurement generateFakeMeasurement() {
