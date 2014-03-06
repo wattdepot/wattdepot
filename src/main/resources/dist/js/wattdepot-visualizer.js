@@ -1,4 +1,4 @@
-var numRows = 1;
+var numRows = 0;
 var activeIndex = []; // The array containing the form indexes of the active
 // form rows
 var dataQueries = []; // The queries and other related data to get the data from the WattDepot Server
@@ -353,12 +353,12 @@ function insertRowHTML(index) {
               + '        <div><label class="checkbox"><input type="checkbox" id="endTimeNow'
               + index + '" value="now">Now</label></div>' + '    </div>'
               + '    <div class="col-xs-2 control-group">'
-              + '      <select id="dateInterval' + index + '">'
-              + '        <option value="instant">Instantaneous Value</option>'
-              + '        <option value="cumm">Cummulative Value</option>'
+              + '      <select id="dataType' + index + '">'
+              + '        <option value="point">Point Value</option>'
+              + '        <option value="interval">Interval Value</option>'
               + '      </select>' + '    </div>'
               + '    <div class="col-xs-1 control-group">'
-              + '      <select id="interval' + index + '">'
+              + '      <select id="frequency' + index + '">'
               + '        <option value="5">5 mins</option>'
               + '        <option value="15">15 mins</option>'
               + '        <option value="30">30 mins</option>'
@@ -575,7 +575,7 @@ function getDate(id, index) {
  * @return An array containing the queries that resulted from splitting the
  *         original query.
  */
-function splitQuery(server, depository, sensor, startTime, endTime, interval) {
+function splitQuery(server, depository, sensor, startTime, endTime, dataType, interval) {
   var returnArray = [];
   var tempTime = new Date(startTime.getTime());
   var query;
@@ -588,7 +588,7 @@ function splitQuery(server, depository, sensor, startTime, endTime, interval) {
         + depository + '/values/gviz/?sensor=' + sensor + '&start='
         + wdClient.getTimestampFromDate(startTime) + '&end='
         + wdClient.getTimestampFromDate(tempTime) + '&interval='
-        + interval);
+        + interval + '&value-type=' + dataType);
     query.setQuery('select timePoint, ' + depository);
     query.setTimeout(queryTimeOut);
     returnArray.push(query);
@@ -602,7 +602,7 @@ function splitQuery(server, depository, sensor, startTime, endTime, interval) {
       + depository + '/values/gviz/?sensor=' + sensor + '&start='
       + wdClient.getTimestampFromDate(startTime) + '&end='
       + wdClient.getTimestampFromDate(endTime) + '&interval='
-      + interval);
+      + interval + '&value-type=' + dataType);
   query.setQuery('select timePoint, ' + depository);
   query.setTimeout(queryTimeOut);
   returnArray.push(query);
@@ -629,7 +629,7 @@ function getNumDataPoints(index) {
     timeInterval = end.getTime() - start.getTime();
   }
 
-  interval = parseInt($('#interval' + index + ' option:selected').val()) * 60 * 1000;
+  interval = parseInt($('#frequency' + index + ' option:selected').val()) * 60 * 1000;
   return timeInterval / interval;
 
 }
@@ -669,6 +669,7 @@ function visualize() {
   var interval;
   var startTime;
   var endTime;
+  var dataType;
   var error = false;
 
   
@@ -681,7 +682,8 @@ function visualize() {
     formIndex = activeIndex[loopIndex].formIndex;
     depository = $("#depositorySelect" + formIndex + " option:selected").val();
     sensor = $("#sensorSelect" + formIndex + " option:selected").val();
-    interval = $('#interval' + formIndex + ' option:selected').val();
+    dataType = $("#dataType" + formIndex + " option:selected").val();
+    interval = $('#frequency' + formIndex + ' option:selected').val();
 
     startTime = getDate('start', formIndex);
     if ($('#endTimeNow' + formIndex).is(':checked')) {
@@ -702,23 +704,22 @@ function visualize() {
     // Make sure interval is not too big
     if ((endTime - startTime) / 60000 < interval) {
       error = true;
-      $('#interval' + formIndex).addClass('invalid');
-      $('#interval' + formIndex).css('border', '3px red solid');
-      $('#interval' + formIndex)
+      $('#frequency' + formIndex).addClass('invalid');
+      $('#frequency' + formIndex).css('border', '3px red solid');
+      $('#frequency' + formIndex)
           .wrap(
               '<a href="#" rel="tooltip" data-placement="bottom" title="Error: Interval is larger than the data range.  Please chooose a smaller interval." />');
-    } else if ($('#interval' + formIndex).hasClass('invalid')) {
-      $('#interval' + formIndex).unwrap();
-      $('#interval' + formIndex).css('border', '');
-      $('#interval' + formIndex).removeClass('invalid');
+    } else if ($('#frequency' + formIndex).hasClass('invalid')) {
+      $('#frequency' + formIndex).unwrap();
+      $('#frequency' + formIndex).css('border', '');
+      $('#frequency' + formIndex).removeClass('invalid');
     }
     if (!error) {
       dataQueries.push({
         'depository' : depository,
         'sensor' : sensor,
         'numReturned' : 0,
-        'queries' : splitQuery(server, depository, sensor, startTime, endTime,
-            interval),
+        'queries' : splitQuery(server, depository, sensor, startTime, endTime, dataType, interval),
         'queryResults' : null
       });
     }

@@ -206,4 +206,7 @@ public class Labels {
   /** The label for visualizing interpolated values. */
   public static final String VISUALIZE = "visualize";
 
+  /** The label for determining what type of value to return. */
+  public static final String VALUE_TYPE = "value-type";
+
 }

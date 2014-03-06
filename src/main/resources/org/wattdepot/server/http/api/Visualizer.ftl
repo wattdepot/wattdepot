@@ -67,10 +67,10 @@
         <div class="col-xs-2">Sensor:</div>
         <div class="col-xs-3">Start Time:</div>
         <div class="col-xs-2">End Time:</div>
-        <div class="col-xs-2">Sample Interval:</div>
+        <div class="col-xs-2">Sample Frequency:</div>
       </div>
       <div id="visualizerFormsDiv">
-        <div class="row form" id="form1">
+<!--        <div class="row form" id="form1">
             <div id="depositoryDiv1" class="col-xs-3 control-group">
               <div class="col-xs-2">
                 <label class="checkbox"><input type="checkbox" id="show1" value="now"></label>
@@ -105,9 +105,9 @@
                 <div><label class="checkbox"><input type="checkbox" id="endTimeNow1" value="now">Now</label></div>
             </div>
             <div class="col-xs-2 control-group">
-              <select id="dateInterval1">
-                <option value="instant">Instantaneous Value</option>
-                <option value="cumm">Cummulative Value</option>
+              <select id="dataInterval1">
+                <option value="point">Point Value</option>
+                <option value="interval">Cummulative Value</option>
               </select>
             </div>
             <div class="col-xs-1 control-group">
@@ -122,7 +122,7 @@
                 <option value="43200">1 Month</option>
               </select>
             </div> 
-          </div>
+          </div> -->
       </div>
       <div id="controlPanelButtonRow" class="row">
         <div class="col-xs-8 control-group">
@@ -171,10 +171,10 @@ var server = window.location.protocol + "//" + window.location.host + "/wattdepo
 var wdClient = org.WattDepot.Client(server);
 
 $(document).ready(function() {
-    selectedDepository(1);
+    addRow();
 });
 
-$(function () {
+/*$(function () {
     activeIndex.push({
         formIndex: 1,
         disabled: false,
@@ -212,7 +212,7 @@ $(function () {
     $('#startdatetimepicker1').datetimepicker();
     $('#enddatetimepicker1').datetimepicker();
 });
-
+*/
 
 var ORGID = "${orgId}";
 var DEPOSITORIES = {};
