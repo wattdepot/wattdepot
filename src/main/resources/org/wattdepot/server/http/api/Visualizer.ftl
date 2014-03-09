@@ -34,7 +34,7 @@
 </script> 
 
 </head>
-<body>
+<body onload="loadPage()">
 <nav class="navbar navbar-default" role="navigation">
   <!-- Brand and toggle get grouped for better mobile display -->
   <div class="navbar-header">
@@ -115,53 +115,7 @@
     </div><!-- /.modal-dialog -->
   </div>
 <script>
-
 var server = window.location.protocol + "//" + window.location.host + "/wattdepot/";
-var wdClient = org.WattDepot.Client(server);
-
-$(document).ready(function() {
-    addRow();
-});
-
-/*$(function () {
-    activeIndex.push({
-        formIndex: 1,
-        disabled: false,
-        sourceSelected: false
-    });
-    $("#show1").prop('checked', true); 
-    // Bind event for when Show checkbox is checked
-    $("#show1").click(function() {
-        var form = activeIndex[findActiveIndex(1)];    
-        if($("#show1").is(":checked")) {
-            if($("#visualizeButton").prop("disabled")) {
-                $('#visualizeButton').prop("disabled", false);
-            }
-            form.disabled = false; 
-            numShow++;
-            $("#form1").css('background-color', '#fff');
-        }
-        else {
-            form.disabled = true;
-            numShow--; 
-            $("#form1").css('background-color', '#ddd');
-        }
-    });
-
-    // Bind event for when the Now checkbox is checked
-    $("#endTimeNow1").click(function() {
-        if($("#endTimeNow1").is(':checked')) {
-            $("#enddatetimepicker1").data("DateTimePicker").disable();
-        }
-        else {
-            $("#enddatetimepicker1").data("DateTimePicker").enable();     
-        }
-    });
-
-    $('#startdatetimepicker1').datetimepicker();
-    $('#enddatetimepicker1').datetimepicker();
-});
-*/
 
 var ORGID = "${orgId}";
 var DEPOSITORIES = {};

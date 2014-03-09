@@ -5,14 +5,15 @@
  *     
  */
 
-var sourceNumber;
+var numVis;
 var server;
 var depository = new Array();
 var sensor = new Array();
 var datatype = new Array();
 var sdate = new Array();
 var edate = new Array();
-var timeInterval = new Array();
+var valtype = new Array();
+var freq = new Array();
 var active = new Array();
 var nowTime = new Array();
 var numFormsFinished = 0;
@@ -50,7 +51,9 @@ function getUrlVariable(search) {
  * 
  */
 function getUrl() {
-  return window.location.protocol + "//" + window.location.hostname
+  console.log("getUrl() " + window.location.protocol + "//"
+      + window.location.host + window.location.pathname);
+  return window.location.protocol + "//" + window.location.host
       + window.location.pathname;
 }
 
@@ -63,20 +66,15 @@ function permalinkCheck() {
   if (window.location.search.length == 0) {
     return false
   } else {
-    server = getUrlVariable('ser');
-    sourceNumber = getUrlVariable('no');
-    source = getUrlVariable('s');
-    datatype = getUrlVariable('dt');
-    sdate = getUrlVariable('sd');
-    stime = getUrlVariable('st');
-    edate = getUrlVariable('ed');
-    etime = getUrlVariable('et');
-    timeInterval = getUrlVariable('int');
+    numVis = getUrlVariable('no');
+    depository = getUrlVariable('d');
+    sensor = getUrlVariable('s');
+    sdate = getUrlVariable('start');
+    edate = getUrlVariable('end');
+    valtype = getUrlVariable('t');
+    freq = getUrlVariable('f');
     active = getUrlVariable('act');
     nowTime = getUrlVariable('now');
-    // wdClient = org.WattDepot.Client(server);
-    // Get all sources
-    // getSourcesWithPermalink();
     return true
   }
 }
@@ -87,34 +85,31 @@ function permalinkCheck() {
  */
 function gatherVariables() {
   var temp = '?';
-  if ($('#serverAddress').val() != null) {
-    temp += 'ser=' + $('#serverAddress').val() + '&';
-  }
   temp += 'no=' + activeIndex.length;
-  var sourceline = 's=';
-  var dataline = 'dt=';
-  var stline = 'st=';
-  var sdline = 'sd=';
-  var etline = 'et=';
-  var edline = 'ed=';
+  var depositline = 'd=';
+  var sensorline = 's=';
+  var startline = 'start=';
+  var endline = 'end=';
   var nowline = 'now=';
-  var intline = 'int=';
+  var typeline = 't=';
+  var intline = 'f=';
   var actline = 'act=';
 
-  for (i = 0; i < numRows; i++) {
+  for (var i = 0; i < numRows + 1; i++) {
     if (findActiveIndex(i) + 1) {
-      sourceline += $('#sourceSelect' + i).val() + ';';
-      dataline += $('#dataType' + i).val() + ';';
-      stline += $('#startTimePicker' + i).val() + ';';
-      sdline += document.getElementById('startDatepicker' + i).value + ';';
-      etline += $('#endTimePicker' + i).val() + ';';
-      edline += document.getElementById('endDatepicker' + i).value + ';';
+      depositline += $('#depositorySelect' + i).val() + ';';
+      sensorline += $('#sensorSelect' + i).val() + ';';
+      startline += wdClient.getTimestampFromDate(getDate('start', i))
+          + ';';
+      endline += wdClient.getTimestampFromDate(getDate('end', i))
+          + ';';
       if ($('#endTimeNow' + i).is(':checked')) {
         nowline += 'y;';
       } else {
         nowline += 'n;';
       }
-      intline += $('#interval' + i).val() + ';';
+      typeline += $('#dataType' + i).val() + ';';
+      intline += $('#frequency' + i).val() + ';';
       if ($('#show' + i).is(':checked')) {
         actline += 'y;';
       } else {
@@ -122,21 +117,9 @@ function gatherVariables() {
       }
     }
   }
-  return temp + '&' + sourceline + '&' + dataline + '&' + stline + '&' + sdline
-      + '&' + etline + '&' + edline + '&' + nowline + '&' + intline + '&'
+  return temp + '&' + depositline + '&' + sensorline + '&' + startline + '&'
+      + endline + '&' + nowline + '&' + typeline + '&' + intline + '&'
       + actline;
-}
-
-/*
- * Inserts the server address if it was inserted into the URL. from a permalink.
- * 
- * @param original the default URL for the SPA.
- */
-function permalinkServer(original) {
-  if (server != null) {
-    return server;
-  }
-  return original;
 }
 
 /*
@@ -144,7 +127,7 @@ function permalinkServer(original) {
  */
 function fillPage() {
   numFormsFinished = 0;
-  for (i = 0; i < sourceNumber; i++) {
+  for (var i = 0; i < numVis; i++) {
     var actTemp = false;
     if (active[i] == 'y') {
       actTemp = true;
@@ -156,15 +139,19 @@ function fillPage() {
     if (typeof edate[i] == "undefined") {
       edate[i] = edate[i - 1];
     }
-    // TODO need to fix this method source => depository, datatype->sensor, start and end, now, pointvsinterval, frequency
-    createFilledVisualizerForm(actTemp, source[i], datatype[i], stime[i],
-        sdate[i], etime[i], edate[i], nowTemp, timeInterval[i], function(data,
-            formIndex, dataType) {
-          putAndSelectDataTypes(data, formIndex, dataType);
-          numFormsFinished++;
-          if (numFormsFinished == sourceNumber) {
-            visualize();
-          }
-        });
+    createFilledVisualizerForm(actTemp, depository[i], sensor[i], wdClient.convertTimestampToDate(sdate[i]),
+        wdClient.convertTimestampToDate(edate[i]), nowTemp, valtype[i], freq[i]);
+    numFormsFinished++;
+    if (numFormsFinished == numVis) {
+      visualize();
+    }
   }
+}
+
+function fixTimeString(timestr) {
+  return timestr.replace(' ', '-');
+}
+
+function unFixTimeString(timestr) {
+  return timestr.replace('-', ' ');
 }
