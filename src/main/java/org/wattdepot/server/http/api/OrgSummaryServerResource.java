@@ -76,15 +76,17 @@ public class OrgSummaryServerResource extends WattDepotServerResource {
       TemplateRepresentation template = null;
       try {
         if (timingp) {
+          getLogger().log(Level.SEVERE, "Start database timing.");
           dbStartTime = System.nanoTime();
         }
-        List<Depository> depos = depot.getDepositories(orgId);
+        depot.getOrganization(orgId, true);
+        List<Depository> depos = depot.getDepositories(orgId, false);
         List<Sensor> sensors = new ArrayList<Sensor>();
         List<MeasurementRateSummary> summaries = new ArrayList<MeasurementRateSummary>();
         for (Depository d : depos) {
-          for (String sensorId : depot.listSensors(d.getId(), orgId)) {
-            sensors.add(depot.getSensor(sensorId, orgId));
-            MeasurementRateSummary sum = depot.getRateSummary(d.getId(), orgId, sensorId);
+          for (String sensorId : depot.listSensors(d.getId(), orgId, false)) {
+            sensors.add(depot.getSensor(sensorId, orgId, false));
+            MeasurementRateSummary sum = depot.getRateSummary(d.getId(), orgId, sensorId, false);
             totalMeasurements += sum.getTotalCount();
             summaries.add(sum);
           }

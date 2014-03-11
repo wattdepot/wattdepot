@@ -61,7 +61,7 @@ public class SensorModelServerResource extends WattDepotServerResource implement
     getLogger().log(Level.INFO, "GET /wattdepot/public/sensor-model/{" + sensorModelId + "}");
     SensorModel model = null;
     try {
-      model = depot.getSensorModel(sensorModelId);
+      model = depot.getSensorModel(sensorModelId, true);
     }
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "SensorModel " + sensorModelId

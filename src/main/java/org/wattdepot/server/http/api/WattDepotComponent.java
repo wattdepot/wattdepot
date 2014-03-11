@@ -92,7 +92,7 @@ public class WattDepotComponent extends Component {
       for (String userId : group.getUsers()) {
         UserPassword up = null;
         try {
-          up = app.getDepot().getUserPassword(userId, group.getId());
+          up = app.getDepot().getUserPassword(userId, group.getId(), true);
         }
         catch (IdNotFoundException e) {
           e.printStackTrace();
@@ -109,7 +109,7 @@ public class WattDepotComponent extends Component {
           else {
             UserInfo info;
             try {
-              info = app.getDepot().getUser(userId, group.getId());
+              info = app.getDepot().getUser(userId, group.getId(), true);
               user = new User(info.getUid(), StrongAES.getInstance().decrypt(
                   up.getEncryptedPassword()), info.getFirstName(),
                   info.getLastName(), info.getEmail());

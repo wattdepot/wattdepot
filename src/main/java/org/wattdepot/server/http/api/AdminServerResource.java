@@ -92,11 +92,13 @@ public class AdminServerResource extends WattDepotServerResource {
       else {
         try {
           // regular organization, can manipulate sensors, depositories
-          List<Depository> depos = depot.getDepositories(orgId);
-          List<Sensor> sensors = depot.getSensors(orgId);
+          depot.getOrganization(orgId, true);
+          List<Depository> depos = depot.getDepositories(orgId, false);
+          List<Sensor> sensors = depot.getSensors(orgId, false);
           List<SensorModel> sensorModels = depot.getSensorModels();
-          List<SensorGroup> sensorGroups = depot.getSensorGroups(orgId);
-          List<CollectorProcessDefinition> cpds = depot.getCollectorProcessDefinitions(orgId);
+          List<SensorGroup> sensorGroups = depot.getSensorGroups(orgId, false);
+          List<CollectorProcessDefinition> cpds = depot
+              .getCollectorProcessDefinitions(orgId, false);
           List<MeasurementType> measurementTypes = depot.getMeasurementTypes();
           dataModel.put("depositories", depos);
           dataModel.put("sensors", sensors);

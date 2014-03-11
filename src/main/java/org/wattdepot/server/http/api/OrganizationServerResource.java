@@ -65,7 +65,7 @@ public class OrganizationServerResource extends WattDepotServerResource implemen
     Organization group = null;
     if (isInRole(orgId) && orgId.equals(userGroupId)) {
       try {
-        group = depot.getOrganization(userGroupId);
+        group = depot.getOrganization(userGroupId, true);
       }
       catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");
@@ -73,7 +73,7 @@ public class OrganizationServerResource extends WattDepotServerResource implemen
     }
     else if (isInRole(Organization.ADMIN_GROUP.getId())) {
       try {
-        group = depot.getOrganization(userGroupId);
+        group = depot.getOrganization(userGroupId, true);
       }
       catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, userGroupId + " is not a defined Organization.");

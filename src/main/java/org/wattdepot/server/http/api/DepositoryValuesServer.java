@@ -87,7 +87,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
       if (start != null && end != null && interval != null) {
         MeasuredValueList ret = new MeasuredValueList();
         try {
-          Depository depository = depot.getDepository(depositoryId, orgId);
+          Depository depository = depot.getDepository(depositoryId, orgId, true);
           if (depository != null) {
             XMLGregorianCalendar startTime = DateConvert.parseCalString(start);
             XMLGregorianCalendar endTime = DateConvert.parseCalString(end);
@@ -100,7 +100,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
             List<XMLGregorianCalendar> timestampList = Tstamp.getTimestampList(startTime, endTime,
                 intervalMinutes);
 
-            Sensor sensor = depot.getSensor(sensorId, orgId);
+            Sensor sensor = depot.getSensor(sensorId, orgId, true);
             if (sensor != null && timestampList != null) {
               Date previous = null;
               for (int i = 0; i < timestampList.size(); i++) {
@@ -108,7 +108,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
                 Double value = new Double(0);
                 if ("point".equals(dataType)) {
                   try {
-                    value = depot.getValue(depositoryId, orgId, sensor.getId(), timestamp);
+                    value = depot.getValue(depositoryId, orgId, sensor.getId(), timestamp, true);
                   }
                   catch (NoMeasurementException e) { // NOPMD
                     // no measurements around the time so return 0?
@@ -118,7 +118,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
                   if (previous != null) {
                     try {
                       value = depot.getValue(depositoryId, orgId, sensor.getId(), previous,
-                          timestamp);
+                          timestamp, true);
                     }
                     catch (NoMeasurementException e) { // NOPMD
                       // No measurements so return 0,
@@ -136,10 +136,10 @@ public class DepositoryValuesServer extends WattDepotServerResource {
             }
             else {
               // TODO CAM this code doesn't work! Need to aggregate the values not just put them in.
-              SensorGroup group = depot.getSensorGroup(sensorId, orgId);
+              SensorGroup group = depot.getSensorGroup(sensorId, orgId, true);
               if (group != null) {
                 for (String s : group.getSensors()) {
-                  Sensor sens = depot.getSensor(s, orgId);
+                  Sensor sens = depot.getSensor(s, orgId, true);
                   if (sens != null && timestampList != null) {
                     Date previous = null;
                     for (int i = 0; i < timestampList.size(); i++) {
@@ -147,7 +147,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
                       Double value = new Double(0);
                       if ("point".equals(dataType)) {
                         try {
-                          value = depot.getValue(depositoryId, orgId, sens.getId(), timestamp);
+                          value = depot.getValue(depositoryId, orgId, sens.getId(), timestamp, true);
                         }
                         catch (NoMeasurementException e) { // NOPMD
                           // No measurements so return 0;
@@ -157,7 +157,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
                         if (previous != null) {
                           try {
                             value = depot.getValue(depositoryId, orgId, sensor.getId(), previous,
-                                timestamp);
+                                timestamp, true);
                           }
                           catch (NoMeasurementException e) { // NOPMD
                             // No measurements so return 0,

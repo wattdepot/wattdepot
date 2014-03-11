@@ -63,7 +63,7 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
     UserInfo user = null;
     if (isInRole(orgId) || isInRole(Organization.ADMIN_GROUP.getId())) {
       try {
-        user = depot.getUser(userId, orgId);
+        user = depot.getUser(userId, orgId, true);
       }
       catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "User " + userId + " is not defined.");
@@ -88,7 +88,7 @@ public class UserInfoServerResource extends WattDepotServerResource implements U
     if (isInRole(Organization.ADMIN_GROUP.getId())) {
       try {
         depot.updateUserInfo(user);
-        UserPassword password = depot.getUserPassword(user.getUid(), user.getOrganizationId());
+        UserPassword password = depot.getUserPassword(user.getUid(), user.getOrganizationId(), true);
         password.setPassword(user.getPassword());
         depot.updateUserPassword(password);
         WattDepotApplication app = (WattDepotApplication) getApplication();

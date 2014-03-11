@@ -68,9 +68,9 @@ public class DepositoryMeasurementPutServerResource extends WattDepotServerResou
             + meas);
     if (isInRole(orgId)) {
       try {
-        Depository depository = depot.getDepository(depositoryId, orgId);
+        Depository depository = depot.getDepository(depositoryId, orgId, true);
         if (depository != null) {
-          Sensor sensor = depot.getSensor(meas.getSensorId(), orgId);
+          Sensor sensor = depot.getSensor(meas.getSensorId(), orgId, true);
           if (sensor != null) {
             depot.putMeasurement(depositoryId, orgId, meas);
           }

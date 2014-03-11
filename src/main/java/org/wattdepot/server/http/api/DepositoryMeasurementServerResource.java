@@ -66,9 +66,9 @@ public class DepositoryMeasurementServerResource extends WattDepotServerResource
     if (isInRole(orgId)) {
       Measurement ret = null;
       try {
-        Depository depository = depot.getDepository(depositoryId, orgId);
+        Depository depository = depot.getDepository(depositoryId, orgId, true);
         if (depository != null) {
-          ret = depot.getMeasurement(depositoryId, orgId, measId);
+          ret = depot.getMeasurement(depositoryId, orgId, measId, true);
         }
         else {
           setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " does not exist.");

@@ -47,7 +47,7 @@ public class SensorGroupsServerResource extends WattDepotServerResource implemen
     if (isInRole(orgId)) {
       SensorGroupList ret = new SensorGroupList();
       try {
-        for (SensorGroup sg : depot.getSensorGroups(orgId)) {
+        for (SensorGroup sg : depot.getSensorGroups(orgId, true)) {
           ret.getGroups().add(sg);
         }
       }

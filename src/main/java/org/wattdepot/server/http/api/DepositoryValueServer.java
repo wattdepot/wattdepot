@@ -95,10 +95,10 @@ public class DepositoryValueServer extends WattDepotServerResource {
     }
     if (isInRole(orgId)) {
       try {
-        Depository deposit = depot.getDepository(depositoryId, orgId);
+        Depository deposit = depot.getDepository(depositoryId, orgId, true);
         if (deposit != null) {
           try {
-            depot.getSensor(sensorId, orgId);
+            depot.getSensor(sensorId, orgId, true);
             InterpolatedValue val =  calculateValue(sensorId, start, end, timestamp, earliest, latest);
             if (depot.getServerProperties().get(ServerProperties.SERVER_TIMING_KEY)
                 .equals(ServerProperties.TRUE)) {
@@ -117,7 +117,7 @@ public class DepositoryValueServer extends WattDepotServerResource {
           }
           catch (IdNotFoundException inf) {
             try {
-              SensorGroup group = depot.getSensorGroup(sensorId, orgId);
+              SensorGroup group = depot.getSensorGroup(sensorId, orgId, true);
               InterpolatedValue val = null;
               // this wont work for earliest or latest.
               if (earliest != null) {
@@ -258,8 +258,8 @@ public class DepositoryValueServer extends WattDepotServerResource {
       String timestamp, String earliest, String latest) throws IdNotFoundException,
       MisMatchedOwnerException, NoMeasurementException, ParseException,
       DatatypeConfigurationException, NumberFormatException, MeasurementGapException {
-    Depository deposit = depot.getDepository(depositoryId, orgId);
-    Sensor sensor = depot.getSensor(sensorId, orgId);
+    Depository deposit = depot.getDepository(depositoryId, orgId, true);
+    Sensor sensor = depot.getSensor(sensorId, orgId, true);
     Double value = null;
     Date startDate = null;
     Date endDate = null;
@@ -267,19 +267,19 @@ public class DepositoryValueServer extends WattDepotServerResource {
     InterpolatedValue val = null;
 
     if (earliest != null) {
-      return depot.getEarliestMeasuredValue(depositoryId, orgId, sensorId);
+      return depot.getEarliestMeasuredValue(depositoryId, orgId, sensorId, true);
     }
     else if (latest != null) {
-      return depot.getLatestMeasuredValue(depositoryId, orgId, sensorId);
+      return depot.getLatestMeasuredValue(depositoryId, orgId, sensorId, true);
     }
     else if (timestamp != null) {
       time = DateConvert.parseCalStringToDate(timestamp);
       if (gapSeconds != null) {
         value = depot.getValue(depositoryId, orgId, sensor.getId(), time,
-            Long.parseLong(gapSeconds));
+            Long.parseLong(gapSeconds), true);
       }
       else {
-        value = depot.getValue(depositoryId, orgId, sensor.getId(), time);
+        value = depot.getValue(depositoryId, orgId, sensor.getId(), time, true);
       }
     }
     else if (start != null && end != null) {
@@ -287,10 +287,10 @@ public class DepositoryValueServer extends WattDepotServerResource {
       endDate = DateConvert.parseCalStringToDate(end);
       if (gapSeconds != null) {
         value = depot.getValue(depositoryId, orgId, sensor.getId(), startDate, endDate,
-            Long.parseLong(gapSeconds));
+            Long.parseLong(gapSeconds), true);
       }
       else {
-        value = depot.getValue(depositoryId, orgId, sensor.getId(), startDate, endDate);
+        value = depot.getValue(depositoryId, orgId, sensor.getId(), startDate, endDate, true);
       }
     }
 

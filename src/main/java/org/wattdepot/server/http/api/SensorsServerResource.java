@@ -46,7 +46,7 @@ public class SensorsServerResource extends WattDepotServerResource implements Se
     if (isInRole(orgId)) {
       SensorList ret = new SensorList();
       try {
-        for (Sensor s : depot.getSensors(orgId)) {
+        for (Sensor s : depot.getSensors(orgId, true)) {
           ret.getSensors().add(s);
         }
       }
