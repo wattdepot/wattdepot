@@ -47,14 +47,18 @@
 </nav>
  
   <div class="container">
-    <table class="table">
-      <thead>
-        <tr><th>${name} Summary</th><th>${depositories?size} Depositories</th><th>${sensors?size} Sensors</th><th>${totalMeasurements} Measurements</th></tr>
-      </thead>
-    </table>
+    <div class="row">
+      <div class="col-xs-3"><strong>${name} Summary:</strong></div>
+      <div class="col-xs-9"><strong>${depositories?size} Depositories,   ${sensors?size} Sensors,  ${totalMeasurements} Measurements</strong></div>
+    </div>
+    <p></p>
+    <hr/>
+    <p></p>
+    <div class="row">
+      <div class="col-xs-3"><strong>Measurement Rate Summary</strong></div>
+    </div>
     <table id="summaryTable" class="table tablesorter">
       <thead>
-        <tr><th colspan="3">Measurement Rate Summary</th></tr>
         <tr>
           <th>Depository Id</th>
           <th>Sensor Id</th>
@@ -62,6 +66,7 @@
           <th>Latest Value</th>
           <th colspan="2">Last Minute</th>
           <th>Total Count</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -69,7 +74,7 @@
       <#assign row = 1>
       <#list keys as key>
         <#list depositorySensors[key] as s> 
-            <tr id="row${row}"><td>${key}</td><td>${s}</td><td></td><td></td><td></td><td></td><td><button class="btn btn-primary btn-sm" onclick="getDetails('${key}', '${orgId}', '${s}', '${row}');">Show Details</button> </td></tr>
+            <tr id="row${row}"><td>${key}</td><td>${s}</td><td id="asOf${row}"></td><td id="latestValue${row}"></td><td id="lastMinNum${row}"></td><td id="lastMinRate${row}"></td><td id="totalCount${row}"></td><td><button id="details${row}" class="btn btn-primary btn-sm" onclick="getDetails('${key}', '${orgId}', '${s}', '${row}');">Show Details</button> </td></tr>
             <#assign row = row + 1>
         </#list>
       </#list>

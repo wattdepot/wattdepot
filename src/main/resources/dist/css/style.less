@@ -4,6 +4,12 @@
 @gridGutterWidth: 20px;
 @wattdepotBorderRadius: 8px;
 @black: #000;
+
+.add-button {
+    float: right;
+    margin-top: 20px;
+}
+
 // Border Radius
 .border-radius (@radius: 5px) {
     -webkit-border-radius: @radius;
@@ -109,3 +115,14 @@
     border-top-right-radius: @radius;
 }
 
+.panel-heading .accordion-toggle:after {
+    /* symbol for "opening" panels */
+    font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
+    content: "\e114";    /* adjust as needed, taken from bootstrap.css */
+//    float: right;        /* adjust as needed */
+    color: grey;         /* adjust as needed */
+}
+.panel-heading .accordion-toggle.collapsed:after {
+    /* symbol for "collapsed" panels */
+    content: "\e080";    /* adjust as needed, taken from bootstrap.css */
+}

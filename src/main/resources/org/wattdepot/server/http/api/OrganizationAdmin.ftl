@@ -7,10 +7,12 @@
 <link rel="stylesheet" href="/webroot/dist/css/bootstrap.min.css">
 <!-- Optional theme -->
 <link rel="stylesheet" href="/webroot/dist/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="/webroot/dist/css/themes/blue/style.css">
 <link rel="stylesheet/less" type="text/css" href="/webroot/dist/css/style.less">
 <script src="/webroot/dist/js/less-1.3.0.min.js"></script>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="/webroot/dist/js/jquery.js"></script>
+<script src="/webroot/dist/js/jquery.tablesorter.js"></script>
 <script src="/webroot/dist/js/bootstrap.min.js"></script>
 <script src="/webroot/dist/js/wattdepot-organization-admin.js"></script>
 <script> 
@@ -55,11 +57,11 @@
     <!-- Tab panes -->
     <div class="tab-content">
         <div class="tab-pane active" id="depositories">
-            <div class="well">
+<!--            <div class="well"> -->
               <div class="panel-group" id="help">
                 <div class="panel panel-default">
                   <div class="panel-heading">
-                    <a class="panel-title text-right" data-toggle="collapse" data-parent="#help" href="#depositoryCollapseHelp">Help <img src="/webroot/dist/icon-help-sm.png"></a>
+                    <a class="panel-title text-right accordion-toggle collapsed" data-toggle="collapse" data-parent="#help" href="#depositoryCollapseHelp">Help </a>
                   </div>
                   <div id="depositoryCollapseHelp" class="panel-collapse collapse">
                     <div class="panel-body">
@@ -69,10 +71,13 @@
                   </div>
                 </div>
               </div>
-            
-                <table class="table">
+              <div class="row">
+                <div class="col-xs-5"><h3>Depositories</h3></div>
+                <div class="col-xs-6"></div>
+                <div class="col-xs-1"><button data-toggle="modal" data-target="#addDepositoryModal" class="btn btn-primary btn-sm add-button"><span class="glyphicon glyphicon-plus"></span></button></div>
+              </div>
+                <table id="depositoryTable" class="table tablesorter">
                     <thead>
-                      <tr><th colspan="5"><h3>Depositories</h3></th></tr>
                         <tr>
                             <th>Id</th>
                             <th>Name</th>
@@ -90,15 +95,14 @@
                     </#list>
                     </tbody>
                 </table>
-                <button data-toggle="modal" data-target="#addDepositoryModal" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> Add Depository</a>
-            </div>       
+<!--            </div>  -->       
         </div>
         <div class="tab-pane" id="sensors">
-            <div class="well">
+<!--            <div class="well">  -->
               <div class="panel-group" id="help">
                 <div class="panel panel-default">
                   <div class="panel-heading">
-                    <a class="panel-title text-right" data-toggle="collapse" data-parent="#help" href="#sensorCollapseHelp">Help <img src="/webroot/dist/icon-help-sm.png"></a>
+                    <a class="panel-title text-right accordion-toggle collapsed" data-toggle="collapse" data-parent="#help" href="#sensorCollapseHelp">Help </a>
                   </div>
                   <div id="sensorCollapseHelp" class="panel-collapse collapse">
                     <div class="panel-body">
@@ -110,10 +114,14 @@
                   </div>
                 </div>
               </div>
-
-                <table class="table">
+              <div class="row">
+                <div class="col-xs-5"><h3>Sensors</h3></div>
+                <div class="col-xs-6"></div>
+                <div class="col-xs-1"><button data-toggle="modal" data-target="#addSensorModal" class="btn btn-primary btn-sm add-button"><span class="glyphicon glyphicon-plus"></span></button></div>
+              </div>
+                
+                <table id="sensorTable" class="table tablesorter">
                     <thead>
-                      <tr><th colspan="5"><h3>Sensors</h3></th></tr>
                         <tr>
                             <th>Id</th>
                             <th>Name</th>
@@ -141,20 +149,26 @@
                     </#list>
                     </tbody>
                 </table>
-                <button data-toggle="modal" data-target="#addSensorModal" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> Add Sensor</button>
-            </div>   
+                
+<!--            </div>  -->   
             <div class="panel-group" id="accordion">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseModel">Sensor Models</a>
+                            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseModel">Sensor Models</a>
                         </h4>
                     </div>
                     <div id="collapseModel" class="panel-collapse collapse">
-                        <div class="well">
-                            <table class="table">
+<!--                        <div class="well">  -->
+                      <div class="row">
+                        <div class="col-xs-5"><h3>Sensor Models</h3></div>
+                        <div class="col-xs-6"></div>
+                        <div class="col-xs-1"><button data-toggle="modal" data-target="#addModelModal" class="btn btn-primary btn-sm add-button"><span class="glyphicon glyphicon-plus"></span></button></div>
+                      </div>
+
+                            
+                            <table id="sensorModelTable" class="table tablesorter">
                                 <thead>
-                                    <tr><th colspan="5"><h3>Sensor Models</h3></th></tr>
                                     <tr>
                                         <th>Id</th>
                                         <th>Name</th>
@@ -178,18 +192,17 @@
                                 </#list>
                                 </tbody>
                             </table>
-                            <button data-toggle="modal" data-target="#addModelModal" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> Add Sensor Model</button>
-                        </div>       
+<!--                        </div>  -->       
                     </div>
                 </div>
             </div>
         </div>
         <div class="tab-pane" id="sensorgroups">
-            <div class="well">
+<!--            <div class="well"> -->
               <div class="panel-group" id="help">
                 <div class="panel panel-default">
                   <div class="panel-heading">
-                    <a class="panel-title text-right" data-toggle="collapse" data-parent="#help" href="#sensorGroupCollapseHelp">Help <img src="/webroot/dist/icon-help-sm.png"></a>
+                    <a class="panel-title text-right accordian-toggle colapsed" data-toggle="collapse" data-parent="#help" href="#sensorGroupCollapseHelp">Help </a>
                   </div>
                   <div id="sensorGroupCollapseHelp" class="panel-collapse collapse">
                     <div class="panel-body">
@@ -199,9 +212,14 @@
                   </div>
                 </div>
               </div>
-                <table class="table">
+              <div class="row">
+                <div class="col-xs-5"><h3>Sensor Groups</h3></div>
+                <div class="col-xs-6"></div>
+                <div class="col-xs-1"><button data-toggle="modal" data-target="#addSensorGroupModal" class="btn btn-primary btn-sm add-button"><span class="glyphicon glyphicon-plus"></span></button></div>
+              </div>
+                
+                <table id="sensorGroupTable" class="table tablesorter">
                     <thead>
-                      <tr><th colspan="5"><h3>Sensor Groups</h3></th></tr>
                         <tr>
                             <th>Id</th>
                             <th>Name</th>
@@ -225,15 +243,15 @@
                     </#list>
                     </tbody>
                 </table>
-                <button data-toggle="modal" data-target="#addSensorGroupModal" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> Add Sensor Group</button>
-            </div>       
+                
+<!--            </div>  -->       
         </div>
         <div class="tab-pane" id="sensorprocesses">
-            <div class="well">
+<!--            <div class="well">  -->
               <div class="panel-group" id="help">
                 <div class="panel panel-default">
                   <div class="panel-heading">
-                    <a class="panel-title text-right" data-toggle="collapse" data-parent="#help" href="#CPDCollapseHelp">Help <img src="/webroot/dist/icon-help-sm.png"></a>
+                    <a class="panel-title text-right accordion-toggle collapsed" data-toggle="collapse" data-parent="#help" href="#CPDCollapseHelp">Help</a>
                   </div>
                   <div id="CPDCollapseHelp" class="panel-collapse collapse">
                     <div class="panel-body">
@@ -243,9 +261,13 @@
                   </div>
                 </div>
               </div>
-                <table class="table">
+              <div class="row">
+                <div class="col-xs-5"><h3>Collector Process Definitions</h3></div>
+                <div class="col-xs-6"></div>
+                <div class="col-xs-1"><button data-toggle="modal" data-target="#addCPDModal" class="btn btn-primary btn-sm add-button"><span class="glyphicon glyphicon-plus"></span></button></div>
+              </div>
+                <table id="cpdTable" class="table tablesorter">
                     <thead>
-                      <tr><th colspan="5"><h3>Collector Process Definitions</h3></th></tr>
                         <tr>
                             <th>Id</th>
                             <th>Name</th>
@@ -275,8 +297,8 @@
                     </#list>
                     </tbody>
                 </table>
-                <button data-toggle="modal" data-target="#addCPDModal" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> Add Collector Process Definition</button>
-            </div>       
+                
+<!--            </div>  -->       
         </div>
     </div>  
 
@@ -1126,7 +1148,11 @@ $(document).ready(function () {
     if (selected_tab != null) {
         $('#' + selected_tab + '_tab_link').tab('show');
     }
-    
+    $("#depositoryTable").tablesorter(); 
+    $("#sensorTable").tablesorter(); 
+    $("#sensorModelTable").tablesorter(); 
+    $("#sensorGroupTable").tablesorter(); 
+    $("#cpdTable").tablesorter(); 
 });
 
 var ORGID = "${orgId}";

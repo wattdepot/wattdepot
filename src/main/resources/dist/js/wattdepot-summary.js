@@ -8,8 +8,20 @@ function loadPage() {
 }
 
 function handleSummaryData(data, rowNum) {
-  console.log("Got " + data + " for row " + rowNum);
-//  $("#row" + rowNum + " ")
+  var obj = JSON.parse(data);
+  var callback = function(){
+    // do something after the updateAll method has completed
+  };
+  var cell = $("#asOf" + rowNum);
+  $("#asOf" + rowNum).text(obj.timestamp);
+//  $("#summaryTable").trigger("updateCell", [cell, "", callback ]);
+  $("#latestValue" + rowNum).text(obj.latestValue);
+  $("#lastMinNum" + rowNum).text(obj.oneMinuteCount);
+  $("#lastMinRate" + rowNum).text(obj.oneMinuteRate);
+  $("#totalCount" + rowNum).text(obj.totalCount);
+  $("#details" + rowNum).empty();
+  $("#details" + rowNum).text("Update Details");
+  $("#summaryTable").trigger("update", [true]);
 }
 
 function getDetails(depositoryId, orgId, sensorId, rowNum) {
