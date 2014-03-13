@@ -174,6 +174,7 @@ public class WattDepotApplication extends Application {
     router.attach(API.DEPOSITORY_URI, DepositoryServerResource.class);
     router.attach(API.DEPOSITORIES_URI, DepositoriesServerResource.class);
     router.attach(API.DEPOSITORY_SENSORS_URI, DepositorySensorsServerResource.class);
+    router.attach(API.DEPOSITORY_SENSOR_SUMMARY_URI, DepositorySensorSummaryServerResource.class);
     router.attach(API.MEASUREMENT_PUT_URI, DepositoryMeasurementPutServerResource.class);
     router.attach(API.MEASUREMENT_URI, DepositoryMeasurementServerResource.class);
     router.attach(API.MEASUREMENTS_URI, DepositoryMeasurementsServerResource.class);

@@ -13,6 +13,8 @@
 <script src="/webroot/dist/js/jquery.js"></script>
 <script src="/webroot/dist/js/bootstrap.min.js"></script>
 <script src="/webroot/dist/js/wattdepot-organization-admin.js"></script>
+<script> 
+</script> 
 
 </head>
 <body>
@@ -31,9 +33,9 @@
   <!-- Collect the nav links, forms, and other content for toggling -->
   <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     <ul class="nav navbar-nav">
-      <li class="active"><a href="#">Definitions</a></li>
-      <li><a href="/wattdepot/${orgId}/summary/">Measurement, Depository Summary</a></li>
-      <li><a href="/wattdepot/${orgId}/visualize/">Measurement Visualization</a></li>
+      <li class="active"><a href="#">Settings</a></li>
+      <li><a href="/wattdepot/${orgId}/summary/">Summary</a></li>
+      <li><a href="/wattdepot/${orgId}/visualize/">Chart</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li><a href="#">${orgId}</a></li>

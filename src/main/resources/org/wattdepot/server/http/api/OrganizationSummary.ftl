@@ -7,17 +7,20 @@
 <link rel="stylesheet" href="/webroot/dist/css/bootstrap.min.css">
 <!-- Optional theme -->
 <link rel="stylesheet" href="/webroot/dist/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="/webroot/dist/css/themes/blue/style.css">
 <link rel="stylesheet/less" type="text/css" href="/webroot/dist/css/style.less">
 <script src="/webroot/dist/js/less-1.3.0.min.js"></script>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="/webroot/dist/js/jquery.js"></script>
+<script src="/webroot/dist/js/jquery.tablesorter.js"></script>
 <script src="/webroot/dist/js/bootstrap.min.js"></script>
-<script src="/webroot/dist/js/wattdepot-user-admin.js"></script>
+<script src="/webroot/dist/js/wattdepot-summary.js"></script>
+<script src="/webroot/dist/js/org.wattdepot.client.js"></script>
 <script> 
 </script> 
 
 </head>
-<body>
+<body onload="loadPage()">
 <nav class="navbar navbar-default" role="navigation">
   <!-- Brand and toggle get grouped for better mobile display -->
   <div class="navbar-header">
@@ -33,9 +36,9 @@
   <!-- Collect the nav links, forms, and other content for toggling -->
   <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     <ul class="nav navbar-nav">
-      <li><a href="/wattdepot/${orgId}/">Definitions</a></li>
-      <li class="active"><a href="/wattdepot/${orgId}/summary/">Measurement, Depository Summary</a></li>
-      <li><a href="/wattdepot/${orgId}/visualize/">Measurement Visualization</a></li>
+      <li><a href="/wattdepot/${orgId}/">Settings</a></li>
+      <li class="active"><a href="/wattdepot/${orgId}/summary/">Summary</a></li>
+      <li><a href="/wattdepot/${orgId}/visualize/">Chart</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li><a href="#">${orgId}</a></li>
@@ -46,9 +49,14 @@
   <div class="container">
     <table class="table">
       <thead>
+        <tr><th>${name} Summary</th><th>${depositories?size} Depositories</th><th>${sensors?size} Sensors</th><th>${totalMeasurements} Measurements</th></tr>
+      </thead>
+    </table>
+    <table id="summaryTable" class="table tablesorter">
+      <thead>
         <tr><th colspan="3">Measurement Rate Summary</th></tr>
         <tr>
-          <th>Depository</th>
+          <th>Depository Id</th>
           <th>Sensor Id</th>
           <th>As of</th>
           <th>Latest Value</th>
@@ -57,21 +65,26 @@
         </tr>
       </thead>
       <tbody>
-      <#list summaries as s>
-        <tr>
-          <td>${s.depositoryId}</td>
-          <td>${s.sensorId}</td>
-          <td>${s.timestamp?datetime}</td>
-          <td>${s.latestValue} ${s.type.getUnits()}</td>
-          <td>${s.oneMinuteCount} meas</td>
-          <td>${s.oneMinuteRate} meas/sec</td>
-          <td>${s.totalCount} meas</td>
-        </tr>
+      <#assign keys = depositorySensors?keys>
+      <#assign row = 1>
+      <#list keys as key>
+        <#list depositorySensors[key] as s> 
+            <tr id="row${row}"><td>${key}</td><td>${s}</td><td></td><td></td><td></td><td></td><td><button class="btn btn-primary btn-sm" onclick="getDetails('${key}', '${orgId}', '${s}', '${row}');">Show Details</button> </td></tr>
+            <#assign row = row + 1>
+        </#list>
       </#list>
+      
       </tbody>
     </table>
   </div>
 <script>
+var server = window.location.protocol + "//" + window.location.host + "/wattdepot/";
+
+$(document).ready(function() 
+    { 
+        $("#summaryTable").tablesorter(); 
+    } 
+); 
 </script>
 </body>
 </html>

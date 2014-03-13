@@ -4,12 +4,13 @@
 <title>WattDepot Organization Measurement Visualization</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Bootstrap -->
-<link rel="stylesheet" href="/webroot/bower_components/bootstrap/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="/webroot/dist/css/bootstrap.min.css">
 <!-- Optional theme -->
-<link rel="stylesheet" href="/webroot/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="/webroot/dist/css/bootstrap-theme.min.css">
 <link rel="stylesheet" href="/webroot/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
 <link rel="stylesheet/less" type="text/css" href="/webroot/dist/css/style.less">
 <script src="/webroot/dist/js/less-1.3.0.min.js"></script>
+
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="/webroot/bower_components/jquery/dist/jquery.js"></script>
 <script src="/webroot/bower_components/moment/min/moment.min.js"></script>
@@ -50,9 +51,9 @@
   <!-- Collect the nav links, forms, and other content for toggling -->
   <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     <ul class="nav navbar-nav">
-      <li><a href="/wattdepot/${orgId}/">Definitions</a></li>
-      <li><a href="/wattdepot/${orgId}/summary/">Measurement, Depository Summary</a></li>
-      <li class="active"><a href="/wattdepot/${orgId}/visualize/">Measurement Visualization</a></li>
+      <li><a href="/wattdepot/${orgId}/">Settings</a></li>
+      <li><a href="/wattdepot/${orgId}/summary/">Summary</a></li>
+      <li class="active"><a href="/wattdepot/${orgId}/visualize/">Chart</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li><a href="#">${orgId}</a></li>

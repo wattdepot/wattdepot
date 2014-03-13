@@ -395,6 +395,30 @@ org.WattDepot.Client = function(url) {
     ajaxSend(xhr, setting, callback, errorHandler);
   }
 
+  /*
+   * Get the measurement summary for the given depository, and
+   * sensor.
+   * 
+   * @param depositoryId the depository id.
+   * 
+   * @param sensorId the sensor id.
+   * 
+   * @param orgId the organization id.
+   * 
+   * @param callback callback function that will be called when the server
+   * responds.
+   * 
+   * @param errorHandler Callback function to be called if there is an error in
+   * the ajax request.
+   */
+  function getDepositorySensorSummary(depositoryId, sensorId, orgId, callback, errorHandler) {
+    var xhr = createXmlHttpRequest();
+    var setting = createGetAjaxSetting(serverUrl + orgId + "/depository/" + depositoryId
+        + "/summary/?sensor=" + sensorId);
+    ajaxSend(xhr, setting, callback, errorHandler);
+    
+  }
+  
   return {
     getTimestampFromDate : getTimestampFromDate,
     convertTimestampToDate : convertTimestampToDate,
@@ -411,6 +435,7 @@ org.WattDepot.Client = function(url) {
     getValueAt : getValueAt,
     getValueBetween : getValueBetween,
     getEarliestValue : getEarliestValue,
-    getLatestValue : getLatestValue
+    getLatestValue : getLatestValue,
+    getDepositorySensorSummary : getDepositorySensorSummary
   };
 };

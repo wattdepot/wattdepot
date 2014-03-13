@@ -877,6 +877,21 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     return ret;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.server.WattDepot#getCollectorProcessDefinitionIds()
+   */
+  @Override
+  public List<String> getCollectorProcessDefinitionIds(String orgId, boolean check)
+      throws IdNotFoundException {
+    ArrayList<String> ret = new ArrayList<String>();
+    for (CollectorProcessDefinition s : getCollectorProcessDefinitions(orgId, check)) {
+      ret.add(s.getId());
+    }
+    return ret;
+  }
+
   /**
    * @param id The CollectorProcessDefinition's id
    * @param orgId The Organization's id.
@@ -894,21 +909,6 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.server.WattDepot#getCollectorProcessDefinitionIds()
-   */
-  @Override
-  public List<String> getCollectorProcessDefinitionIds(String orgId, boolean check)
-      throws IdNotFoundException {
-    ArrayList<String> ret = new ArrayList<String>();
-    for (CollectorProcessDefinition s : getCollectorProcessDefinitions(orgId, check)) {
-      ret.add(s.getId());
-    }
     return ret;
   }
 
@@ -1044,32 +1044,34 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     return ret;
   }
 
-  /**
-   * @param id The depository id.
-   * @param orgId The organization's id.
-   * @return The defined Depository.
-   * @throws IdNotFoundException if the Depository isn't defined.
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.server.WattDepot#getWattDepositoryIds()
    */
-  public Depository getDepositoryNoOrgCheck(String id, String orgId) throws IdNotFoundException {
+  @Override
+  public List<String> getDepositoryIds(String orgId, boolean check) throws IdNotFoundException {
     Long startTime = 0l;
     Long endTime = 0l;
     Long diff = 0l;
     if (timingp) {
-      timingLogger.log(Level.SEVERE, padding + "Start getDepositoryNoOrgCheck(" + id + ", " + orgId
-          + ")");
+      timingLogger.log(Level.SEVERE, padding + "Start getDepositoryIds(" + orgId + ")");
       padding += "  ";
       startTime = System.nanoTime();
     }
-    Depository ret = getDepositoryNoCheck(id, orgId);
-    if (ret == null) {
-      throw new IdNotFoundException(id + " is not a defined Depository's id.");
+    if (check) {
+      getOrganization(orgId, check);
+    }
+    ArrayList<String> ret = new ArrayList<String>();
+    for (Depository d : getDepositoriesNoCheck(orgId)) {
+      ret.add(d.getId());
     }
     if (timingp) {
       endTime = System.nanoTime();
       diff = endTime - startTime;
       padding = padding.substring(0, padding.length() - 2);
-      timingLogger.log(Level.SEVERE, padding + "getDepositoryNoOrgCheck(" + id + ", " + orgId
-          + ") took " + (diff / 1E9) + " secs.");
+      timingLogger.log(Level.SEVERE, padding + "getDepositoryIds(" + orgId + ") took "
+          + (diff / 1E9) + " secs.");
     }
     return ret;
   }
@@ -1106,38 +1108,6 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       padding = padding.substring(0, padding.length() - 2);
       timingLogger.log(Level.SEVERE, padding + "getDepositoryNoCheck(" + id + ", " + orgId
           + ") took " + (diff / 1E9) + " secs.");
-    }
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.server.WattDepot#getWattDepositoryIds()
-   */
-  @Override
-  public List<String> getDepositoryIds(String orgId, boolean check) throws IdNotFoundException {
-    Long startTime = 0l;
-    Long endTime = 0l;
-    Long diff = 0l;
-    if (timingp) {
-      timingLogger.log(Level.SEVERE, padding + "Start getDepositoryIds(" + orgId + ")");
-      padding += "  ";
-      startTime = System.nanoTime();
-    }
-    if (check) {
-      getOrganization(orgId, check);
-    }
-    ArrayList<String> ret = new ArrayList<String>();
-    for (Depository d : getDepositoriesNoCheck(orgId)) {
-      ret.add(d.getId());
-    }
-    if (timingp) {
-      endTime = System.nanoTime();
-      diff = endTime - startTime;
-      padding = padding.substring(0, padding.length() - 2);
-      timingLogger.log(Level.SEVERE, padding + "getDepositoryIds(" + orgId + ") took "
-          + (diff / 1E9) + " secs.");
     }
     return ret;
   }
@@ -1430,6 +1400,239 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     return ret;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.server.WattDepotPersistence#getMeasurements(java.lang.String,
+   * java.lang.String, java.util.Date, java.util.Date)
+   */
+  @Override
+  public List<Measurement> getMeasurements(String depotId, String orgId, String sensorId,
+      Date start, Date end, boolean check) throws IdNotFoundException {
+    Long startTime = 0l;
+    Long endTime = 0l;
+    Long diff = 0l;
+    if (timingp) {
+      timingLogger.log(Level.SEVERE, padding + "Start getMeasurementsNoCheck(" + depotId + ", "
+          + orgId + ", " + sensorId + ")");
+      padding += "  ";
+      startTime = System.nanoTime();
+    }
+    if (check) {
+      getOrganization(orgId, check);
+      getDepository(depotId, orgId, check);
+      getSensor(sensorId, orgId, check);
+    }
+    List<Measurement> ret = getMeasurementsNoCheck(depotId, orgId, sensorId, start, end);
+    if (timingp) {
+      endTime = System.nanoTime();
+      diff = endTime - startTime;
+      padding = padding.substring(0, padding.length() - 2);
+      timingLogger.log(Level.SEVERE, padding + "getMeasurementsNoCheck(" + depotId + ", " + orgId
+          + ", " + sensorId + ") took " + (diff / 1E9) + " secs.");
+    }
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.server.WattDepotPersistence#getMeasurementsCount(java.lang
+   * .String, boolean)
+   */
+  @Override
+  public Long getMeasurementsCount(String orgId, boolean check) throws IdNotFoundException {
+    Long startTime = 0l;
+    Long endTime = 0l;
+    Long diff = 0l;
+    if (timingp) {
+      timingLogger.log(Level.SEVERE, padding + "Start getMeasurementsCount(" + orgId + ")");
+      padding += "  ";
+      startTime = System.nanoTime();
+    }
+    if (check) {
+      getOrganization(orgId, check);
+    }
+    Long ret = 0l;
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    session.beginTransaction();
+    for (DepositoryImpl depot : retrieveDepositories(session, orgId)) {
+      @SuppressWarnings("unchecked")
+      List<Long> result = (List<Long>) session
+          .createQuery(
+              "SELECT count(*) FROM MeasurementImpl WHERE depository = :depot")
+          .setParameter("depot", depot).list();
+      ret += result.get(0);
+    }
+    session.getTransaction().commit();
+    session.close();
+
+    if (timingp) {
+      endTime = System.nanoTime();
+      diff = endTime - startTime;
+      padding = padding.substring(0, padding.length() - 2);
+      timingLogger.log(Level.SEVERE, padding + "getMeasurementsCount(" + orgId + ") took "
+          + (diff / 1E9) + " secs.");
+    }
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.server.WattDepotPersistence#getMeasurementsCount(java.lang
+   * .String, java.lang.String, java.lang.String)
+   */
+  @Override
+  public Long getMeasurementsCount(String depotId, String orgId, String sensorId, boolean check)
+      throws IdNotFoundException {
+    Long startTime = 0l;
+    Long endTime = 0l;
+    Long diff = 0l;
+    if (timingp) {
+      timingLogger.log(Level.SEVERE, padding + "Start getMeasurementsCount(" + depotId + ", "
+          + orgId + ", " + sensorId + ")");
+      padding += "  ";
+      startTime = System.nanoTime();
+    }
+    if (check) {
+      getOrganization(orgId, check);
+      getDepository(depotId, orgId, check);
+      getSensor(sensorId, orgId, check);
+    }
+    Long ret = getMeasurementsCountNoCheck(depotId, orgId, sensorId);
+    if (timingp) {
+      endTime = System.nanoTime();
+      diff = endTime - startTime;
+      padding = padding.substring(0, padding.length() - 2);
+      timingLogger.log(Level.SEVERE, padding + "getMeasurementsCount(" + depotId + ", " + orgId
+          + ", " + sensorId + ") took " + (diff / 1E9) + " secs.");
+    }
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.server.WattDepotPersistence#getMeasurementsCount(java.lang
+   * .String, java.lang.String, java.lang.String, java.util.Date,
+   * java.util.Date)
+   */
+  @Override
+  public Long getMeasurementsCount(String depotId, String orgId, String sensorId, Date start,
+      Date end, boolean check) throws IdNotFoundException {
+    Long startTime = 0l;
+    Long endTime = 0l;
+    Long diff = 0l;
+    if (timingp) {
+      startTime = System.nanoTime();
+      timingLogger.log(Level.SEVERE, padding + "Starting getMeasurementsCount(" + depotId + ", "
+          + orgId + ", " + sensorId + ")");
+      padding += "  ";
+    }
+    if (check) {
+      getOrganization(orgId, check);
+      getDepository(depotId, orgId, check);
+      getSensor(sensorId, orgId, check);
+    }
+    Long ret = getMeasurementsCountNoCheck(depotId, orgId, sensorId, start, end);
+    if (timingp) {
+      endTime = System.nanoTime();
+      diff = endTime - startTime;
+      padding = padding.substring(0, padding.length() - 2);
+      timingLogger.log(Level.SEVERE, padding + "getMeasurementsCount(" + depotId + ", " + orgId
+          + ", " + sensorId + ") took " + (diff / 1E9) + " secs.");
+    }
+    return ret;
+  }
+
+  /**
+   * @param depotId The depository's id.
+   * @param orgId The organization's id.
+   * @param sensorId The sensor's id.
+   * @return the number of measurements made by the given sensor stored in the
+   *         given depository.
+   */
+  private Long getMeasurementsCountNoCheck(String depotId, String orgId, String sensorId) {
+    Long startTime = 0l;
+    Long endTime = 0l;
+    Long diff = 0l;
+    if (timingp) {
+      timingLogger.log(Level.SEVERE, padding + "Start getMeasurementsCountNoCheck(" + depotId
+          + ", " + orgId + ", " + sensorId + ")");
+      padding += "  ";
+      startTime = System.nanoTime();
+    }
+    Long ret = null;
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    session.beginTransaction();
+    DepositoryImpl depot = retrieveDepository(session, depotId, orgId);
+    SensorImpl sensor = retrieveSensor(session, sensorId, orgId);
+    @SuppressWarnings("unchecked")
+    List<Long> result = (List<Long>) session
+        .createQuery(
+            "SELECT count(*) FROM MeasurementImpl WHERE depository = :depot AND sensor = :sensor")
+        .setParameter("depot", depot).setParameter("sensor", sensor).list();
+    ret = result.get(0);
+    session.getTransaction().commit();
+    session.close();
+    if (timingp) {
+      endTime = System.nanoTime();
+      diff = endTime - startTime;
+      padding = padding.substring(0, padding.length() - 2);
+      timingLogger.log(Level.SEVERE, padding + "getMeasurementsCountNoCheck(" + depotId + ", "
+          + orgId + ", " + sensorId + ") took " + (diff / 1E9) + " secs.");
+    }
+    return ret;
+  }
+
+  /**
+   * @param depotId The depository's id.
+   * @param orgId The organization's id.
+   * @param sensorId The sensor's id.
+   * @param start The start of the interval.
+   * @param end The end of the interval.
+   * @return a list of the measurements made by the given sensor stored in the
+   *         given depository during the interval.
+   */
+  private Long getMeasurementsCountNoCheck(String depotId, String orgId, String sensorId,
+      Date start, Date end) {
+    Long startTime = 0l;
+    Long endTime = 0l;
+    Long diff = 0l;
+    if (timingp) {
+      startTime = System.nanoTime();
+      timingLogger.log(Level.SEVERE, padding + "Starting getMeasurementsCountNoCheck(" + depotId
+          + ", " + orgId + ", " + sensorId + ")");
+      padding += "  ";
+    }
+    Long ret = null;
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    session.beginTransaction();
+    DepositoryImpl depot = retrieveDepository(session, depotId, orgId);
+    SensorImpl sensor = retrieveSensor(session, sensorId, orgId);
+    Long result = (Long) session
+        .createQuery(
+            "SELECT count(*) FROM MeasurementImpl WHERE timestamp >= :start AND timestamp <= :end AND depository = :depository AND sensor = :sensor")
+        .setParameter("start", start).setParameter("end", end).setParameter("depository", depot)
+        .setParameter("sensor", sensor).iterate().next();
+    ret = result;
+    session.getTransaction().commit();
+    session.close();
+    if (timingp) {
+      endTime = System.nanoTime();
+      diff = endTime - startTime;
+      padding = padding.substring(0, padding.length() - 2);
+      timingLogger.log(Level.SEVERE, padding + "getMeasurementsCountNoCheck(" + depotId + ", "
+          + orgId + ", " + sensorId + ") took " + (diff / 1E9) + " secs.");
+    }
+    return ret;
+  }
+
   /**
    * @param depotId The depository's id.
    * @param orgId The Organization's id.
@@ -1460,41 +1663,6 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     }
     session.getTransaction().commit();
     session.close();
-    if (timingp) {
-      endTime = System.nanoTime();
-      diff = endTime - startTime;
-      padding = padding.substring(0, padding.length() - 2);
-      timingLogger.log(Level.SEVERE, padding + "getMeasurementsNoCheck(" + depotId + ", " + orgId
-          + ", " + sensorId + ") took " + (diff / 1E9) + " secs.");
-    }
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.server.WattDepotPersistence#getMeasurements(java.lang.String,
-   * java.lang.String, java.util.Date, java.util.Date)
-   */
-  @Override
-  public List<Measurement> getMeasurements(String depotId, String orgId, String sensorId,
-      Date start, Date end, boolean check) throws IdNotFoundException {
-    Long startTime = 0l;
-    Long endTime = 0l;
-    Long diff = 0l;
-    if (timingp) {
-      timingLogger.log(Level.SEVERE, padding + "Start getMeasurementsNoCheck(" + depotId + ", "
-          + orgId + ", " + sensorId + ")");
-      padding += "  ";
-      startTime = System.nanoTime();
-    }
-    if (check) {
-      getOrganization(orgId, check);
-      getDepository(depotId, orgId, check);
-      getSensor(sensorId, orgId, check);
-    }
-    List<Measurement> ret = getMeasurementsNoCheck(depotId, orgId, sensorId, start, end);
     if (timingp) {
       endTime = System.nanoTime();
       diff = endTime - startTime;
@@ -1547,160 +1715,6 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       padding = padding.substring(0, padding.length() - 2);
       timingLogger.log(Level.SEVERE, padding + "getMeasurementsNoCheck(" + depotId + ", " + orgId
           + ", " + sensorId + ") took " + (diff / 1E9) + " secs.");
-    }
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.server.WattDepotPersistence#getMeasurementsCount(java.lang
-   * .String, java.lang.String, java.lang.String)
-   */
-  @Override
-  public Long getMeasurementsCount(String depotId, String orgId, String sensorId, boolean check)
-      throws IdNotFoundException {
-    Long startTime = 0l;
-    Long endTime = 0l;
-    Long diff = 0l;
-    if (timingp) {
-      timingLogger.log(Level.SEVERE, padding + "Start getMeasurementsCount(" + depotId + ", "
-          + orgId + ", " + sensorId + ")");
-      padding += "  ";
-      startTime = System.nanoTime();
-    }
-    if (check) {
-      getOrganization(orgId, check);
-      getDepository(depotId, orgId, check);
-      getSensor(sensorId, orgId, check);
-    }
-    Long ret = getMeasurementsCountNoCheck(depotId, orgId, sensorId);
-    if (timingp) {
-      endTime = System.nanoTime();
-      diff = endTime - startTime;
-      padding = padding.substring(0, padding.length() - 2);
-      timingLogger.log(Level.SEVERE, padding + "getMeasurementsCount(" + depotId + ", " + orgId
-          + ", " + sensorId + ") took " + (diff / 1E9) + " secs.");
-    }
-    return ret;
-  }
-
-  /**
-   * @param depotId The depository's id.
-   * @param orgId The organization's id.
-   * @param sensorId The sensor's id.
-   * @return the number of measurements made by the given sensor stored in the
-   *         given depository.
-   */
-  private Long getMeasurementsCountNoCheck(String depotId, String orgId, String sensorId) {
-    Long startTime = 0l;
-    Long endTime = 0l;
-    Long diff = 0l;
-    if (timingp) {
-      timingLogger.log(Level.SEVERE, padding + "Start getMeasurementsCountNoCheck(" + depotId
-          + ", " + orgId + ", " + sensorId + ")");
-      padding += "  ";
-      startTime = System.nanoTime();
-    }
-    Long ret = null;
-    Session session = Manager.getFactory(getServerProperties()).openSession();
-    session.beginTransaction();
-    DepositoryImpl depot = retrieveDepository(session, depotId, orgId);
-    SensorImpl sensor = retrieveSensor(session, sensorId, orgId);
-    @SuppressWarnings("unchecked")
-    List<Long> result = (List<Long>) session
-        .createQuery(
-            "SELECT count(*) FROM MeasurementImpl WHERE depository = :depot AND sensor = :sensor")
-        .setParameter("depot", depot).setParameter("sensor", sensor).list();
-    ret = result.get(0);
-    session.getTransaction().commit();
-    session.close();
-    if (timingp) {
-      endTime = System.nanoTime();
-      diff = endTime - startTime;
-      padding = padding.substring(0, padding.length() - 2);
-      timingLogger.log(Level.SEVERE, padding + "getMeasurementsCountNoCheck(" + depotId + ", "
-          + orgId + ", " + sensorId + ") took " + (diff / 1E9) + " secs.");
-    }
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.server.WattDepotPersistence#getMeasurementsCount(java.lang
-   * .String, java.lang.String, java.lang.String, java.util.Date,
-   * java.util.Date)
-   */
-  @Override
-  public Long getMeasurementsCount(String depotId, String orgId, String sensorId, Date start,
-      Date end, boolean check) throws IdNotFoundException {
-    Long startTime = 0l;
-    Long endTime = 0l;
-    Long diff = 0l;
-    if (timingp) {
-      startTime = System.nanoTime();
-      timingLogger.log(Level.SEVERE, padding + "Starting getMeasurementsCount(" + depotId + ", "
-          + orgId + ", " + sensorId + ")");
-      padding += "  ";
-    }
-    if (check) {
-      getOrganization(orgId, check);
-      getDepository(depotId, orgId, check);
-      getSensor(sensorId, orgId, check);
-    }
-    Long ret = getMeasurementsCountNoCheck(depotId, orgId, sensorId, start, end);
-    if (timingp) {
-      endTime = System.nanoTime();
-      diff = endTime - startTime;
-      padding = padding.substring(0, padding.length() - 2);
-      timingLogger.log(Level.SEVERE, padding + "getMeasurementsCount(" + depotId + ", " + orgId
-          + ", " + sensorId + ") took " + (diff / 1E9) + " secs.");
-    }
-    return ret;
-  }
-
-  /**
-   * @param depotId The depository's id.
-   * @param orgId The organization's id.
-   * @param sensorId The sensor's id.
-   * @param start The start of the interval.
-   * @param end The end of the interval.
-   * @return a list of the measurements made by the given sensor stored in the
-   *         given depository during the interval.
-   */
-  private Long getMeasurementsCountNoCheck(String depotId, String orgId, String sensorId,
-      Date start, Date end) {
-    Long startTime = 0l;
-    Long endTime = 0l;
-    Long diff = 0l;
-    if (timingp) {
-      startTime = System.nanoTime();
-      timingLogger.log(Level.SEVERE, padding + "Starting getMeasurementsCountNoCheck(" + depotId
-          + ", " + orgId + ", " + sensorId + ")");
-      padding += "  ";
-    }
-    Long ret = null;
-    Session session = Manager.getFactory(getServerProperties()).openSession();
-    session.beginTransaction();
-    DepositoryImpl depot = retrieveDepository(session, depotId, orgId);
-    SensorImpl sensor = retrieveSensor(session, sensorId, orgId);
-    Long result = (Long) session
-        .createQuery(
-            "SELECT count(*) FROM MeasurementImpl WHERE timestamp >= :start AND timestamp <= :end AND depository = :depository AND sensor = :sensor")
-        .setParameter("start", start).setParameter("end", end).setParameter("depository", depot)
-        .setParameter("sensor", sensor).iterate().next();
-    ret = result;
-    session.getTransaction().commit();
-    session.close();
-    if (timingp) {
-      endTime = System.nanoTime();
-      diff = endTime - startTime;
-      padding = padding.substring(0, padding.length() - 2);
-      timingLogger.log(Level.SEVERE, padding + "getMeasurementsCountNoCheck(" + depotId + ", "
-          + orgId + ", " + sensorId + ") took " + (diff / 1E9) + " secs.");
     }
     return ret;
   }
@@ -1964,39 +1978,6 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     return ret;
   }
 
-  /**
-   * @param id The sensor's id.
-   * @param orgId The organization's id.
-   * @return The defined Sensor or null.
-   */
-  private Sensor getSensorNoCheck(String id, String orgId) {
-    Long startTime = 0l;
-    Long endTime = 0l;
-    Long diff = 0l;
-    if (timingp) {
-      timingLogger.log(Level.SEVERE, padding + "Start getSensorNoCheck(" + id + ", " + orgId + ")");
-      startTime = System.nanoTime();
-    }
-    Sensor ret = null;
-    Session session = Manager.getFactory(getServerProperties()).openSession();
-    sessionOpen++;
-    session.beginTransaction();
-    SensorImpl impl = retrieveSensor(session, id, orgId);
-    if (impl != null) {
-      ret = impl.toSensor();
-    }
-    session.getTransaction().commit();
-    session.close();
-    sessionClose++;
-    if (timingp) {
-      endTime = System.nanoTime();
-      diff = endTime - startTime;
-      timingLogger.log(Level.SEVERE, padding + "getSensorNoCheck(" + id + ", " + orgId + ") took "
-          + (diff / 1E9) + " secs.");
-    }
-    return ret;
-  }
-
   /*
    * (non-Javadoc)
    * 
@@ -2027,42 +2008,6 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       padding = padding.substring(0, padding.length() - 2);
       timingLogger.log(Level.SEVERE, padding + "getSensorGroup(" + id + ", " + orgId + ") took "
           + (diff / 1E9) + " secs.");
-    }
-    return ret;
-  }
-
-  /**
-   * @param id The sensor group's id.
-   * @param orgId The organization's id.
-   * @return The defined SensorGroup or null.
-   */
-  private SensorGroup getSensorGroupNoCheck(String id, String orgId) {
-    Long startTime = 0l;
-    Long endTime = 0l;
-    Long diff = 0l;
-    if (timingp) {
-      timingLogger.log(Level.SEVERE, padding + "Start getSensorGroupNoCheck(" + id + ", " + orgId
-          + ")");
-      padding += "  ";
-      startTime = System.nanoTime();
-    }
-    SensorGroup ret = null;
-    Session session = Manager.getFactory(getServerProperties()).openSession();
-    sessionOpen++;
-    session.beginTransaction();
-    SensorGroupImpl impl = retrieveSensorGroup(session, id, orgId);
-    if (impl != null) {
-      ret = impl.toSensorGroup();
-    }
-    session.getTransaction().commit();
-    session.close();
-    sessionClose++;
-    if (timingp) {
-      endTime = System.nanoTime();
-      diff = endTime - startTime;
-      padding = padding.substring(0, padding.length() - 2);
-      timingLogger.log(Level.SEVERE, padding + "getSensorGroupNoCheck(" + id + ", " + orgId
-          + ") took " + (diff / 1E9) + " secs.");
     }
     return ret;
   }
@@ -2119,6 +2064,42 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       padding = padding.substring(0, padding.length() - 2);
       timingLogger.log(Level.SEVERE, padding + "getSensorGroupIds(" + orgId + ") took "
           + (diff / 1E9) + " secs.");
+    }
+    return ret;
+  }
+
+  /**
+   * @param id The sensor group's id.
+   * @param orgId The organization's id.
+   * @return The defined SensorGroup or null.
+   */
+  private SensorGroup getSensorGroupNoCheck(String id, String orgId) {
+    Long startTime = 0l;
+    Long endTime = 0l;
+    Long diff = 0l;
+    if (timingp) {
+      timingLogger.log(Level.SEVERE, padding + "Start getSensorGroupNoCheck(" + id + ", " + orgId
+          + ")");
+      padding += "  ";
+      startTime = System.nanoTime();
+    }
+    SensorGroup ret = null;
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    sessionOpen++;
+    session.beginTransaction();
+    SensorGroupImpl impl = retrieveSensorGroup(session, id, orgId);
+    if (impl != null) {
+      ret = impl.toSensorGroup();
+    }
+    session.getTransaction().commit();
+    session.close();
+    sessionClose++;
+    if (timingp) {
+      endTime = System.nanoTime();
+      diff = endTime - startTime;
+      padding = padding.substring(0, padding.length() - 2);
+      timingLogger.log(Level.SEVERE, padding + "getSensorGroupNoCheck(" + id + ", " + orgId
+          + ") took " + (diff / 1E9) + " secs.");
     }
     return ret;
   }
@@ -2339,6 +2320,39 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       diff = endTime - startTime;
       padding = padding.substring(0, padding.length() - 2);
       timingLogger.log(Level.SEVERE, padding + "getSensorModels() took " + (diff / 1E9) + " secs.");
+    }
+    return ret;
+  }
+
+  /**
+   * @param id The sensor's id.
+   * @param orgId The organization's id.
+   * @return The defined Sensor or null.
+   */
+  private Sensor getSensorNoCheck(String id, String orgId) {
+    Long startTime = 0l;
+    Long endTime = 0l;
+    Long diff = 0l;
+    if (timingp) {
+      timingLogger.log(Level.SEVERE, padding + "Start getSensorNoCheck(" + id + ", " + orgId + ")");
+      startTime = System.nanoTime();
+    }
+    Sensor ret = null;
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    sessionOpen++;
+    session.beginTransaction();
+    SensorImpl impl = retrieveSensor(session, id, orgId);
+    if (impl != null) {
+      ret = impl.toSensor();
+    }
+    session.getTransaction().commit();
+    session.close();
+    sessionClose++;
+    if (timingp) {
+      endTime = System.nanoTime();
+      diff = endTime - startTime;
+      timingLogger.log(Level.SEVERE, padding + "getSensorNoCheck(" + id + ", " + orgId + ") took "
+          + (diff / 1E9) + " secs.");
     }
     return ret;
   }

@@ -91,6 +91,14 @@ public class API {
       + Labels.DEPOSITORY + "/";
 
   /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/summary/</b> URI for
+   * getting all the sensors that have stored measurements in the depository.
+   * Use GET requests.
+   */
+  public static final String DEPOSITORY_SENSOR_SUMMARY_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.SUMMARY + "/";
+
+  /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/sensors/</b> URI for
    * getting all the sensors that have stored measurements in the depository.
    * Use GET requests.

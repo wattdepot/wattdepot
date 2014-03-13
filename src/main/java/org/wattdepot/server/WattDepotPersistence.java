@@ -84,11 +84,10 @@ public abstract class WattDepotPersistence {
    * @throws IdNotFoundException if the sensorId or orgId are not defined.
    * @throws BadSlugException if the given id isn't valid.
    */
-  public abstract CollectorProcessDefinition defineCollectorProcessDefinition(
-      String id, String name, String sensorId, Long pollingInterval,
-      String depositoryId, Set<Property> properties, String orgId)
-      throws UniqueIdException, MisMatchedOwnerException, IdNotFoundException,
-      BadSlugException;
+  public abstract CollectorProcessDefinition defineCollectorProcessDefinition(String id,
+      String name, String sensorId, Long pollingInterval, String depositoryId,
+      Set<Property> properties, String orgId) throws UniqueIdException, MisMatchedOwnerException,
+      IdNotFoundException, BadSlugException;
 
   /**
    * Defines a new WattDepository in WattDepot.
@@ -104,8 +103,8 @@ public abstract class WattDepotPersistence {
    * @throws BadSlugException if the id isn't valid.
    */
   public abstract Depository defineDepository(String id, String name,
-      MeasurementType measurementType, String orgId) throws UniqueIdException,
-      IdNotFoundException, BadSlugException;
+      MeasurementType measurementType, String orgId) throws UniqueIdException, IdNotFoundException,
+      BadSlugException;
 
   /**
    * Defines a new MeasurementType in WattDepot.
@@ -118,8 +117,8 @@ public abstract class WattDepotPersistence {
    * @throws UniqueIdException if the id derived from name is already defined.
    * @throws BadSlugException if the id isn't valid.
    */
-  public abstract MeasurementType defineMeasurementType(String id, String name,
-      String units) throws UniqueIdException, BadSlugException;
+  public abstract MeasurementType defineMeasurementType(String id, String name, String units)
+      throws UniqueIdException, BadSlugException;
 
   /**
    * @param id The unique id.
@@ -131,9 +130,8 @@ public abstract class WattDepotPersistence {
    * @throws BadSlugException if the id isn't valid.
    * @throws IdNotFoundException if the user's are not defined.
    */
-  public abstract Organization defineOrganization(String id, String name,
-      Set<String> users) throws UniqueIdException, BadSlugException,
-      IdNotFoundException;
+  public abstract Organization defineOrganization(String id, String name, Set<String> users)
+      throws UniqueIdException, BadSlugException, IdNotFoundException;
 
   /**
    * @param id The unique id.
@@ -149,10 +147,9 @@ public abstract class WattDepotPersistence {
    * @throws IdNotFoundException if modelId, or orgId are not actual Ids.
    * @throws BadSlugException if the id isn't valid.
    */
-  public abstract Sensor defineSensor(String id, String name, String uri,
-      String modelId, Set<Property> properties, String orgId)
-      throws UniqueIdException, MisMatchedOwnerException, IdNotFoundException,
-      BadSlugException;
+  public abstract Sensor defineSensor(String id, String name, String uri, String modelId,
+      Set<Property> properties, String orgId) throws UniqueIdException, MisMatchedOwnerException,
+      IdNotFoundException, BadSlugException;
 
   /**
    * @param id The unique id.
@@ -167,9 +164,9 @@ public abstract class WattDepotPersistence {
    * @throws IdNotFoundException if sensorIds, or orgId are not actual Ids.
    * @throws BadSlugException id the id isn't valid.
    */
-  public abstract SensorGroup defineSensorGroup(String id, String name,
-      Set<String> sensors, String orgId) throws UniqueIdException,
-      MisMatchedOwnerException, IdNotFoundException, BadSlugException;
+  public abstract SensorGroup defineSensorGroup(String id, String name, Set<String> sensors,
+      String orgId) throws UniqueIdException, MisMatchedOwnerException, IdNotFoundException,
+      BadSlugException;
 
   /**
    * Defines a new SensorModel in WattDepot.
@@ -184,9 +181,8 @@ public abstract class WattDepotPersistence {
    *         SensorModel.
    * @throws BadSlugException if the id isn't valid.
    */
-  public abstract SensorModel defineSensorModel(String id, String name,
-      String protocol, String type, String version) throws UniqueIdException,
-      BadSlugException;
+  public abstract SensorModel defineSensorModel(String id, String name, String protocol,
+      String type, String version) throws UniqueIdException, BadSlugException;
 
   /**
    * Defines a new UserInfo with the given information.
@@ -202,9 +198,9 @@ public abstract class WattDepotPersistence {
    * @throws UniqueIdException if the id is already used for another UserInfo.
    * @throws IdNotFoundException Organization is not defined.
    */
-  public abstract UserInfo defineUserInfo(String userId, String firstName,
-      String lastName, String email, String orgId, Set<Property> properties,
-      String password) throws UniqueIdException, IdNotFoundException;
+  public abstract UserInfo defineUserInfo(String userId, String firstName, String lastName,
+      String email, String orgId, Set<Property> properties, String password)
+      throws UniqueIdException, IdNotFoundException;
 
   /**
    * Deletes the given CollectorProcessDefinition.
@@ -227,8 +223,8 @@ public abstract class WattDepotPersistence {
    * @throws MisMatchedOwnerException if the orgId doesn't match the owner of
    *         the sensor process.
    */
-  public abstract void deleteDepository(String id, String orgId)
-      throws IdNotFoundException, MisMatchedOwnerException;
+  public abstract void deleteDepository(String id, String orgId) throws IdNotFoundException,
+      MisMatchedOwnerException;
 
   /**
    * @param depotId the id of the Depository storing the measurement.
@@ -236,8 +232,8 @@ public abstract class WattDepotPersistence {
    * @param measId The id of the measurement to delete.
    * @throws IdNotFoundException if there is a problem with the ids.
    */
-  public abstract void deleteMeasurement(String depotId, String orgId,
-      String measId) throws IdNotFoundException;
+  public abstract void deleteMeasurement(String depotId, String orgId, String measId)
+      throws IdNotFoundException;
 
   /**
    * Deletes the given measurement type.
@@ -245,8 +241,7 @@ public abstract class WattDepotPersistence {
    * @param id The unique id for the MeasurementType to delete.
    * @throws IdNotFoundException if the id is not a known MeasurementType.
    */
-  public abstract void deleteMeasurementType(String id)
-      throws IdNotFoundException;
+  public abstract void deleteMeasurementType(String id) throws IdNotFoundException;
 
   /**
    * @param id The unique id of the Organization.
@@ -263,8 +258,8 @@ public abstract class WattDepotPersistence {
    * @throws MisMatchedOwnerException if the orgId doesn't match the owner of
    *         the sensor.
    */
-  public abstract void deleteSensor(String id, String orgId)
-      throws IdNotFoundException, MisMatchedOwnerException;
+  public abstract void deleteSensor(String id, String orgId) throws IdNotFoundException,
+      MisMatchedOwnerException;
 
   /**
    * Deletes the given SensorGroup.
@@ -275,8 +270,8 @@ public abstract class WattDepotPersistence {
    * @throws MisMatchedOwnerException if the orgId doesn't match the owner of
    *         the sensor group.
    */
-  public abstract void deleteSensorGroup(String id, String orgId)
-      throws IdNotFoundException, MisMatchedOwnerException;
+  public abstract void deleteSensorGroup(String id, String orgId) throws IdNotFoundException,
+      MisMatchedOwnerException;
 
   /**
    * Deletes the given SensorModel.
@@ -291,16 +286,14 @@ public abstract class WattDepotPersistence {
    * @param orgId the id of the organization the user is a member.
    * @throws IdNotFoundException If the id is not known or defined.
    */
-  public abstract void deleteUser(String id, String orgId)
-      throws IdNotFoundException;
+  public abstract void deleteUser(String id, String orgId) throws IdNotFoundException;
 
   /**
    * @param userId The id of the UserPassword to delete.
    * @param orgId the user's organization id.
    * @throws IdNotFoundException If the id is not known or defined.
    */
-  public abstract void deleteUserPassword(String userId, String orgId)
-      throws IdNotFoundException;
+  public abstract void deleteUserPassword(String userId, String orgId) throws IdNotFoundException;
 
   /**
    * @param id The unique id for the CollectorProcessDefinition.
@@ -309,8 +302,8 @@ public abstract class WattDepotPersistence {
    * @return The CollectorProcessDefinition with the given id.
    * @throws IdNotFoundException if either id is not defined.
    */
-  public abstract CollectorProcessDefinition getCollectorProcessDefinition(
-      String id, String orgId, boolean check) throws IdNotFoundException;
+  public abstract CollectorProcessDefinition getCollectorProcessDefinition(String id, String orgId,
+      boolean check) throws IdNotFoundException;
 
   /**
    * @param orgId the id of the owner Organization.
@@ -328,8 +321,8 @@ public abstract class WattDepotPersistence {
    *         group id.
    * @throws IdNotFoundException if the orgId is not defined.
    */
-  public abstract List<CollectorProcessDefinition> getCollectorProcessDefinitions(
-      String orgId, boolean check) throws IdNotFoundException;
+  public abstract List<CollectorProcessDefinition> getCollectorProcessDefinitions(String orgId,
+      boolean check) throws IdNotFoundException;
 
   /**
    * @param orgId the group id of the user making the request.
@@ -369,9 +362,8 @@ public abstract class WattDepotPersistence {
    *         time.
    * @throws IdNotFoundException if there is a problem with the ids.
    */
-  public abstract InterpolatedValue getEarliestMeasuredValue(String depotId,
-      String orgId, String sensorId, boolean check) throws NoMeasurementException,
-      IdNotFoundException;
+  public abstract InterpolatedValue getEarliestMeasuredValue(String depotId, String orgId,
+      String sensorId, boolean check) throws NoMeasurementException, IdNotFoundException;
 
   /**
    * @param depotId the id of the Depository.
@@ -383,9 +375,8 @@ public abstract class WattDepotPersistence {
    *         time.
    * @throws IdNotFoundException if there is a problem with the ids.
    */
-  public abstract InterpolatedValue getLatestMeasuredValue(String depotId,
-      String orgId, String sensorId, boolean check) throws NoMeasurementException,
-      IdNotFoundException;
+  public abstract InterpolatedValue getLatestMeasuredValue(String depotId, String orgId,
+      String sensorId, boolean check) throws NoMeasurementException, IdNotFoundException;
 
   /**
    * @param depotId the id of the Depository storing the measurements.
@@ -395,8 +386,8 @@ public abstract class WattDepotPersistence {
    * @return The Measurement with the given id or null.
    * @throws IdNotFoundException if there are problems with the ids.
    */
-  public abstract Measurement getMeasurement(String depotId, String orgId,
-      String measId, boolean check) throws IdNotFoundException;
+  public abstract Measurement getMeasurement(String depotId, String orgId, String measId,
+      boolean check) throws IdNotFoundException;
 
   /**
    * @param depotId the id of the Depository storing the measurements.
@@ -406,8 +397,8 @@ public abstract class WattDepotPersistence {
    * @return A list of all the measurements made by the Sensor.
    * @throws IdNotFoundException if there is a problem with the ids.
    */
-  public abstract List<Measurement> getMeasurements(String depotId,
-      String orgId, String sensorId, boolean check) throws IdNotFoundException;
+  public abstract List<Measurement> getMeasurements(String depotId, String orgId, String sensorId,
+      boolean check) throws IdNotFoundException;
 
   /**
    * @param depotId the id of the Depository storing the measurements.
@@ -419,9 +410,16 @@ public abstract class WattDepotPersistence {
    * @return A list of the measurements in the interval.
    * @throws IdNotFoundException if there is a problem with the ids.
    */
-  public abstract List<Measurement> getMeasurements(String depotId,
-      String orgId, String sensorId, Date start, Date end, boolean check)
-      throws IdNotFoundException;
+  public abstract List<Measurement> getMeasurements(String depotId, String orgId, String sensorId,
+      Date start, Date end, boolean check) throws IdNotFoundException;
+
+  /**
+   * @param orgId the Organziation's id.
+   * @param check true if want to check the ids.
+   * @return A count of all the measurements for the given Organization.
+   * @throws IdNotFoundException if there is a problem with the id.
+   */
+  public abstract Long getMeasurementsCount(String orgId, boolean check) throws IdNotFoundException;
 
   /**
    * @param depotId the id of the Depository storing the measurements.
@@ -431,8 +429,8 @@ public abstract class WattDepotPersistence {
    * @return A count of all the measurements made by the Sensor.
    * @throws IdNotFoundException if there is a problem with the ids.
    */
-  public abstract Long getMeasurementsCount(String depotId,
-      String orgId, String sensorId, boolean check) throws IdNotFoundException;
+  public abstract Long getMeasurementsCount(String depotId, String orgId, String sensorId,
+      boolean check) throws IdNotFoundException;
 
   /**
    * @param depotId the id of the Depository storing the measurements.
@@ -444,9 +442,8 @@ public abstract class WattDepotPersistence {
    * @return A count of the measurements in the interval.
    * @throws IdNotFoundException if there is a problem with the ids.
    */
-  public abstract Long getMeasurementsCount(String depotId,
-      String orgId, String sensorId, Date start, Date end, boolean check)
-      throws IdNotFoundException;
+  public abstract Long getMeasurementsCount(String depotId, String orgId, String sensorId,
+      Date start, Date end, boolean check) throws IdNotFoundException;
 
   /**
    * @param id The unique id for the MeasurementType.
@@ -468,8 +465,7 @@ public abstract class WattDepotPersistence {
    * @return The UserGroup with the given id.
    * @throws IdNotFoundException if the id isn't a defined Organization's id.
    */
-  public abstract Organization getOrganization(String id, boolean check)
-      throws IdNotFoundException;
+  public abstract Organization getOrganization(String id, boolean check) throws IdNotFoundException;
 
   /**
    * @return A list of the defined organization Ids.
@@ -490,8 +486,8 @@ public abstract class WattDepotPersistence {
    * @throws IdNotFoundException if there is a problem with the ids.
    * @throws NoMeasurementException if there aren't any measurements.
    */
-  public abstract MeasurementRateSummary getRateSummary(String depotId,
-      String orgId, String sensorId, boolean check) throws IdNotFoundException, NoMeasurementException;
+  public abstract MeasurementRateSummary getRateSummary(String depotId, String orgId,
+      String sensorId, boolean check) throws IdNotFoundException, NoMeasurementException;
 
   /**
    * @param id The unique id for the Sensor.
@@ -538,8 +534,7 @@ public abstract class WattDepotPersistence {
    * @return A list of the defined Sensor Ids.
    * @throws IdNotFoundException if orgId is not defined.
    */
-  public abstract List<String> getSensorIds(String orgId, boolean check)
-      throws IdNotFoundException;
+  public abstract List<String> getSensorIds(String orgId, boolean check) throws IdNotFoundException;
 
   /**
    * @param id The unique id for the SensorModel.
@@ -547,8 +542,7 @@ public abstract class WattDepotPersistence {
    * @return The SensorModel with the given id.
    * @throws IdNotFoundException if id isn't a defined SensorModel id.
    */
-  public abstract SensorModel getSensorModel(String id, boolean check)
-      throws IdNotFoundException;
+  public abstract SensorModel getSensorModel(String id, boolean check) throws IdNotFoundException;
 
   /**
    * @return A list of the defined SensorModel Ids.
@@ -566,8 +560,7 @@ public abstract class WattDepotPersistence {
    * @return The known/defined Sensors owned by the given group id.
    * @throws IdNotFoundException if orgId is not defined.
    */
-  public abstract List<Sensor> getSensors(String orgId, boolean check)
-      throws IdNotFoundException;
+  public abstract List<Sensor> getSensors(String orgId, boolean check) throws IdNotFoundException;
 
   /**
    * @return the properties
@@ -601,9 +594,8 @@ public abstract class WattDepotPersistence {
    *         period.
    * @throws IdNotFoundException if there is a problem with the ids.
    */
-  public abstract SensorMeasurementSummary getSummary(String depotId,
-      String orgId, String sensorId, Date start, Date end, boolean check)
-      throws IdNotFoundException;
+  public abstract SensorMeasurementSummary getSummary(String depotId, String orgId,
+      String sensorId, Date start, Date end, boolean check) throws IdNotFoundException;
 
   /**
    * @param id the unique id for the UserInfo.
@@ -622,8 +614,7 @@ public abstract class WattDepotPersistence {
    * @return A list of the defined user Ids.
    * @throws IdNotFoundException if orgId is not defined.
    */
-  public abstract List<String> getUserIds(String orgId, boolean check)
-      throws IdNotFoundException;
+  public abstract List<String> getUserIds(String orgId, boolean check) throws IdNotFoundException;
 
   /**
    * @param id The user's id.
@@ -646,8 +637,7 @@ public abstract class WattDepotPersistence {
    * @return The known/defined UserInfos in the given organization.
    * @throws IdNotFoundException if orgId is not defined.
    */
-  public abstract List<UserInfo> getUsers(String orgId, boolean check)
-      throws IdNotFoundException;
+  public abstract List<UserInfo> getUsers(String orgId, boolean check) throws IdNotFoundException;
 
   /**
    * @param depotId the id of the depository.
@@ -661,9 +651,8 @@ public abstract class WattDepotPersistence {
    *         time.
    * @throws IdNotFoundException if there is a problem with the ids.
    */
-  public abstract Double getValue(String depotId, String orgId,
-      String sensorId, Date timestamp, boolean check) throws NoMeasurementException,
-      IdNotFoundException;
+  public abstract Double getValue(String depotId, String orgId, String sensorId, Date timestamp,
+      boolean check) throws NoMeasurementException, IdNotFoundException;
 
   /**
    * @param depotId the id of the depository.
@@ -678,9 +667,8 @@ public abstract class WattDepotPersistence {
    *         start or end time.
    * @throws IdNotFoundException if there is a problem with the ids.
    */
-  public abstract Double getValue(String depotId, String orgId,
-      String sensorId, Date start, Date end, boolean check) throws NoMeasurementException,
-      IdNotFoundException;
+  public abstract Double getValue(String depotId, String orgId, String sensorId, Date start,
+      Date end, boolean check) throws NoMeasurementException, IdNotFoundException;
 
   /**
    * @param depotId the id of the depository.
@@ -699,10 +687,9 @@ public abstract class WattDepotPersistence {
    *         too far apart.
    * @throws IdNotFoundException if there is a problem with the ids.
    */
-  public abstract Double getValue(String depotId, String orgId,
-      String sensorId, Date start, Date end, Long gapSeconds, boolean check)
-      throws NoMeasurementException, MeasurementGapException,
-      IdNotFoundException;
+  public abstract Double getValue(String depotId, String orgId, String sensorId, Date start,
+      Date end, Long gapSeconds, boolean check) throws NoMeasurementException,
+      MeasurementGapException, IdNotFoundException;
 
   /**
    * @param depotId the id of the depository.
@@ -720,9 +707,8 @@ public abstract class WattDepotPersistence {
    *         too far apart.
    * @throws IdNotFoundException if there is a problem with the ids.
    */
-  public abstract Double getValue(String depotId, String orgId,
-      String sensorId, Date timestamp, Long gapSeconds, boolean check)
-      throws NoMeasurementException, MeasurementGapException,
+  public abstract Double getValue(String depotId, String orgId, String sensorId, Date timestamp,
+      Long gapSeconds, boolean check) throws NoMeasurementException, MeasurementGapException,
       IdNotFoundException;
 
   /**
@@ -735,8 +721,7 @@ public abstract class WattDepotPersistence {
       }
       catch (IdNotFoundException e1) {
         try {
-          defineMeasurementType(Slug.slugify(key), key, UnitsHelper.quantities
-              .get(key).toString());
+          defineMeasurementType(Slug.slugify(key), key, UnitsHelper.quantities.get(key).toString());
         }
         catch (UniqueIdException e) {
           e.printStackTrace();
@@ -759,8 +744,8 @@ public abstract class WattDepotPersistence {
       catch (IdNotFoundException e1) {
         SensorModel model = SensorModelHelper.models.get(key);
         try {
-          defineSensorModel(Slug.slugify(model.getName()), model.getName(),
-              model.getProtocol(), model.getType(), model.getVersion());
+          defineSensorModel(Slug.slugify(model.getName()), model.getName(), model.getProtocol(),
+              model.getType(), model.getVersion());
         }
         catch (UniqueIdException e) {
           e.printStackTrace();
@@ -792,8 +777,8 @@ public abstract class WattDepotPersistence {
    *         match the Depository measurement type.
    * @throws IdNotFoundException if there is a problem with the ids.
    */
-  public abstract void putMeasurement(String depotId, String orgId,
-      Measurement meas) throws MeasurementTypeException, IdNotFoundException;
+  public abstract void putMeasurement(String depotId, String orgId, Measurement meas)
+      throws MeasurementTypeException, IdNotFoundException;
 
   /**
    * @param properties the properties to set
@@ -831,8 +816,7 @@ public abstract class WattDepotPersistence {
    * @return The updated organization from persistence.
    * @throws IdNotFoundException if the given Organization is not defined.
    */
-  public abstract Organization updateOrganization(Organization org)
-      throws IdNotFoundException;
+  public abstract Organization updateOrganization(Organization org) throws IdNotFoundException;
 
   /**
    * Updates the given sensor in the persistent store.
@@ -850,8 +834,7 @@ public abstract class WattDepotPersistence {
    * @return The updated sensor group from persistence.
    * @throws IdNotFoundException if there is a problem with the ids.
    */
-  public abstract SensorGroup updateSensorGroup(SensorGroup group)
-      throws IdNotFoundException;
+  public abstract SensorGroup updateSensorGroup(SensorGroup group) throws IdNotFoundException;
 
   /**
    * Updates the given sensor model in the persistent store.
@@ -860,22 +843,19 @@ public abstract class WattDepotPersistence {
    * @return The updated model from persistence.
    * @throws IdNotFoundException if the SensorModel isn't in persistence.
    */
-  public abstract SensorModel updateSensorModel(SensorModel model)
-      throws IdNotFoundException;
+  public abstract SensorModel updateSensorModel(SensorModel model) throws IdNotFoundException;
 
   /**
    * @param user The updated UserInfo.
    * @return The updated user from persistence.
    * @throws IdNotFoundException if the user isn't in the persistence.
    */
-  public abstract UserInfo updateUserInfo(UserInfo user)
-      throws IdNotFoundException;
+  public abstract UserInfo updateUserInfo(UserInfo user) throws IdNotFoundException;
 
   /**
    * @param password The UserPassword to update.
    * @return The updated password from persistence.
    * @throws IdNotFoundException if the password is not in persistence.
    */
-  public abstract UserPassword updateUserPassword(UserPassword password)
-      throws IdNotFoundException;
+  public abstract UserPassword updateUserPassword(UserPassword password) throws IdNotFoundException;
 }
