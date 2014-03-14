@@ -168,12 +168,12 @@ public class ServerProperties {
     StringBuffer buff = new StringBuffer(25);
     buff.append("Server Properties:").append(cr);
     for (String key : alphaProps.keySet()) {
-      if (key.contains("password")) {
-        buff.append(pad).append(key).append(eq).append("((hidden))").append(cr);
-      }
-      else {
+//      if (key.contains("password")) {
+//        buff.append(pad).append(key).append(eq).append("((hidden))").append(cr);
+//      }
+//      else {
         buff.append(pad).append(key).append(eq).append(get(key)).append(cr);
-      }
+//      }
     }
     return buff.toString();
   }
