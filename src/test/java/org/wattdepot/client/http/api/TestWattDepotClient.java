@@ -179,8 +179,10 @@ public class TestWattDepotClient {
               Organization.ADMIN_GROUP.getId(), UserInfo.ROOT.getPassword());
         }
         catch (Exception e) {
+          e.printStackTrace();
           System.out.println("Failed with " + UserInfo.ROOT.getUid() + " and "
               + UserInfo.ROOT.getPassword());
+          fail("Cannot create admin client.");
         }
       }
       // 1. Define test organization w/o users
