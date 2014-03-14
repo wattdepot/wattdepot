@@ -18,7 +18,6 @@
  */
 package org.wattdepot.server.http.api;
 
-import java.util.logging.Level;
 
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -88,10 +87,17 @@ public class WattDepotComponent extends Component {
     realm.setName("WattDepot Security");
     getRealms().add(realm);
     for (Organization group : app.getDepot().getOrganizations()) {
-      getLogger().log(Level.INFO, "Processing Organization " + group.getName());
       app.getRoles().add(new Role(group.getId()));
+      if (Organization.ADMIN_GROUP.getName().equals(group.getName())) {
+        // need to ensure the admin user is available.
+        User user = new User(UserInfo.ROOT.getUid(), StrongAES.getInstance()
+            .decrypt(UserPassword.ROOT.getEncryptedPassword()),
+            UserInfo.ROOT.getFirstName(), UserInfo.ROOT.getLastName(),
+            UserInfo.ROOT.getEmail());
+        realm.getUsers().add(user);
+        realm.map(user, app.getRole(group.getId()));
+      }
       for (String userId : group.getUsers()) {
-        getLogger().log(Level.INFO, "Processing user " + userId + " of org " + group.getName());
         UserPassword up = null;
         try {
           up = app.getDepot().getUserPassword(userId, group.getId(), true);
@@ -99,7 +105,6 @@ public class WattDepotComponent extends Component {
         catch (IdNotFoundException e) {
           e.printStackTrace();
         }
-        getLogger().log(Level.INFO, "password object = " + up);
         if (up != null) {
           User user = null;
           if (userId.equals(UserInfo.ROOT.getUid())) {

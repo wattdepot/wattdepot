@@ -48,12 +48,13 @@
   <div id="modal-dialogs"></div>
   <div class="container">
   <!-- Nav tabs -->
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-tabs" id="tabs">
         <li><a id="depositories_tab_link" href="#depositories" data-toggle="tab">Depositories</a></li>
-        <li><a id="sensors_tab_link" href="#sensors" data-toggle="tab">Sensors</a></li>
-        <li><a id="sensorgroups_tab_link" href="#sensorgroups" data-toggle="tab">Sensor Groups</a></li>
-        <li><a id="sensorprocesses_tab_link" href="#sensorprocesses" data-toggle="tab">Collector Process Definitions</a></li>
+        <li><a id="sensors_tab_link" href="#sensors" data-toggle="tab" name="sensors">Sensors</a></li>
+        <li><a id="sensorgroups_tab_link" href="#sensorgroups" data-toggle="tab" name="sensorgroups">Sensor Groups</a></li>
+        <li><a id="sensorprocesses_tab_link" href="#sensorprocesses" data-toggle="tab" name="sensorprocesses">Collector Process Definitions</a></li>
     </ul>
+    <a name="sensorprocesses"></a>
     <!-- Tab panes -->
     <div class="tab-content">
         <div class="tab-pane active" id="depositories">
@@ -202,7 +203,7 @@
               <div class="panel-group" id="help">
                 <div class="panel panel-default">
                   <div class="panel-heading">
-                    <a class="panel-title text-right accordian-toggle colapsed" data-toggle="collapse" data-parent="#help" href="#sensorGroupCollapseHelp">Help </a>
+                    <a class="panel-title text-right accordion-toggle collapsed" data-toggle="collapse" data-parent="#help" href="#sensorGroupCollapseHelp">Help </a>
                   </div>
                   <div id="sensorGroupCollapseHelp" class="panel-collapse collapse">
                     <div class="panel-body">
@@ -1148,12 +1149,27 @@ $(document).ready(function () {
     if (selected_tab != null) {
         $('#' + selected_tab + '_tab_link').tab('show');
     }
+    else {
+      $('#depositories_tab_link').tab('show');
+    }
     $("#depositoryTable").tablesorter(); 
     $("#sensorTable").tablesorter(); 
     $("#sensorModelTable").tablesorter(); 
     $("#sensorGroupTable").tablesorter(); 
     $("#cpdTable").tablesorter(); 
 });
+
+$('#tabs a').click(function (e) {
+    e.preventDefault();
+    $(this).tab('show');
+});
+
+// store the currently selected tab in the hash value
+$("ul.nav-tabs > li > a").on("shown.bs.tab", function (e) {
+    var id = $(e.target).attr("href").substr(1);
+    setCookie('selected-tab', id);
+});
+
 
 var ORGID = "${orgId}";
 var DEPOSITORIES = {};
