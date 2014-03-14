@@ -18,6 +18,8 @@
  */
 package org.wattdepot.server.http.api;
 
+import java.util.logging.Level;
+
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
@@ -49,10 +51,8 @@ public class WattDepotComponent extends Component {
   /**
    * Sets up the WattDepotComponent with the given WattDepot.
    * 
-   * @param depot
-   *          The persitent store.
-   * @param port
-   *          the port number on which the restlet server listens.
+   * @param depot The persitent store.
+   * @param port the port number on which the restlet server listens.
    */
   public WattDepotComponent(WattDepotPersistence depot, int port) {
     setName("WattDepot HTTP API Server");
@@ -88,8 +88,10 @@ public class WattDepotComponent extends Component {
     realm.setName("WattDepot Security");
     getRealms().add(realm);
     for (Organization group : app.getDepot().getOrganizations()) {
+      getLogger().log(Level.INFO, "Processing Organization " + group.getName());
       app.getRoles().add(new Role(group.getId()));
       for (String userId : group.getUsers()) {
+        getLogger().log(Level.INFO, "Processing user " + userId + " of org " + group.getName());
         UserPassword up = null;
         try {
           up = app.getDepot().getUserPassword(userId, group.getId(), true);
@@ -97,6 +99,7 @@ public class WattDepotComponent extends Component {
         catch (IdNotFoundException e) {
           e.printStackTrace();
         }
+        getLogger().log(Level.INFO, "password object = " + up);
         if (up != null) {
           User user = null;
           if (userId.equals(UserInfo.ROOT.getUid())) {
@@ -128,31 +131,31 @@ public class WattDepotComponent extends Component {
     app.getContext().setDefaultEnroler(realm.getEnroler());
     app.getContext().setDefaultVerifier(realm.getVerifier());
 
-//    Properties props = new Properties();
-//    InputStream inputStream = this.getClass().getClassLoader()
-//        .getResourceAsStream("log.properties");
-//    if (inputStream != null) {
-//      try {
-//        props.load(inputStream);
-//      }
-//      catch (IOException e) {
-//        // TODO Auto-generated catch block
-//        e.printStackTrace();
-//      }
-//    }
-//    // // // Configure the log service
-//    getLogService().setLoggerName("WattDepot.AccessLog");
-//    try {
-//      LogManager.getLogManager().readConfiguration(inputStream);
-//    }
-//    catch (SecurityException e) {
-//      // TODO Auto-generated catch block
-//      e.printStackTrace();
-//    }
-//    catch (IOException e) {
-//      // TODO Auto-generated catch block
-//      e.printStackTrace();
-//    }
+    // Properties props = new Properties();
+    // InputStream inputStream = this.getClass().getClassLoader()
+    // .getResourceAsStream("log.properties");
+    // if (inputStream != null) {
+    // try {
+    // props.load(inputStream);
+    // }
+    // catch (IOException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    // }
+    // // // // Configure the log service
+    // getLogService().setLoggerName("WattDepot.AccessLog");
+    // try {
+    // LogManager.getLogManager().readConfiguration(inputStream);
+    // }
+    // catch (SecurityException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    // catch (IOException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
     //
     // getLogService().setLogPropertiesRef("log.properties");
 
