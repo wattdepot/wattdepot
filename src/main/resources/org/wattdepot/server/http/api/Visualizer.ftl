@@ -8,6 +8,7 @@
 <!-- Optional theme -->
 <link rel="stylesheet" href="/webroot/dist/css/bootstrap-theme.min.css">
 <link rel="stylesheet" href="/webroot/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
+<link rel="stylesheet" href="/webroot/dist/css/normalize.css">
 <link rel="stylesheet/less" type="text/css" href="/webroot/dist/css/style.less">
 <script src="/webroot/dist/js/less-1.3.0.min.js"></script>
 

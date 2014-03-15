@@ -265,14 +265,14 @@ function insertRowHTML(index) {
               + index
               + '" class="col-xs-3 control-group">'
               + '      <div class="col-xs-2">'
-              + '      <label class="checkbox"><input type="checkbox" id="show'
+              + '      <label class="checkbox row-checkbox"><input type="checkbox" id="show'
               + index
               + '" value="show"></label>'
               + '      </div>'
               + '      <div class="col-xs-9">'
               + '        <select id="depositorySelect'
               + index
-              + '" class="col-xs-12 chzn-select" data-placehoder="Choose Depository..." onchange="selectedDepository('
+              + '" class="col-xs-12 depository-select" data-placehoder="Choose Depository..." onchange="selectedDepository('
               + index
               + ')" data-toggle="tooltip" title="Choose Depository...">'
               + '        </select>'
@@ -283,7 +283,7 @@ function insertRowHTML(index) {
               + '" class="col-xs-2 control-group">'
               + '      <select id="sensorSelect'
               + index
-              + '" class="col-xs-12" onchange="selectedSensor('
+              + '" class="col-xs-12 sensor-select" onchange="selectedSensor('
               + index
               + ')">'
               + '      </select>'
@@ -301,18 +301,25 @@ function insertRowHTML(index) {
               + '"></div>'
               + '    </div>'
               + '    <div class="form-group col-xs-2">'
-              + '        <div class="input-group date" id="enddatetimepicker'
+              + '        <div class="row">'
+              + '            <div class="input-group date col-xs-12" id="enddatetimepicker'
               + index
               + '">'
-              + '            <input type="text" class="form-control" data-format="MM/DD/YY HH:mm"/>'
-              + '            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>'
-              + '            </span>'
+              + '                <input type="text" class="form-control" data-format="MM/DD/YY HH:mm"/>'
+              + '                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>'
+              + '                </span>'
+              + '            </div>'
               + '        </div>'
-              + '        <div id="endInfo'
+              + '        <div class="row">'
+              + '            <div class="col-xs-12" id="endInfo'
               + index
               + '"></div>'
-              + '        <div><label class="checkbox"><input type="checkbox" id="endTimeNow'
-              + index + '" value="now">Now</label></div>' + '    </div>'
+              + '        </div>'
+              + '        <div class="row">'
+              + '            <div class="col-xs-12"><label class="checkbox"><input type="checkbox" id="endTimeNow'
+              + index + '" value="now">Now</label></div>' 
+              + '        </div>'
+              + '    </div>'
               + '    <div class="col-xs-2 control-group">'
               + '      <select id="dataType' + index + '">'
               + '        <option value="point">Point Value</option>'
@@ -525,7 +532,7 @@ function selectedSensor(index) {
           + DEPO_SENSOR_INFO[depoId][sensorId]['earliest'] + "</small></div>");
   $("#endInfo" + index).remove();
   $("#enddatetimepicker" + index).parent().append(
-      "<div id=\"endInfo" + index + "\"><small>Latest: "
+      "<div id=\"endInfo" + index + "\" class=\"col-xs-12\"><small>Latest: "
           + DEPO_SENSOR_INFO[depoId][sensorId]['latest'] + "</small></div>");
 };
 
