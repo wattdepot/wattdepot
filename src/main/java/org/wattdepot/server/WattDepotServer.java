@@ -137,9 +137,10 @@ public class WattDepotServer {
         base.info("Couldn't set Logging level to: " + level);
       }
       base.setLevel(newLevel);
+      server.logger.setLevel(null);
 
-      server.logger.warning("Starting WattDepot server.");
-      server.logger.warning("Host: " + server.hostName);
+      server.logger.info("Starting WattDepot server.");
+      server.logger.info("Host: " + server.hostName);
       server.logger.info(server.serverProperties.echoProperties());
     }
     else {
@@ -150,7 +151,7 @@ public class WattDepotServer {
     }
     server.restletServer.start();
 
-    server.logger.warning("WattDepot server now running.");
+    server.logger.info("WattDepot server now running.");
 
     return server;
   }
@@ -240,7 +241,6 @@ public class WattDepotServer {
     else {
       WattDepotServer.newInstance(directoryName);
     }
-    LoggerUtil.useConsoleHandler();
   }
 
 }
