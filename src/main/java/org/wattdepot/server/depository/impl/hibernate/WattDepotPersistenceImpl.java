@@ -154,7 +154,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     if (admin == null) {
       try {
         defineOrganization(Organization.ADMIN_GROUP.getId(), Organization.ADMIN_GROUP.getName(),
-            Organization.ADMIN_GROUP.getUsers());
+            new HashSet<String>());
         if (checkSession && getSessionClose() != getSessionOpen()) {
           throw new RuntimeException("opens and closed mismatched.");
         }
