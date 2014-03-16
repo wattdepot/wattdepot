@@ -49,7 +49,7 @@
   <div class="container">
     <div class="row">
       <div class="col-xs-3"><strong>${name} Summary:</strong></div>
-      <div class="col-xs-9"><strong>${depositories?size} Depositories,   ${sensors?size} Sensors,  ${totalMeasurements} Measurements</strong></div>
+      <div class="col-xs-9"><strong>${depositories?size} Depositories,   ${sensors?size} Sensors reporting,  ${totalMeasurements} Measurements</strong></div>
     </div>
     <p></p>
     <hr/>

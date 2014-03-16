@@ -90,7 +90,7 @@
                     <#list depositories as d>
                         <tr><td>${d.id}</td><td>${d.name}</td><td><#if d.getMeasurementType()??>${d.measurementType.name}</#if></td>
                             <td>
-                                <span class="glyphicon glyphicon-remove" onclick="delete_depository_dialog(event, '${d.id}');"></span>
+                                <a href="#"><span class="glyphicon glyphicon-remove" onclick="delete_depository_dialog(event, '${d.id}');"></span></a>
                             </td>
                         </tr>
                     </#list>
@@ -141,10 +141,10 @@
                             <td><#if s.getModelId()??>${s.modelId}</#if></td>
                             <td>[<#assign k = s.properties?size><#list s.properties as prop>{"${prop.key}":"${prop.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]</td>
                             <td>
-                                <span class="glyphicon glyphicon-pencil" onclick="edit_sensor_dialog(event, '${s.id}');"></span>
+                                <a href="#"><span class="glyphicon glyphicon-pencil" onclick="edit_sensor_dialog(event, '${s.id}');"></span></a>
                             </td>
                             <td>
-                                <span class="glyphicon glyphicon-remove" onclick="delete_sensor_dialog(event, '${s.id}');"></span>
+                                <a href="#"><span class="glyphicon glyphicon-remove" onclick="delete_sensor_dialog(event, '${s.id}');"></span></a>
                             </td>
                         </tr>
                     </#list>
@@ -184,10 +184,10 @@
                                 <#list sensormodels as m>
                                     <tr><td>${m.id}</td><td>${m.name}</td><td>${m.protocol}</td><td>${m.type}</td><td>${m.version}</td>
                                         <td>
-                                            <span class="glyphicon glyphicon-pencil" onclick="edit_model_dialog(event, '${m.id}');"></span>
+                                            <a href="#"><span class="glyphicon glyphicon-pencil" onclick="edit_model_dialog(event, '${m.id}');"></span></a>
                                         </td>
                                         <td>
-                                            <span class="glyphicon glyphicon-remove" onclick="delete_model_dialog(event, '${m.id}');"></span>
+                                            <a href="#"><span class="glyphicon glyphicon-remove" onclick="delete_model_dialog(event, '${m.id}');"></span></a>
                                         </td>
                                     </tr>
                                 </#list>
@@ -235,10 +235,10 @@
                             <td>${g.name}</td>
                             <td><#list g.sensors as s>${s} </#list></td>
                             <td>
-                                <span class="glyphicon glyphicon-pencil" onclick="edit_sensorgroup_dialog(event, '${g.id}');"></span>
+                                <a href="#"><span class="glyphicon glyphicon-pencil" onclick="edit_sensorgroup_dialog(event, '${g.id}');"></span></a>
                             </td>
                             <td>
-                                <span class="glyphicon glyphicon-remove" onclick="delete_sensorgroup_dialog(event, '${g.id}');"></span>
+                                <a href="#"><span class="glyphicon glyphicon-remove" onclick="delete_sensorgroup_dialog(event, '${g.id}');"></span></a>
                             </td>
                         </tr>
                     </#list>
@@ -252,7 +252,7 @@
               <div class="panel-group" id="help">
                 <div class="panel panel-default">
                   <div class="panel-heading">
-                    <a class="panel-title text-right accordion-toggle collapsed" data-toggle="collapse" data-parent="#help" href="#CPDCollapseHelp">Help</a>
+                    <a class="panel-title text-right accordion-toggle collapsed" data-toggle="collapse" data-parent="#help" href="#CPDCollapseHelp">Help </a>
                   </div>
                   <div id="CPDCollapseHelp" class="panel-collapse collapse">
                     <div class="panel-body">
@@ -289,10 +289,10 @@
                             <td>${p.depositoryId}</td>
                             <td>[<#assign k = p.properties?size><#list p.properties as prop>{"${prop.key}":"${prop.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]</td>
                             <td>
-                                <span class="glyphicon glyphicon-pencil" onclick="edit_cpd_dialog(event, '${p.id}');"></span>
+                                <a href="#"><span class="glyphicon glyphicon-pencil" onclick="edit_cpd_dialog(event, '${p.id}');"></span></a>
                             </td>
                             <td>
-                                <span class="glyphicon glyphicon-remove" onclick="delete_cpd_dialog(event, '${p.id}');"></span>
+                                <a href="#"><span class="glyphicon glyphicon-remove" onclick="delete_cpd_dialog(event, '${p.id}');"></span></a>
                             </td>
                         </tr>
                     </#list>

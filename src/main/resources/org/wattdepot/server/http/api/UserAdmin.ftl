@@ -93,10 +93,10 @@
                         <#if g.id != adminId>
                         <tr><td>${g.id}</td><td>${g.name}</td><td><#list g.users as u>${u} </#list></td>
                             <td>
-                                <#if g.id != "admin"><span class="glyphicon glyphicon-pencil" onclick="edit_organization_dialog(event, '${g.id}');"></span></#if>
+                                <#if g.id != "admin"><a href="#"><span class="glyphicon glyphicon-pencil" onclick="edit_organization_dialog(event, '${g.id}');"></span></a></#if>
                             </td>
                             <td>
-                                <#if g.id != "admin"><span class="glyphicon glyphicon-remove" onclick="delete_organization_dialog(event, '${g.id}');"></span></#if>
+                                <#if g.id != "admin"><a href="#"><span class="glyphicon glyphicon-remove" onclick="delete_organization_dialog(event, '${g.id}');"></span></a></#if>
                             </td>
                         </tr>
                         </#if>
@@ -129,10 +129,10 @@
                         <#if u.uid != rootUid>
                         <tr><td>${u.firstName!}</td><td>${u.lastName!}</td><td>${u.uid}</td><td>${u.email!}</td><td>${u.organizationId!}</td>
                             <td>
-                                <#if u.uid != rootUid><span class="glyphicon glyphicon-pencil" onclick="edit_user_dialog(event, '${u.uid}');"></span></#if>
+                                <#if u.uid != rootUid><a href="#"><span class="glyphicon glyphicon-pencil" onclick="edit_user_dialog(event, '${u.uid}');"></span></a></#if>
                             </td>
                             <td>
-                                <#if u.uid != rootUid><span class="glyphicon glyphicon-remove" onclick="delete_user_dialog(event, '${u.uid}');"></span></#if>
+                                <#if u.uid != rootUid><a href="#"><span class="glyphicon glyphicon-remove" onclick="delete_user_dialog(event, '${u.uid}');"></span></a></#if>
                             </td>
                         </tr>
                         </#if>
