@@ -100,7 +100,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
             List<XMLGregorianCalendar> timestampList = Tstamp.getTimestampList(startTime, endTime,
                 intervalMinutes);
             if (timestampList != null) {
-              Sensor sensor = depot.getSensor(sensorId, orgId, true);
+              Sensor sensor = depot.getSensor(sensorId, orgId, false);
               if (sensor != null) {
                 Date previous = null;
                 for (int i = 0; i < timestampList.size(); i++) {
@@ -137,7 +137,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
               else {
                 // TODO CAM this code doesn't work! Need to aggregate the values
                 // not just put them in.
-                SensorGroup group = depot.getSensorGroup(sensorId, orgId, true);
+                SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
                 if (group != null) {
                   Date previous = null;
                   for (int i = 0; i < timestampList.size(); i++) {

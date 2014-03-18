@@ -317,10 +317,8 @@ function insertRowHTML(index) {
               + '        </div>'
               + '        <div class="row">'
               + '            <div class="col-xs-12"><label class="checkbox"><input type="checkbox" id="endTimeNow'
-              + index + '" value="now">Now</label></div>' 
-              + '        </div>'
-              + '    </div>'
-              + '    <div class="col-xs-2 control-group">'
+              + index + '" value="now">Now</label></div>' + '        </div>'
+              + '    </div>' + '    <div class="col-xs-2 control-group">'
               + '      <select id="dataType' + index + '">'
               + '        <option value="point">Point Value</option>'
               + '        <option value="interval">Interval Value</option>'
@@ -538,8 +536,11 @@ function selectedSensor(index) {
 
 /**
  * Sets the frequency selector in the given row to the given value.
- * @param index the row.
- * @param frequency the frequency.
+ * 
+ * @param index
+ *          the row.
+ * @param frequency
+ *          the frequency.
  */
 function selectFrequency(index, frequency) {
   $("#frequency" + index).val(frequency);
@@ -676,14 +677,28 @@ function stopQueries() {
 function updateSensorSelection(index, sensors) {
   var select = $("#sensorSelect" + index);
   select.empty();
-  var length = sensors.length;
+  select.append($("<optgroup>").attr("label", "Groups"));
+  for ( var group in SENSORGROUPS) {
+    select.append($("<option></option>").attr("value", group).text(
+        SENSORGROUPS[group].name));
+  }
+  select.append($("</optgroup>"));
   var i = 0;
+  var length = sensors.length;
   for (i = 0; i < length; i++) {
     select.append($("<option></option>").attr("value", sensors[i]).text(
         SENSORS[sensors[i]].name));
   }
-
 };
+
+function countGroups() {
+  var count = 0;
+  for ( var prop in SENSORGROUPS) {
+    console.log(prop);
+    count++;
+  }
+  return count;
+}
 
 /**
  * The response to a visualizer request. The callback function for each
