@@ -66,8 +66,7 @@ import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.DateConvert;
 import org.wattdepot.common.util.UnitsHelper;
-import org.wattdepot.common.util.logger.WattDepotLogger;
-import org.wattdepot.common.util.logger.WattDepotLoggerUtil;
+import org.wattdepot.common.util.logger.LoggerUtil;
 import org.wattdepot.server.WattDepotServer;
 
 /**
@@ -106,6 +105,7 @@ public class TestWattDepotClient {
    */
   @BeforeClass
   public static void setupServer() throws Exception {
+    LoggerUtil.disableLogging();    
     server = WattDepotServer.newTestInstance();
   }
 
@@ -124,7 +124,6 @@ public class TestWattDepotClient {
    */
   @Before
   public void setUp() {
-    WattDepotLoggerUtil.removeClientLoggerHandlers();
     // Set up the test instances.
     Set<Property> properties = new HashSet<Property>();
     properties.add(new Property("isAdmin", "no they are not"));
@@ -171,15 +170,14 @@ public class TestWattDepotClient {
     try {
       ClientProperties props = new ClientProperties();
       props.setTestProperties();
-      this.logger = WattDepotLogger.getLogger("org.wattdepot.client",
-          props.get(ClientProperties.CLIENT_HOME_DIR));
-      WattDepotLogger.setLoggingLevel(logger,
-          props.get(ClientProperties.LOGGING_LEVEL_KEY));
+      this.logger = Logger.getLogger("org.wattdepot.client");
+      LoggerUtil.setLoggingLevel(this.logger, props.get(ClientProperties.LOGGING_LEVEL_KEY));
+      LoggerUtil.useConsoleHandler();
       logger.finest("setUp()");
       this.serverURL = "http://"
           + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
           + props.get(ClientProperties.PORT_KEY) + "/";
-      logger.finest(serverURL);
+      logger.finest("Using server " + serverURL);
       if (admin == null) {
         try {
           admin = new WattDepotAdminClient(serverURL, UserInfo.ROOT.getUid(),

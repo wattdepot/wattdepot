@@ -40,7 +40,6 @@ import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.BadSensorUriException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.util.DateConvert;
-import org.wattdepot.common.util.logger.WattDepotLoggerUtil;
 import org.wattdepot.common.util.tstamp.Tstamp;
 
 /**
@@ -93,7 +92,6 @@ public class MeasurementSummaryClient extends TimerTask {
    * @param args command line arguments.
    */
   public static void main(String[] args) {
-    WattDepotLoggerUtil.removeClientLoggerHandlers();
     Options options = new Options();
     options.addOption("h", false, "Usage: MeasurementSummaryClient -s <server uri> -u <username>"
         + " -p <password> -o <orgId> -c <collectorId> -m <millisecond sleep> [-d]");
