@@ -31,7 +31,6 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.BadSensorUriException;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.util.logger.WattDepotLoggerUtil;
 
 /**
  * GetIntervalValueThroughput - Attempts to determine the maximum rate of
@@ -108,7 +107,6 @@ public class GetIntervalValueThroughput extends TimerTask {
    */
   public static void main(String[] args) throws BadCredentialException, IdNotFoundException,
       BadSensorUriException {
-    WattDepotLoggerUtil.removeClientLoggerHandlers();
     Options options = new Options();
     CommandLine cmd = null;
     String serverUri = null;

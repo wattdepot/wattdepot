@@ -29,7 +29,6 @@ import org.apache.commons.cli.PosixParser;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.BadSensorUriException;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.util.logger.WattDepotLoggerUtil;
 
 /**
  * OrganizationDomainMain - Reads in an Organization domain definition file and
@@ -51,7 +50,6 @@ public class OrganizationDomainMain {
    */
   public static void main(String[] args) throws BadCredentialException,
       IdNotFoundException, BadSensorUriException, IOException {
-    WattDepotLoggerUtil.removeClientLoggerHandlers();
     Options options = new Options();
     CommandLine cmd = null;
     String serverUri = null;

@@ -75,8 +75,7 @@ import org.wattdepot.common.http.api.SensorPutResource;
 import org.wattdepot.common.http.api.SensorResource;
 import org.wattdepot.common.http.api.SensorsResource;
 import org.wattdepot.common.util.DateConvert;
-import org.wattdepot.common.util.logger.WattDepotLogger;
-import org.wattdepot.common.util.logger.WattDepotLoggerUtil;
+import org.wattdepot.common.util.logger.LoggerUtil;
 
 /**
  * WattDepotClient - high-level Java implementation that communicates with a
@@ -117,8 +116,9 @@ public class WattDepotClient implements WattDepotInterface {
   public WattDepotClient(String serverUri, String username, String orgId, String password)
       throws BadCredentialException {
     this.properties = new ClientProperties();
-    this.logger = WattDepotLogger.getLogger("org.wattdepot.client",
-        properties.get(ClientProperties.CLIENT_HOME_DIR));
+    this.logger = Logger.getLogger("org.wattdepot.client");
+    LoggerUtil.setLoggingLevel(this.logger, properties.get(ClientProperties.LOGGING_LEVEL_KEY));
+    LoggerUtil.useConsoleHandler();
     logger.finest("Client " + serverUri + ", " + username + ", " + password);
     this.authentication = new ChallengeResponse(this.scheme, username, password);
     if (serverUri == null) {
@@ -131,7 +131,6 @@ public class WattDepotClient implements WattDepotInterface {
 
     ClientResource client = null;
     client = makeClient(orgId + "/");
-    WattDepotLoggerUtil.removeClientLoggerHandlers();
     try {
       client.head();
       if (client.getLocationRef() != null) {
@@ -148,7 +147,6 @@ public class WattDepotClient implements WattDepotInterface {
     catch (ResourceException e) {
       throw new BadCredentialException(e.getMessage() + " username and or password are not corect.");
     }
-    WattDepotLoggerUtil.removeClientLoggerHandlers();
   }
 
   /*
