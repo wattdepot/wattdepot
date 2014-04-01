@@ -40,7 +40,8 @@
           vAxis: {title: "Watt hours"},
           hAxis: {title: "Time", format:'MMM d, y HH:mm:ss'},
           seriesType: "bars",
-          series: {2: {type: "line"}}
+          series: {2: {type: "line", targetAxisIndex:1}}, 
+          vAxes:{1:{title:'Watts'}}
         };
 
         var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));

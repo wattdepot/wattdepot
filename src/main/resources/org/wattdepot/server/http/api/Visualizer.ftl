@@ -123,7 +123,7 @@ var server = window.location.protocol + "//" + window.location.host + "/wattdepo
 var ORGID = "${orgId}";
 var DEPOSITORIES = {};
 <#list depositories as d>
-DEPOSITORIES["${d.id}"] = {"id": "${d.id}", "name": "${d.name}", "measurementType": "${d.measurementType.id}", "organizationId": "${d.organizationId}"};
+DEPOSITORIES["${d.id}"] = {"id": "${d.id}", "name": "${d.name}", "measurementType": "${d.measurementType.id}", "typeString" : "${d.measurementType.units}", "organizationId": "${d.organizationId}"};
 </#list>
 var SENSORS = {};
 <#list sensors as s>

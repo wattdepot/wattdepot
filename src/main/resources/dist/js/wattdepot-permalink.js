@@ -51,8 +51,6 @@ function getUrlVariable(search) {
  * 
  */
 function getUrl() {
-  console.log("getUrl() " + window.location.protocol + "//"
-      + window.location.host + window.location.pathname);
   return window.location.protocol + "//" + window.location.host
       + window.location.pathname;
 }

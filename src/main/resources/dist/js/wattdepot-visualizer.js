@@ -5,6 +5,7 @@ var activeIndex = []; // The array containing the form indexes of the active
 var numShow = 0;
 var loaded = false; // If the google visualization API has been loaded.
 var dataArray = []; // The array of data tables retrieved from the queries
+var seriesInfo = []; // holds information about the series from the queries.
 var numFinished = 0; // The number of queries finished
 var canceled = false; // If the queries have been canceled.
 var numDataPointsRetrieved; // The number of data points that have been
@@ -225,6 +226,31 @@ function getDate(id, index) {
 }
 
 /**
+ * Gets the number of data points requested by the form with the given index.
+ * 
+ * @param index
+ *          The index of the form to calculate the number of data points of.
+ * 
+ * @return The number of data points requested by the specified form.
+ */
+function getNumDataPoints(index) {
+  var timeInterval;
+  var interval;
+  var start, end;
+  start = getDate("start", index);
+  end = getDate("end", index);
+  if (start > end) {
+    timeInterval = start.getTime() - end.getTime();
+  } else {
+    timeInterval = end.getTime() - start.getTime();
+  }
+
+  interval = parseInt($('#frequency' + index + ' option:selected').val()) * 60 * 1000;
+  return timeInterval / interval;
+
+}
+
+/**
  * Get the timestamp string used in WattDepot server by given the date object in
  * javascript.
  * 
@@ -248,6 +274,23 @@ function getTimestampFromDate(date) {
   timestamp = timestamp + '.' + padZero(date.getMilliseconds(), 3);
   return timestamp;
 };
+
+/**
+ * Gets the total number of data points needed by all forms in the visualization
+ * request.
+ * 
+ * @return The number of data points needed for the whole visualization request.
+ */
+function getTotalDataPoints() {
+  var totalPoints = 0;
+  var i;
+  for (i = 0; i < activeIndex.length; i++) {
+    if (!activeIndex[i].disabled) {
+      totalPoints += getNumDataPoints(activeIndex[i].formIndex);
+    }
+  }
+  return totalPoints;
+}
 
 /**
  * Inserts the HTML code for a visualizer selection row.
@@ -459,6 +502,10 @@ function makeVisualization() {
     // $('#profile').show();
     // $('#newProfileDiv').show();
     $('#addButtonDiv').removeClass('offset3');
+    
+    // build the options for the chart.
+    var options = {};
+    
     var chart = new google.visualization.AnnotatedTimeLine(document
         .getElementById('chartDiv'));
     chart.draw(mergedTable, {
@@ -481,6 +528,7 @@ function makeVisualization() {
 
   // Free up memory for garbage collection.
   dataArray = null;
+  seriesInfo = null;
   dataQueries = null;
 }
 
@@ -675,12 +723,12 @@ function stopQueries() {
 function updateSensorSelection(index, sensors) {
   var select = $("#sensorSelect" + index);
   select.empty();
-  select.append($("<optgroup>").attr("label", "Groups"));
+//  select.append($("<optgroup>").attr("label", "Groups"));
   for ( var group in SENSORGROUPS) {
     select.append($("<option></option>").attr("value", group).text(
         SENSORGROUPS[group].name));
   }
-  select.append($("</optgroup>"));
+//  select.append($("</optgroup>"));
   var i = 0;
   var length = sensors.length;
   for (i = 0; i < length; i++) {
@@ -835,47 +883,8 @@ function visualizerResponse(response, queryIndex, startQueryTime, queryID) {
 }
 
 /**
- * Gets the number of data points requested by the form with the given index.
- * 
- * @param index
- *          The index of the form to calculate the number of data points of.
- * 
- * @return The number of data points requested by the specified form.
+ * Handles the Visualize button clicks.
  */
-function getNumDataPoints(index) {
-  var timeInterval;
-  var interval;
-  var start, end;
-  start = getDate("start", index);
-  end = getDate("end", index);
-  if (start > end) {
-    timeInterval = start.getTime() - end.getTime();
-  } else {
-    timeInterval = end.getTime() - start.getTime();
-  }
-
-  interval = parseInt($('#frequency' + index + ' option:selected').val()) * 60 * 1000;
-  return timeInterval / interval;
-
-}
-
-/**
- * Gets the total number of data points needed by all forms in the visualization
- * request.
- * 
- * @return The number of data points needed for the whole visualization request.
- */
-function getTotalDataPoints() {
-  var totalPoints = 0;
-  var i;
-  for (i = 0; i < activeIndex.length; i++) {
-    if (!activeIndex[i].disabled) {
-      totalPoints += getNumDataPoints(activeIndex[i].formIndex);
-    }
-  }
-  return totalPoints;
-}
-
 function visualize() {
 
   // Disable visualize button
@@ -887,10 +896,12 @@ function visualize() {
 
   // Initialize required globals
   dataQueries = [];
+  seriesInfo = [];
   totalNumQueries = 0;
   var formIndex;
   var depository;
   var sensor;
+  var sensorName;
   var interval;
   var startTime;
   var endTime;
@@ -906,9 +917,19 @@ function visualize() {
     formIndex = activeIndex[loopIndex].formIndex;
     depository = $("#depositorySelect" + formIndex + " option:selected").val();
     sensor = $("#sensorSelect" + formIndex + " option:selected").val();
+    sensorName = $("#sensorSelect" + formIndex + " option:selected").text();
     dataType = $("#dataType" + formIndex + " option:selected").val();
     interval = $('#frequency' + formIndex + ' option:selected').val();
 
+    var tempInfo = {
+        'index' : totalNumQueries - 1,
+        'sensor' : sensorName,
+        'dataType' : dataType,
+        'typeString' : DEPOSITORIES[depository]["typeString"]
+      };
+    console.log(tempInfo);
+    seriesInfo.push(tempInfo);
+    
     startTime = getDate('start', formIndex);
     if ($('#endTimeNow' + formIndex).is(':checked')) {
       endTime = new Date();
@@ -967,6 +988,7 @@ function visualize() {
   // Initialize rest of the globals
   numFinished = 0;
   dataArray = [];
+  seriesInfo = [];
   canceled = false;
   totalNumPoints = getTotalDataPoints();
   numDataPointsRetrieved = 0;
@@ -1009,7 +1031,6 @@ function visualize() {
     });
   }
 
-  console.log(getUrl());
   $('#linkSpace').val(getUrl() + gatherVariables());
   currentVisID = $('#linkSpace').val() + numVisExecuted;
   numVisExecuted++;
