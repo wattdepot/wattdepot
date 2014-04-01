@@ -626,7 +626,6 @@ function splitQuery(server, depository, sensor, startTime, endTime, dataType,
         + wdClient.getTimestampFromDate(startTime) + '&end='
         + wdClient.getTimestampFromDate(tempTime) + '&interval=' + interval
         + '&value-type=' + dataType);
-    query.setQuery('select timePoint, ' + depository);
     query.setTimeout(queryTimeOut);
     returnArray.push(query);
     startTime = new Date(tempTime.getTime());
@@ -640,7 +639,6 @@ function splitQuery(server, depository, sensor, startTime, endTime, dataType,
       + wdClient.getTimestampFromDate(startTime) + '&end='
       + wdClient.getTimestampFromDate(endTime) + '&interval=' + interval
       + '&value-type=' + dataType);
-  query.setQuery('select timePoint, ' + depository);
   query.setTimeout(queryTimeOut);
   returnArray.push(query);
   return returnArray;
