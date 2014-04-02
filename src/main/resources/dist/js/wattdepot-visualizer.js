@@ -107,6 +107,57 @@ function createFilledVisualizerForm(show, selectedDepository, selectedSensor,
   selectFrequency(rowCopy, frequency);
 }
 
+function buildChartOptions() {
+  
+/*  var tempInfo = {
+      'index' : totalNumQueries - 1,
+      'sensor' : sensorName,
+      'dataType' : dataType,
+      'typeString' : DEPOSITORIES[depository]["typeString"]
+    }; */
+  
+  var options = {};
+  var axesTypes = {};
+  var axesByType = {};
+  for (var i = 0; i < seriesInfo.length; i++) {
+    if (axesTypes[seriesInfo[i]['typeString']] == null) {
+      axesTypes[seriesInfo[i]['typeString']] = 1;
+    }
+    else {
+      axesTypes[seriesInfo[i]['typeString']]++;
+    }
+  }
+  var vAxes = {};
+  var index = 0;
+  for (var t in axesTypes) {
+    var foo = {title: t};
+    axesByType[t] = index;
+    vAxes[index++] = foo;
+  }
+  var series = {};
+  options['vAxes'] = vAxes;
+  for (var i = 0; i < seriesInfo.length; i++) {
+    var foo = {};
+    if (seriesInfo[i]['dataType'] == 'point') {
+      foo['type'] = "line";
+    }
+    else {
+      foo['type'] = "bars";
+    }
+    if (seriesInfo[i]['dataType'] == 'point') {
+      foo['type'] = "line";
+    }
+    else {
+      foo['type'] = "bars";
+    }
+    foo['targetAxisIndex'] = axesByType[seriesInfo[i]['typeString']];
+    series[i] = foo;
+  }
+  options['hAxis'] = {title: "Time", format:'MMM d, y HH:mm:ss'};
+  options['series'] = series;
+  return options;
+}
+
 /**
  * Creates a time string from the given number of seconds.
  * 
@@ -504,8 +555,8 @@ function makeVisualization() {
     $('#addButtonDiv').removeClass('offset3');
     
     // build the options for the chart.
-    var options = {};
-    
+    var options = buildChartOptions();
+    console.log(options);
     var chart = new google.visualization.AnnotatedTimeLine(document
         .getElementById('chartDiv'));
     chart.draw(mergedTable, {
@@ -740,7 +791,6 @@ function updateSensorSelection(index, sensors) {
 function countGroups() {
   var count = 0;
   for ( var prop in SENSORGROUPS) {
-    console.log(prop);
     count++;
   }
   return count;
@@ -927,7 +977,6 @@ function visualize() {
         'dataType' : dataType,
         'typeString' : DEPOSITORIES[depository]["typeString"]
       };
-    console.log(tempInfo);
     seriesInfo.push(tempInfo);
     
     startTime = getDate('start', formIndex);
@@ -988,7 +1037,6 @@ function visualize() {
   // Initialize rest of the globals
   numFinished = 0;
   dataArray = [];
-  seriesInfo = [];
   canceled = false;
   totalNumPoints = getTotalDataPoints();
   numDataPointsRetrieved = 0;

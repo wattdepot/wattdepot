@@ -36,12 +36,9 @@
         ]);
 
         var options = {
-          title : 'Lehua C energy',
-          vAxis: {title: "Watt hours"},
           hAxis: {title: "Time", format:'MMM d, y HH:mm:ss'},
-          seriesType: "bars",
-          series: {2: {type: "line", targetAxisIndex:1}}, 
-          vAxes:{1:{title:'Watts'}}
+          series: {0: {type: "bars", targetAxisIndex: 0}, 1: {type: "bars", targetAxisIndex: 0}, 2: {type: "line", targetAxisIndex:1}}, 
+          vAxes:{0: {title: "Wh"}, 1:{title:'W'}}
         };
 
         var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
