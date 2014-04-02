@@ -556,7 +556,7 @@ function makeVisualization() {
     
     // build the options for the chart.
     var options = buildChartOptions();
-    console.log(options);
+//    console.log(options);
     var chart = new google.visualization.ComboChart(document.getElementById('chartDiv'));
     chart.draw(mergedTable, options);
 //    var chart = new google.visualization.AnnotatedTimeLine(document
