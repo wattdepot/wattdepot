@@ -26,7 +26,7 @@
 <script> 
    // Load the Visualization API and Annotated Timeline visualization
    google.load('visualization', '1.0', {
-     'packages':['annotatedtimeline']
+     'packages':['corechart']
    });
            
    // Set a callback to run when the API is loaded.
