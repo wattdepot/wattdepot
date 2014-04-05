@@ -105,7 +105,7 @@ public class TestWattDepotClient {
    */
   @BeforeClass
   public static void setupServer() throws Exception {
-    LoggerUtil.disableLogging();    
+//    LoggerUtil.disableLogging();
     server = WattDepotServer.newTestInstance();
   }
 
@@ -127,30 +127,25 @@ public class TestWattDepotClient {
     // Set up the test instances.
     Set<Property> properties = new HashSet<Property>();
     properties.add(new Property("isAdmin", "no they are not"));
-    testUser = new UserInfo("wattdepot-client-id", "First Name", "Last Name",
-        "test@test.com", "test-wattdepotclient", properties, "secret1");
+    testUser = new UserInfo("wattdepot-client-id", "First Name", "Last Name", "test@test.com",
+        "test-wattdepotclient", properties, "secret1");
     Set<String> users = new HashSet<String>();
     users.add(testUser.getUid());
     testOrg = new Organization("Test WattDepotClient", users);
     testUser.setOrganizationId(testOrg.getId());
-    testModel = new SensorModel("TestWattDepotClient Sensor Model",
-        "test_model_protocol", "test_model_type", "test_model_version");
-    testSensor = new Sensor("TestWattDepotClient Sensor", "test_sensor_uri",
-        testModel.getId(), testOrg.getId());
+    testModel = new SensorModel("TestWattDepotClient Sensor Model", "test_model_protocol",
+        "test_model_type", "test_model_version");
+    testSensor = new Sensor("TestWattDepotClient Sensor", "test_sensor_uri", testModel.getId(),
+        testOrg.getId());
     testMeasurementType = new MeasurementType("Test MeasurementType Name",
         UnitsHelper.quantities.get("Flow Rate (gal/s)"));
-    testDepository = new Depository("Test Depository", testMeasurementType,
-        testOrg.getId());
-    testCPD = new CollectorProcessDefinition(
-        "TestWattDepotClient Collector Process Defintion", testSensor.getId(),
-        10L, testDepository.getId(), testOrg.getId());
+    testDepository = new Depository("Test Depository", testMeasurementType, testOrg.getId());
+    testCPD = new CollectorProcessDefinition("TestWattDepotClient Collector Process Defintion",
+        testSensor.getId(), 10L, testDepository.getId(), testOrg.getId());
     try {
-      Date measTime1 = DateConvert
-          .parseCalStringToDate("2013-11-20T14:35:27.925-1000");
-      Date measTime2 = DateConvert
-          .parseCalStringToDate("2013-11-20T14:35:37.925-1000");
-      Date measTime3 = DateConvert
-          .parseCalStringToDate("2013-11-20T14:45:37.925-1000");
+      Date measTime1 = DateConvert.parseCalStringToDate("2013-11-20T14:35:27.925-1000");
+      Date measTime2 = DateConvert.parseCalStringToDate("2013-11-20T14:35:37.925-1000");
+      Date measTime3 = DateConvert.parseCalStringToDate("2013-11-20T14:45:37.925-1000");
       Double value = 100.0;
       testMeasurement1 = new Measurement(testSensor.getId(), measTime1, value,
           testMeasurementType.unit());
@@ -174,8 +169,7 @@ public class TestWattDepotClient {
       LoggerUtil.setLoggingLevel(this.logger, props.get(ClientProperties.LOGGING_LEVEL_KEY));
       LoggerUtil.useConsoleHandler();
       logger.finest("setUp()");
-      this.serverURL = "http://"
-          + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
+      this.serverURL = "http://" + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
           + props.get(ClientProperties.PORT_KEY) + "/";
       logger.finest("Using server " + serverURL);
       if (admin == null) {
@@ -185,8 +179,8 @@ public class TestWattDepotClient {
         }
         catch (Exception e) {
           System.out.println();
-          fail("Cannot create admin client with " + UserInfo.ROOT.getUid()
-              + " and " + UserInfo.ROOT.getPassword());
+          fail("Cannot create admin client with " + UserInfo.ROOT.getUid() + " and "
+              + UserInfo.ROOT.getPassword());
         }
       }
       // 1. Define test organization w/o users
@@ -215,8 +209,8 @@ public class TestWattDepotClient {
         e.printStackTrace();
       }
       if (test == null) {
-        test = new WattDepotClient(serverURL, testUser.getUid(),
-            testUser.getOrganizationId(), testUser.getPassword());
+        test = new WattDepotClient(serverURL, testUser.getUid(), testUser.getOrganizationId(),
+            testUser.getPassword());
       }
       test.isHealthy();
       test.getWattDepotUri();
@@ -234,7 +228,12 @@ public class TestWattDepotClient {
   public void tearDown() throws Exception {
     logger.finest("tearDown()");
     if (admin != null) {
-      admin.deleteOrganization(testOrg.getId());
+      try {
+        admin.deleteOrganization(testOrg.getId());
+      }
+      catch (IdNotFoundException inf) { // NOPMD
+        // not a problem
+      }
     }
     logger.finest("Done tearDown()");
   }
@@ -263,9 +262,8 @@ public class TestWattDepotClient {
       fail("We used good credentials");
     }
     try {
-      WattDepotClient bad = new WattDepotClient("http://localhost",
-          testUser.getUid(), testUser.getOrganizationId(),
-          testUser.getPassword());
+      WattDepotClient bad = new WattDepotClient("http://localhost", testUser.getUid(),
+          testUser.getOrganizationId(), testUser.getPassword());
       fail(bad + " should not exist.");
     }
     catch (IllegalArgumentException e) {
@@ -294,12 +292,17 @@ public class TestWattDepotClient {
     // Get list
     DepositoryList list = test.getDepositories();
     assertNotNull(list);
-    assertTrue(list.getDepositories().size() == 0);
-    // Put new instance (CREATE)
-    test.putDepository(depo);
-    list = test.getDepositories();
-    assertNotNull(list);
-    assertTrue(list.getDepositories().size() == 1);
+    int size = list.getDepositories().size();
+    // assertTrue("Got " + list.getDepositories().size() + " expecting 0 ",
+    // list.getDepositories()
+    // .size() == 0);
+    if (size == 0 || !list.getDepositories().contains(depo)) {
+      // Put new instance (CREATE)
+      test.putDepository(depo);
+      list = test.getDepositories();
+      assertNotNull(list);
+      assertTrue(list.getDepositories().size() == size + 1);
+    }
     try {
       // get instance (READ)
       Depository ret = test.getDepository(depo.getId());
@@ -330,8 +333,7 @@ public class TestWattDepotClient {
     }
 
     // error conditions
-    Depository bogus = new Depository("bogus", depo.getMeasurementType(),
-        depo.getOrganizationId());
+    Depository bogus = new Depository("bogus", depo.getMeasurementType(), depo.getOrganizationId());
     try {
       test.deleteDepository(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -376,9 +378,8 @@ public class TestWattDepotClient {
       }
       list = test.getMeasurementTypes();
       assertNotNull(list);
-      assertTrue("Expecting " + numTypes + " got "
-          + list.getMeasurementTypes().size(), list.getMeasurementTypes()
-          .size() == numTypes);
+      assertTrue("Expecting " + numTypes + " got " + list.getMeasurementTypes().size(), list
+          .getMeasurementTypes().size() == numTypes);
       // delete instance (DELETE)
       try {
         test.deleteMeasurementType(ret);
@@ -402,8 +403,7 @@ public class TestWattDepotClient {
     }
 
     // error conditions
-    MeasurementType bogus = new MeasurementType("bogus_meas_type",
-        Unit.valueOf("dyn"));
+    MeasurementType bogus = new MeasurementType("bogus_meas_type", Unit.valueOf("dyn"));
     try {
       test.deleteMeasurementType(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -479,8 +479,8 @@ public class TestWattDepotClient {
   public void testSensorGroup() {
     Set<String> sensors = new HashSet<String>();
     sensors.add("testwattdepotclient-sensor");
-    SensorGroup group = new SensorGroup("TestWattDepotClient Sensor Group",
-        sensors, testOrg.getId());
+    SensorGroup group = new SensorGroup("TestWattDepotClient Sensor Group", sensors,
+        testOrg.getId());
     // Get list
     SensorGroupList list = test.getSensorGroups();
     assertNotNull(list);
@@ -523,8 +523,7 @@ public class TestWattDepotClient {
       fail("Should have " + group);
     }
     // error conditions
-    SensorGroup bogus = new SensorGroup("bogus", group.getSensors(),
-        group.getOrganizationId());
+    SensorGroup bogus = new SensorGroup("bogus", group.getSensors(), group.getOrganizationId());
     try {
       test.deleteSensorGroup(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -558,7 +557,8 @@ public class TestWattDepotClient {
       test.updateSensorModel(ret);
       list = test.getSensorModels();
       assertNotNull(list);
-      assertTrue(list.getModels().size() == numModels + 1);
+      assertTrue("Expecting " + (numModels + 1) + " got " + list.getModels().size(), list
+          .getModels().size() == numModels + 1);
       // delete instance (DELETE)
       test.deleteSensorModel(model);
       try {
@@ -573,8 +573,8 @@ public class TestWattDepotClient {
       fail("Should have " + model);
     }
     // error conditions
-    SensorModel bogus = new SensorModel("bogus", model.getProtocol(),
-        model.getType(), model.getVersion());
+    SensorModel bogus = new SensorModel("bogus", model.getProtocol(), model.getType(),
+        model.getVersion());
     try {
       test.deleteSensorModel(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -611,8 +611,7 @@ public class TestWattDepotClient {
     assertTrue(list.getDefinitions().contains(data));
     try {
       // get instance (READ)
-      CollectorProcessDefinition ret = test.getCollectorProcessDefinition(data
-          .getId());
+      CollectorProcessDefinition ret = test.getCollectorProcessDefinition(data.getId());
       assertEquals(data, ret);
       ret.setDepositoryId("new depotistory_id");
       try {
@@ -639,9 +638,8 @@ public class TestWattDepotClient {
       fail("Should have " + data);
     }
     // error conditions
-    CollectorProcessDefinition bogus = new CollectorProcessDefinition("bogus",
-        data.getSensorId(), data.getPollingInterval(), data.getDepositoryId(),
-        data.getOrganizationId());
+    CollectorProcessDefinition bogus = new CollectorProcessDefinition("bogus", data.getSensorId(),
+        data.getPollingInterval(), data.getDepositoryId(), data.getOrganizationId());
     try {
       test.deleteCollectorProcessDefinition(bogus);
       fail("Shouldn't be able to delete " + bogus);
@@ -676,27 +674,22 @@ public class TestWattDepotClient {
       test.putMeasurement(depo, m3);
       Sensor s1 = test.getSensor(m1.getSensorId());
       Double val = test.getValue(depo, s1, m1.getDate());
-      assertTrue("Got " + val + " was expecting " + m1.getValue(), m1
-          .getValue().equals(val));
+      assertTrue("Got " + val + " was expecting " + m1.getValue(), m1.getValue().equals(val));
       Sensor s2 = test.getSensor(m2.getSensorId());
       val = test.getValue(depo, s2, m2.getDate(), 799L);
-      assertTrue("Got " + val + " was expecting " + m1.getValue(), m1
-          .getValue().equals(val));
+      assertTrue("Got " + val + " was expecting " + m1.getValue(), m1.getValue().equals(val));
       val = test.getValue(depo, s1, m1.getDate(), m2.getDate());
-      assertTrue(
-          "Got " + val + " was expecting " + (m2.getValue() - m1.getValue()),
+      assertTrue("Got " + val + " was expecting " + (m2.getValue() - m1.getValue()),
           (m2.getValue() - m1.getValue()) == val);
       val = test.getValue(depo, s1, m1.getDate(), m2.getDate(), 799L);
-      assertTrue(
-          "Got " + val + " was expecting " + (m2.getValue() - m1.getValue()),
+      assertTrue("Got " + val + " was expecting " + (m2.getValue() - m1.getValue()),
           (m2.getValue() - m1.getValue()) == val);
       // Get list
-      MeasurementList list = test.getMeasurements(depo, s1, m1.getDate(),
-          m3.getDate());
+      MeasurementList list = test.getMeasurements(depo, s1, m1.getDate(), m3.getDate());
       assertNotNull(list);
 
-      assertTrue("expecting " + 2 + " got " + list.getMeasurements().size(),
-          list.getMeasurements().size() == 2);
+      assertTrue("expecting " + 2 + " got " + list.getMeasurements().size(), list.getMeasurements()
+          .size() == 2);
       assertTrue(list.getMeasurements().contains(m1));
       assertTrue(list.getMeasurements().contains(m3));
       test.putMeasurement(depo, m2);
@@ -705,8 +698,8 @@ public class TestWattDepotClient {
         list = test.getMeasurements(depo, s1, m1.getDate(), m3.getDate());
         assertNotNull(list);
 
-        assertTrue("expecting " + 2 + " got " + list.getMeasurements().size(),
-            list.getMeasurements().size() == 2);
+        assertTrue("expecting " + 2 + " got " + list.getMeasurements().size(), list
+            .getMeasurements().size() == 2);
       }
       catch (IdNotFoundException e) {
         fail(m1 + " does exist in the depo");
@@ -736,8 +729,7 @@ public class TestWattDepotClient {
     catch (MeasurementTypeException e) {
       // this is what we expect.
     }
-    bogus = new Measurement(m1.getSensorId(), new Date(), new Double(1.0),
-        Unit.valueOf("dyn"));
+    bogus = new Measurement(m1.getSensorId(), new Date(), new Double(1.0), Unit.valueOf("dyn"));
     try {
       test.deleteMeasurement(depo, bogus);
       fail(bogus + " isn't in the depot");
@@ -754,36 +746,30 @@ public class TestWattDepotClient {
   public void testSensorGroupMeasurements() {
     addSensorModel();
     // Initialize and store the sensors
-    Sensor sensor1 = new Sensor("TestWattDepotClient Sensor1",
-        "test_sensor_uri1", testModel.getId(), testOrg.getId());
-    Sensor sensor2 = new Sensor("TestWattDepotClient Sensor2",
-        "test_sensor_uri2", testModel.getId(), testOrg.getId());
+    Sensor sensor1 = new Sensor("TestWattDepotClient Sensor1", "test_sensor_uri1",
+        testModel.getId(), testOrg.getId());
+    Sensor sensor2 = new Sensor("TestWattDepotClient Sensor2", "test_sensor_uri2",
+        testModel.getId(), testOrg.getId());
     test.putSensor(sensor1);
     test.putSensor(sensor2);
     // Initialize and store the SensorGroup
     Set<String> sensorNames = new HashSet<String>();
     sensorNames.add(sensor1.getId());
     sensorNames.add(sensor2.getId());
-    SensorGroup group = new SensorGroup("TestWattDepotClient SensorGroup1",
-        sensorNames, testOrg.getId());
+    SensorGroup group = new SensorGroup("TestWattDepotClient SensorGroup1", sensorNames,
+        testOrg.getId());
     test.putSensorGroup(group);
     // Make sure the depository is saved.
     Depository depo = testDepository;
     test.putDepository(depo);
     // Create some measurements
     try {
-      Date measTime1 = DateConvert
-          .parseCalStringToDate("2013-11-20T14:35:27.925-1000");
-      Date measTime2 = DateConvert
-          .parseCalStringToDate("2013-11-20T14:35:37.925-1000");
-      Date measTime3 = DateConvert
-          .parseCalStringToDate("2013-11-20T14:35:47.925-1000");
-      Date measTime4 = DateConvert
-          .parseCalStringToDate("2013-11-20T14:35:57.925-1000");
-      Date measTime5 = DateConvert
-          .parseCalStringToDate("2013-11-20T14:36:07.925-1000");
-      Date measTime6 = DateConvert
-          .parseCalStringToDate("2013-11-20T14:36:17.925-1000");
+      Date measTime1 = DateConvert.parseCalStringToDate("2013-11-20T14:35:27.925-1000");
+      Date measTime2 = DateConvert.parseCalStringToDate("2013-11-20T14:35:37.925-1000");
+      Date measTime3 = DateConvert.parseCalStringToDate("2013-11-20T14:35:47.925-1000");
+      Date measTime4 = DateConvert.parseCalStringToDate("2013-11-20T14:35:57.925-1000");
+      Date measTime5 = DateConvert.parseCalStringToDate("2013-11-20T14:36:07.925-1000");
+      Date measTime6 = DateConvert.parseCalStringToDate("2013-11-20T14:36:17.925-1000");
       Double value = 50.1;
       Measurement s1m1 = new Measurement(sensor1.getId(), measTime1, value,
           testMeasurementType.unit());
@@ -805,8 +791,7 @@ public class TestWattDepotClient {
       test.putMeasurement(depo, s2m3);
 
       // now get the measurements for the group
-      MeasurementList measurements = test.getMeasurements(depo, group,
-          measTime1, measTime6);
+      MeasurementList measurements = test.getMeasurements(depo, group, measTime1, measTime6);
       assertNotNull(measurements);
       assertTrue(measurements.getMeasurements().size() == 6);
       assertTrue(measurements.getMeasurements().contains(s2m3));

@@ -48,6 +48,7 @@ public class Manager {
           .addAnnotatedClass(
               org.wattdepot.server.depository.impl.hibernate.CollectorProcessDefinitionImpl.class)
           .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.DepositoryImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.DepositorySensorContribution.class)
           .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.MeasurementImpl.class)
           .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.MeasurementTypeImpl.class)
           .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.PropertyImpl.class)

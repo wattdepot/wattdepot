@@ -608,6 +608,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     sessionOpen++;
     session.beginTransaction();
     DepositoryImpl impl = retrieveDepository(session, id, orgId);
+    for (DepositorySensorContribution dsc : retrieveContributions(session, impl)) {
+      session.delete(dsc);
+    }
     session.delete(impl);
     session.getTransaction().commit();
     session.close();
@@ -630,7 +633,12 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     session.beginTransaction();
     MeasurementImpl impl = retrieveMeasurement(session, depotId, orgId, measId);
-    session.delete(impl);
+    if (impl != null) {
+      session.delete(impl);
+    }
+    else {
+      throw new IdNotFoundException(measId + " is not a valid measurment id.");
+    }
     session.getTransaction().commit();
     session.close();
   }
@@ -647,6 +655,23 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     sessionOpen++;
     session.beginTransaction();
     MeasurementTypeImpl impl = retrieveMeasurementType(session, id);
+    List<DepositoryImpl> depositories = retrieveDepositories(session, impl);
+    session.getTransaction().commit();
+    session.close();
+    sessionClose++;
+    for (DepositoryImpl depository : depositories) {
+      try {
+        deleteDepository(depository.getId(), depository.getOrg().getId());
+      }
+      catch (MisMatchedOwnerException e) {
+        // Shouldn't happen
+        e.printStackTrace();
+      }
+    }
+    session = Manager.getFactory(getServerProperties()).openSession();
+    sessionOpen++;
+    session.beginTransaction();
+    impl = retrieveMeasurementType(session, id);
     session.delete(impl);
     session.getTransaction().commit();
     session.close();
@@ -703,13 +728,10 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     sessionOpen++;
     session.beginTransaction();
     List<DepositoryImpl> depositories = retrieveDepositories(session, id);
-    session.getTransaction().commit();
-    session.close();
-    sessionClose++;
-    session = Manager.getFactory(getServerProperties()).openSession();
-    sessionOpen++;
-    session.beginTransaction();
     for (DepositoryImpl d : depositories) {
+      for (DepositorySensorContribution dsc : retrieveContributions(session, d)) {
+        session.delete(dsc);
+      }
       session.delete(d);
     }
     for (SensorImpl s : retrieveSensors(session, id)) {
@@ -771,6 +793,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     sessionOpen++;
     session.beginTransaction();
     SensorImpl impl = retrieveSensor(session, id, orgId);
+    for (DepositorySensorContribution dsc : retrieveContributions(session, impl)) {
+      session.delete(dsc);
+    }
     session.delete(impl);
     session.getTransaction().commit();
     session.close();
@@ -1461,8 +1486,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     for (DepositoryImpl depot : retrieveDepositories(session, orgId)) {
       @SuppressWarnings("unchecked")
       List<Long> result = (List<Long>) session
-          .createQuery(
-              "SELECT count(*) FROM MeasurementImpl WHERE depository = :depot")
+          .createQuery("SELECT count(*) FROM MeasurementImpl WHERE depository = :depot")
           .setParameter("depot", depot).list();
       ret += result.get(0);
     }
@@ -2853,16 +2877,22 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.beginTransaction();
     DepositoryImpl depot = retrieveDepository(session, depotId, orgId);
     @SuppressWarnings("unchecked")
-    List<SensorImpl> result = (List<SensorImpl>) session
-        .createQuery(
-            "select distinct meas.sensor FROM MeasurementImpl meas WHERE meas.depository = :depot")
-        .setParameter("depot", depot).list();
+    // List<SensorImpl> result = (List<SensorImpl>) session
+    // .createQuery(
+    // "select distinct meas.sensor FROM MeasurementImpl meas WHERE meas.depository = :depot")
+    // .setParameter("depot", depot).list();
+    List<DepositorySensorContribution> result = (List<DepositorySensorContribution>) session
+        .createQuery("from DepositorySensorContribution where depository = :depository")
+        .setParameter("depository", depot).list();
     ArrayList<String> sensorIds = new ArrayList<String>();
-    for (SensorImpl sensor : result) {
-      if (!sensorIds.contains(sensor.getId())) {
-        sensorIds.add(sensor.getId());
-      }
+    for (DepositorySensorContribution contrib : result) {
+      sensorIds.add(contrib.getSensor().getId());
     }
+    // for (SensorImpl sensor : result) {
+    // if (!sensorIds.contains(sensor.getId())) {
+    // sensorIds.add(sensor.getId());
+    // }
+    // }
     session.getTransaction().commit();
     session.close();
     if (timingp) {
@@ -2895,6 +2925,13 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.beginTransaction();
     DepositoryImpl depot = retrieveDepository(session, depotId, orgId);
     SensorImpl sensor = retrieveSensor(session, meas.getSensorId(), orgId);
+    DepositorySensorContribution contrib = retrieveContribution(session, depot, sensor);
+    if (contrib == null) {
+      contrib = new DepositorySensorContribution();
+      contrib.setDepository(depot);
+      contrib.setSensor(sensor);
+      session.saveOrUpdate(contrib);
+    }
     MeasurementImpl impl = new MeasurementImpl();
     impl.setDepository(depot);
     impl.setSensor(sensor);
@@ -2958,6 +2995,18 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
 
   /**
    * @param session The session with an open transaction.
+   * @param type The measurement type of the depository.
+   * @return A List of all the depositories with the given measurment type.
+   */
+  @SuppressWarnings("unchecked")
+  private List<DepositoryImpl> retrieveDepositories(Session session, MeasurementTypeImpl type) {
+    List<DepositoryImpl> ret = (List<DepositoryImpl>) session
+        .createQuery("from DepositoryImpl WHERE type = :type").setParameter("type", type).list();
+    return ret;
+  }
+
+  /**
+   * @param session The session with an open transaction.
    * @param id the Depository's id.
    * @param orgId The owner's Organization id.
    * @return A List of the Depositories owned by orgId.
@@ -2972,6 +3021,54 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       return ret.get(0);
     }
     return null;
+  }
+
+  /**
+   * @param session The session with an open transaction.
+   * @param depo The Depository.
+   * @param sensor The Sensor.
+   * @return The DepositorySensorContribution if the sensor has contributed
+   *         measurements to the depository, or null.
+   */
+  @SuppressWarnings("unchecked")
+  private DepositorySensorContribution retrieveContribution(Session session, DepositoryImpl depo,
+      SensorImpl sensor) {
+    List<DepositorySensorContribution> ret = (List<DepositorySensorContribution>) session
+        .createQuery(
+            "from DepositorySensorContribution where sensor = :sensor and depository = :depository")
+        .setParameter("sensor", sensor).setParameter("depository", depo).list();
+    if (ret.size() == 1) {
+      return ret.get(0);
+    }
+    return null;
+  }
+
+  /**
+   * @param session A session with an open transaction.
+   * @param depository The depository to search for.
+   * @return A List of DepositorySensorContributions for the given depository.
+   */
+  @SuppressWarnings("unchecked")
+  private List<DepositorySensorContribution> retrieveContributions(Session session,
+      DepositoryImpl depository) {
+    List<DepositorySensorContribution> ret = (List<DepositorySensorContribution>) session
+        .createQuery("from DepositorySensorContribution where depository = :depository")
+        .setParameter("depository", depository).list();
+    return ret;
+  }
+
+  /**
+   * @param session A session with an open transaction.
+   * @param sensor The sensor to search for.
+   * @return A List of DepositorySensorContributions for the given sensor.
+   */
+  @SuppressWarnings("unchecked")
+  private List<DepositorySensorContribution> retrieveContributions(Session session,
+      SensorImpl sensor) {
+    List<DepositorySensorContribution> ret = (List<DepositorySensorContribution>) session
+        .createQuery("from DepositorySensorContribution where sensor = :sensor")
+        .setParameter("sensor", sensor).list();
+    return ret;
   }
 
   /**
