@@ -236,6 +236,29 @@ public abstract class MultiThreadedCollector extends TimerTask {
           e.printStackTrace();
         }
       }
+      else if (model.getName().equals(SensorModelHelper.WEATHER)) {
+        Timer t = new Timer();
+        try {
+          NOAAWeatherCollector collector = new NOAAWeatherCollector(serverUri, username, orgId, password, collectorId, debug);
+          if (collector.isValid()) {
+            System.out.format("Started polling %s sensor at %s%n", sensor.getName(),
+                Tstamp.makeTimestamp());
+            t.schedule(collector, 0, definition.getPollingInterval() * 1000);
+          }
+          else {
+            System.err.format("Cannot poll %s sensor%n", sensor.getName());
+            return false;
+          }
+        }       
+        catch (IdNotFoundException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        catch (BadSensorUriException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
     }
     catch (IdNotFoundException e) {
       System.err.println(e.getMessage());

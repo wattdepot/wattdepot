@@ -352,7 +352,7 @@ function putNewModel() {
     };
     setSelectedTab('sensors');
     $.ajax({
-        url : '/wattdepot/' + ORGID + '/sensor-model/',
+        url : '/wattdepot/public/sensor-model/',
         type : 'PUT',
         contentType : 'application/json',
         data : JSON.stringify(model),
