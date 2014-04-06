@@ -1195,7 +1195,7 @@ SENSORGROUPS["${sg.id}"] = {"id": "${sg.id}", "name": "${sg.name}", "sensors": [
 </#list>
 var CPDS = {};
 <#list cpds as sp>
-CPDS["${sp.id}"] = {"id": "${sp.id}", "name": "${sp.name}",  "sensorId": "${sp.sensorId}", "pollingInterval": ${sp.pollingInterval}, "depositoryId": "${sp.depositoryId}", "organizationId": "${sp.organizationId}", "properties" : [<#assign k = sp.properties?size><#list sp.properties as p>{"key":"${p.key}", "value":"${p.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]};
+CPDS["${sp.id}"] = {"id": "${sp.id}", "name": "${sp.name}",  "sensorId": "${sp.sensorId}", "pollingInterval": ${sp.pollingInterval?string.computer}, "depositoryId": "${sp.depositoryId}", "organizationId": "${sp.organizationId}", "properties" : [<#assign k = sp.properties?size><#list sp.properties as p>{"key":"${p.key}", "value":"${p.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]};
 </#list>
 var MEASUREMENTTYPES = {};
 <#list measurementtypes as mt>
