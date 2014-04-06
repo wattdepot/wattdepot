@@ -224,25 +224,25 @@ public class NOAAWeatherCollector extends MultiThreadedCollector {
         String cloudStr = cloudCoverage.toString();
         if (cloudStr.equalsIgnoreCase("sunny") || cloudStr.equalsIgnoreCase("clear")) {
           // 0 to 1/8 cloud coverage
-          result = new Double(0.0625);
+          result = new Double(6.25);
         }
         else if (cloudStr.equalsIgnoreCase("mostly sunny")
             || cloudStr.equalsIgnoreCase("mostly clear")) {
           // 1/8 to 2/8 cloud coverage
-          result = new Double(0.1875);
+          result = new Double(18.75);
         }
         else if (cloudStr.equalsIgnoreCase("partly sunny")
             || cloudStr.equalsIgnoreCase("partly cloudy")) {
           // 3/8 to 5/8 cloud coverage
-          result = new Double(0.5);
+          result = new Double(50.0);
         }
         else if (cloudStr.equalsIgnoreCase("mostly cloudy")) {
           // 6/8 to 7/8 cloud coverage
-          result = new Double(0.8125);
+          result = new Double(81.25);
         }
         else if (cloudStr.equalsIgnoreCase("cloudy")) {
           // 7/8 to 100% cloud coverage
-          result = new Double(0.9375);
+          result = new Double(93.75);
         }
       }
       else {
