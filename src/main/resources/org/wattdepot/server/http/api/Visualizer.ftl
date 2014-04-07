@@ -86,7 +86,7 @@
         </div>
       </div>
     </div>
-    <div id='chartDiv' style='height: 400px; z-index: -1;'></div>    
+    <div id='chartDiv' style='height: 500px;'></div>    
   </div>
   <div class="modal fade" id="progressWindow" tabindex="-1"
     role="dialog">

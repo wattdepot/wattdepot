@@ -155,6 +155,7 @@ function buildChartOptions() {
   }
   options['hAxis'] = {title: "Time", format:'MMM d, y HH:mm:ss'};
   options['series'] = series;
+  options['displayAnnotations'] = true;
   return options;
 }
 
