@@ -18,8 +18,11 @@
  */
 package org.wattdepot.common.analysis;
 
+import java.util.ArrayList;
+
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.MeasuredValueList;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementList;
@@ -42,6 +45,27 @@ public class DescriptiveStats {
     this.data = new DescriptiveStatistics();
     for (Measurement m : meas.getMeasurements()) {
       data.addValue(m.getValue());
+    }
+  }
+  
+  /**
+   * @param meas the Measurements.
+   * @param valueType The type of value to use either Labels.POINT or Labels.INTERVAL.
+   */
+  public DescriptiveStats(MeasurementList meas, String valueType) {
+    this.data = new DescriptiveStatistics();
+    if (Labels.POINT.equals(valueType)) {
+      for (Measurement m : meas.getMeasurements()) {
+        data.addValue(m.getValue());
+      }
+    }
+    else if (Labels.INTERVAL.equals(valueType)) {
+      ArrayList<Measurement> measurements = meas.getMeasurements();
+      for (int i = 1; i < measurements.size(); i++) {
+        Measurement start = measurements.get(i - 1);
+        Measurement end = measurements.get(i);
+        data.addValue(end.getValue() - start.getValue());
+      }
     }
   }
   

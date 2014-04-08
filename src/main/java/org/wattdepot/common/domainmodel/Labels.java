@@ -28,6 +28,9 @@ public class Labels {
   /** The String indicating admin group. */
   public static final String ADMIN = "admin";
 
+  /** The String indicating average operation. */
+  public static final String AVERAGE = "average";
+  
   /** The label for a given CollectorProcessDefinitionData. */
   public static final String COLLECTOR_PROCESS_DEFINITION = "collector-process-definition";
 
@@ -65,6 +68,9 @@ public class Labels {
   /** The label for google visualization. */
   public static final String GVIZ = "gviz";
 
+  /** The label for sampling internal or interval values. */
+  public static final String INTERVAL = "interval";
+
   /** The label for the latest time. */
   public static final String LATEST = "latest";
 
@@ -79,6 +85,9 @@ public class Labels {
 
   /** The label for all the Locations. */
   public static final String LOCATIONS = "locations";
+  
+  /** The label for the maximum operation. */
+  public static final String MAXIMUM = "maximum";
 
   /** The label for a given Measurement. */
   public static final String MEASUREMENT = "measurement";
@@ -103,6 +112,30 @@ public class Labels {
 
   /** The label for all the Measurements. */
   public static final String MEASUREMENTS = "measurements";
+
+  /** The label for the minimum operation. */
+  public static final String MINIMUM = "minimum";
+
+  /** The URI for manipulating a given Organization. */
+  public static final String ORGANIZATION = "organization";
+
+  /** Label for the organization id. */
+  public static final String ORGANIZATION_ID = "org-id";
+
+  /** Label for the organization id. */
+  public static final String ORGANIZATION_ID_VAR = "{" + ORGANIZATION_ID + "}";
+
+  /** Label for the organization id. */
+  public static final String ORGANIZATION_ID2 = "org-id2";
+
+  /** Label for the organization id. */
+  public static final String ORGANIZATION_ID2_VAR = "{" + ORGANIZATION_ID2 + "}";
+
+  /** URI component for manipulating all Organizations. */
+  public static final String ORGANIZATIONS = "organizations";
+
+  /** The label for point values. */
+  public static final String POINT = "point";
 
   /** The label/group for public objects. */
   public static final String PUBLIC = "public";
@@ -155,24 +188,6 @@ public class Labels {
   /** The URI for manipulating a given UserInfo. */
   public static final String USER = "user";
 
-  /** The URI for manipulating a given Organization. */
-  public static final String ORGANIZATION = "organization";
-
-  /** Label for the organization id. */
-  public static final String ORGANIZATION_ID = "org-id";
-
-  /** Label for the organization id. */
-  public static final String ORGANIZATION_ID_VAR = "{" + ORGANIZATION_ID + "}";
-
-  /** Label for the organization id. */
-  public static final String ORGANIZATION_ID2 = "org-id2";
-
-  /** Label for the organization id. */
-  public static final String ORGANIZATION_ID2_VAR = "{" + ORGANIZATION_ID2 + "}";
-
-  /** URI component for manipulating all Organizations. */
-  public static final String ORGANIZATIONS = "organizations";
-
   /** Label for the user id. */
   public static final String USER_ID = "user-id";
 
@@ -194,19 +209,16 @@ public class Labels {
   /** The label for a 'measured' value. */
   public static final String VALUE = "value";
 
+  /** The label for determining what type of value to return. */
+  public static final String VALUE_TYPE = "value-type";
+  
   /** The label for 'measured' values. */
   public static final String VALUES = "values";
-
-  /** The base label used for WattDepot. */
-  public static final String WATTDEPOT = "wattdepot";
-
-  /** The label for sampling internal. */
-  public static final String INTERVAL = "interval";
   
   /** The label for visualizing interpolated values. */
   public static final String VISUALIZE = "visualize";
 
-  /** The label for determining what type of value to return. */
-  public static final String VALUE_TYPE = "value-type";
+  /** The base label used for WattDepot. */
+  public static final String WATTDEPOT = "wattdepot";
 
 }
