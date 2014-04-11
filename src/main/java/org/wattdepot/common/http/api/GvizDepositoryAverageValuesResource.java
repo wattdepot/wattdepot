@@ -1,5 +1,5 @@
 /**
- * DepositoryAverageValuesServerResource.java This file is part of WattDepot.
+ * GvizDepositoryAverageValuesResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
  *
@@ -16,30 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.server.http.api;
+package org.wattdepot.common.http.api;
 
-import org.wattdepot.common.domainmodel.MeasuredValueList;
-import org.wattdepot.common.http.api.DepositoryAverageValuesResource;
+import org.restlet.resource.Get;
 
 /**
- * DepositoryAverageValuesServerResource - Calculates the Average value for the
- * measurements during the interval from the start date till the end date.
+ * GvizDepositoryAverageValuesResource - HTTP Interface for getting the Google
+ * Visualization DataTable for the average values. <br/>
+ * (/wattdepot/{org-id}/depository/{depository-id}/values/average/gviz/)
  * 
  * @author Cam Moore
  * 
  */
-public class DepositoryAverageValuesServerResource extends DepositoryAverageValuesServer
-    implements DepositoryAverageValuesResource {
+public interface GvizDepositoryAverageValuesResource {
 
-  /*
-   * (non-Javadoc)
+  /**
+   * Defines GET <br/>
+   * /wattdepot/{org-id}/depository/{depository-id}/values/average/gviz/?
+   *   sensor={sensor_id}&start={start}&end={end}&interval={interval}.
    * 
-   * @see
-   * org.wattdepot.common.http.api.DepositoryAverageValuesResource#retrieve()
+   * @return Google Visualization data source.
    */
-  @Override
-  public MeasuredValueList retrieve() {
-    return doRetrieve();
-  }
+  @Get("json")
+  // Use JSON as transport encoding.
+  public String retrieve();
 
 }

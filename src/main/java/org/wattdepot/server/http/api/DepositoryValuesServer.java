@@ -96,7 +96,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
             int intervalMinutes = Integer.parseInt(interval);
 
             // Build list of timestamps, starting with startTime, separated by
-            // intervalMilliseconds
+            // intervalMinutes
             List<XMLGregorianCalendar> timestampList = Tstamp.getTimestampList(startTime, endTime,
                 intervalMinutes);
             if (timestampList != null) {
@@ -135,8 +135,6 @@ public class DepositoryValuesServer extends WattDepotServerResource {
                 }
               }
               else {
-                // TODO CAM this code doesn't work! Need to aggregate the values
-                // not just put them in.
                 SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
                 if (group != null) {
                   Date previous = null;

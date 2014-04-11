@@ -82,8 +82,8 @@ public class API {
    * getting all the sensors that have stored measurements in the depository.
    * Use GET requests.
    */
-  public static final String DEPOSITORY_SENSOR_SUMMARY_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.SUMMARY + "/";
+  public static final String DEPOSITORY_SENSOR_SUMMARY_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR
+      + "/" + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.SUMMARY + "/";
 
   /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/sensors/</b> URI for
@@ -173,11 +173,11 @@ public class API {
       + Labels.ORGANIZATION + "/" + Labels.ORGANIZATION_ID2_VAR;
 
   /**
-   * <b>/wattdepot/{org-id}/visualize/</b> URI for the Organization Visualization User
-   * Interface. Supports GET requests.
+   * <b>/wattdepot/{org-id}/visualize/</b> URI for the Organization
+   * Visualization User Interface. Supports GET requests.
    */
-  public static final String ORGANIZATION_VISUALIZE_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.VISUALIZE + "/";
+  public static final String ORGANIZATION_VISUALIZE_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR
+      + "/" + Labels.VISUALIZE + "/";
 
   /**
    * <b>/wattdepot/{org-id}/user-groups/</b> URI to get all defined
@@ -298,11 +298,22 @@ public class API {
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUE + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/average/</b> URI to get
-   * all the average value for an interval of measurements. Use GET requests.
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/average/gviz/</b> URI
+   * to get all the average value for an interval of measurements. Use GET
+   * requests.
+   */
+  public static final String VALUES_AVERAGE_GVIZ_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/"
+      + Labels.AVERAGE + "/" + Labels.GVIZ + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/average/</b> URI
+   * to get all the average value for an interval of measurements. Use GET
+   * requests.
    */
   public static final String VALUES_AVERAGE_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/" + Labels.AVERAGE + "/";
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/"
+      + Labels.AVERAGE + "/";
 
   /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/values/gviz/</b> URI to
@@ -313,18 +324,22 @@ public class API {
       + Labels.GVIZ + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/average/</b> URI to get
-   * all the average value for an interval of measurements. Use GET requests.
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/average/</b> URI
+   * to get all the average value for an interval of measurements. Use GET
+   * requests.
    */
   public static final String VALUES_MAXIMUM_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/" + Labels.MAXIMUM + "/";
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/"
+      + Labels.MAXIMUM + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/average/</b> URI to get
-   * all the average value for an interval of measurements. Use GET requests.
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/average/</b> URI
+   * to get all the average value for an interval of measurements. Use GET
+   * requests.
    */
   public static final String VALUES_MINIMUM_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/" + Labels.MINIMUM + "/";
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/"
+      + Labels.MINIMUM + "/";
 
   /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/values/</b> URI to get
