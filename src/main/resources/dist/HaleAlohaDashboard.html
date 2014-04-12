@@ -49,8 +49,20 @@
         energySensor = "hale-aloha";
         DailyEnergyGraph();
         AverageTempGraph();
+        AverageHumidityGraph();
+        AverageCloudGraph();
       }
     </script>
+<style>
+.temp-holder {
+    height: 153px;
+    width: 153px;
+}
+.temp-holder1 {
+    height: 155px;
+    width: 153px;
+}
+</style>
 </head>
 <body>
     <nav class="navbar navbar-default" role="navigation"> <!-- Brand and toggle get grouped for better mobile display -->
@@ -80,10 +92,12 @@
     <div class="container">
         <div class="row">
             <div class="col-xs-4 col-md-2">
+                <Strong>Power</Strong>
                 <div class="thumbnail">
+                    <div><strong>Current</strong></div>
                     <div id="current-power"></div>
                     <div class="caption">
-                        <strong id="power-units"></strong>
+                            <strong id="power-units"></strong>
                         <p>
                             as of <span id="power-time"></span>
                         </p>
@@ -91,7 +105,9 @@
                 </div>
             </div>
             <div class="col-xs-4 col-md-2">
+                <Strong>Temperature</Strong>
                 <div class="thumbnail">
+                    <div><strong>Current</strong></div>
                     <div id="current-temperature"></div>
                     <div class="caption">
                         <strong id="temperature-units"></strong>
@@ -102,7 +118,9 @@
                 </div>
             </div>
             <div class="col-xs-4 col-md-2">
+                <strong>Humidity</strong>
                 <div class="thumbnail">
+                    <div><strong>Current</strong></div>
                     <div id="current-humidity"></div>
                     <div class="caption">
                         <strong id="humidity-units"></strong>
@@ -113,7 +131,9 @@
                 </div>
             </div>
             <div class="col-xs-4 col-md-2">
+                <strong>Cloud Coverage</strong>
                 <div class="thumbnail">
+                    <div><strong>Current</strong></div>
                     <div id="current-cloud"></div>
                     <div class="caption">
                         <strong id="cloud-units"></strong>
@@ -127,9 +147,10 @@
         <div class="row">
             <div class="col-xs-4 col-md-2">
                 <div class="thumbnail">
+                    <strong>Last 7 days</strong>
                     <div id="daily-energy"></div>
                     <div class="caption">
-                        <strong>Last 7 days. Daily Energy <span id="daily-energy-units"></span></strong>
+                        <strong>Daily Energy <span id="daily-energy-units"></span></strong>
                         <p>
                             as of <span id="daily-energy-time"></span>
                         </p>
@@ -138,11 +159,36 @@
             </div>
             <div class="col-xs-4 col-md-2">
                 <div class="thumbnail">
+                    <strong>Last 7 days</strong>
                     <div id="average-temp"></div>
                     <div class="caption">
-                        <strong>Last 7 days. Average Temp. <span id="average-temp-units"></span></strong>
+                        <strong>Average Temp. <span id="average-temp-units"></span></strong>
                         <p>
                             as of <span id="average-temp-time"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-4 col-md-2">
+                <div class="thumbnail">
+                    <strong>Last 7 days</strong>
+                    <div id="average-humidity"></div>
+                    <div class="caption">
+                        <strong>Average Humidity <span id="average-humidity-units"></span></strong>
+                        <p>
+                            as of <span id="average-humidity-time"></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-4 col-md-2">
+                <div class="thumbnail">
+                    <strong>Last 7 days</strong>
+                    <div id="average-cloud"></div>
+                    <div class="caption">
+                        <strong>Average Cloud <span id="average-cloud-units"></span></strong>
+                        <p>
+                            as of <span id="average-cloud-time"></span>
                         </p>
                     </div>
                 </div>

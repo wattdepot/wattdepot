@@ -43,6 +43,12 @@ var cloudRefresh = null;
 /** the latest cloud data as a google data table. */
 var cloudData = null;
 
+var averageTempData = null;
+
+var averageHumidityData = null;
+
+var averageCloudData = null;
+
 function debug(msg) {
   if (typeof (console) != 'undefined') {
     console.info(msg);
@@ -58,7 +64,7 @@ function CurrentPowerMeter() {
 
   function pcallback() {
     var element = $("#current-power");
-    element.text("Loading graph...");
+    element.append('<div class="temp-holder1"><p>Loading graph...</p></div>');
     var gvizUrl = serverUrl + "/" + organization + "/depository/"
         + powerDepository + "/value/gviz/?sensor=" + powerSensor
         + "&latest=true";
@@ -78,7 +84,7 @@ function CurrentPowerMeter() {
       return;
     }
     var element = $("#current-power");
-    element.text("Loading graph...");
+    element.empty();
     powerData = response.getDataTable();
 
     drawP(fixPowerData(powerData));
@@ -368,7 +374,7 @@ function DailyEnergyGraph() {
 
   function callbackEnergy() {
     var element = $("#daily-energy");
-    element.text("Loading graph...");
+    element.append('<div class="temp-holder"><p>Loading graph...</p></div>');
     var now = new Date();
     var end = new Date(now.getFullYear(), now.getMonth(), now.getDay() - 1, 23, 59, 59, 999);
     var start = new Date(now.getFullYear(), now.getMonth(), now.getDay() - 7, 0, 0, 0 ,0);
@@ -413,7 +419,7 @@ function DailyEnergyGraph() {
     var energyOptions = {
         width: 155,
         height: 155,
-        showAxisLines: false,
+        showAxisLines: true,
         showValueLabels: true,
         labelPosition: 'none'
     };
@@ -445,61 +451,209 @@ function AverageTempGraph() {
 
   function callbackAveTemp() {
     var element = $("#average-temp");
-    element.text("Loading graph...");
+    element.append('<div class="temp-holder"><p>Loading graph...</p></div>');
     var now = new Date();
-    var end = new Date(now.getFullYear(), now.getMonth(), now.getDay() - 1, 23, 59, 59, 999);
-    var start = new Date(now.getFullYear(), now.getMonth(), now.getDay() - 7, 0, 0, 0 ,0);
-    var dataUrl = "/wattdepot/" + organization + "/depository/"
-        + temperatureDepository + "/values/average/?sensor=" + temperatureSensor
+    var end = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 23, 59, 59, 999);
+    var start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 9, 23, 59, 59 ,999);
+    var gvizUrl = serverUrl + "/" + organization + "/depository/"
+        + temperatureDepository + "/values/average/gviz/?sensor=" + temperatureSensor
         + "&start=" + getTimestampFromDate(start) + "&end=" + getTimestampFromDate(end) 
-        + "&interval=1440&value-type=interval";
-    $.ajax({
-      url: dataUrl,
-      type: 'GET',
-      success: function responseHandlerTemp(response) {
-        var element = $("#average-temp");
-        element.empty();
-        
-        var averageTempData = response;
-        debug(averageTempData);
-      },
+        + "&interval=1440&value-type=point";
+ 
+    tempQuery = new google.visualization.Query(gvizUrl);
+    // Set a callback to run when the data has been retrieved.
+    tempQuery.send(function(response) {
+      responseHandlerTemp(response);
     });
   }
 
-  function fixTempData(dataTable) {
-    var energyTable = new google.visualization.DataTable();
-    energyTable.addColumn('number', 'Daily Energy');
-    energyTable.addRows(7);
-    for (var i = 1; i < dataTable.getNumberOfRows(); i++) {
-      energyTable.setCell(i-1, 0, dataTable.getValue(i, 1));
-    }
-    return energyTable;
+  function responseHandlerTemp(response) {
+    var element = $("#average-temp");
+    element.empty();
+    
+    averageTempData = response.getDataTable();
+    updateTemperatureCaption();
+    drawTemp(fixTempData(averageTempData));
   }
   
-  function drawEnergy(dataTable) {
+  function fixTempData(dataTable) {
+    var tempTable = new google.visualization.DataTable();
+    tempTable.addColumn('number', 'Average Tempurature');
+    tempTable.addRows(7);
+    for (var i = 0; i < dataTable.getNumberOfRows(); i++) {
+      tempTable.setCell(i, 0, dataTable.getValue(i, 1));
+    }
+    return tempTable;
+  }
+  
+  function drawTemp(dataTable) {
 
-    var energyOptions = {
+    var tempOptions = {
         width: 155,
         height: 155,
-        showAxisLines: false,
+        showAxisLines: true,
         showValueLabels: true,
         labelPosition: 'none'
     };
     
-    var energyChart = new google.visualization.ImageSparkLine(document
-        .getElementById('daily-energy'));
-    energyChart.draw(dataTable, energyOptions);
+    var tempChart = new google.visualization.ImageSparkLine(document
+        .getElementById('average-temp'));
+    tempChart.draw(dataTable, tempOptions);
     
   }
   
-  function updateEnergyCaption() {
-    var element = $("#daily-energy-time");
+  function updateTemperatureCaption() {
+    var element = $("#average-temp-time");
     element.empty();
     var dateFormatter = new google.visualization.DateFormat({pattern:'MMM d, yyyy, h:mm:ss a'});
     var updateTime = dateFormatter.formatValue(new Date());
     element.text(updateTime);
-    element = $("#daily-energy-units");
-    element.text(energyData.getColumnId(1));
+    element = $("#average-temp-units");
+    element.text(averageTempData.getColumnId(1));
+
+  }
+};
+
+function AverageHumidityGraph() {
+  var humidQuery = null;
+
+  google.setOnLoadCallback(callbackAveHumidity());
+
+  return false;
+
+  function callbackAveHumidity() {
+    var element = $("#average-humidity");
+    element.append('<div class="temp-holder"><p>Loading graph...</p></div>');
+    var now = new Date();
+    var end = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 23, 59, 59, 999);
+    var start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 9, 23, 59, 59 ,999);
+    var gvizUrl = serverUrl + "/" + organization + "/depository/"
+        + humidityDepository + "/values/average/gviz/?sensor=" + humiditySensor
+        + "&start=" + getTimestampFromDate(start) + "&end=" + getTimestampFromDate(end) 
+        + "&interval=1440&value-type=point";
+ 
+    humidQuery = new google.visualization.Query(gvizUrl);
+    // Set a callback to run when the data has been retrieved.
+    humidQuery.send(function(response) {
+      responseHandlerHumidity(response);
+    });
+  }
+
+  function responseHandlerHumidity(response) {
+    var element = $("#average-humidity");
+    element.empty();
+    
+    averageHumidityData = response.getDataTable();
+    updateHumidityCaption();
+    drawHumidity(fixHumidityData(averageHumidityData));
+  }
+  
+  function fixHumidityData(dataTable) {
+    var humidityTable = new google.visualization.DataTable();
+    humidityTable.addColumn('number', 'Average Humidity');
+    humidityTable.addRows(7);
+    for (var i = 0; i < dataTable.getNumberOfRows(); i++) {
+      humidityTable.setCell(i, 0, dataTable.getValue(i, 1));
+    }
+    return humidityTable;
+  }
+  
+  function drawHumidity(dataTable) {
+
+    var humidityOptions = {
+        width: 155,
+        height: 155,
+        showAxisLines: true,
+        showValueLabels: true,
+        labelPosition: 'none'
+    };
+    
+    var humidityChart = new google.visualization.ImageSparkLine(document
+        .getElementById('average-humidity'));
+    humidityChart.draw(dataTable, humidityOptions);
+    
+  }
+  
+  function updateHumidityCaption() {
+    var element = $("#average-humidity-time");
+    element.empty();
+    var dateFormatter = new google.visualization.DateFormat({pattern:'MMM d, yyyy, h:mm:ss a'});
+    var updateTime = dateFormatter.formatValue(new Date());
+    element.text(updateTime);
+    element = $("#average-humidity-units");
+    element.text(averageHumidityData.getColumnId(1));
+
+  }
+};
+
+function AverageCloudGraph() {
+  var humidQuery = null;
+
+  google.setOnLoadCallback(callbackAveCloud());
+
+  return false;
+
+  function callbackAveCloud() {
+    var element = $("#average-cloud");
+    element.append('<div class="temp-holder"><p>Loading graph...</p></div>');
+    var now = new Date();
+    var end = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 23, 59, 59, 999);
+    var start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 9, 23, 59, 59 ,999);
+    var gvizUrl = serverUrl + "/" + organization + "/depository/"
+        + cloudDepository + "/values/average/gviz/?sensor=" + cloudSensor
+        + "&start=" + getTimestampFromDate(start) + "&end=" + getTimestampFromDate(end) 
+        + "&interval=1440&value-type=point";
+ 
+    humidQuery = new google.visualization.Query(gvizUrl);
+    // Set a callback to run when the data has been retrieved.
+    humidQuery.send(function(response) {
+      responseHandlerCloud(response);
+    });
+  }
+
+  function responseHandlerCloud(response) {
+    var element = $("#average-cloud");
+    element.empty();
+    
+    averageCloudData = response.getDataTable();
+    updateCloudCaption();
+    drawCloud(fixCloudData(averageCloudData));
+  }
+  
+  function fixCloudData(dataTable) {
+    var humidityTable = new google.visualization.DataTable();
+    humidityTable.addColumn('number', 'Average Cloud');
+    humidityTable.addRows(7);
+    for (var i = 0; i < dataTable.getNumberOfRows(); i++) {
+      humidityTable.setCell(i, 0, dataTable.getValue(i, 1));
+    }
+    return humidityTable;
+  }
+  
+  function drawCloud(dataTable) {
+
+    var cloudOptions = {
+        width: 155,
+        height: 155,
+        showAxisLines: true,
+        showValueLabels: true,
+        labelPosition: 'none'
+    };
+    
+    var cloudChart = new google.visualization.ImageSparkLine(document
+        .getElementById('average-cloud'));
+    cloudChart.draw(dataTable, cloudOptions);
+    
+  }
+  
+  function updateCloudCaption() {
+    var element = $("#average-cloud-time");
+    element.empty();
+    var dateFormatter = new google.visualization.DateFormat({pattern:'MMM d, yyyy, h:mm:ss a'});
+    var updateTime = dateFormatter.formatValue(new Date());
+    element.text(updateTime);
+    element = $("#average-cloud-units");
+    element.text(averageCloudData.getColumnId(1));
 
   }
 };
