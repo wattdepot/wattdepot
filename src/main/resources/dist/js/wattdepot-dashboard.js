@@ -480,7 +480,7 @@ function AverageTempGraph() {
     var tempTable = new google.visualization.DataTable();
     tempTable.addColumn('number', 'Average Tempurature');
     tempTable.addRows(7);
-    for (var i = 0; i < dataTable.getNumberOfRows(); i++) {
+    for (var i = 0; i < dataTable.getNumberOfRows() - 1; i++) {
       tempTable.setCell(i, 0, dataTable.getValue(i, 1));
     }
     return tempTable;
@@ -552,7 +552,7 @@ function AverageHumidityGraph() {
     var humidityTable = new google.visualization.DataTable();
     humidityTable.addColumn('number', 'Average Humidity');
     humidityTable.addRows(7);
-    for (var i = 0; i < dataTable.getNumberOfRows(); i++) {
+    for (var i = 0; i < dataTable.getNumberOfRows() - 1; i++) {
       humidityTable.setCell(i, 0, dataTable.getValue(i, 1));
     }
     return humidityTable;
@@ -624,7 +624,7 @@ function AverageCloudGraph() {
     var humidityTable = new google.visualization.DataTable();
     humidityTable.addColumn('number', 'Average Cloud');
     humidityTable.addRows(7);
-    for (var i = 0; i < dataTable.getNumberOfRows(); i++) {
+    for (var i = 0; i < dataTable.getNumberOfRows() - 1; i++) {
       humidityTable.setCell(i, 0, dataTable.getValue(i, 1));
     }
     return humidityTable;
