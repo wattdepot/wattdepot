@@ -1,7 +1,7 @@
 /**
- * CollectorProcessDefinitionsResouce.java This file is part of WattDepot.
+ * GarbageCollectionDefinitionsResource.java This file is part of WattDepot.
  *
- * Copyright (C) 2013  Cam Moore
+ * Copyright (C) 2014  Cam Moore
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,21 +19,25 @@
 package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
+import org.wattdepot.common.domainmodel.GarbageCollectionDefinitionList;
 
 /**
- * SensorProcessesResouce - HTTP Interface for CollectorProcessDefinitions.
+ * GarbageCollectionDefinitionsResource - HTTP Interface for
+ * GarbageCollectionDefinitions.
  * 
  * @author Cam Moore
  * 
  */
-public interface CollectorProcessDefinitionsResource {
+public interface GarbageCollectionDefinitionsResource {
+
   /**
-   * Defines the GET /wattdepot/{org-id}/collector-process-definitions/ API call.
+   * Defines the GET /wattdepot/{org-id}/garbage-collection-definitions/ API
+   * call.
    * 
-   * @return a List of the defined CollectorProcessDefinitions.
+   * @return a List of the defined GarbageCollectionDefinitions.
    */
-  @Get("json") // Use JSON as transport encoding.
-  public CollectorProcessDefinitionList retrieve();
+  @Get("json")
+  // Use JSON as transport encoding.
+  public GarbageCollectionDefinitionList retrieve();
 
 }

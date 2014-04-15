@@ -101,6 +101,29 @@ public class API {
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR;
 
   /**
+   * <b>/wattdepot/{org-id}/garbage-collection-definition/</b> URI for putting a
+   * GarbageCollectionDefinition. Use PUT requests.
+   */
+  public static final String GARBAGE_COLLECTION_DEFINITION_PUT_URI = BASE_URI
+      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.GARBAGE_COLLECTION_DEFINITION + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/garbage-collection-definition/{garbage-collection-
+   * definition-id}</b> URI for getting a GarbageCollectionDefinition. Use GET
+   * requests.
+   */
+  public static final String GARBAGE_COLLECTION_DEFINITION_URI = BASE_URI
+      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.GARBAGE_COLLECTION_DEFINITION + "/"
+      + Labels.GARBAGE_COLLECTION_DEFINITION_ID_VAR;
+
+  /**
+   * <b>/wattdepot/{org-id}/garbage-collection-definitions/</b> URI for getting
+   * all defined GarbageCollectionDefinition. Use GET requests.
+   */
+  public static final String GARBAGE_COLLECTION_DEFINITIONS_URI = BASE_URI
+      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.GARBAGE_COLLECTION_DEFINITIONS + "/";
+
+  /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/measurement/</b> URI for
    * putting a measurement into the depsository. Use PUT requests.
    */
@@ -298,8 +321,8 @@ public class API {
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUE + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/average/gviz/</b> URI
-   * to get all the average value for an interval of measurements. Use GET
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/average/gviz/</b>
+   * URI to get all the average value for an interval of measurements. Use GET
    * requests.
    */
   public static final String VALUES_AVERAGE_GVIZ_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"

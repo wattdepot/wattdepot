@@ -1,7 +1,7 @@
 /**
- * CollectorProcessDefinitionResource.java This file is part of WattDepot.
+ * GarbageCollectionDefinitionReasource.java This file is part of WattDepot.
  *
- * Copyright (C) 2013  Cam Moore
+ * Copyright (C) 2014  Cam Moore
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,43 +21,43 @@ package org.wattdepot.common.http.api;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
-import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
+import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
 
 /**
- * CollectorProcessDefinitionResource - HTTP Interface for
- * CollectorProcessDefinition.
+ * GarbageCollectionDefinitionReasource - HTTP Interface for
+ * GarbageCollectionDefinition.
  * 
  * @author Cam Moore
  * 
  */
-public interface CollectorProcessDefinitionResource {
+public interface GarbageCollectionDefinitionReasource {
 
   /**
    * Defines GET
-   * /wattdepot/{org-id}/collector-process-definition/{collector-process
+   * /wattdepot/{org-id}/garbage-collection-definition/{garbage-collection
    * -definition-id} API call.
    * 
-   * @return The CollectorProcessDefinition with the given id. The id is sent in
-   *         the request.
+   * @return The GarbageCollectionDefinition with the given id. The id is sent
+   *         in the request.
    */
   @Get("json")
   // Use JSON as transport encoding.
-  public CollectorProcessDefinition retrieve();
+  public GarbageCollectionDefinition retrieve();
 
   /**
    * Defines the POST
-   * /wattdepot/{org-id}/collector-process-definition/{collector
-   * -process-definition-id} API call.
+   * /wattdepot/{org-id}/garbage-collection-definition/{garbage-
+   * collection-definition-id} API call.
    * 
-   * @param definition The CollectorProcessDefinition to update.
+   * @param definition The GarbageCollectionDefinition to update.
    */
   @Post
-  public void update(CollectorProcessDefinition definition);
+  public void update(GarbageCollectionDefinition definition);
 
   /**
    * Defined the DEL
-   * /wattdepot/{org-id}/collector-process-definition/{collector-
-   * process-definition-id} API call. The id is sent in the request.
+   * /wattdepot/garbage-collection-definition/{garbage-collection-definition-id}
+   * API call. The id is sent in the request.
    */
   @Delete
   public void remove();

@@ -30,18 +30,18 @@ public class Labels {
 
   /** The String indicating average operation. */
   public static final String AVERAGE = "average";
-  
-  /** The label for a given CollectorProcessDefinitionData. */
+
+  /** The label for a given CollectorProcessDefinition. */
   public static final String COLLECTOR_PROCESS_DEFINITION = "collector-process-definition";
 
-  /** The label for the CollectorProcessDefinitionData id. */
+  /** The label for the CollectorProcessDefinition id. */
   public static final String COLLECTOR_PROCESS_DEFINITION_ID = "collector-process-definition-id";
 
-  /** The label for the CollectorProcessDefinitionData id variable. */
+  /** The label for the CollectorProcessDefinition id variable. */
   public static final String COLLECTOR_PROCESS_DEFINITION_ID_VAR = "{"
       + COLLECTOR_PROCESS_DEFINITION_ID + "}";
 
-  /** The label for all CollectorProcessDefinitionDatas. */
+  /** The label for all CollectorProcessDefinition. */
   public static final String COLLECTOR_PROCESS_DEFINITIONS = "collector-process-definitions";
 
   /** The label for all the Depositories. */
@@ -62,6 +62,19 @@ public class Labels {
   /** The label for the end timestamp. */
   public static final String END = "end";
 
+  /** The label for a given GarbageCollectionDefinition. */
+  public static final String GARBAGE_COLLECTION_DEFINITION = "garbage-collection-definition";
+
+  /** The label for the GarbageCollectionDefinition id. */
+  public static final String GARBAGE_COLLECTION_DEFINITION_ID = "garbage-collection-definition-id";
+
+  /** The label for the GarbageCollectionDefinition id variable. */
+  public static final String GARBAGE_COLLECTION_DEFINITION_ID_VAR = "{"
+      + GARBAGE_COLLECTION_DEFINITION_ID + "}";
+
+  /** The label for all GarbageCollectionDefinitions. */
+  public static final String GARBAGE_COLLECTION_DEFINITIONS = "garbage-collection-definitions";
+  
   /** The label for gap. */
   public static final String GAP = "gap";
 
@@ -85,7 +98,7 @@ public class Labels {
 
   /** The label for all the Locations. */
   public static final String LOCATIONS = "locations";
-  
+
   /** The label for the maximum operation. */
   public static final String MAXIMUM = "maximum";
 
@@ -211,10 +224,10 @@ public class Labels {
 
   /** The label for determining what type of value to return. */
   public static final String VALUE_TYPE = "value-type";
-  
+
   /** The label for 'measured' values. */
   public static final String VALUES = "values";
-  
+
   /** The label for visualizing interpolated values. */
   public static final String VISUALIZE = "visualize";
 
