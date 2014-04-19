@@ -123,7 +123,6 @@ public abstract class MultiThreadedCollector extends TimerTask {
    * @param collectorId The CollectorProcessDefinitionId used to initialize this
    *        collector.
    * @param debug flag for debugging messages.
-   * @param debug
    * @return true if sensor starts successfully.
    * @throws InterruptedException If sleep is interrupted for some reason.
    * @throws BadCredentialException if the username and password are invalid.

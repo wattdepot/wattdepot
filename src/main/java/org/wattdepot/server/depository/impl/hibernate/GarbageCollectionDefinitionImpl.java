@@ -52,6 +52,9 @@ public class GarbageCollectionDefinitionImpl {
   /** The sensor making the measurements. */
   @ManyToOne
   private SensorImpl sensor;
+  /** The gcd's organization. */
+  @ManyToOne
+  private OrganizationImpl org;
   /** The number of days from now to ignore. */
   private Integer ignoreWindowDays;
   /** The number of days after the ignore window to garbage collect. */
@@ -77,16 +80,18 @@ public class GarbageCollectionDefinitionImpl {
    * @param name The name.
    * @param depository The depository.
    * @param sensor The sensor.
+   * @param org The organization.
    * @param ignore The ignore window.
    * @param collect The collection window.
    * @param gap The minimum gap between measurements.
    */
   public GarbageCollectionDefinitionImpl(String id, String name, DepositoryImpl depository,
-      SensorImpl sensor, Integer ignore, Integer collect, Integer gap) {
+      SensorImpl sensor, OrganizationImpl org, Integer ignore, Integer collect, Integer gap) {
     this.id = id;
     this.name = name;
     this.depository = depository;
     this.sensor = sensor;
+    this.org = org;
     this.ignoreWindowDays = ignore;
     this.collectWindowDays = collect;
     this.minGapSeconds = gap;
@@ -173,6 +178,14 @@ public class GarbageCollectionDefinitionImpl {
     else if (!sensor.equals(other.sensor)) {
       return false;
     }
+    if (org == null) {
+      if (other.org != null) {
+        return false;
+      }
+    }
+    else if (!org.equals(other.org)) {
+      return false;
+    }
     return true;
   }
 
@@ -208,14 +221,20 @@ public class GarbageCollectionDefinitionImpl {
    * @return the lastCompleted
    */
   public Date getLastCompleted() {
-    return new Date(lastCompleted.getTime());
+    if (lastCompleted != null) {
+      return new Date(lastCompleted.getTime());
+    }
+    return null;
   }
 
   /**
    * @return the lastStarted
    */
   public Date getLastStarted() {
-    return new Date(lastStarted.getTime());
+    if (lastStarted != null) {
+      return new Date(lastStarted.getTime());
+    }
+    return null;
   }
 
   /**
@@ -237,6 +256,13 @@ public class GarbageCollectionDefinitionImpl {
    */
   public Integer getNumMeasurementsCollected() {
     return numMeasurementsCollected;
+  }
+
+  /**
+   * @return the org
+   */
+  public OrganizationImpl getOrg() {
+    return org;
   }
 
   /**
@@ -270,6 +296,7 @@ public class GarbageCollectionDefinitionImpl {
     result = prime * result + ((name == null) ? 0 : name.hashCode());
     result = prime * result + ((pk == null) ? 0 : pk.hashCode());
     result = prime * result + ((sensor == null) ? 0 : sensor.hashCode());
+    result = prime * result + ((org == null) ? 0 : org.hashCode());
     return result;
   }
 
@@ -305,14 +332,18 @@ public class GarbageCollectionDefinitionImpl {
    * @param lastCompleted the lastCompleted to set
    */
   public void setLastCompleted(Date lastCompleted) {
-    this.lastCompleted = new Date(lastCompleted.getTime());
+    if (lastCompleted != null) {
+      this.lastCompleted = new Date(lastCompleted.getTime());
+    }
   }
 
   /**
    * @param lastStarted the lastStarted to set
    */
   public void setLastStarted(Date lastStarted) {
-    this.lastStarted = new Date(lastStarted.getTime());
+    if (lastStarted != null) {
+      this.lastStarted = new Date(lastStarted.getTime());
+    }
   }
 
   /**
@@ -337,6 +368,13 @@ public class GarbageCollectionDefinitionImpl {
   }
 
   /**
+   * @param org the org to set
+   */
+  public void setOrg(OrganizationImpl org) {
+    this.org = org;
+  }
+
+  /**
    * @param pk the pk to set
    */
   @SuppressWarnings("unused")
@@ -356,7 +394,7 @@ public class GarbageCollectionDefinitionImpl {
    */
   public GarbageCollectionDefinition toGCD() {
     return new GarbageCollectionDefinition(id, name, depository.getId(), sensor.getId(),
-        ignoreWindowDays, collectWindowDays, minGapSeconds);
+        org.getId(), ignoreWindowDays, collectWindowDays, minGapSeconds);
   }
 
   /*
@@ -367,10 +405,10 @@ public class GarbageCollectionDefinitionImpl {
   @Override
   public String toString() {
     return "GarbageCollectionDefinitionImpl [pk=" + pk + ", id=" + id + ", name=" + name
-        + ", depository=" + depository + ", sensor=" + sensor + ", ignoreWindowDays="
-        + ignoreWindowDays + ", collectWindowDays=" + collectWindowDays + ", minGapSeconds="
-        + minGapSeconds + ", lastStarted=" + lastStarted + ", lastCompleted=" + lastCompleted
-        + ", numMeasurementsCollected=" + numMeasurementsCollected + "]";
+        + ", depository=" + depository + ", sensor=" + sensor + ", organization=" + org
+        + ", ignoreWindowDays=" + ignoreWindowDays + ", collectWindowDays=" + collectWindowDays
+        + ", minGapSeconds=" + minGapSeconds + ", lastStarted=" + lastStarted + ", lastCompleted="
+        + lastCompleted + ", numMeasurementsCollected=" + numMeasurementsCollected + "]";
   }
 
 }

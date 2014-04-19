@@ -202,10 +202,8 @@ public class Measurement {
 
   /**
    * The String measurementType must be a javax.measure.unit.Unit toString()
-   * value.
-   * 
-   * @see http://jscience.org/api/javax/measure/unit/NonSI.html or
-   *      http://jscience.org/api/javax/measure/unit/SI.html
+   * value. See http://jscience.org/api/javax/measure/unit/NonSI.html or
+   * http://jscience.org/api/javax/measure/unit/SI.html
    * 
    * @param measurementType the measurementType to set
    */

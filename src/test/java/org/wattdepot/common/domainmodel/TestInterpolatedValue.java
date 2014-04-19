@@ -31,11 +31,11 @@ import org.junit.Test;
  * @author Cam Moore
  * 
  */
-public class TestMeasuredValue {
+public class TestInterpolatedValue {
 
   /**
    * Test method for
-   * {@link org.wattdepot.common.domainmodel.InterpolatedValue#MeasuredValue()}.
+   * {@link org.wattdepot.common.domainmodel.InterpolatedValue#InterpolatedValue()}.
    */
   @Test
   public void testMeasuredValue() {

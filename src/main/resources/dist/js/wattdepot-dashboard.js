@@ -376,8 +376,8 @@ function DailyEnergyGraph() {
     var element = $("#daily-energy");
     element.append('<div class="temp-holder"><p>Loading graph...</p></div>');
     var now = new Date();
-    var end = new Date(now.getFullYear(), now.getMonth(), now.getDay() - 1, 23, 59, 59, 999);
-    var start = new Date(now.getFullYear(), now.getMonth(), now.getDay() - 7, 0, 0, 0 ,0);
+    var end = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1, 23, 59, 59, 999);
+    var start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7, 0, 0, 0 ,0);
     var gvizUrl = serverUrl + "/" + organization + "/depository/"
         + energyDepository + "/values/gviz/?sensor=" + energySensor
         + "&start=" + getTimestampFromDate(start) + "&end=" + getTimestampFromDate(end) 
@@ -409,6 +409,7 @@ function DailyEnergyGraph() {
     energyTable.addColumn('number', 'Daily Energy');
     energyTable.addRows(7);
     for (var i = 1; i < dataTable.getNumberOfRows(); i++) {
+      console.log(dataTable.getValue(i, 1));
       energyTable.setCell(i-1, 0, dataTable.getValue(i, 1));
     }
     return energyTable;

@@ -32,6 +32,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
 import org.wattdepot.common.domainmodel.InstanceFactory;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Measurement;
@@ -177,7 +178,6 @@ public class TestWattDepotPersistenceImpl {
 
   /**
    * Test methods for dealing with CollectorProcessDefinitions.
-   * 
    */
   @Test
   public void testCollectorProcessDefinitions() {
@@ -477,6 +477,157 @@ public class TestWattDepotPersistenceImpl {
   }
 
   /**
+   * Tests for GarbageCollectionDefinitions.
+   */
+  @Test
+  public void testGarbageCollectionDefinitions() {
+    // get the list of GarbageCollectionDefinitions
+    List<GarbageCollectionDefinition> list = null;
+    try {
+      list = impl.getGarbageCollectionDefinitions(testOrg.getId(), true);
+    }
+    catch (IdNotFoundException e3) {
+      fail(e3.getMessage() + " should not happen");
+    }
+    int numCollector = list.size();
+    assertTrue(numCollector >= 0);
+    // Create a new instance
+    GarbageCollectionDefinition gcd = InstanceFactory.getGarbageCollectionDefinition();
+    try {
+      impl.defineGarbageCollectionDefinition(gcd.getId(), gcd.getName(), gcd.getDepositoryId(),
+          gcd.getSensorId(), gcd.getOrganizationId(), gcd.getIgnoreWindowDays(),
+          gcd.getCollectWindowDays(), gcd.getMinGapSeconds());
+    }
+    catch (UniqueIdException e) {
+      fail(gcd.getId() + " should not exist in persistence.");
+    }
+    catch (BadSlugException e) {
+      fail(gcd.getId() + " is valid.");
+    }
+    catch (IdNotFoundException e) {
+      // This is expected.
+      try {
+        addSensor();
+        addMeasurementType();
+        addDepository();
+      }
+      catch (MisMatchedOwnerException e1) {
+        e1.printStackTrace();
+        fail(e1.getMessage() + " shouldn't happen");
+      }
+      catch (UniqueIdException e1) {
+        e1.printStackTrace();
+        fail(e1.getMessage() + " shouldn't happen");
+      }
+      catch (IdNotFoundException e1) {
+        e1.printStackTrace();
+        fail(e1.getMessage() + " shouldn't happen");
+      }
+    }
+    try {
+      impl.defineGarbageCollectionDefinition(gcd.getId(), gcd.getName(), gcd.getDepositoryId(),
+          gcd.getSensorId(), gcd.getOrganizationId(), gcd.getIgnoreWindowDays(),
+          gcd.getCollectWindowDays(), gcd.getMinGapSeconds());
+    }
+    catch (UniqueIdException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " shouldn't happen");
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " shouldn't happen");
+    }
+    catch (BadSlugException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " shouldn't happen");
+    }
+    // try to define it again.
+    try {
+      impl.defineGarbageCollectionDefinition(gcd.getId(), gcd.getName(), gcd.getDepositoryId(),
+          gcd.getSensorId(), gcd.getOrganizationId(), gcd.getIgnoreWindowDays(),
+          gcd.getCollectWindowDays(), gcd.getMinGapSeconds());
+    }
+    catch (UniqueIdException e2) {
+      // expected result
+    }
+    catch (IdNotFoundException e2) {
+      e2.printStackTrace();
+      fail(e2.getMessage() + " shouldn't happen");
+    }
+    catch (BadSlugException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " shouldn't happen");
+    }
+
+    try {
+      list = impl.getGarbageCollectionDefinitions(testOrg.getId(), true);
+    }
+    catch (IdNotFoundException e2) {
+      fail(e2.getMessage() + " should not happen");
+    }
+    assertTrue(numCollector + 1 == list.size());
+    List<String> ids = null;
+    try {
+      ids = impl.getGarbageCollectionDefinitionIds(testOrg.getId(), true);
+    }
+    catch (IdNotFoundException e2) {
+      fail(e2.getMessage() + " should not happen");
+    }
+    assertTrue(list.size() == ids.size());
+    try {
+      GarbageCollectionDefinition defined = impl.getGarbageCollectionDefinition(gcd.getId(),
+          gcd.getOrganizationId(), true);
+      System.out.println(gcd);
+      System.out.println(defined);
+      assertNotNull(defined);
+      assertTrue(defined.equals(gcd));
+      assertTrue(defined.toString().equals(gcd.toString()));
+      defined.setName("New Name");
+      // Update the instance
+      impl.updateGarbageCollectionDefinition(defined);
+      GarbageCollectionDefinition updated = impl.getGarbageCollectionDefinition(gcd.getId(),
+          gcd.getOrganizationId(), true);
+      assertNotNull(updated);
+      assertTrue(defined.equals(updated));
+      assertFalse(updated.equals(gcd));
+      assertTrue(defined.hashCode() == updated.hashCode());
+      assertFalse(updated.hashCode() == gcd.hashCode());
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+      fail("should not happen");
+    }
+    // Delete the instance
+    try {
+      impl.deleteGarbageCollectionDefinition("bogus-collector-3921", gcd.getOrganizationId());
+      fail("should be able to delete bogus GarbageCollectionDefinition.");
+    }
+    catch (IdNotFoundException e1) {
+      // expected.
+    }
+    try {
+      impl.deleteGarbageCollectionDefinition(gcd.getId(), gcd.getOrganizationId());
+      list = impl.getGarbageCollectionDefinitions(testOrg.getId(), true);
+      assertTrue(numCollector == list.size());
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+      fail("should not happen");
+    }
+    try {
+      deleteSensor();
+    }
+    catch (MisMatchedOwnerException e) {
+      e.printStackTrace();
+      fail("should not happen");
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+      fail("should not happen");
+    }
+  }
+
+  /**
    * Tests for dealing with Measurements.
    */
   @Test
@@ -605,7 +756,8 @@ public class TestWattDepotPersistenceImpl {
       }
       try {
         Double val = impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId,
-            InstanceFactory.getTimeBetweenM1andM2(), InstanceFactory.getTimeBetweenM1andM3(), 700L, true);
+            InstanceFactory.getTimeBetweenM1andM2(), InstanceFactory.getTimeBetweenM1andM3(), 700L,
+            true);
         assertTrue(Math.abs(val - 0.0) < 0.001);
       }
       catch (NoMeasurementException e) {

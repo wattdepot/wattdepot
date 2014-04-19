@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementRateSummary;
@@ -105,6 +106,27 @@ public abstract class WattDepotPersistence {
   public abstract Depository defineDepository(String id, String name,
       MeasurementType measurementType, String orgId) throws UniqueIdException, IdNotFoundException,
       BadSlugException;
+
+  /**
+   * Defines a new GarbageCollectionDefinition.
+   * 
+   * @param id The id of the garbage collection definition.
+   * @param name The name of the garbage collection definition.
+   * @param depositoryId The id of the depository.
+   * @param sensorId The id of the sensor.
+   * @param orgId The organization id.
+   * @param ignore The number of days to ignore starting from now.
+   * @param collect The number of days to garbage collect in.
+   * @param gap The minimum gap between measurements in seconds.
+   * @return the defined GarbageCollectionDefinition.
+   * @throws UniqueIdException if the id derived from name is already defined.
+   * @throws BadSlugException if the id isn't valid.
+   * @throws IdNotFoundException If the depository, sensor or organization are
+   *         not defined.
+   */
+  public abstract GarbageCollectionDefinition defineGarbageCollectionDefinition(String id,
+      String name, String depositoryId, String sensorId, String orgId, Integer ignore,
+      Integer collect, Integer gap) throws UniqueIdException, BadSlugException, IdNotFoundException;
 
   /**
    * Defines a new MeasurementType in WattDepot.
@@ -225,6 +247,16 @@ public abstract class WattDepotPersistence {
    */
   public abstract void deleteDepository(String id, String orgId) throws IdNotFoundException,
       MisMatchedOwnerException;
+
+  /**
+   * Deletes the given GarbageCollectionDefinition.
+   * 
+   * @param id The id of the GarbageCollectionDefinition to delete.
+   * @param orgId The Organization's id.
+   * @throws IdNotFoundException if the id is not defined.
+   */
+  public abstract void deleteGarbageCollectionDefinition(String id, String orgId)
+      throws IdNotFoundException;
 
   /**
    * @param depotId the id of the Depository storing the measurement.
@@ -364,6 +396,34 @@ public abstract class WattDepotPersistence {
    */
   public abstract InterpolatedValue getEarliestMeasuredValue(String depotId, String orgId,
       String sensorId, boolean check) throws NoMeasurementException, IdNotFoundException;
+
+  /**
+   * @param id The id of the GarbageCollectionDefinition.
+   * @param orgId The Organization's id.
+   * @param check true if want to check the ids.
+   * @return The defined GarbageCollectionDefinition.
+   * @throws IdNotFoundException if the id is not defined.
+   */
+  public abstract GarbageCollectionDefinition getGarbageCollectionDefinition(String id,
+      String orgId, boolean check) throws IdNotFoundException;
+
+  /**
+   * @param orgId The Organization's id.
+   * @param check true if want to check the ids.
+   * @return A list of the defined GarbageCollectionDefinition ids.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract List<String> getGarbageCollectionDefinitionIds(String orgId, boolean check)
+      throws IdNotFoundException;
+
+  /**
+   * @param orgId The Organization's id.
+   * @param check true if want to check the ids.
+   * @return A list of the defined GarbageCollectionDefinitions.
+   * @throws IdNotFoundException If there is a problem with the ids.
+   */
+  public abstract List<GarbageCollectionDefinition> getGarbageCollectionDefinitions(String orgId,
+      boolean check) throws IdNotFoundException;
 
   /**
    * @param depotId the id of the Depository.
@@ -793,7 +853,7 @@ public abstract class WattDepotPersistence {
   public abstract void stop();
 
   /**
-   * Updates the given sensor process in the persistent store.
+   * Updates the given CollectorProcessDefinition in the persistent store.
    * 
    * @param process The updated CollectorProcessDefinition.
    * @return The updated process from persistence.
@@ -802,6 +862,16 @@ public abstract class WattDepotPersistence {
    */
   public abstract CollectorProcessDefinition updateCollectorProcessDefinition(
       CollectorProcessDefinition process) throws IdNotFoundException;
+
+  /**
+   * Updates the given GarbageCollectionDefinition in the persistent store.
+   * 
+   * @param gcd The updated GarbageCollectionDefinition.
+   * @return The updated GarbageCollectionDefinition from persistence.
+   * @throws IdNotFoundException If there is a problem with the ids.
+   */
+  public abstract GarbageCollectionDefinition updateGarbageCollectionDefinition(
+      GarbageCollectionDefinition gcd) throws IdNotFoundException;
 
   /**
    * Updates the given measurement type in the persistent store.

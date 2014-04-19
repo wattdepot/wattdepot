@@ -31,6 +31,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.hibernate.Session;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementRateSummary;
@@ -215,7 +216,6 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
         updateUserInfo(UserInfo.ROOT);
       }
       catch (IdNotFoundException e) {
-        // TODO Auto-generated catch block
         e.printStackTrace();
       }
       if (checkSession && getSessionClose() != getSessionOpen()) {
@@ -332,6 +332,50 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.close();
     sessionClose++;
     return d;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.server.WattDepotPersistence#defineGarbageCollectionDefinition
+   * (java.lang.String, java.lang.String, java.lang.String, java.lang.String,
+   * java.lang.String, java.lang.Integer, java.lang.Integer, java.lang.Integer)
+   */
+  @Override
+  public GarbageCollectionDefinition defineGarbageCollectionDefinition(String id, String name,
+      String depositoryId, String sensorId, String orgId, Integer ignore, Integer collect,
+      Integer gap) throws UniqueIdException, BadSlugException, IdNotFoundException {
+    if (!Slug.validateSlug(id)) {
+      throw new BadSlugException(id + " is not a valid id.");
+    }
+    getOrganization(orgId, true);
+    getDepository(depositoryId, orgId, true);
+    getSensor(sensorId, orgId, true);
+    GarbageCollectionDefinition gcd = null;
+    try {
+      gcd = getGarbageCollectionDefinition(id, orgId, true);
+      if (gcd != null) {
+        throw new UniqueIdException(name + " is already a GarbageCollectionDefinition name.");
+      }
+    }
+    catch (IdNotFoundException e) { // NOPMD
+      // ok since we are defining it.
+    }
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    sessionOpen++;
+    session.beginTransaction();
+    DepositoryImpl dep = retrieveDepository(session, depositoryId, orgId);
+    SensorImpl sensor = retrieveSensor(session, sensorId, orgId);
+    OrganizationImpl org = retrieveOrganization(session, orgId);
+    GarbageCollectionDefinitionImpl impl = new GarbageCollectionDefinitionImpl(id, name, dep,
+        sensor, org, ignore, collect, gap);
+    gcd = impl.toGCD();
+    session.save(impl);
+    session.getTransaction().commit();
+    session.close();
+    sessionClose++;
+    return gcd;
   }
 
   /*
@@ -621,6 +665,26 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * (non-Javadoc)
    * 
    * @see
+   * org.wattdepot.server.WattDepotPersistence#deleteGarbageCollectionDefinition
+   * (java.lang.String)
+   */
+  @Override
+  public void deleteGarbageCollectionDefinition(String id, String orgId) throws IdNotFoundException {
+    getGarbageCollectionDefinition(id, orgId, true);
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    sessionOpen++;
+    session.beginTransaction();
+    GarbageCollectionDefinitionImpl impl = retrieveGarbageCollectionDefinition(session, id, orgId);
+    session.delete(impl);
+    session.getTransaction().commit();
+    session.close();
+    sessionClose++;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
    * org.wattdepot.server.WattDepotPersistence#deleteMeasurement(java.lang.String
    * , java.lang.String)
    */
@@ -691,6 +755,16 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     sessionOpen++;
     session.beginTransaction();
     for (CollectorProcessDefinitionImpl sp : retrieveCollectorProcessDefinitions(session, id)) {
+      session.delete(sp);
+    }
+    session.getTransaction().commit();
+    session.close();
+    sessionClose++;
+    // Remove Organization owned GarbageCollectionDefinitions
+    session = Manager.getFactory(getServerProperties()).openSession();
+    sessionOpen++;
+    session.beginTransaction();
+    for (GarbageCollectionDefinitionImpl sp : retrieveGarbageCollectionDefinitions(session, id)) {
       session.delete(sp);
     }
     session.getTransaction().commit();
@@ -1225,6 +1299,115 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
           + orgId + ", " + sensorId + ") took " + (diff / 1E9) + " secs.");
     }
     return value;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.server.WattDepotPersistence#getGarbageCollectionDefinition
+   * (java.lang.String, java.lang.String, boolean)
+   */
+  @Override
+  public GarbageCollectionDefinition getGarbageCollectionDefinition(String id, String orgId,
+      boolean check) throws IdNotFoundException {
+    Long startTime = 0l;
+    Long endTime = 0l;
+    Long diff = 0l;
+    if (timingp) {
+      timingLogger.log(Level.SEVERE, padding + "Start getGarbageCollectionDefinition(" + id + ", "
+          + orgId + ")");
+      padding += "  ";
+      startTime = System.nanoTime();
+    }
+    if (check) {
+      getOrganization(orgId, check);
+    }
+    GarbageCollectionDefinition gcd = getGarbageCollectionDefinitionNoCheck(id, orgId);
+    if (timingp) {
+      endTime = System.nanoTime();
+      diff = endTime - startTime;
+      padding = padding.substring(0, padding.length() - 2);
+      timingLogger.log(Level.SEVERE, padding + "getGarbageCollectionDefinition(" + id + ", "
+          + orgId + ") took " + (diff / 1E9) + " secs.");
+    }
+    if (gcd == null) {
+      throw new IdNotFoundException(id + " is not a defined GarbageCollectionDefinition id.");
+    }
+    return gcd;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.server.WattDepotPersistence#getGarbageCollectionDefinitionIds
+   * (java.lang.String, boolean)
+   */
+  @Override
+  public List<String> getGarbageCollectionDefinitionIds(String orgId, boolean check)
+      throws IdNotFoundException {
+    ArrayList<String> ret = new ArrayList<String>();
+    for (GarbageCollectionDefinition gcd : getGarbageCollectionDefinitions(orgId, check)) {
+      ret.add(gcd.getId());
+    }
+    return ret;
+  }
+
+  /**
+   * @param id The GarbageCollectionDefinition's id.
+   * @param orgId The Organization's id.
+   * @return The GarbageCollectionDefinition with the given id and orgId, or
+   *         null if not defined.
+   */
+  private GarbageCollectionDefinition getGarbageCollectionDefinitionNoCheck(String id, String orgId) {
+    GarbageCollectionDefinition ret = null;
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    sessionOpen++;
+    session.beginTransaction();
+    GarbageCollectionDefinitionImpl gcd = retrieveGarbageCollectionDefinition(session, id, orgId);
+    if (gcd != null) {
+      ret = gcd.toGCD();
+    }
+    session.getTransaction().commit();
+    session.close();
+    sessionClose++;
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.server.WattDepotPersistence#getGarbageCollectionDefinitions
+   * (java.lang.String, boolean)
+   */
+  @Override
+  public List<GarbageCollectionDefinition> getGarbageCollectionDefinitions(String orgId,
+      boolean check) throws IdNotFoundException {
+    if (check) {
+      getOrganization(orgId, check);
+    }
+    return getGarbageCollectionDefinitionsNoCheck(orgId);
+  }
+
+  /**
+   * @param orgId The Organization's id.
+   * @return A list of defined GarbageCollectionDefinitions.
+   */
+  private List<GarbageCollectionDefinition> getGarbageCollectionDefinitionsNoCheck(String orgId) {
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    sessionOpen++;
+    session.beginTransaction();
+    List<GarbageCollectionDefinitionImpl> r = retrieveGarbageCollectionDefinitions(session, orgId);
+    List<GarbageCollectionDefinition> ret = new ArrayList<GarbageCollectionDefinition>();
+    for (GarbageCollectionDefinitionImpl gcd : r) {
+      ret.add(gcd.toGCD());
+    }
+    session.getTransaction().commit();
+    session.close();
+    sessionClose++;
+    return ret;
   }
 
   /*
@@ -2982,49 +3165,6 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
 
   /**
    * @param session The session with an open transaction.
-   * @param orgId The owner's Organization id.
-   * @return A List of the Depositories owned by orgId.
-   */
-  @SuppressWarnings("unchecked")
-  private List<DepositoryImpl> retrieveDepositories(Session session, String orgId) {
-    OrganizationImpl org = retrieveOrganization(session, orgId);
-    List<DepositoryImpl> ret = (List<DepositoryImpl>) session
-        .createQuery("from DepositoryImpl WHERE org = :org").setParameter("org", org).list();
-    return ret;
-  }
-
-  /**
-   * @param session The session with an open transaction.
-   * @param type The measurement type of the depository.
-   * @return A List of all the depositories with the given measurment type.
-   */
-  @SuppressWarnings("unchecked")
-  private List<DepositoryImpl> retrieveDepositories(Session session, MeasurementTypeImpl type) {
-    List<DepositoryImpl> ret = (List<DepositoryImpl>) session
-        .createQuery("from DepositoryImpl WHERE type = :type").setParameter("type", type).list();
-    return ret;
-  }
-
-  /**
-   * @param session The session with an open transaction.
-   * @param id the Depository's id.
-   * @param orgId The owner's Organization id.
-   * @return A List of the Depositories owned by orgId.
-   */
-  @SuppressWarnings("unchecked")
-  private DepositoryImpl retrieveDepository(Session session, String id, String orgId) {
-    OrganizationImpl org = retrieveOrganization(session, orgId);
-    List<DepositoryImpl> ret = (List<DepositoryImpl>) session
-        .createQuery("from DepositoryImpl WHERE id = :id AND org = :org").setParameter("id", id)
-        .setParameter("org", org).list();
-    if (ret.size() == 1) {
-      return ret.get(0);
-    }
-    return null;
-  }
-
-  /**
-   * @param session The session with an open transaction.
    * @param depo The Depository.
    * @param sensor The Sensor.
    * @return The DepositorySensorContribution if the sensor has contributed
@@ -3069,6 +3209,83 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
         .createQuery("from DepositorySensorContribution where sensor = :sensor")
         .setParameter("sensor", sensor).list();
     return ret;
+  }
+
+  /**
+   * @param session The session with an open transaction.
+   * @param type The measurement type of the depository.
+   * @return A List of all the depositories with the given measurment type.
+   */
+  @SuppressWarnings("unchecked")
+  private List<DepositoryImpl> retrieveDepositories(Session session, MeasurementTypeImpl type) {
+    List<DepositoryImpl> ret = (List<DepositoryImpl>) session
+        .createQuery("from DepositoryImpl WHERE type = :type").setParameter("type", type).list();
+    return ret;
+  }
+
+  /**
+   * @param session The session with an open transaction.
+   * @param orgId The owner's Organization id.
+   * @return A List of the Depositories owned by orgId.
+   */
+  @SuppressWarnings("unchecked")
+  private List<DepositoryImpl> retrieveDepositories(Session session, String orgId) {
+    OrganizationImpl org = retrieveOrganization(session, orgId);
+    List<DepositoryImpl> ret = (List<DepositoryImpl>) session
+        .createQuery("from DepositoryImpl WHERE org = :org").setParameter("org", org).list();
+    return ret;
+  }
+
+  /**
+   * @param session The session with an open transaction.
+   * @param id the Depository's id.
+   * @param orgId The owner's Organization id.
+   * @return A List of the Depositories owned by orgId.
+   */
+  @SuppressWarnings("unchecked")
+  private DepositoryImpl retrieveDepository(Session session, String id, String orgId) {
+    OrganizationImpl org = retrieveOrganization(session, orgId);
+    List<DepositoryImpl> ret = (List<DepositoryImpl>) session
+        .createQuery("from DepositoryImpl WHERE id = :id AND org = :org").setParameter("id", id)
+        .setParameter("org", org).list();
+    if (ret.size() == 1) {
+      return ret.get(0);
+    }
+    return null;
+  }
+
+  /**
+   * @param session The session with an open transaction.
+   * @param id the GarbageCollectionDefinition's id.
+   * @param orgId The Organization's id.
+   * @return The GarbageCollectionDefinitionImpl or null if not defined.
+   */
+  private GarbageCollectionDefinitionImpl retrieveGarbageCollectionDefinition(Session session,
+      String id, String orgId) {
+    OrganizationImpl org = retrieveOrganization(session, orgId);
+    @SuppressWarnings("unchecked")
+    List<GarbageCollectionDefinitionImpl> result = (List<GarbageCollectionDefinitionImpl>) session
+        .createQuery("FROM GarbageCollectionDefinitionImpl WHERE id = :id AND org = :org")
+        .setParameter("id", id).setParameter("org", org).list();
+    if (result.size() == 1) {
+      return result.get(0);
+    }
+    return null;
+  }
+
+  /**
+   * @param session The Session with an open transaction.
+   * @param orgId The Organization's id.
+   * @return A list of the defined GarbageCollectionDefinitionImpls.
+   */
+  private List<GarbageCollectionDefinitionImpl> retrieveGarbageCollectionDefinitions(
+      Session session, String orgId) {
+    OrganizationImpl org = retrieveOrganization(session, orgId);
+    @SuppressWarnings("unchecked")
+    List<GarbageCollectionDefinitionImpl> result = (List<GarbageCollectionDefinitionImpl>) session
+        .createQuery("FROM GarbageCollectionDefinitionImpl WHERE org = :org")
+        .setParameter("org", org).list();
+    return result;
   }
 
   /**
@@ -3376,6 +3593,37 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.close();
     sessionClose++;
     return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.server.WattDepotPersistence#updateGarbageCollectionDefinition
+   * (org.wattdepot.common.domainmodel.GarbageCollectionDefinition)
+   */
+  @Override
+  public GarbageCollectionDefinition updateGarbageCollectionDefinition(
+      GarbageCollectionDefinition gcd) throws IdNotFoundException {
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    sessionOpen++;
+    session.beginTransaction();
+    GarbageCollectionDefinitionImpl impl = retrieveGarbageCollectionDefinition(session,
+        gcd.getId(), gcd.getOrganizationId());
+    impl.setName(gcd.getName());
+    impl.setDepository(retrieveDepository(session, gcd.getDepositoryId(), gcd.getOrganizationId()));
+    impl.setSensor(retrieveSensor(session, gcd.getSensorId(), gcd.getOrganizationId()));
+    impl.setIgnoreWindowDays(gcd.getIgnoreWindowDays());
+    impl.setCollectWindowDays(gcd.getCollectWindowDays());
+    impl.setMinGapSeconds(gcd.getMinGapSeconds());
+    impl.setLastStarted(gcd.getLastStarted());
+    impl.setLastCompleted(gcd.getLastCompleted());
+    impl.setNumMeasurementsCollected(gcd.getNumMeasurementsCollected());
+    session.saveOrUpdate(impl);
+    session.getTransaction().commit();
+    session.close();
+    sessionClose++;
+    return null;
   }
 
   /*
