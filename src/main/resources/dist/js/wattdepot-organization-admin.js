@@ -53,6 +53,10 @@ function getKnownCPD(id) {
     return CPDS[id];
 }
 
+function getKnownGCD(id) {
+  return GCDS[id];
+}
+
 // ****************** Depositories **************************
 function putNewDepository() {
     var id = $("input[name='depository_id']").val();
@@ -452,7 +456,7 @@ function deleteModel() {
     });
 };
 
-//****************** Sensor Processes **************************
+//****************** Collector Process Definitions **************************
 function putNewCPD() {
     var id = $("input[name='cpd_id']").val();
     var name = $("input[name='cpd_name']").val();
@@ -550,6 +554,116 @@ function deleteCPD() {
     setSelectedTab('sensorprocesses');
     $.ajax({
         url : '/wattdepot/' + ORGID + '/collector-process-definition/' + id,
+        type : 'DELETE',
+        contentType : 'application/json',
+        success : function() {
+            location.reload();
+        },
+    });
+};
+
+//****************** Garbage Collection Definitions **************************
+function putNewGCD() {
+    var id = $("input[name='gcd_id']").val();
+    var name = $("input[name='gcd_name']").val();
+    var selected_depository = $("select[name='cpd_depository']").val();
+    var selected_sensor = $("select[name='gcd_sensor']").val();
+    var ignore = $("input[name=gcd_ignore").val();
+    var collect = $("input[name='gcd_collect']").val();
+    var gap = $("input[name='gcd_gap']").val();
+    var gcd = {
+        "id" : id,
+        "name" : name,
+        "depositoryId" : selected_depository,
+        "sensorId" : selected_sensor,
+        "ignoreWindowDays" : ignore,
+        "collectWindowDays" : collect,
+        "minGapSeconds" : gap,
+        "organizationId" : ORGID
+    };
+    setSelectedTab('garbagecollection');
+    $.ajax({
+        url : '/wattdepot/' + ORGID + '/garbage-collection-definition/',
+        type : 'PUT',
+        contentType : 'application/json',
+        data : JSON.stringify(gcd),
+        success : function() {
+            location.reload();
+        },
+    });
+};
+
+
+function edit_gcd_dialog(event, id) {
+    setSelectedTab('garbagecollection');
+    var modalElement = $('#editGCDModal');
+    modalElement.modal({
+        backdrop : true,
+        keyboard : true,
+        show : false
+    });
+    var gcd = getKnownGCD(id);
+    $("input[name='edit_gcd_id']").val(id);
+    $("input[name='edit_gcd_name']").val(gcd['id']);
+    var mid = gcd.depositoryId;
+    $('select[name="edit_cpd_depository"] option[value="' + mid + '"]').prop(
+        "selected", "selected");
+    var lid = gcd.sensorId;
+    $('select[name="edit_gcd_sensor"] option[value="' + lid + '"]').prop(
+            "selected", "selected");
+    $("input[name='edit_gcd_ignore']").val(gcd['ignoreWindowDays']);
+    $("input[name='edit_gcd_collect']").val(gcd['collectWindowDays']);
+    $("input[name='edit_gcd_gap']").val(gcd['minGapSeconds']);
+    modalElement.modal('show');
+};
+
+function updateGCD() {
+  var id = $("input[name='edit_gcd_id']").val();
+  var name = $("input[name='edit_gcd_name']").val();
+  var selected_depository = $("select[name='edit_gcd_depository']").val();
+  var selected_sensor = $("select[name='edit_gcd_sensor']").val();
+  var ignore = $("input[name='edit_gcd_ignore']").val();
+  var collect = $("input[name='edit_gcd_collect']").val();
+  var gap = $("input[name='edit_gcd_gap']").val();
+  var gcd = {
+      "id" : id,
+      "name" : name,
+      "depositoryId" : selected_depository,
+      "sensorId" : selected_sensor,
+      "ignoreWindowDays" : ignore,
+      "collectWindowDays" : collect,
+      "minGapSeconds" : gap,
+      "organizationId" : ORGID
+  };
+  setSelectedTab('garbagecollection');
+  $.ajax({
+      url : '/wattdepot/' + ORGID + '/garbage-collection-definition/' + id,
+      type : 'POST',
+      contentType : 'application/json',
+      data : JSON.stringify(gcd),
+      success : function() {
+          location.reload();
+      },
+  });
+};
+
+function delete_gcd_dialog(event, id) {
+    var modalElement = $('#deleteGCDModal');
+
+    modalElement.modal({
+        backdrop : true,
+        keyboard : true,
+        show : false
+    });
+    modalElement.find('#del_gcd_id').html(id);
+    modalElement.modal('show');
+};
+
+function deleteGCD() {
+    var id = $('#del_gcd_id').html();
+    setSelectedTab('garbagecollection');
+    $.ajax({
+        url : '/wattdepot/' + ORGID + '/garbage-collection-definition/' + id,
         type : 'DELETE',
         contentType : 'application/json',
         success : function() {

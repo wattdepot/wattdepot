@@ -20,9 +20,11 @@ package org.wattdepot.server.http.api;
 
 import java.util.logging.Level;
 
+import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
 import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.http.api.API;
 import org.wattdepot.common.http.api.GarbageCollectionDefinitionReasource;
 
@@ -62,8 +64,23 @@ public class GarbageCollectionDefinitionServerResource extends WattDepotServerRe
         Level.INFO,
         "GET " + API.BASE_URI + "{" + orgId + "}/" + Labels.GARBAGE_COLLECTION_DEFINITION + "/{"
             + gcdId + "}");
-
-    return null;
+    GarbageCollectionDefinition gcd = null;
+    if (isInRole(orgId)) {
+      try {
+        gcd = depot.getGarbageCollectionDefinition(gcdId, orgId, true);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
+      if (gcd == null) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "GarbageCollectionDefinition " + gcdId
+            + " is not defined.");
+      }
+    }
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+    }
+    return gcd;
   }
 
   /*
@@ -78,8 +95,30 @@ public class GarbageCollectionDefinitionServerResource extends WattDepotServerRe
     getLogger().log(
         Level.INFO,
         "POST " + API.BASE_URI + "{" + orgId + "}/" + Labels.GARBAGE_COLLECTION_DEFINITION + "/{"
-            + gcdId + "}");
-
+            + gcdId + "} with " + definition);
+    if (isInRole(orgId)) {
+      if (definition.getId().equals(gcdId)) {
+        try {
+          if (depot.getGarbageCollectionDefinitionIds(orgId, true).contains(definition.getId())) {
+            try {
+              depot.updateGarbageCollectionDefinition(definition);
+            }
+            catch (IdNotFoundException e) {
+              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+            }
+          }
+        }
+        catch (IdNotFoundException e) {
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        }
+      }
+      else {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Ids do not match.");
+      }
+    }
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+    }
   }
 
   /*
@@ -94,7 +133,17 @@ public class GarbageCollectionDefinitionServerResource extends WattDepotServerRe
         Level.INFO,
         "DEL " + API.BASE_URI + "{" + orgId + "}/" + Labels.GARBAGE_COLLECTION_DEFINITION + "/{"
             + gcdId + "}");
-
+    if (isInRole(orgId)) {
+      try {
+        depot.deleteGarbageCollectionDefinition(gcdId, orgId);
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }      
+    }
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+    }
   }
 
 }

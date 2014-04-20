@@ -67,7 +67,7 @@ public class InstanceFactory {
    */
   public static GarbageCollectionDefinition getGarbageCollectionDefinition() {
     return new GarbageCollectionDefinition("Test GarbageCollectionDefinition", getDepository()
-        .getId(), getSensor().getId(), getOrganization().getId(), 7, 7, 300);
+        .getId(), getSensor().getId(), getOrganization().getId(), 1, 1, 300);
   }
 
   /**

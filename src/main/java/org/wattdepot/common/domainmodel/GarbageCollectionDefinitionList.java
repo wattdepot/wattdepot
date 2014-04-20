@@ -38,6 +38,15 @@ public class GarbageCollectionDefinitionList {
   }
 
   /**
+   * @param e a GarbageCollectionDefinition to add to the list.
+   * @return true if successful.
+   * @see java.util.ArrayList#add(java.lang.Object)
+   */
+  public boolean add(GarbageCollectionDefinition e) {
+    return definitions.add(e);
+  }
+
+  /**
    * @return the definitions
    */
   public ArrayList<GarbageCollectionDefinition> getDefinitions() {

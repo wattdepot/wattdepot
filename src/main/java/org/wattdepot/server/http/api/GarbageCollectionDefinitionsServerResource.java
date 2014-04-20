@@ -18,27 +18,51 @@
  */
 package org.wattdepot.server.http.api;
 
+import java.util.logging.Level;
+
+import org.restlet.data.Status;
+import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
 import org.wattdepot.common.domainmodel.GarbageCollectionDefinitionList;
+import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.http.api.GarbageCollectionDefinitionsResource;
 
 /**
  * GarbageCollectionDefinitionsServerResource - Handles the
  * GarbageCollectionDefinition HTTP API
  * ("/wattdepot/{org-id}/garbage-collection-definitions/").
- *
+ * 
  * @author Cam Moore
- *
+ * 
  */
 public class GarbageCollectionDefinitionsServerResource extends WattDepotServerResource implements
     GarbageCollectionDefinitionsResource {
 
-  /* (non-Javadoc)
-   * @see org.wattdepot.common.http.api.GarbageCollectionDefinitionsResource#retrieve()
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.common.http.api.GarbageCollectionDefinitionsResource#retrieve
+   * ()
    */
   @Override
   public GarbageCollectionDefinitionList retrieve() {
-    // TODO Auto-generated method stub
-    return null;
+    getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/garbage-collection-definitions/");
+    if (isInRole(orgId)) {
+      GarbageCollectionDefinitionList ret = new GarbageCollectionDefinitionList();
+      try {
+        for (GarbageCollectionDefinition gcd : depot.getGarbageCollectionDefinitions(orgId, true)) {
+          ret.add(gcd);
+        }
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization id.");
+      }
+      return ret;
+    }
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+      return null;
+    }
   }
 
 }

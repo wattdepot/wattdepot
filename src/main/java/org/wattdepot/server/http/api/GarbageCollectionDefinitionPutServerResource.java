@@ -23,7 +23,9 @@ import java.util.logging.Level;
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
 import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.exception.BadSlugException;
 import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.API;
 import org.wattdepot.common.http.api.GarbageCollectionDefinitionPutResource;
 
@@ -55,11 +57,20 @@ public class GarbageCollectionDefinitionPutServerResource extends WattDepotServe
     if (isInRole(orgId)) {
       try {
         depot.getOrganization(orgId, true);
+        depot.defineGarbageCollectionDefinition(definition.getId(), definition.getName(),
+            definition.getDepositoryId(), definition.getSensorId(), definition.getOrganizationId(),
+            definition.getIgnoreWindowDays(), definition.getCollectWindowDays(),
+            definition.getMinGapSeconds());
       }
       catch (IdNotFoundException e1) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");
       }
-
+      catch (UniqueIdException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
+      catch (BadSlugException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
     }
     else {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials");
