@@ -18,6 +18,7 @@
  */
 package org.wattdepot.server.garbage.collector;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
@@ -42,12 +43,14 @@ import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.BadSlugException;
 import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.util.DateConvert;
 import org.wattdepot.common.util.UnitsHelper;
 import org.wattdepot.common.util.tstamp.Tstamp;
 import org.wattdepot.server.ServerProperties;
+import org.wattdepot.server.WattDepotPersistence;
 import org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl;
 
 /**
@@ -67,6 +70,11 @@ public class TestMeasurementGarbageCollector {
   private static Depository depository;
   private static Sensor sensor;
   private static GarbageCollectionDefinition gcd;
+
+  private XMLGregorianCalendar now;
+  private XMLGregorianCalendar start;
+  private XMLGregorianCalendar end;
+  private int totalMeasurements;
 
   /**
    * Sets up the WattDepotPersistenceImpl using test properties.
@@ -132,13 +140,6 @@ public class TestMeasurementGarbageCollector {
     addMeasurementType();
     addDepository();
     addGarbageCollectionDefinition();
-    // Need to add high frequency Measurements to the database.
-    XMLGregorianCalendar start = Tstamp.incrementDays(Tstamp.makeTimestamp(), -1 * gcd.getIgnoreWindowDays());
-    XMLGregorianCalendar end = Tstamp.incrementDays(start, -1 * gcd.getCollectWindowDays());
-    List<XMLGregorianCalendar> measTimes = Tstamp.getTimestampList(end, start, 2);
-    for (XMLGregorianCalendar cal : measTimes) {
-      impl.putMeasurement(depository.getId(), depository.getOrganizationId(), makeMeasurement(cal));
-    }
   }
 
   /**
@@ -193,11 +194,32 @@ public class TestMeasurementGarbageCollector {
    */
   @Test
   public void testGetMeasurementsToDelete() throws Exception {
+    populateMeasurements(2);
     MeasurementGarbageCollector mgc = new MeasurementGarbageCollector(properties, gcd.getId(),
         gcd.getOrganizationId());
     List<Measurement> toDel = mgc.getMeasurementsToDelete();
     assertTrue(toDel.size() > 0);
-    System.out.println(toDel);
+    assertTrue(toDel.size() < totalMeasurements);
+  }
+
+  /**
+   * @throws Exception if there is a problem.
+   */
+  @Test
+  public void testGarbageCollection() throws Exception {
+    populateMeasurements(2);
+    MeasurementGarbageCollector mgc = new MeasurementGarbageCollector(properties, gcd.getId(),
+        gcd.getOrganizationId());
+    int numToDel = mgc.getMeasurementsToDelete().size();
+    mgc.run();
+    List<Measurement> toDel = mgc.getMeasurementsToDelete();
+    assertTrue(toDel.size() == 0);
+    WattDepotPersistence p = mgc.getPersistance();
+    List<Measurement> data = p.getMeasurements(gcd.getDepositoryId(), gcd.getOrganizationId(),
+        gcd.getSensorId(), false);
+    assertNotNull(data);
+    assertTrue(data.size() < totalMeasurements);
+    assertTrue(data.size() == totalMeasurements - numToDel);
   }
 
   /**
@@ -313,5 +335,24 @@ public class TestMeasurementGarbageCollector {
   private Measurement makeMeasurement(XMLGregorianCalendar time) {
     return new Measurement(InstanceFactory.getSensor().getId(), DateConvert.convertXMLCal(time),
         123.0, Unit.valueOf(InstanceFactory.getMeasurementType().getUnits()));
+  }
+
+  /**
+   * @param minBetween The number of minutes between measurements.
+   * @throws MeasurementTypeException This shouldn't happen.
+   * @throws IdNotFoundException If there is a problem with the ids. This
+   *         shouldn't happen.
+   */
+  private void populateMeasurements(int minBetween) throws MeasurementTypeException,
+      IdNotFoundException {
+    // Need to add high frequency Measurements to the database.
+    now = Tstamp.makeTimestamp();
+    start = Tstamp.incrementDays(now, -1 * gcd.getIgnoreWindowDays());
+    end = Tstamp.incrementDays(start, -1 * gcd.getCollectWindowDays());
+    List<XMLGregorianCalendar> measTimes = Tstamp.getTimestampList(end, now, minBetween);
+    totalMeasurements = measTimes.size();
+    for (XMLGregorianCalendar cal : measTimes) {
+      impl.putMeasurement(depository.getId(), depository.getOrganizationId(), makeMeasurement(cal));
+    }
   }
 }

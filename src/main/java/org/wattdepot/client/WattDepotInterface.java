@@ -24,6 +24,8 @@ import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.DepositoryList;
+import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.GarbageCollectionDefinitionList;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementList;
@@ -66,6 +68,13 @@ public interface WattDepotInterface {
    * @throws IdNotFoundException if the Depository is not found in the server.
    */
   public void deleteDepository(Depository depository) throws IdNotFoundException;
+
+  /**
+   * Deletes the given GarbageCollectionDefinition from the WattDepotServer.
+   * 
+   * @param gcd The GarbageCollectionDefinition to delete.
+   */
+  void deleteGarbageCollectionDefinition(GarbageCollectionDefinition gcd);
 
   /**
    * Deletes the given measurement from the given depository.
@@ -163,6 +172,19 @@ public interface WattDepotInterface {
    * @return The earliest Value.
    */
   public InterpolatedValue getEarliestValue(Depository depository, SensorGroup group);
+
+  /**
+   * @param id The GarbageCollectionDefinition id.
+   * @return The defined GarbageCollectionDefinition.
+   * @throws IdNotFoundException if id is not defined.
+   */
+  public GarbageCollectionDefinition getGarbageCollectionDefinition(String id)
+      throws IdNotFoundException;
+
+  /**
+   * @return All the defined GarbageCollectionDefinitions.
+   */
+  public GarbageCollectionDefinitionList getGarbageCollectionDefinitions();
 
   /**
    * @param depository The Depository storing the Measurements.
@@ -387,6 +409,14 @@ public interface WattDepotInterface {
   public boolean isDefinedDepository(String id);
 
   /**
+   * Checks to see if the given id is a defined GarbageCollectionDefinition id.
+   * 
+   * @param id the id to check.
+   * @return true if the id is a defined GarbageCollectionDefinition's id.
+   */
+  public boolean isDefinedGarbageCollectionDefinition(String id);
+
+  /**
    * Checks to see if the given id is a defined MeasurementType id.
    * 
    * @param id the id to check.
@@ -441,6 +471,13 @@ public interface WattDepotInterface {
   public void putDepository(Depository depository);
 
   /**
+   * Stores the given GarbageCollectionDefinition in the WattDepot Server.
+   * 
+   * @param gcd the GarbageCollectionDefinition.
+   */
+  public void putGarbageCollectionDefinition(GarbageCollectionDefinition gcd);
+
+  /**
    * @param depository The Depository to store the Measurement.
    * @param measurement The Measurement to store.
    * @throws MeasurementTypeException if the type of the measurement doesn't
@@ -490,6 +527,13 @@ public interface WattDepotInterface {
    * @param depository The Depository to update.
    */
   public void updateDepository(Depository depository);
+
+  /**
+   * Updates the given GarbageCollectionDefinition in the WattDepot Server.
+   * 
+   * @param gcd The GarbageCollectionDefinition to update.
+   */
+  public void updateGarbageCollectionDefinition(GarbageCollectionDefinition gcd);
 
   /**
    * Updates the given MeasurementType in the WattDepot Server.

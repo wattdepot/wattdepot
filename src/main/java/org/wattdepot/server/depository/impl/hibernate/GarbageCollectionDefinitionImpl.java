@@ -50,8 +50,7 @@ public class GarbageCollectionDefinitionImpl {
   @ManyToOne
   private DepositoryImpl depository;
   /** The sensor making the measurements. */
-  @ManyToOne
-  private SensorImpl sensor;
+  private String sensor;
   /** The gcd's organization. */
   @ManyToOne
   private OrganizationImpl org;
@@ -86,7 +85,7 @@ public class GarbageCollectionDefinitionImpl {
    * @param gap The minimum gap between measurements.
    */
   public GarbageCollectionDefinitionImpl(String id, String name, DepositoryImpl depository,
-      SensorImpl sensor, OrganizationImpl org, Integer ignore, Integer collect, Integer gap) {
+      String sensor, OrganizationImpl org, Integer ignore, Integer collect, Integer gap) {
     this.id = id;
     this.name = name;
     this.depository = depository;
@@ -275,7 +274,7 @@ public class GarbageCollectionDefinitionImpl {
   /**
    * @return the sensor
    */
-  public SensorImpl getSensor() {
+  public String getSensor() {
     return sensor;
   }
 
@@ -385,7 +384,7 @@ public class GarbageCollectionDefinitionImpl {
   /**
    * @param sensor the sensor to set
    */
-  public void setSensor(SensorImpl sensor) {
+  public void setSensor(String sensor) {
     this.sensor = sensor;
   }
 
@@ -393,7 +392,7 @@ public class GarbageCollectionDefinitionImpl {
    * @return the GarbageCollectionDefinition equivalent.
    */
   public GarbageCollectionDefinition toGCD() {
-    return new GarbageCollectionDefinition(id, name, depository.getId(), sensor.getId(),
+    return new GarbageCollectionDefinition(id, name, depository.getId(), sensor,
         org.getId(), ignoreWindowDays, collectWindowDays, minGapSeconds);
   }
 

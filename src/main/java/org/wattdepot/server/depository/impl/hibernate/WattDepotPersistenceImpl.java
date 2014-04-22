@@ -351,7 +351,12 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     }
     getOrganization(orgId, true);
     getDepository(depositoryId, orgId, true);
-    getSensor(sensorId, orgId, true);
+    try {
+      getSensor(sensorId, orgId, true);
+    }
+    catch (IdNotFoundException e) {
+      getSensorGroup(sensorId, orgId, true);
+    }
     GarbageCollectionDefinition gcd = null;
     try {
       gcd = getGarbageCollectionDefinition(id, orgId, true);
@@ -366,10 +371,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     sessionOpen++;
     session.beginTransaction();
     DepositoryImpl dep = retrieveDepository(session, depositoryId, orgId);
-    SensorImpl sensor = retrieveSensor(session, sensorId, orgId);
     OrganizationImpl org = retrieveOrganization(session, orgId);
     GarbageCollectionDefinitionImpl impl = new GarbageCollectionDefinitionImpl(id, name, dep,
-        sensor, org, ignore, collect, gap);
+        sensorId, org, ignore, collect, gap);
     gcd = impl.toGCD();
     session.save(impl);
     session.getTransaction().commit();
@@ -3612,7 +3616,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
         gcd.getId(), gcd.getOrganizationId());
     impl.setName(gcd.getName());
     impl.setDepository(retrieveDepository(session, gcd.getDepositoryId(), gcd.getOrganizationId()));
-    impl.setSensor(retrieveSensor(session, gcd.getSensorId(), gcd.getOrganizationId()));
+    impl.setSensor(gcd.getSensorId());
     impl.setIgnoreWindowDays(gcd.getIgnoreWindowDays());
     impl.setCollectWindowDays(gcd.getCollectWindowDays());
     impl.setMinGapSeconds(gcd.getMinGapSeconds());

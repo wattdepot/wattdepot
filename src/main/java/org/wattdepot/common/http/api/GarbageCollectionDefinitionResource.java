@@ -30,7 +30,7 @@ import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
  * @author Cam Moore
  * 
  */
-public interface GarbageCollectionDefinitionReasource {
+public interface GarbageCollectionDefinitionResource {
 
   /**
    * Defines GET

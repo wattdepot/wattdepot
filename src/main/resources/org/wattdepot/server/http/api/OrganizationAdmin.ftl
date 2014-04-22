@@ -344,7 +344,7 @@
                         <tr><td>${g.id}</td>
                             <td>${g.name}</td>
                             <td>${g.depositoryId}</td>
-                            <td>${g.sensorId}</td>
+                            <td>${g.sensorId!""}</td>
                             <td>${g.ignoreWindowDays}</td>
                             <td>${g.collectWindowDays}</td>
                             <td>${g.minGapSeconds}</td>

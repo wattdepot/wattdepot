@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
 
@@ -43,6 +44,7 @@ public class DefinitionFileWriter {
   private Set<SensorGroup> groups;
   private Set<Sensor> sensors;
   private Set<CollectorProcessDefinition> cpds;
+  private Set<GarbageCollectionDefinition> gcds;
 
   /**
    * Creates a new DefinitionFileReader.
@@ -57,6 +59,7 @@ public class DefinitionFileWriter {
     this.groups = new HashSet<SensorGroup>();
     this.sensors = new HashSet<Sensor>();
     this.cpds = new HashSet<CollectorProcessDefinition>();
+    this.gcds = new HashSet<GarbageCollectionDefinition>();
   }
 
   /**
@@ -68,7 +71,6 @@ public class DefinitionFileWriter {
     return cpds.add(arg0);
   }
 
-
   /**
    * @param arg0 The Depository to add.
    * @return true if it is added.
@@ -78,6 +80,14 @@ public class DefinitionFileWriter {
     return depositories.add(arg0);
   }
 
+  /**
+   * @param arg0 The GarbageCollectionDefinition to add.
+   * @return true if it is added.
+   * @see java.util.Set#add(java.lang.Object)
+   */
+  public boolean add(GarbageCollectionDefinition arg0) {
+    return gcds.add(arg0);
+  }
 
   /**
    * @param arg0 The Sensor to add.
@@ -88,7 +98,6 @@ public class DefinitionFileWriter {
     return sensors.add(arg0);
   }
 
-
   /**
    * @param arg0 The SensorGroup to add.
    * @return true if it is added.
@@ -98,14 +107,12 @@ public class DefinitionFileWriter {
     return groups.add(arg0);
   }
 
-
   /**
    * @return the CollectorProcessDefinitions.
    */
   public Set<CollectorProcessDefinition> getCollectorProcessDefinitions() {
     return cpds;
   }
-
 
   /**
    * @return the Depositories
@@ -114,6 +121,12 @@ public class DefinitionFileWriter {
     return depositories;
   }
 
+  /**
+   * @return the gcds
+   */
+  public Set<GarbageCollectionDefinition> getGarbageCollectionDefinitions() {
+    return gcds;
+  }
 
   /**
    * @return the SensorGroups
@@ -122,14 +135,12 @@ public class DefinitionFileWriter {
     return groups;
   }
 
-
   /**
    * @return the Sensors
    */
   public Set<Sensor> getSensors() {
     return sensors;
   }
-
 
   /**
    * @param cpds the Set of CollectorProcessDefinition to set
@@ -143,6 +154,13 @@ public class DefinitionFileWriter {
    */
   public void setDepositories(Set<Depository> depositories) {
     this.depositories = depositories;
+  }
+
+  /**
+   * @param gcds the gcds to set
+   */
+  public void setGarbageCollectionDefinitions(Set<GarbageCollectionDefinition> gcds) {
+    this.gcds = gcds;
   }
 
   /**
@@ -164,31 +182,43 @@ public class DefinitionFileWriter {
    */
   public void writeFile() throws IOException {
     // Write out the Depositories
-    writer.write("# Depositories: 'Depository', Name, MeasurementType Name, MeasurementType Unit, OrgId");
+    writer
+        .write("# Depositories: 'Depository', Name, MeasurementType Name, MeasurementType Unit, OrgId");
     writer.newLine();
     for (Depository d : depositories) {
       writer.write(CSVObjectFactory.toCSV(d));
       writer.newLine();
     }
     // Sensors
-    writer.write("# Sensors: 'Sensor', Name, URI, ModelId, OrgId, num properties, prop1.key, prop1,value, ...,");
+    writer
+        .write("# Sensors: 'Sensor', Name, URI, ModelId, OrgId, num properties, prop1.key, prop1,value, ...,");
     writer.newLine();
-    for (Sensor s: sensors) {
+    for (Sensor s : sensors) {
       writer.write(CSVObjectFactory.toCSV(s));
       writer.newLine();
     }
     // SensorGroups
-    writer.write("# SensorGroups: 'SensorGroup', Name, OrgId, num sensors, sensorId1, sensorId2, ...,");
+    writer
+        .write("# SensorGroups: 'SensorGroup', Name, OrgId, num sensors, sensorId1, sensorId2, ...,");
     writer.newLine();
-    for (SensorGroup g: groups) {
+    for (SensorGroup g : groups) {
       writer.write(CSVObjectFactory.toCSV(g));
       writer.newLine();
     }
     // CollectorProcessDefinitions
-    writer.write("# CollectorProcessDefinitions: 'CollectorProcessDefinition', Name, SensorId, Polling, DepositoryId, OrgId, num properties, prop1.key, prop1.value, ...,");
+    writer
+        .write("# CollectorProcessDefinitions: 'CollectorProcessDefinition', Name, SensorId, Polling, DepositoryId, OrgId, num properties, prop1.key, prop1.value, ...,");
     writer.newLine();
-    for (CollectorProcessDefinition cpd: cpds) {
+    for (CollectorProcessDefinition cpd : cpds) {
       writer.write(CSVObjectFactory.toCSV(cpd));
+      writer.newLine();
+    }
+    // GarbageCollectionDefinitions
+    writer
+        .write("# GarbageCollectionDefinitions: 'GarbageCollectionDefinition', Name, DepositoryId, SensorId, OrgId, ignore window days, collect window days, minimum gap seconds");
+    writer.newLine();
+    for (GarbageCollectionDefinition gcd : gcds) {
+      writer.write(CSVObjectFactory.toCSV(gcd));
       writer.newLine();
     }
     writer.flush();

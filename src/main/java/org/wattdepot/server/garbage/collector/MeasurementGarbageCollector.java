@@ -28,6 +28,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
 import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.util.DateConvert;
 import org.wattdepot.common.util.tstamp.Tstamp;
@@ -64,14 +65,44 @@ public class MeasurementGarbageCollector extends TimerTask {
     this.definition = this.persistance.getGarbageCollectionDefinition(gcdId, orgId, true);
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see java.util.TimerTask#run()
+  /**
+   * @return the definition
    */
-  @Override
-  public void run() {
+  public GarbageCollectionDefinition getDefinition() {
+    return definition;
+  }
 
+  /**
+   * @return The end of the collection window.
+   */
+  private Date getEndDate() {
+    XMLGregorianCalendar now;
+    Date ret = null;
+    try {
+      now = DateConvert.convertDate(new Date());
+      XMLGregorianCalendar endCal = Tstamp
+          .incrementDays(now, -1 * definition.getIgnoreWindowDays());
+      endCal = Tstamp.incrementDays(endCal, -1 * definition.getCollectWindowDays());
+      ret = DateConvert.convertXMLCal(endCal);
+    }
+    catch (DatatypeConfigurationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return ret;
+  }
+
+  /**
+   * @param sensorId the id of the sensor to get measurements for.
+   * @return The Measurements in the collection window.
+   * @throws IdNotFoundException if there is a problem with the
+   *         GarbageCollectionDefintion.
+   */
+  private List<Measurement> getMeasurementsToCheck(String sensorId) throws IdNotFoundException {
+    Date start = getStartDate();
+    Date end = getEndDate();
+    return this.persistance.getMeasurements(this.definition.getDepositoryId(),
+        this.definition.getOrgId(), sensorId, end, start, false);
   }
 
   /**
@@ -82,7 +113,27 @@ public class MeasurementGarbageCollector extends TimerTask {
    */
   public List<Measurement> getMeasurementsToDelete() throws IdNotFoundException {
     List<Measurement> ret = new ArrayList<Measurement>();
-    List<Measurement> check = getMeasurementsToCheck();
+    SensorGroup group = this.persistance.getSensorGroup(this.definition.getSensorId(),
+        this.definition.getOrgId(), false);
+    if (group != null) {
+      for (String s : group.getSensors()) {
+        ret.addAll(getMeasurementsToDelete(s));
+      }
+    }
+    else {
+      ret = getMeasurementsToDelete(this.definition.getSensorId());
+    }
+    return ret;
+  }
+
+  /**
+   * @param sensorId The id of the sensor making the measurements.
+   * @return The List of measurements to delete for the given sensor.
+   * @throws IdNotFoundException if there is a problem with the sensorId.
+   */
+  private List<Measurement> getMeasurementsToDelete(String sensorId) throws IdNotFoundException {
+    List<Measurement> ret = new ArrayList<Measurement>();
+    List<Measurement> check = getMeasurementsToCheck(sensorId);
     int size = check.size();
     int index = 1;
     int baseIndex = 0;
@@ -98,37 +149,14 @@ public class MeasurementGarbageCollector extends TimerTask {
       }
     }
     return ret;
+
   }
 
   /**
-   * @return The Measurements in the collection window.
-   * @throws IdNotFoundException if there is a problem with the
-   *         GarbageCollectionDefintion.
+   * @return the persistance
    */
-  private List<Measurement> getMeasurementsToCheck() throws IdNotFoundException {
-    Date start = getStartDate();
-    Date end = getEndDate();
-    return this.persistance.getMeasurements(this.definition.getDepositoryId(),
-        this.definition.getOrgId(), this.definition.getSensorId(), end, start, false);
-  }
-
-  /**
-   * @return The end of the collection window.
-   */
-  private Date getEndDate() {
-    XMLGregorianCalendar now;
-    Date ret = null;
-    try {
-      now = DateConvert.convertDate(new Date());
-      XMLGregorianCalendar endCal = Tstamp.incrementDays(now, -1 * definition.getIgnoreWindowDays());
-      endCal = Tstamp.incrementDays(endCal, -1 * definition.getCollectWindowDays());
-      ret = DateConvert.convertXMLCal(endCal);
-    }
-    catch (DatatypeConfigurationException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return ret;
+  public WattDepotPersistence getPersistance() {
+    return persistance;
   }
 
   /**
@@ -139,7 +167,8 @@ public class MeasurementGarbageCollector extends TimerTask {
     Date ret = null;
     try {
       now = DateConvert.convertDate(new Date());
-      XMLGregorianCalendar startCal = Tstamp.incrementDays(now, -1 * definition.getIgnoreWindowDays());
+      XMLGregorianCalendar startCal = Tstamp.incrementDays(now,
+          -1 * definition.getIgnoreWindowDays());
       ret = DateConvert.convertXMLCal(startCal);
     }
     catch (DatatypeConfigurationException e) {
@@ -147,5 +176,38 @@ public class MeasurementGarbageCollector extends TimerTask {
       e.printStackTrace();
     }
     return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.util.TimerTask#run()
+   */
+  @Override
+  public void run() {
+    Date lastStarted = new Date();
+    Integer deleted = 0;
+    try {
+      for (Measurement m : getMeasurementsToDelete()) {
+        this.persistance.deleteMeasurement(this.definition.getDepositoryId(),
+            this.definition.getOrganizationId(), m.getId());
+        deleted++;
+      }
+    }
+    catch (IdNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    Date lastCompleted = new Date();
+    this.definition.setLastStarted(lastStarted);
+    this.definition.setLastCompleted(lastCompleted);
+    this.definition.setNumMeasurementsCollected(deleted);
+    try {
+      this.persistance.updateGarbageCollectionDefinition(this.definition);
+    }
+    catch (IdNotFoundException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
   }
 }

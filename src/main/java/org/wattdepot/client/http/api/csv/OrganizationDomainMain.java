@@ -69,7 +69,7 @@ public class OrganizationDomainMain {
     options.addOption("p", "password", true, "Password");
     options.addOption("f", "fileName", true, "Domain definition file name.");
     options.addOption("d", "debug", false,
-        "Displays statistics as the Measurements are stored.");
+        "Displays debugging information.");
 
     CommandLineParser parser = new PosixParser();
     HelpFormatter formatter = new HelpFormatter();

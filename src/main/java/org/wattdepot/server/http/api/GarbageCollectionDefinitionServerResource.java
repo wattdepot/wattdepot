@@ -26,7 +26,7 @@ import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.http.api.API;
-import org.wattdepot.common.http.api.GarbageCollectionDefinitionReasource;
+import org.wattdepot.common.http.api.GarbageCollectionDefinitionResource;
 
 /**
  * GarbageCollectionDefinitionServerResource - Handles the
@@ -37,7 +37,7 @@ import org.wattdepot.common.http.api.GarbageCollectionDefinitionReasource;
  * 
  */
 public class GarbageCollectionDefinitionServerResource extends WattDepotServerResource implements
-    GarbageCollectionDefinitionReasource {
+    GarbageCollectionDefinitionResource {
   private String gcdId;
 
   /*
