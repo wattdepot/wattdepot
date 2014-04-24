@@ -31,7 +31,8 @@ public final class LoggerUtil {
    */
   public static void useConsoleHandler() {
     LogManager logManager = LogManager.getLogManager();
-    for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements();) {
+    for (Enumeration<String> en = logManager.getLoggerNames(); en
+        .hasMoreElements();) {
       String logName = en.nextElement();
       Logger logger = logManager.getLogger(logName);
       if (logger != null) {
@@ -51,7 +52,8 @@ public final class LoggerUtil {
    * Removes all the handlers from all the defined loggers. This should
    */
   public static void disableLogging() {
-    Logger base = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
+    Logger base = LogManager.getLogManager().getLogger(
+        Logger.GLOBAL_LOGGER_NAME);
     base = base.getParent();
     base.setLevel(Level.SEVERE);
   }
@@ -70,10 +72,12 @@ public final class LoggerUtil {
   public static void useFileHandler(String serverHome) {
     LogManager logManager = LogManager.getLogManager();
     // System.out.println("In useFileHandler");
-    for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements();) {
+    for (Enumeration<String> en = logManager.getLoggerNames(); en
+        .hasMoreElements();) {
       String logName = en.nextElement();
-      if ((logName.startsWith("com.noelios") || logName.startsWith("org.restlet") || "global"
-          .equals(logName)) && (logManager.getLogger(logName) != null)) {
+      if ((logName.startsWith("com.noelios")
+          || logName.startsWith("org.restlet") || "global".equals(logName))
+          && (logManager.getLogger(logName) != null)) {
         // First, get rid of current Handlers
         Logger logger = logManager.getLogger(logName);
         logger.setFilter(new HTTPClientHelperFilter());
@@ -90,7 +94,8 @@ public final class LoggerUtil {
         // Define a file handler that writes to the logs directory, creating it
         // if nec.
         if (serverHome == null) {
-          throw new IllegalArgumentException("Attempt to change Restlet logging to null filename");
+          throw new IllegalArgumentException(
+              "Attempt to change Restlet logging to null filename");
         }
         else {
           File logDir = new File(serverHome + "/logs/");
@@ -109,7 +114,8 @@ public final class LoggerUtil {
           catch (IOException e) {
             // throw new RuntimeException
             // ("Could not open the log file for this WattDepot service.", e);
-            System.out.println("Could not open log file: " + fileName + " " + e.getMessage());
+            System.out.println("Could not open log file: " + fileName + " "
+                + e.getMessage());
           }
         }
       }
@@ -122,10 +128,12 @@ public final class LoggerUtil {
    */
   public static void removeRestletLoggers() {
     LogManager logManager = LogManager.getLogManager();
-    for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements();) {
+    for (Enumeration<String> en = logManager.getLoggerNames(); en
+        .hasMoreElements();) {
       String logName = en.nextElement();
-      if ((logName.startsWith("com.noelios") || logName.startsWith("org.restlet")
-          || "global".equals(logName) || logName.startsWith("org.hibernate"))
+      if ((logName.startsWith("com.noelios")
+          || logName.startsWith("org.restlet") || "global".equals(logName) || logName
+            .startsWith("org.hibernate"))
           && (logManager.getLogger(logName) != null)) {
         Logger logger = logManager.getLogger(logName);
         logger = logger.getParent();
@@ -138,11 +146,33 @@ public final class LoggerUtil {
   }
 
   /**
+   * Sets the logging level to be used for this WattDepot logger. If the passed
+   * string cannot be parsed into a Level, then INFO is set by default.
+   * 
+   * @param logger The logger whose level is to be set.
+   * @param level The new Level.
+   */
+  public static void setLoggingLevel(Logger logger, String level) {
+    Level newLevel = Level.INFO;
+    try {
+      newLevel = Level.parse(level);
+    }
+    catch (Exception e) {
+      logger.info("Couldn't set Logging level to: " + level);
+    }
+    logger.setLevel(newLevel);
+    for (Handler handler : logger.getHandlers()) {
+      handler.setLevel(newLevel);
+    }
+  }
+
+  /**
    * Utility for printing out the known/defined logger names.
    */
   public static void showLoggers() {
     LogManager logManager = LogManager.getLogManager();
-    for (Enumeration<String> en = logManager.getLoggerNames(); en.hasMoreElements();) {
+    for (Enumeration<String> en = logManager.getLoggerNames(); en
+        .hasMoreElements();) {
       String logName = en.nextElement();
       Logger logger = logManager.getLogger(logName);
       Logger parent = logger.getParent();

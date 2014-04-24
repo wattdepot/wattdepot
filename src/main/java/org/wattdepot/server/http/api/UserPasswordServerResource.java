@@ -65,7 +65,7 @@ public class UserPasswordServerResource extends WattDepotServerResource implemen
     else {
       UserPassword user;
       try {
-        user = depot.getUserPassword(userId, orgId);
+        user = depot.getUserPassword(userId, orgId, true);
         return user;
       }
       catch (IdNotFoundException e) {

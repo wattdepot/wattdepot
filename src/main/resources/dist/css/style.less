@@ -4,6 +4,12 @@
 @gridGutterWidth: 20px;
 @wattdepotBorderRadius: 8px;
 @black: #000;
+
+.add-button {
+    float: right;
+    margin-top: 20px;
+}
+
 // Border Radius
 .border-radius (@radius: 5px) {
     -webkit-border-radius: @radius;
@@ -109,3 +115,27 @@
     border-top-right-radius: @radius;
 }
 
+.panel-heading .accordion-toggle:after {
+    /* symbol for "opening" panels */
+    font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
+    content: "\e114";    /* adjust as needed, taken from bootstrap.css */
+//    float: right;        /* adjust as needed */
+    color: grey;         /* adjust as needed */
+    font-size: 12px;     /* needs to be smaller than the title 14px*/
+}
+.panel-heading .accordion-toggle.collapsed:after {
+    /* symbol for "collapsed" panels */
+    content: "\e080";    /* adjust as needed, taken from bootstrap.css */
+}
+
+select {
+    font-size: 14px;
+    line-height: 20px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    height: 34px;
+    box-sizing: initial;
+}
+
+input[type="checkbox"] {
+  -webkit-appearance: checkbox;
+}

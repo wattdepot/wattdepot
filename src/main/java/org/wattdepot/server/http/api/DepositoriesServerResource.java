@@ -46,7 +46,7 @@ public class DepositoriesServerResource extends WattDepotServerResource implemen
     if (isInRole(orgId)) {
       DepositoryList list = new DepositoryList();
       try {
-        for (Depository d : depot.getDepositories(orgId)) {
+        for (Depository d : depot.getDepositories(orgId, true)) {
           list.getDepositories().add(d);
         }
       }

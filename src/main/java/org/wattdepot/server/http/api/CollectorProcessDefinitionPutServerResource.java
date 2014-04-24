@@ -56,15 +56,15 @@ public class CollectorProcessDefinitionPutServerResource extends WattDepotServer
             + "/ with " + definition);
     if (isInRole(orgId)) {
       try {
-        depot.getOrganization(orgId);
+        depot.getOrganization(orgId, true);
       }
       catch (IdNotFoundException e1) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");
       }
       try {
-        if (!depot.getCollectorProcessDefinitionIds(orgId).contains(definition.getId())) {
+        if (!depot.getCollectorProcessDefinitionIds(orgId, false).contains(definition.getId())) {
           try {
-            Sensor s = depot.getSensor(definition.getSensorId(), orgId);
+            Sensor s = depot.getSensor(definition.getSensorId(), orgId, true);
             if (s != null) {
               depot.defineCollectorProcessDefinition(definition.getId(), definition.getName(),
                   s.getId(), definition.getPollingInterval(), definition.getDepositoryId(),

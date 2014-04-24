@@ -34,6 +34,8 @@ import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.DepositoryList;
+import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.GarbageCollectionDefinitionList;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
@@ -62,6 +64,9 @@ import org.wattdepot.common.http.api.DepositoryPutResource;
 import org.wattdepot.common.http.api.DepositoryResource;
 import org.wattdepot.common.http.api.DepositorySensorsResource;
 import org.wattdepot.common.http.api.DepositoryValueResource;
+import org.wattdepot.common.http.api.GarbageCollectionDefinitionPutResource;
+import org.wattdepot.common.http.api.GarbageCollectionDefinitionResource;
+import org.wattdepot.common.http.api.GarbageCollectionDefinitionsResource;
 import org.wattdepot.common.http.api.MeasurementTypePutResource;
 import org.wattdepot.common.http.api.MeasurementTypeResource;
 import org.wattdepot.common.http.api.MeasurementTypesResource;
@@ -75,8 +80,7 @@ import org.wattdepot.common.http.api.SensorPutResource;
 import org.wattdepot.common.http.api.SensorResource;
 import org.wattdepot.common.http.api.SensorsResource;
 import org.wattdepot.common.util.DateConvert;
-import org.wattdepot.common.util.logger.WattDepotLogger;
-import org.wattdepot.common.util.logger.WattDepotLoggerUtil;
+import org.wattdepot.common.util.logger.LoggerUtil;
 
 /**
  * WattDepotClient - high-level Java implementation that communicates with a
@@ -117,8 +121,9 @@ public class WattDepotClient implements WattDepotInterface {
   public WattDepotClient(String serverUri, String username, String orgId, String password)
       throws BadCredentialException {
     this.properties = new ClientProperties();
-    this.logger = WattDepotLogger.getLogger("org.wattdepot.client",
-        properties.get(ClientProperties.CLIENT_HOME_DIR));
+    this.logger = Logger.getLogger("org.wattdepot.client");
+    LoggerUtil.setLoggingLevel(this.logger, properties.get(ClientProperties.LOGGING_LEVEL_KEY));
+    LoggerUtil.useConsoleHandler();
     logger.finest("Client " + serverUri + ", " + username + ", " + password);
     this.authentication = new ChallengeResponse(this.scheme, username, password);
     if (serverUri == null) {
@@ -131,7 +136,6 @@ public class WattDepotClient implements WattDepotInterface {
 
     ClientResource client = null;
     client = makeClient(orgId + "/");
-    WattDepotLoggerUtil.removeClientLoggerHandlers();
     try {
       client.head();
       if (client.getLocationRef() != null) {
@@ -148,7 +152,6 @@ public class WattDepotClient implements WattDepotInterface {
     catch (ResourceException e) {
       throw new BadCredentialException(e.getMessage() + " username and or password are not corect.");
     }
-    WattDepotLoggerUtil.removeClientLoggerHandlers();
   }
 
   /*
@@ -196,6 +199,11 @@ public class WattDepotClient implements WattDepotInterface {
     finally {
       client.release();
     }
+  }
+
+  @Override
+  public void deleteGarbageCollectionDefinition(GarbageCollectionDefinition gcd) {
+
   }
 
   /*
@@ -312,23 +320,6 @@ public class WattDepotClient implements WattDepotInterface {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.client.WattDepotInterface#getCollectorProcessDefinitions()
-   */
-  @Override
-  public CollectorProcessDefinitionList getCollectorProcessDefinitions() {
-    ClientResource client = makeClient(this.organizationId + "/"
-        + Labels.COLLECTOR_PROCESS_DEFINITIONS + "/");
-    CollectorProcessDefinitionsResource resource = client
-        .wrap(CollectorProcessDefinitionsResource.class);
-    CollectorProcessDefinitionList ret = resource.retrieve();
-    client.release();
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
    * org.wattdepot.client.WattDepotInterface#getCollectorProcessDefinition(java
    * .lang .String)
    */
@@ -352,6 +343,23 @@ public class WattDepotClient implements WattDepotInterface {
         client.release();
       }
     }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getCollectorProcessDefinitions()
+   */
+  @Override
+  public CollectorProcessDefinitionList getCollectorProcessDefinitions() {
+    ClientResource client = makeClient(this.organizationId + "/"
+        + Labels.COLLECTOR_PROCESS_DEFINITIONS + "/");
+    CollectorProcessDefinitionsResource resource = client
+        .wrap(CollectorProcessDefinitionsResource.class);
+    CollectorProcessDefinitionList ret = resource.retrieve();
+    client.release();
+    return ret;
   }
 
   /*
@@ -454,6 +462,50 @@ public class WattDepotClient implements WattDepotInterface {
         + "&earliest=true");
     DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
     InterpolatedValue ret = resource.retrieve();
+    client.release();
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getGarbageCollectionDefinition(
+   * java.lang.String)
+   */
+  @Override
+  public GarbageCollectionDefinition getGarbageCollectionDefinition(String id)
+      throws IdNotFoundException {
+    ClientResource client = makeClient(this.organizationId + "/"
+        + Labels.GARBAGE_COLLECTION_DEFINITION + "/" + id);
+    GarbageCollectionDefinitionResource resource = client
+        .wrap(GarbageCollectionDefinitionResource.class);
+    GarbageCollectionDefinition ret;
+    try {
+      ret = resource.retrieve();
+    }
+    catch (ResourceException e) {
+      throw new IdNotFoundException(id + " is not a known GarbageCollectionDefinition id.");
+    }
+    finally {
+      client.release();
+    }
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getGarbageCollectionDefinitions()
+   */
+  @Override
+  public GarbageCollectionDefinitionList getGarbageCollectionDefinitions() {
+    ClientResource client = makeClient(this.organizationId + "/"
+        + Labels.GARBAGE_COLLECTION_DEFINITIONS + "/");
+    GarbageCollectionDefinitionsResource resource = client
+        .wrap(GarbageCollectionDefinitionsResource.class);
+    GarbageCollectionDefinitionList ret = resource.retrieve();
     client.release();
     return ret;
   }
@@ -934,6 +986,131 @@ public class WattDepotClient implements WattDepotInterface {
   /*
    * (non-Javadoc)
    * 
+   * @see
+   * org.wattdepot.client.WattDepotInterface#isDefinedCollectorProcessDefinition
+   * (java.lang.String)
+   */
+  @Override
+  public boolean isDefinedCollectorProcessDefinition(String id) {
+    try {
+      getCollectorProcessDefinition(id);
+      return true;
+    }
+    catch (IdNotFoundException e) {
+      return false;
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.client.WattDepotInterface#isDefinedDepository(java.lang.String
+   * )
+   */
+  @Override
+  public boolean isDefinedDepository(String id) {
+    try {
+      getDepository(id);
+      return true;
+    }
+    catch (IdNotFoundException e) {
+      return false;
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.client.WattDepotInterface#isDefinedGarbageCollectionDefinition
+   * (java.lang.String)
+   */
+  @Override
+  public boolean isDefinedGarbageCollectionDefinition(String id) {
+    try {
+      getGarbageCollectionDefinition(id);
+      return true;
+    }
+    catch (IdNotFoundException idnf) {
+      return false;
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.client.WattDepotInterface#isDefinedMeasurementType(java.lang
+   * .String)
+   */
+  @Override
+  public boolean isDefinedMeasurementType(String id) {
+    try {
+      getMeasurementType(id);
+      return true;
+    }
+    catch (IdNotFoundException e) {
+      return false;
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.client.WattDepotInterface#isDefinedSensor(java.lang.String)
+   */
+  @Override
+  public boolean isDefinedSensor(String id) {
+    try {
+      getSensor(id);
+      return true;
+    }
+    catch (IdNotFoundException e) {
+      return false;
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.client.WattDepotInterface#isDefinedSensorGroup(java.lang.
+   * String)
+   */
+  @Override
+  public boolean isDefinedSensorGroup(String id) {
+    try {
+      getSensorGroup(id);
+      return true;
+    }
+    catch (IdNotFoundException e) {
+      return false;
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.client.WattDepotInterface#isDefinedSensorModel(java.lang.
+   * String)
+   */
+  @Override
+  public boolean isDefinedSensorModel(String id) {
+    try {
+      getSensorModel(id);
+      return true;
+    }
+    catch (IdNotFoundException e) {
+      return false;
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.wattdepot.client.WattDepotInterface#isHealthy()
    */
   @Override
@@ -995,6 +1172,27 @@ public class WattDepotClient implements WattDepotInterface {
     DepositoryPutResource resource = client.wrap(DepositoryPutResource.class);
     try {
       resource.store(depository);
+    }
+    finally {
+      client.release();
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.client.WattDepotInterface#putGarbageCollectionDefinition(
+   * org.wattdepot.common.domainmodel.GarbageCollectionDefinition)
+   */
+  @Override
+  public void putGarbageCollectionDefinition(GarbageCollectionDefinition gcd) {
+    ClientResource client = makeClient(this.organizationId + "/"
+        + Labels.GARBAGE_COLLECTION_DEFINITION + "/");
+    GarbageCollectionDefinitionPutResource resource = client
+        .wrap(GarbageCollectionDefinitionPutResource.class);
+    try {
+      resource.store(gcd);
     }
     finally {
       client.release();
@@ -1135,6 +1333,27 @@ public class WattDepotClient implements WattDepotInterface {
    * (non-Javadoc)
    * 
    * @see
+   * org.wattdepot.client.WattDepotInterface#updateGarbageCollectionDefinition
+   * (org.wattdepot.common.domainmodel.GarbageCollectionDefinition)
+   */
+  @Override
+  public void updateGarbageCollectionDefinition(GarbageCollectionDefinition gcd) {
+    ClientResource client = makeClient(this.organizationId + "/"
+        + Labels.GARBAGE_COLLECTION_DEFINITION + "/" + gcd.getId());
+    GarbageCollectionDefinitionResource resource = client
+        .wrap(GarbageCollectionDefinitionResource.class);
+    try {
+      resource.update(gcd);
+    }
+    finally {
+      client.release();
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
    * org.wattdepot.client.WattDepotInterface#updateMeasurementType(org.wattdepot
    * .datamodel.MeasurementType)
    */
@@ -1208,113 +1427,6 @@ public class WattDepotClient implements WattDepotInterface {
     }
     finally {
       client.release();
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#isDefinedCollectorProcessDefinition
-   * (java.lang.String)
-   */
-  @Override
-  public boolean isDefinedCollectorProcessDefinition(String id) {
-    try {
-      getCollectorProcessDefinition(id);
-      return true;
-    }
-    catch (IdNotFoundException e) {
-      return false;
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#isDefinedDepository(java.lang.String
-   * )
-   */
-  @Override
-  public boolean isDefinedDepository(String id) {
-    try {
-      getDepository(id);
-      return true;
-    }
-    catch (IdNotFoundException e) {
-      return false;
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#isDefinedMeasurementType(java.lang
-   * .String)
-   */
-  @Override
-  public boolean isDefinedMeasurementType(String id) {
-    try {
-      getMeasurementType(id);
-      return true;
-    }
-    catch (IdNotFoundException e) {
-      return false;
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#isDefinedSensor(java.lang.String)
-   */
-  @Override
-  public boolean isDefinedSensor(String id) {
-    try {
-      getSensor(id);
-      return true;
-    }
-    catch (IdNotFoundException e) {
-      return false;
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#isDefinedSensorGroup(java.lang.
-   * String)
-   */
-  @Override
-  public boolean isDefinedSensorGroup(String id) {
-    try {
-      getSensorGroup(id);
-      return true;
-    }
-    catch (IdNotFoundException e) {
-      return false;
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#isDefinedSensorModel(java.lang.
-   * String)
-   */
-  @Override
-  public boolean isDefinedSensorModel(String id) {
-    try {
-      getSensorModel(id);
-      return true;
-    }
-    catch (IdNotFoundException e) {
-      return false;
     }
   }
 

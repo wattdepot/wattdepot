@@ -33,25 +33,12 @@ public class API {
    * requests.
    */
   public static final String BASE_URI = "/" + Labels.WATTDEPOT + "/";
+
   /**
    * <b>/wattdepot/{org-id}/</b> URI for the group administration User
    * Interface. Supports GET requests.
    */
   public static final String ADMIN_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/";
-
-  /**
-   * <b>/wattdepot/{org-id}/summary/</b> URI for the Organization Summary User
-   * Interface. Supports GET requests.
-   */
-  public static final String ORGANIZATION_SUMMARY_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.SUMMARY + "/";
-
-  /**
-   * <b>/wattdepot/{org-id}/visualize/</b> URI for the Organization Visualization User
-   * Interface. Supports GET requests.
-   */
-  public static final String ORGANIZATION_VISUALIZE_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.VISUALIZE + "/";
 
   /**
    * <b>/wattdepot/{org-id}/collector-process-definition/</b> URI for storing
@@ -91,6 +78,14 @@ public class API {
       + Labels.DEPOSITORY + "/";
 
   /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/summary/</b> URI for
+   * getting all the sensors that have stored measurements in the depository.
+   * Use GET requests.
+   */
+  public static final String DEPOSITORY_SENSOR_SUMMARY_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR
+      + "/" + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.SUMMARY + "/";
+
+  /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/sensors/</b> URI for
    * getting all the sensors that have stored measurements in the depository.
    * Use GET requests.
@@ -104,6 +99,29 @@ public class API {
    */
   public static final String DEPOSITORY_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR;
+
+  /**
+   * <b>/wattdepot/{org-id}/garbage-collection-definition/</b> URI for putting a
+   * GarbageCollectionDefinition. Use PUT requests.
+   */
+  public static final String GARBAGE_COLLECTION_DEFINITION_PUT_URI = BASE_URI
+      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.GARBAGE_COLLECTION_DEFINITION + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/garbage-collection-definition/{garbage-collection-
+   * definition-id}</b> URI for getting a GarbageCollectionDefinition. Use GET
+   * requests.
+   */
+  public static final String GARBAGE_COLLECTION_DEFINITION_URI = BASE_URI
+      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.GARBAGE_COLLECTION_DEFINITION + "/"
+      + Labels.GARBAGE_COLLECTION_DEFINITION_ID_VAR;
+
+  /**
+   * <b>/wattdepot/{org-id}/garbage-collection-definitions/</b> URI for getting
+   * all defined GarbageCollectionDefinition. Use GET requests.
+   */
+  public static final String GARBAGE_COLLECTION_DEFINITIONS_URI = BASE_URI
+      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.GARBAGE_COLLECTION_DEFINITIONS + "/";
 
   /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/measurement/</b> URI for
@@ -141,6 +159,7 @@ public class API {
   public static final String MEASUREMENT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.MEASUREMENT + "/"
       + Labels.MEASUREMENT_ID_VAR;
+
   /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/measurements/gviz/</b>
    * URI to get all the measurements in the depsository. Use GET requests.
@@ -155,7 +174,6 @@ public class API {
    */
   public static final String MEASUREMENTS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.MEASUREMENTS + "/";
-
   /**
    * <b>/wattdepot/{org-id}/organization/</b> URI to store UserGroups. Use PUT
    * requests.
@@ -164,11 +182,25 @@ public class API {
       + Labels.ORGANIZATION + "/";
 
   /**
+   * <b>/wattdepot/{org-id}/summary/</b> URI for the Organization Summary User
+   * Interface. Supports GET requests.
+   */
+  public static final String ORGANIZATION_SUMMARY_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.SUMMARY + "/";
+
+  /**
    * <b>/wattdepot/{org-id}/user-group/{user-org-id}</b> URI to manipulate
    * SensorGroups. Supports GET, POST, and DELETE requests.
    */
   public static final String ORGANIZATION_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + Labels.ORGANIZATION + "/" + Labels.ORGANIZATION_ID2_VAR;
+
+  /**
+   * <b>/wattdepot/{org-id}/visualize/</b> URI for the Organization
+   * Visualization User Interface. Supports GET requests.
+   */
+  public static final String ORGANIZATION_VISUALIZE_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR
+      + "/" + Labels.VISUALIZE + "/";
 
   /**
    * <b>/wattdepot/{org-id}/user-groups/</b> URI to get all defined
@@ -289,12 +321,48 @@ public class API {
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUE + "/";
 
   /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/average/gviz/</b>
+   * URI to get all the average value for an interval of measurements. Use GET
+   * requests.
+   */
+  public static final String VALUES_AVERAGE_GVIZ_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/"
+      + Labels.AVERAGE + "/" + Labels.GVIZ + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/average/</b> URI
+   * to get all the average value for an interval of measurements. Use GET
+   * requests.
+   */
+  public static final String VALUES_AVERAGE_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/"
+      + Labels.AVERAGE + "/";
+
+  /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/values/gviz/</b> URI to
    * get all the measured value. Use GET requests.
    */
   public static final String VALUES_GVIZ_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/"
       + Labels.GVIZ + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/average/</b> URI
+   * to get all the average value for an interval of measurements. Use GET
+   * requests.
+   */
+  public static final String VALUES_MAXIMUM_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/"
+      + Labels.MAXIMUM + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/average/</b> URI
+   * to get all the average value for an interval of measurements. Use GET
+   * requests.
+   */
+  public static final String VALUES_MINIMUM_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/"
+      + Labels.MINIMUM + "/";
 
   /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/values/</b> URI to get

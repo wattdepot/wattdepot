@@ -47,7 +47,7 @@ public class CollectorProcessDefinitionsServerResource extends WattDepotServerRe
     if (isInRole(orgId)) {
       CollectorProcessDefinitionList ret = new CollectorProcessDefinitionList();
       try {
-        for (CollectorProcessDefinition sp : depot.getCollectorProcessDefinitions(orgId)) {
+        for (CollectorProcessDefinition sp : depot.getCollectorProcessDefinitions(orgId, true)) {
           ret.getDefinitions().add(sp);
         }
       }

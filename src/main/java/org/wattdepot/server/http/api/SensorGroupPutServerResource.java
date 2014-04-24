@@ -49,14 +49,14 @@ public class SensorGroupPutServerResource extends WattDepotServerResource implem
     getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/sensor-group/ with " + sensorgroup);
     if (isInRole(orgId)) {
       try {
-        depot.getOrganization(orgId);
+        depot.getOrganization(orgId, true);
       }
       catch (IdNotFoundException e1) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
       }
       try {
-        if (!depot.getSensorIds(orgId).contains(sensorgroup.getId())) {
-          if (!depot.getSensorGroupIds(orgId).contains(sensorgroup.getId())) {
+        if (!depot.getSensorIds(orgId, true).contains(sensorgroup.getId())) {
+          if (!depot.getSensorGroupIds(orgId, true).contains(sensorgroup.getId())) {
             try {
               depot.defineSensorGroup(sensorgroup.getId(), sensorgroup.getName(),
                   sensorgroup.getSensors(), orgId);

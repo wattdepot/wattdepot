@@ -123,7 +123,6 @@ public abstract class MultiThreadedCollector extends TimerTask {
    * @param collectorId The CollectorProcessDefinitionId used to initialize this
    *        collector.
    * @param debug flag for debugging messages.
-   * @param debug
    * @return true if sensor starts successfully.
    * @throws InterruptedException If sleep is interrupted for some reason.
    * @throws BadCredentialException if the username and password are invalid.
@@ -227,6 +226,29 @@ public abstract class MultiThreadedCollector extends TimerTask {
             return false;
           }
         }
+        catch (IdNotFoundException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        catch (BadSensorUriException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+      else if (model.getName().equals(SensorModelHelper.WEATHER)) {
+        Timer t = new Timer();
+        try {
+          NOAAWeatherCollector collector = new NOAAWeatherCollector(serverUri, username, orgId, password, collectorId, debug);
+          if (collector.isValid()) {
+            System.out.format("Started polling %s sensor at %s%n", sensor.getName(),
+                Tstamp.makeTimestamp());
+            t.schedule(collector, 0, definition.getPollingInterval() * 1000);
+          }
+          else {
+            System.err.format("Cannot poll %s sensor%n", sensor.getName());
+            return false;
+          }
+        }       
         catch (IdNotFoundException e) {
           // TODO Auto-generated catch block
           e.printStackTrace();

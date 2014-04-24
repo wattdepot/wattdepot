@@ -18,6 +18,9 @@
  */
 package org.wattdepot.common.domainmodel;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+
 import org.wattdepot.server.ServerProperties;
 import org.wattdepot.server.StrongAES;
 
@@ -42,6 +45,17 @@ public class UserPassword {
     String password = System.getenv().get(ServerProperties.ADMIN_USER_PASSWORD);
     if (password != null) {
       ROOT.setPassword(password);
+    }
+    else {
+      RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
+      for (String arg : runtimeMxBean.getInputArguments()) {
+        if (arg.startsWith("-D" + ADMIN_USER_PASSWORD)) {
+          password = arg.split("=")[1];
+        }
+      }
+      if (password != null) {
+        ROOT.setPassword(password);
+      }
     }
   }
 

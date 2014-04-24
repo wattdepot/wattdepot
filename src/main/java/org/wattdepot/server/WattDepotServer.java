@@ -128,29 +128,22 @@ public class WattDepotServer {
       LoggerUtil.useConsoleHandler();
       Logger base = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
       base = base.getParent();
-      Level newLevel = Level.INFO;
       String level = properties.get(ServerProperties.LOGGING_LEVEL_KEY);
-      try {
-        newLevel = Level.parse(level);
-      }
-      catch (Exception e) {
-        base.info("Couldn't set Logging level to: " + level);
-      }
-      base.setLevel(newLevel);
+     LoggerUtil.setLoggingLevel(base, level);
 
-      server.logger.warning("Starting WattDepot server.");
-      server.logger.warning("Host: " + server.hostName);
+      server.logger.info("Starting WattDepot server.");
+      server.logger.info("Host: " + server.hostName);
       server.logger.info(server.serverProperties.echoProperties());
     }
     else {
       LoggerUtil.useConsoleHandler();
       Logger base = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);
       base = base.getParent();
-      base.setLevel(Level.SEVERE);
+      LoggerUtil.setLoggingLevel(base, Level.SEVERE.toString());
     }
     server.restletServer.start();
 
-    server.logger.warning("WattDepot server now running.");
+    server.logger.info("WattDepot server now running.");
 
     return server;
   }
@@ -240,7 +233,6 @@ public class WattDepotServer {
     else {
       WattDepotServer.newInstance(directoryName);
     }
-    LoggerUtil.useConsoleHandler();
   }
 
 }

@@ -31,10 +31,9 @@ import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 public interface CollectorProcessDefinitionPutResource {
 
   /**
-   * Defines the PUT /wattdepot/collector-process-definition/ API call.
+   * Defines the PUT /wattdepot/{org-id}/collector-process-definition/ API call.
    * 
-   * @param definition
-   *          The CollectorProcessDefinition to store.
+   * @param definition The CollectorProcessDefinition to store.
    */
   @Put
   public void store(CollectorProcessDefinition definition);

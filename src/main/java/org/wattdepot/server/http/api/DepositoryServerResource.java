@@ -61,14 +61,14 @@ public class DepositoryServerResource extends WattDepotServerResource implements
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}");
     if (isInRole(orgId)) {
       try {
-        depot.getOrganization(orgId);
+        depot.getOrganization(orgId, true);
       }
       catch (IdNotFoundException e1) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");
       }
       Depository depo = null;
       try {
-        depo = depot.getDepository(depositoryId, orgId);
+        depo = depot.getDepository(depositoryId, orgId, true);
       }
       catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Depository " + depositoryId
@@ -94,7 +94,7 @@ public class DepositoryServerResource extends WattDepotServerResource implements
         "POST /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "} with " + depository);
     if (isInRole(orgId)) {
       try {
-        depot.getOrganization(orgId);
+        depot.getOrganization(orgId, true);
       }
       catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");

@@ -62,7 +62,7 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
     getLogger().log(Level.INFO, "GET /wattdepot/public/measurement-type/{" + typeSlug + "}");
     MeasurementType mt = null;
     try {
-      mt = depot.getMeasurementType(typeSlug);
+      mt = depot.getMeasurementType(typeSlug, true);
     }
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "MeasurementType " + typeSlug
@@ -85,7 +85,7 @@ public class MeasurementTypeServerResource extends WattDepotServerResource imple
     if (isInRole(Organization.ADMIN_GROUP.getId())) {
       MeasurementType mt;
       try {
-        mt = depot.getMeasurementType(measurementType.getId());
+        mt = depot.getMeasurementType(measurementType.getId(), true);
         if (mt != null) {
           depot.updateMeasurementType(measurementType);
         }

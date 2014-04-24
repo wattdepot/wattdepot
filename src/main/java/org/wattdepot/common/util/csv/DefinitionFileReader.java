@@ -26,6 +26,7 @@ import java.util.HashSet;
 
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
 
@@ -43,6 +44,7 @@ public class DefinitionFileReader {
   private Set<SensorGroup> groups;
   private Set<Sensor> sensors;
   private Set<CollectorProcessDefinition> cpds;
+  private Set<GarbageCollectionDefinition> gcds;
 
   /**
    * Creates a new DefinitionFileReader.
@@ -57,15 +59,32 @@ public class DefinitionFileReader {
     this.groups = new HashSet<SensorGroup>();
     this.sensors = new HashSet<Sensor>();
     this.cpds = new HashSet<CollectorProcessDefinition>();
+    this.gcds = new HashSet<GarbageCollectionDefinition>();
     processFile();
   }
 
   
   /**
+   * @return the CollectorProcessDefinitions.
+   */
+  public Set<CollectorProcessDefinition> getCollectorProcessDefinitions() {
+    return cpds;
+  }
+
+
+  /**
    * @return the Depositories
    */
   public Set<Depository> getDepositories() {
     return depositories;
+  }
+
+
+  /**
+   * @return the gcds
+   */
+  public Set<GarbageCollectionDefinition> getGarbageCollectionDefinitions() {
+    return gcds;
   }
 
 
@@ -82,14 +101,6 @@ public class DefinitionFileReader {
    */
   public Set<Sensor> getSensors() {
     return sensors;
-  }
-
-
-  /**
-   * @return the CollectorProcessDefinitions.
-   */
-  public Set<CollectorProcessDefinition> getCollectorProcessDefinitions() {
-    return cpds;
   }
 
 
@@ -113,6 +124,9 @@ public class DefinitionFileReader {
         }
         else if (line.startsWith("CollectorProcessDefinition")) {
           cpds.add(CSVObjectFactory.buildCPD(line));
+        }
+        else if (line.startsWith("GarbageCollectionDefinition")) {
+          gcds.add(CSVObjectFactory.buildGarbageCollectionDefinition(line));
         }
       }
       line = reader.readLine();

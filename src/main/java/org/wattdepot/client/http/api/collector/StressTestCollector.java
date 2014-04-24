@@ -44,7 +44,6 @@ import org.wattdepot.common.exception.BadSensorUriException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.util.SensorModelHelper;
-import org.wattdepot.common.util.logger.WattDepotLoggerUtil;
 import org.wattdepot.common.util.tstamp.Tstamp;
 
 /**
@@ -109,7 +108,6 @@ public class StressTestCollector extends TimerTask {
    * @param args command line arguments.
    */
   public static void main(String[] args) {
-    WattDepotLoggerUtil.removeClientLoggerHandlers();
     Options options = new Options();
     options
         .addOption(

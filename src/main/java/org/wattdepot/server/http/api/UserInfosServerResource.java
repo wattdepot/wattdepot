@@ -47,7 +47,7 @@ public class UserInfosServerResource extends WattDepotServerResource implements 
     if (isInRole(orgId) || isInRole(Organization.ADMIN_GROUP.getId())) {
       if (!orgId.equals(Organization.ADMIN_GROUP.getId())) {
         try {
-          for (UserInfo u : depot.getUsers(orgId)) {
+          for (UserInfo u : depot.getUsers(orgId, true)) {
             ret.getUsers().add(u);
           }
         }

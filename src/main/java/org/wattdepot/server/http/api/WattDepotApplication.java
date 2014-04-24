@@ -174,6 +174,10 @@ public class WattDepotApplication extends Application {
     router.attach(API.DEPOSITORY_URI, DepositoryServerResource.class);
     router.attach(API.DEPOSITORIES_URI, DepositoriesServerResource.class);
     router.attach(API.DEPOSITORY_SENSORS_URI, DepositorySensorsServerResource.class);
+    router.attach(API.DEPOSITORY_SENSOR_SUMMARY_URI, DepositorySensorSummaryServerResource.class);
+    router.attach(API.GARBAGE_COLLECTION_DEFINITION_PUT_URI, GarbageCollectionDefinitionPutServerResource.class);
+    router.attach(API.GARBAGE_COLLECTION_DEFINITION_URI, GarbageCollectionDefinitionServerResource.class);
+    router.attach(API.GARBAGE_COLLECTION_DEFINITIONS_URI, GarbageCollectionDefinitionsServerResource.class);
     router.attach(API.MEASUREMENT_PUT_URI, DepositoryMeasurementPutServerResource.class);
     router.attach(API.MEASUREMENT_URI, DepositoryMeasurementServerResource.class);
     router.attach(API.MEASUREMENTS_URI, DepositoryMeasurementsServerResource.class);
@@ -182,6 +186,10 @@ public class WattDepotApplication extends Application {
     router.attach(API.VALUE_GVIZ_URI, GvizDepositoryValueServerResource.class);
     router.attach(API.VALUES_URI, DepositoryValuesServerResource.class);
     router.attach(API.VALUES_GVIZ_URI, GvizDepositoryValuesServerResource.class);
+    router.attach(API.VALUES_AVERAGE_URI, DepositoryAverageValuesServerResource.class);
+    router.attach(API.VALUES_AVERAGE_GVIZ_URI, GvizDepositoryAverageValuesServerResource.class);
+    router.attach(API.VALUES_MAXIMUM_URI, DepositoryMaximumValuesServerResource.class);
+    router.attach(API.VALUES_MINIMUM_URI, DepositoryMinimumValuesServerResource.class);
     // MeasurementTypes
     router.attach(API.MEASUREMENT_TYPE_PUT_URI, MeasurementTypePutServerResource.class);
     router.attach(API.MEASUREMENT_TYPE_URI, MeasurementTypeServerResource.class);

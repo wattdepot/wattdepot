@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>
+      Google Visualization API Sample
+    </title>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load('visualization', '1', {packages: ['corechart']});
+    </script>
+    <script type="text/javascript">
+      function drawVisualization() {
+        // Some raw data (not necessarily accurate)
+        var data = google.visualization.arrayToDataTable([
+          ['Month', 'Bolivia', 'Ecuador', 'Madagascar', 'Papua New Guinea', 'Rwanda', 'Average'],
+          ['2004/05',  165,      938,         522,             998,           450,      614.6],
+          ['2005/06',  135,      1120,        599,             1268,          288,      682],
+          ['2006/07',  157,      1167,        587,             807,           397,      623],
+          ['2007/08',  139,      1110,        615,             968,           215,      609.4],
+          ['2008/09',  136,      691,         629,             1026,          366,      569.6]
+        ]);
+        var data2 = google.visualization.arrayToDataTable([
+          ['Date & Time', 'Lehua C Wh', 'Lehua A Wh', 'Lehua C W'],
+          [new Date(2014,2,16,7,10,0), 0, 0, 3812],
+          [new Date(2014,2,16,9,10,0), 7121.717999987304, 6199.932666659355, 3510.150771077474],
+          [new Date(2014,2,16,11,10,0), 6628.169333346188, 5699.946398556232, 3037.9829638720375],
+          [new Date(2014,2,16,13,10,0), 7640.938666667789, 5928.972268119454, 2688.4871264892577],
+          [new Date(2014,2,16,15,10,0), 8397.454666662961, 6948.340666666627, 3316.119862068268],
+          [new Date(2014,2,16,17,10,0), 8122.320508230478, 7369.881333332509, 3261.195433170573],
+          [new Date(2014,2,16,19,10,0), 8376.344158433378, 8791.611144859344, 3882.9643822672524],
+          [new Date(2014,2,16,21,10,0), 11707.283333342522, 10012.675521805882, 4455.983391523305],
+          [new Date(2014,2,16,23,10,0), 12669.827999986708, 10989.851643040776, 6980.19059708252],
+          [new Date(2014,2,17,1,10,0), 11177.686666667461, 9987.259023621678, 5704.950767347233],
+          [new Date(2014,2,17,3,10,0), 9047.026336345822, 7847.9893333390355, 4577.328298012624]
+        ]);
+
+        var options = {
+          hAxis: {title: "Time", format:'MMM d, y HH:mm:ss'},
+          series: {0: {type: "bars", targetAxisIndex: 0}, 1: {type: "bars", targetAxisIndex: 0}, 2: {type: "line", targetAxisIndex:1}}, 
+          vAxes:{0: {title: "Wh"}, 1:{title:'W'}}
+        };
+
+        var chart = new google.visualization.ComboChart(document.getElementById('chart_div'));
+        chart.draw(data2, options);
+      }
+      google.setOnLoadCallback(drawVisualization);
+    </script>
+  </head>
+  <body>
+    <div id="chart_div" style="width: 900px; height: 500px;"></div>
+  </body>
+</html>

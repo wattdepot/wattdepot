@@ -114,25 +114,25 @@ public class SensorMeasurementServerResource extends WattDepotServerResource imp
     if (start != null && end != null) {
       MeasurementList ret = new MeasurementList();
       try {
-        Depository depository = depot.getDepository(depositoryId, orgId);
+        Depository depository = depot.getDepository(depositoryId, orgId, true);
         if (depository != null) {
           Date startDate = DateConvert.parseCalStringToDate(start);
           Date endDate = DateConvert.parseCalStringToDate(end);
           if (startDate != null && endDate != null) {
             try {
-              Sensor sensor = depot.getSensor(sensorId, orgId);
+              Sensor sensor = depot.getSensor(sensorId, orgId, true);
               for (Measurement meas : depot.getMeasurements(depositoryId, orgId, sensor.getId(),
-                  startDate, endDate)) {
+                  startDate, endDate, true)) {
                 ret.getMeasurements().add(meas);
               }
             }
             catch (IdNotFoundException nf) {
               try {
-                SensorGroup group = depot.getSensorGroup(sensorId, orgId);
+                SensorGroup group = depot.getSensorGroup(sensorId, orgId, true);
                 for (String s : group.getSensors()) {
-                  Sensor sensor = depot.getSensor(s, orgId);
+                  Sensor sensor = depot.getSensor(s, orgId, true);
                   for (Measurement meas : depot.getMeasurements(depositoryId, orgId,
-                      sensor.getId(), startDate, endDate)) {
+                      sensor.getId(), startDate, endDate, true)) {
                     ret.getMeasurements().add(meas);
                   }
                 }

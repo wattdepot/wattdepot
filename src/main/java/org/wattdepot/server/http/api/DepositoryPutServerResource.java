@@ -48,7 +48,7 @@ public class DepositoryPutServerResource extends WattDepotServerResource impleme
     getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/depository/ with " + depository);
     if (isInRole(orgId)) {
       try {
-        depot.getOrganization(orgId);
+        depot.getOrganization(orgId, true);
       }
       catch (IdNotFoundException e1) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");

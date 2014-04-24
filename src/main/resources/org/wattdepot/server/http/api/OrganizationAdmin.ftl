@@ -7,12 +7,16 @@
 <link rel="stylesheet" href="/webroot/dist/css/bootstrap.min.css">
 <!-- Optional theme -->
 <link rel="stylesheet" href="/webroot/dist/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="/webroot/dist/css/themes/blue/style.css">
 <link rel="stylesheet/less" type="text/css" href="/webroot/dist/css/style.less">
 <script src="/webroot/dist/js/less-1.3.0.min.js"></script>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="/webroot/dist/js/jquery.js"></script>
+<script src="/webroot/dist/js/jquery.tablesorter.js"></script>
 <script src="/webroot/dist/js/bootstrap.min.js"></script>
 <script src="/webroot/dist/js/wattdepot-organization-admin.js"></script>
+<script> 
+</script> 
 
 </head>
 <body>
@@ -31,9 +35,9 @@
   <!-- Collect the nav links, forms, and other content for toggling -->
   <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     <ul class="nav navbar-nav">
-      <li class="active"><a href="#">Definitions</a></li>
-      <li><a href="/wattdepot/${orgId}/summary/">Measurement, Depository Summary</a></li>
-      <li><a href="/wattdepot/${orgId}/visualize/">Measurement Visualization</a></li>
+      <li class="active"><a href="#">Settings</a></li>
+      <li><a href="/wattdepot/${orgId}/summary/">Summary</a></li>
+      <li><a href="/wattdepot/${orgId}/visualize/">Chart</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li><a href="#">${orgId}</a></li>
@@ -44,20 +48,22 @@
   <div id="modal-dialogs"></div>
   <div class="container">
   <!-- Nav tabs -->
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-tabs" id="tabs">
         <li><a id="depositories_tab_link" href="#depositories" data-toggle="tab">Depositories</a></li>
-        <li><a id="sensors_tab_link" href="#sensors" data-toggle="tab">Sensors</a></li>
-        <li><a id="sensorgroups_tab_link" href="#sensorgroups" data-toggle="tab">Sensor Groups</a></li>
-        <li><a id="sensorprocesses_tab_link" href="#sensorprocesses" data-toggle="tab">Collector Process Definitions</a></li>
+        <li><a id="sensors_tab_link" href="#sensors" data-toggle="tab" name="sensors">Sensors</a></li>
+        <li><a id="sensorgroups_tab_link" href="#sensorgroups" data-toggle="tab" name="sensorgroups">Sensor Groups</a></li>
+        <li><a id="sensorprocesses_tab_link" href="#sensorprocesses" data-toggle="tab" name="sensorprocesses">Collector Process Definitions</a></li>
+        <li><a id="garbagecollection_tab_link" href="#garbagecollection" data-toggle="tab" name="garbagecollection">Garbage Collection Definitions</a></li>
     </ul>
+    <a name="sensorprocesses"></a>
     <!-- Tab panes -->
     <div class="tab-content">
         <div class="tab-pane active" id="depositories">
-            <div class="well">
+<!--            <div class="well"> -->
               <div class="panel-group" id="help">
                 <div class="panel panel-default">
                   <div class="panel-heading">
-                    <a class="panel-title text-right" data-toggle="collapse" data-parent="#help" href="#depositoryCollapseHelp">Help <img src="/webroot/dist/icon-help-sm.png"></a>
+                    <a class="panel-title text-right accordion-toggle collapsed" data-toggle="collapse" data-parent="#help" href="#depositoryCollapseHelp">Help </a>
                   </div>
                   <div id="depositoryCollapseHelp" class="panel-collapse collapse">
                     <div class="panel-body">
@@ -67,10 +73,13 @@
                   </div>
                 </div>
               </div>
-            
-                <table class="table">
+              <div class="row">
+                <div class="col-xs-5"><h3>Depositories</h3></div>
+                <div class="col-xs-6"></div>
+                <div class="col-xs-1"><button data-toggle="modal" data-target="#addDepositoryModal" class="btn btn-primary btn-sm add-button"><span class="glyphicon glyphicon-plus"></span></button></div>
+              </div>
+                <table id="depositoryTable" class="table tablesorter">
                     <thead>
-                      <tr><th colspan="5"><h3>Depositories</h3></th></tr>
                         <tr>
                             <th>Id</th>
                             <th>Name</th>
@@ -82,21 +91,20 @@
                     <#list depositories as d>
                         <tr><td>${d.id}</td><td>${d.name}</td><td><#if d.getMeasurementType()??>${d.measurementType.name}</#if></td>
                             <td>
-                                <span class="glyphicon glyphicon-remove" onclick="delete_depository_dialog(event, '${d.id}');"></span>
+                                <a href="#"><span class="glyphicon glyphicon-remove" onclick="delete_depository_dialog(event, '${d.id}');"></span></a>
                             </td>
                         </tr>
                     </#list>
                     </tbody>
                 </table>
-                <button data-toggle="modal" data-target="#addDepositoryModal" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> Add Depository</a>
-            </div>       
+<!--            </div>  -->       
         </div>
         <div class="tab-pane" id="sensors">
-            <div class="well">
+<!--            <div class="well">  -->
               <div class="panel-group" id="help">
                 <div class="panel panel-default">
                   <div class="panel-heading">
-                    <a class="panel-title text-right" data-toggle="collapse" data-parent="#help" href="#sensorCollapseHelp">Help <img src="/webroot/dist/icon-help-sm.png"></a>
+                    <a class="panel-title text-right accordion-toggle collapsed" data-toggle="collapse" data-parent="#help" href="#sensorCollapseHelp">Help </a>
                   </div>
                   <div id="sensorCollapseHelp" class="panel-collapse collapse">
                     <div class="panel-body">
@@ -108,10 +116,14 @@
                   </div>
                 </div>
               </div>
-
-                <table class="table">
+              <div class="row">
+                <div class="col-xs-5"><h3>Sensors</h3></div>
+                <div class="col-xs-6"></div>
+                <div class="col-xs-1"><button data-toggle="modal" data-target="#addSensorModal" class="btn btn-primary btn-sm add-button"><span class="glyphicon glyphicon-plus"></span></button></div>
+              </div>
+                
+                <table id="sensorTable" class="table tablesorter">
                     <thead>
-                      <tr><th colspan="5"><h3>Sensors</h3></th></tr>
                         <tr>
                             <th>Id</th>
                             <th>Name</th>
@@ -130,29 +142,35 @@
                             <td><#if s.getModelId()??>${s.modelId}</#if></td>
                             <td>[<#assign k = s.properties?size><#list s.properties as prop>{"${prop.key}":"${prop.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]</td>
                             <td>
-                                <span class="glyphicon glyphicon-pencil" onclick="edit_sensor_dialog(event, '${s.id}');"></span>
+                                <a href="#"><span class="glyphicon glyphicon-pencil" onclick="edit_sensor_dialog(event, '${s.id}');"></span></a>
                             </td>
                             <td>
-                                <span class="glyphicon glyphicon-remove" onclick="delete_sensor_dialog(event, '${s.id}');"></span>
+                                <a href="#"><span class="glyphicon glyphicon-remove" onclick="delete_sensor_dialog(event, '${s.id}');"></span></a>
                             </td>
                         </tr>
                     </#list>
                     </tbody>
                 </table>
-                <button data-toggle="modal" data-target="#addSensorModal" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> Add Sensor</button>
-            </div>   
+                
+<!--            </div>  -->   
             <div class="panel-group" id="accordion">
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseModel">Sensor Models</a>
+                            <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion" href="#collapseModel">Sensor Models</a>
                         </h4>
                     </div>
                     <div id="collapseModel" class="panel-collapse collapse">
-                        <div class="well">
-                            <table class="table">
+<!--                        <div class="well">  -->
+                      <div class="row">
+                        <div class="col-xs-5"><h3>Sensor Models</h3></div>
+                        <div class="col-xs-6"></div>
+                        <div class="col-xs-1"><button data-toggle="modal" data-target="#addModelModal" class="btn btn-primary btn-sm add-button"><span class="glyphicon glyphicon-plus"></span></button></div>
+                      </div>
+
+                            
+                            <table id="sensorModelTable" class="table tablesorter">
                                 <thead>
-                                    <tr><th colspan="5"><h3>Sensor Models</h3></th></tr>
                                     <tr>
                                         <th>Id</th>
                                         <th>Name</th>
@@ -167,27 +185,26 @@
                                 <#list sensormodels as m>
                                     <tr><td>${m.id}</td><td>${m.name}</td><td>${m.protocol}</td><td>${m.type}</td><td>${m.version}</td>
                                         <td>
-                                            <span class="glyphicon glyphicon-pencil" onclick="edit_model_dialog(event, '${m.id}');"></span>
+                                            <a href="#"><span class="glyphicon glyphicon-pencil" onclick="edit_model_dialog(event, '${m.id}');"></span></a>
                                         </td>
                                         <td>
-                                            <span class="glyphicon glyphicon-remove" onclick="delete_model_dialog(event, '${m.id}');"></span>
+                                            <a href="#"><span class="glyphicon glyphicon-remove" onclick="delete_model_dialog(event, '${m.id}');"></span></a>
                                         </td>
                                     </tr>
                                 </#list>
                                 </tbody>
                             </table>
-                            <button data-toggle="modal" data-target="#addModelModal" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> Add Sensor Model</button>
-                        </div>       
+<!--                        </div>  -->       
                     </div>
                 </div>
             </div>
         </div>
         <div class="tab-pane" id="sensorgroups">
-            <div class="well">
+<!--            <div class="well"> -->
               <div class="panel-group" id="help">
                 <div class="panel panel-default">
                   <div class="panel-heading">
-                    <a class="panel-title text-right" data-toggle="collapse" data-parent="#help" href="#sensorGroupCollapseHelp">Help <img src="/webroot/dist/icon-help-sm.png"></a>
+                    <a class="panel-title text-right accordion-toggle collapsed" data-toggle="collapse" data-parent="#help" href="#sensorGroupCollapseHelp">Help </a>
                   </div>
                   <div id="sensorGroupCollapseHelp" class="panel-collapse collapse">
                     <div class="panel-body">
@@ -197,9 +214,14 @@
                   </div>
                 </div>
               </div>
-                <table class="table">
+              <div class="row">
+                <div class="col-xs-5"><h3>Sensor Groups</h3></div>
+                <div class="col-xs-6"></div>
+                <div class="col-xs-1"><button data-toggle="modal" data-target="#addSensorGroupModal" class="btn btn-primary btn-sm add-button"><span class="glyphicon glyphicon-plus"></span></button></div>
+              </div>
+                
+                <table id="sensorGroupTable" class="table tablesorter">
                     <thead>
-                      <tr><th colspan="5"><h3>Sensor Groups</h3></th></tr>
                         <tr>
                             <th>Id</th>
                             <th>Name</th>
@@ -214,24 +236,24 @@
                             <td>${g.name}</td>
                             <td><#list g.sensors as s>${s} </#list></td>
                             <td>
-                                <span class="glyphicon glyphicon-pencil" onclick="edit_sensorgroup_dialog(event, '${g.id}');"></span>
+                                <a href="#"><span class="glyphicon glyphicon-pencil" onclick="edit_sensorgroup_dialog(event, '${g.id}');"></span></a>
                             </td>
                             <td>
-                                <span class="glyphicon glyphicon-remove" onclick="delete_sensorgroup_dialog(event, '${g.id}');"></span>
+                                <a href="#"><span class="glyphicon glyphicon-remove" onclick="delete_sensorgroup_dialog(event, '${g.id}');"></span></a>
                             </td>
                         </tr>
                     </#list>
                     </tbody>
                 </table>
-                <button data-toggle="modal" data-target="#addSensorGroupModal" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> Add Sensor Group</button>
-            </div>       
+                
+<!--            </div>  -->       
         </div>
         <div class="tab-pane" id="sensorprocesses">
-            <div class="well">
+<!--            <div class="well">  -->
               <div class="panel-group" id="help">
                 <div class="panel panel-default">
                   <div class="panel-heading">
-                    <a class="panel-title text-right" data-toggle="collapse" data-parent="#help" href="#CPDCollapseHelp">Help <img src="/webroot/dist/icon-help-sm.png"></a>
+                    <a class="panel-title text-right accordion-toggle collapsed" data-toggle="collapse" data-parent="#help" href="#CPDCollapseHelp">Help </a>
                   </div>
                   <div id="CPDCollapseHelp" class="panel-collapse collapse">
                     <div class="panel-body">
@@ -241,9 +263,13 @@
                   </div>
                 </div>
               </div>
-                <table class="table">
+              <div class="row">
+                <div class="col-xs-5"><h3>Collector Process Definitions</h3></div>
+                <div class="col-xs-6"></div>
+                <div class="col-xs-1"><button data-toggle="modal" data-target="#addCPDModal" class="btn btn-primary btn-sm add-button"><span class="glyphicon glyphicon-plus"></span></button></div>
+              </div>
+                <table id="cpdTable" class="table tablesorter">
                     <thead>
-                      <tr><th colspan="5"><h3>Collector Process Definitions</h3></th></tr>
                         <tr>
                             <th>Id</th>
                             <th>Name</th>
@@ -264,17 +290,79 @@
                             <td>${p.depositoryId}</td>
                             <td>[<#assign k = p.properties?size><#list p.properties as prop>{"${prop.key}":"${prop.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]</td>
                             <td>
-                                <span class="glyphicon glyphicon-pencil" onclick="edit_cpd_dialog(event, '${p.id}');"></span>
+                                <a href="#"><span class="glyphicon glyphicon-pencil" onclick="edit_cpd_dialog(event, '${p.id}');"></span></a>
                             </td>
                             <td>
-                                <span class="glyphicon glyphicon-remove" onclick="delete_cpd_dialog(event, '${p.id}');"></span>
+                                <a href="#"><span class="glyphicon glyphicon-remove" onclick="delete_cpd_dialog(event, '${p.id}');"></span></a>
                             </td>
                         </tr>
                     </#list>
                     </tbody>
                 </table>
-                <button data-toggle="modal" data-target="#addCPDModal" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> Add Collector Process Definition</button>
-            </div>       
+                
+<!--            </div>  -->       
+        </div>
+        <div class="tab-pane" id="garbagecollection">
+<!--            <div class="well">  -->
+              <div class="panel-group" id="help">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <a class="panel-title text-right accordion-toggle collapsed" data-toggle="collapse" data-parent="#help" href="#GCDCollapseHelp">Help </a>
+                  </div>
+                  <div id="GCDCollapseHelp" class="panel-collapse collapse">
+                    <div class="panel-body">
+                      <p>Garbage collection is a way of reducing the number of measurements stored in the WattDepot database. Most applications will want high resolution measurmement data for a period of time, but not require that amount of historical data. The Garbage Collection Definition allows you to manage how much measurement data is kept.</p>
+                      <p>Garbage Collection Definitions help define the how much data is kept in the database. They contain the Depository, the Sensor, the number of days to keep high resolution data, the collection window a number of days to reduce the number of measurements in, and the minimum gap in seconds between measurements. A separate process can use this definition to remove measurement in the collection window if they have a smaller gap between them than the minimum measurement gap.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-xs-5"><h3>Garbage Collection Definitions</h3></div>
+                <div class="col-xs-6"></div>
+                <div class="col-xs-1"><button data-toggle="modal" data-target="#addGCDModal" class="btn btn-primary btn-sm add-button"><span class="glyphicon glyphicon-plus"></span></button></div>
+              </div>
+                <table id="gcdTable" class="table tablesorter">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Depository</th>
+                            <th>Sensor</th>
+                            <th>Ignore Window</th>
+                            <th>Collection Window</th>
+                            <th>Minimum Gap</th>
+                            <th>Last Run</th>
+                            <th>Last Completed</th>
+                            <th>Measurements Cleaned</th>
+                            <th style="width: 7px;"></th>
+                            <th style="width: 7px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <#list gcds as g>
+                        <tr><td>${g.id}</td>
+                            <td>${g.name}</td>
+                            <td>${g.depositoryId}</td>
+                            <td>${g.sensorId!""}</td>
+                            <td>${g.ignoreWindowDays}</td>
+                            <td>${g.collectWindowDays}</td>
+                            <td>${g.minGapSeconds}</td>
+                            <td>${(g.lastStarted?datetime)!"Never"}</td>
+                            <td>${(g.lastCompleted?datetime)!"Never"}</td>
+                            <td>${g.numMeasurementsCollected!0}</td>                            
+                            <td>
+                                <a href="#"><span class="glyphicon glyphicon-pencil" onclick="edit_gcd_dialog(event, '${g.id}');"></span></a>
+                            </td>
+                            <td>
+                                <a href="#"><span class="glyphicon glyphicon-remove" onclick="delete_gcd_dialog(event, '${g.id}');"></span></a>
+                            </td>
+                        </tr>
+                    </#list>
+                    </tbody>
+                </table>
+                
+<!--            </div>  -->       
         </div>
     </div>  
 
@@ -1116,6 +1204,201 @@
 </div>
 <!-- / .modal -->
 
+<!-- ********************** GarbageCollectionDefinition Modal Dialog Boxes **************************** -->
+  <!-- Add Garbage Collection Defintion -->
+  <div class="modal fade" id="addGCDModal" tabindex="-1" role="dialog" aria-labelledby="addGCDModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Add Garbage Collection Definition</h4>
+        </div>
+        <div class="modal-body">
+          <div class="container">
+            <form>
+              <input type="hidden" name="meta_id" value="">
+            <div class="form-group">
+              <label class="col-md-3 control-label">Garbage Collection (GC) Definition Id</label>
+                <div class="col-md-9">
+                  <input type="text" name="gcd_id" class="form-control">
+                  <p class="help-block">GC Definition id must be unique and be a slug. Slugs consist of lowercase letter, numbers and '-', no other characters are allowed.</p>
+                </div>
+              </div>
+              <div class="form-group">
+                 <label class="col-sm-3 control-label">GC Definition Name</label>
+                 <div class="col-sm-9">
+                   <input class="form-control" type="text" name="gcd_name" class="form-control">
+                   <p class="help-block">Unique name for the definition.</p>
+                 </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">Depository</label>
+                <div class="col-sm-9">
+                  <select class="form-control" name="gcd_depository">
+                  <#list depositories as d>
+                    <option value="${d.id}">${d.name}</option>
+                  </#list>
+                  </select>
+                  <p class="help-block">Select the depository storing the measurements.</p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">Sensor</label>
+                <div class="col-sm-9">
+                  <select class="form-control" name="gcd_sensor">
+                  <#list sensors as s>
+                    <option value="${s.id}">${s.name}</option>
+                  </#list>
+                  </select>
+                  <p class="help-block">Select the sensor that made the measurements.</p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">Ignore Window</label>
+                <div class="col-sm-9">
+                  <input class="form-control" type="number" name="gcd_ignore" class="form-control">
+                  <p class="help-block">Number of days of high resolution measurement data.</p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">Collection Window</label>
+                <div class="col-sm-9">
+                  <input class="form-control" type="number" name="gcd_collect" class="form-control">
+                  <p class="help-block">Number of days for the collection window.</p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">Minimum Gap</label>
+                <div class="col-sm-9">
+                  <input class="form-control" type="number" name="gcd_gap" class="form-control">
+                  <p class="help-block">Minimum number of seconds between measurements.</p>
+                </div>
+              </div>
+              <div class="clearfix"></div>
+            </form>
+          </div>
+        </div> <!-- /.modal-body -->                
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="putNewGCD();">Save changes</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->    
+
+  <!-- Edit Garbage Collection Defintion -->
+  <div class="modal fade" id="editGCDModal" tabindex="-1" role="dialog" aria-labelledby="editGCDModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Edit Garbage Collection Definition</h4>
+        </div>
+        <div class="modal-body">
+          <div class="container">
+            <form>
+              <input type="hidden" name="gcd_id" value="">
+            <div class="form-group">
+              <label class="col-md-3 control-label">Garbage Collection Definition Id</label>
+                <div class="col-md-9">
+                  <input type="text" name="edit_gcd_id" class="form-control" disabled>
+                  <p class="help-block">Garbage Collection Definition id cannot be changed once created.</p>
+                </div>
+              </div>
+              <div class="form-group">
+                 <label class="col-sm-3 control-label">GC Definition Name</label>
+                 <div class="col-sm-9">
+                   <input class="form-control" type="text" name="edit_gcd_name" class="form-control">
+                   <p class="help-block">Unique name for the definition.</p>
+                 </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">Depository</label>
+                <div class="col-sm-9">
+                  <select class="form-control" name="edit_gcd_depository">
+                  <#list depositories as d>
+                    <option value="${d.id}">${d.name}</option>
+                  </#list>
+                  </select>
+                  <p class="help-block">Select the depository storing the measurements.</p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">Sensor</label>
+                <div class="col-sm-9">
+                  <select class="form-control" name="edit_gcd_sensor">
+                  <#list sensors as s>
+                    <option value="${s.id}">${s.name}</option>
+                  </#list>
+                  </select>
+                  <p class="help-block">Select the sensor that made the measurements.</p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">Ignore Window</label>
+                <div class="col-sm-9">
+                  <input class="form-control" type="number" name="edit_gcd_ignore" class="form-control">
+                  <p class="help-block">Number of days to ignore.</p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">Collection Window</label>
+                <div class="col-sm-9">
+                  <input class="form-control" type="number" name="edit_gcd_collect" class="form-control">
+                  <p class="help-block">Number of days in the collection window.</p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-3 control-label">Minimum Gap</label>
+                <div class="col-sm-9">
+                  <input class="form-control" type="number" name="edit_gcd_gap" class="form-control">
+                  <p class="help-block">Minimum gap between measurements in seconds.</p>
+                </div>
+              </div>
+              <div class="clearfix"></div>
+            </form>
+          </div>
+        </div> <!-- /.modal-body -->                
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="updateGCD();">Save changes</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->    
+
+<!-- Delete Garbage Collection Definition -->
+<div class="modal fade" id="deleteGCDModal" tabindex="-1"
+    role="dialog" aria-labelledby="deleteGCDModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Delete Garbage Collection Definition</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <b>Delete Garbage Collection Definition </b>
+                </p>
+                <div id="del_gcd_id"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default"
+                    data-dismiss="modal">Close</button>
+                <button id="delete_button" type="button"
+                    class="btn btn-primary"
+                    onclick="deleteGCD();">Delete
+                    Garbage Collection Definition</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- / .modal -->
+
 
 </div>
 <script>
@@ -1124,8 +1407,27 @@ $(document).ready(function () {
     if (selected_tab != null) {
         $('#' + selected_tab + '_tab_link').tab('show');
     }
-    
+    else {
+      $('#depositories_tab_link').tab('show');
+    }
+    $("#depositoryTable").tablesorter(); 
+    $("#sensorTable").tablesorter(); 
+    $("#sensorModelTable").tablesorter(); 
+    $("#sensorGroupTable").tablesorter(); 
+    $("#cpdTable").tablesorter(); 
 });
+
+$('#tabs a').click(function (e) {
+    e.preventDefault();
+    $(this).tab('show');
+});
+
+// store the currently selected tab in the hash value
+$("ul.nav-tabs > li > a").on("shown.bs.tab", function (e) {
+    var id = $(e.target).attr("href").substr(1);
+    setCookie('selected-tab', id);
+});
+
 
 var ORGID = "${orgId}";
 var DEPOSITORIES = {};
@@ -1151,7 +1453,11 @@ SENSORGROUPS["${sg.id}"] = {"id": "${sg.id}", "name": "${sg.name}", "sensors": [
 </#list>
 var CPDS = {};
 <#list cpds as sp>
-CPDS["${sp.id}"] = {"id": "${sp.id}", "name": "${sp.name}",  "sensorId": "${sp.sensorId}", "pollingInterval": ${sp.pollingInterval}, "depositoryId": "${sp.depositoryId}", "organizationId": "${sp.organizationId}", "properties" : [<#assign k = sp.properties?size><#list sp.properties as p>{"key":"${p.key}", "value":"${p.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]};
+CPDS["${sp.id}"] = {"id": "${sp.id}", "name": "${sp.name}",  "sensorId": "${sp.sensorId}", "pollingInterval": ${sp.pollingInterval?string.computer}, "depositoryId": "${sp.depositoryId}", "organizationId": "${sp.organizationId}", "properties" : [<#assign k = sp.properties?size><#list sp.properties as p>{"key":"${p.key}", "value":"${p.value}"}<#if k != 1>,</#if><#assign k = k -1></#list>]};
+</#list>
+var GCDS = {};
+<#list gcds as g>
+GCDS["${g.id}"] = {"id": "${g.id}", "name": "${g.name}", "depositoryId": "${g.depositoryId}", "sensorId": "${g.sensorId}", "organizationId": "${g.organizationId}", "ignoreWindowDays": ${g.ignoreWindowDays}, "collectWindowDays": ${g.collectWindowDays}, "minGapSeconds": ${g.minGapSeconds}, "lastStarted": "${(g.lastStarted?datetime)!"Never"}", "lastCompleted": "${(g.lastCompleted?datetime)!"Never"}", "numMeasurementsCollected": ${g.numMeasurementsCollected!0}};
 </#list>
 var MEASUREMENTTYPES = {};
 <#list measurementtypes as mt>

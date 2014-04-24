@@ -34,12 +34,10 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.Get;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.MeasurementRateSummary;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
-import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.http.api.API;
 import org.wattdepot.server.ServerProperties;
 
@@ -76,22 +74,30 @@ public class OrgSummaryServerResource extends WattDepotServerResource {
       TemplateRepresentation template = null;
       try {
         if (timingp) {
+          getLogger().log(Level.SEVERE, "Start database timing.");
           dbStartTime = System.nanoTime();
         }
-        List<Depository> depos = depot.getDepositories(orgId);
+        Organization org = depot.getOrganization(orgId, true);
+        List<Depository> depos = depot.getDepositories(orgId, false);
         List<Sensor> sensors = new ArrayList<Sensor>();
-        List<MeasurementRateSummary> summaries = new ArrayList<MeasurementRateSummary>();
+        Map<String, List<String>> depositorySensors = new HashMap<String, List<String>>();
+        totalMeasurements = depot.getMeasurementsCount(orgId, false);
+//        List<MeasurementRateSummary> summaries = new ArrayList<MeasurementRateSummary>();
         for (Depository d : depos) {
-          for (String sensorId : depot.listSensors(d.getId(), orgId)) {
-            sensors.add(depot.getSensor(sensorId, orgId));
-            MeasurementRateSummary sum = depot.getRateSummary(d.getId(), orgId, sensorId);
-            totalMeasurements += sum.getTotalCount();
-            summaries.add(sum);
+          depositorySensors.put(d.getId(), depot.listSensors(d.getId(), orgId, false));
+          for (String sensorId : depositorySensors.get(d.getId())) {
+            sensors.add(depot.getSensor(sensorId, orgId, false));
+//            MeasurementRateSummary sum = depot.getRateSummary(d.getId(), orgId, sensorId, false);
+//            totalMeasurements += sum.getTotalCount();
+//            summaries.add(sum);
           }
         }
+        dataModel.put("name", org.getName());
         dataModel.put("depositories", depos);
         dataModel.put("sensors", sensors);
-        dataModel.put("summaries", summaries);
+        dataModel.put("depositorySensors", depositorySensors);
+        dataModel.put("totalMeasurements", totalMeasurements);
+//        dataModel.put("summaries", summaries);
         if (depot.getServerProperties().get(ServerProperties.SERVER_TIMING_KEY)
             .equals(ServerProperties.TRUE)) {
           Long dbEndTime = System.nanoTime();
@@ -116,11 +122,11 @@ public class OrgSummaryServerResource extends WattDepotServerResource {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         return null;
       }
-      catch (NoMeasurementException e) {
-        e.printStackTrace();
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-        return null;
-      }
+//      catch (NoMeasurementException e) {
+//        e.printStackTrace();
+//        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+//        return null;
+//      }
       template = new TemplateRepresentation(rep, dataModel, MediaType.TEXT_HTML);
       if (timingp) {
         Long endTime = System.nanoTime();

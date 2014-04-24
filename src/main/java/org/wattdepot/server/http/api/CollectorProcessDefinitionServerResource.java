@@ -66,7 +66,7 @@ public class CollectorProcessDefinitionServerResource extends WattDepotServerRes
     CollectorProcessDefinition process = null;
     if (isInRole(orgId)) {
       try {
-        process = depot.getCollectorProcessDefinition(definitionId, orgId);
+        process = depot.getCollectorProcessDefinition(definitionId, orgId, true);
       }
       catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
@@ -123,7 +123,7 @@ public class CollectorProcessDefinitionServerResource extends WattDepotServerRes
     if (isInRole(orgId)) {
       if (definition.getId().equals(definitionId)) {
         try {
-          if (depot.getCollectorProcessDefinitionIds(orgId).contains(definition.getId())) {
+          if (depot.getCollectorProcessDefinitionIds(orgId, true).contains(definition.getId())) {
             try {
               depot.updateCollectorProcessDefinition(definition);
             }

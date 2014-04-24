@@ -38,6 +38,23 @@ import org.wattdepot.common.util.UnitsHelper;
  */
 public class InstanceFactory {
 
+  /** The latest value. */
+  public static final Double LATEST_VALUE = 100.0;
+  /** The one minute count. */
+  public static final Long ONE_MINUTE_COUNT = 4l;
+  /** The one minute rate. */
+  public static final Double ONE_MINUTE_RATE = 0.667;
+  /** The total count. */
+  public static final Long TOTAL_COUNT = 1000000l;
+  
+  /**
+   * @return A CollectorProcessDefinition instance for testing.
+   */
+  public static CollectorProcessDefinition getCollectorProcessDefinition() {
+    return new CollectorProcessDefinition("Test Collector Process Defintion", getSensor().getId(),
+        10L, getDepository().getId(), getOrganization().getId());
+  }
+
   /**
    * @return A Depository instance for testing.
    */
@@ -45,6 +62,30 @@ public class InstanceFactory {
     return new Depository("Test Depository", getMeasurementType(), getOrganization().getId());
   }
 
+  /**
+   * @return A GarbageCollectionDefinition for testing.
+   */
+  public static GarbageCollectionDefinition getGarbageCollectionDefinition() {
+    return new GarbageCollectionDefinition("Test GarbageCollectionDefinition", getDepository()
+        .getId(), getSensor().getId(), getOrganization().getId(), 1, 1, 300);
+  }
+
+  /**
+   * @return A MeasurementRateSummary for testing.
+   */
+  public static MeasurementRateSummary getMeasurementRateSummary() {
+    MeasurementRateSummary ret = new MeasurementRateSummary();
+    ret.setDepositoryId(getDepository().getId());
+    ret.setLatestValue(LATEST_VALUE);
+    ret.setOneMinuteCount(ONE_MINUTE_COUNT);
+    ret.setOneMinuteRate(ONE_MINUTE_RATE);
+    ret.setSensorId(getSensor().getId());
+    ret.setTimestamp(getTimeBeforeM1());
+    ret.setTotalCount(TOTAL_COUNT);
+    ret.setType(getMeasurementType());
+    return ret;
+  }
+  
   /**
    * @return A Measurement instance for testing.
    */
@@ -61,6 +102,108 @@ public class InstanceFactory {
       e.printStackTrace();
     }
     return null;
+  }
+
+  /**
+   * @return A Measurement instance for testing.
+   */
+  public static Measurement getMeasurementThree() {
+    try {
+      Date measTime = DateConvert.parseCalStringToDate("2013-11-20T14:45:37.925-1000");
+      Double value = 100.0;
+      return new Measurement(getSensor().getId(), measTime, value, getMeasurementType().unit());
+    }
+    catch (ParseException e) {
+      e.printStackTrace();
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  /**
+   * @return A Measurement instance for testing.
+   */
+  public static Measurement getMeasurementTwo() {
+    try {
+      Date measTime = DateConvert.parseCalStringToDate("2013-11-20T14:35:37.925-1000");
+      Double value = 100.0;
+      return new Measurement(getSensor().getId(), measTime, value, getMeasurementType().unit());
+    }
+    catch (ParseException e) {
+      e.printStackTrace();
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  /**
+   * @return A MeasurementType instance for testing.
+   */
+  public static MeasurementType getMeasurementType() {
+    Unit<?> unit = UnitsHelper.quantities.get("Flow Rate (gal/s)");
+    return new MeasurementType("Test MeasurementType Name", unit);
+  }
+
+  /**
+   * @return A MeasurementType instance for testing.
+   */
+  public static MeasurementType getMeasurementType2() {
+    Unit<?> unit = UnitsHelper.quantities.get("Flow Rate (gal/s)");
+    return new MeasurementType("Test MeasurementType Name2", unit);
+  }
+
+  /**
+   * @return A Organization instance for testing.
+   */
+  public static Organization getOrganization() {
+    Set<String> users = new HashSet<String>();
+    users.add(getUserInfo().getUid());
+    return new Organization("Test User Group", users);
+  }
+
+  /**
+   * @return A second Organization instance for testing.
+   */
+  public static Organization getOrganization2() {
+    Set<String> users = new HashSet<String>();
+    users.add(getUserInfo2().getUid());
+    return new Organization("Test User Group2", users);
+  }
+
+  /**
+   * @return A Property instance for testing.
+   */
+  public static Property getProperty() {
+    return new Property("test_key", "test_value");
+  }
+
+  /**
+   * @return A Sensor instance for testing.
+   */
+  public static Sensor getSensor() {
+    return new Sensor("Test Sensor", "test_sensor_uri", getSensorModel().getId(), getOrganization()
+        .getId());
+  }
+
+  /**
+   * @return A SensorGroup instance for testing.
+   */
+  public static SensorGroup getSensorGroup() {
+    Set<String> sensors = new HashSet<String>();
+    sensors.add(getSensor().getId());
+    return new SensorGroup("Test Sensor Group", sensors, getOrganization().getId());
+  }
+
+  /**
+   * @return A SensorModel instance for testing.
+   */
+  public static SensorModel getSensorModel() {
+    return new SensorModel("Test Sensor Model", "test_model_protocol", "test_model_type",
+        "test_model_version");
   }
 
   /**
@@ -125,116 +268,6 @@ public class InstanceFactory {
       e.printStackTrace();
     }
     return null;
-  }
-
-  /**
-   * @return A Measurement instance for testing.
-   */
-  public static Measurement getMeasurementThree() {
-    try {
-      Date measTime = DateConvert.parseCalStringToDate("2013-11-20T14:45:37.925-1000");
-      Double value = 100.0;
-      return new Measurement(getSensor().getId(), measTime, value, getMeasurementType().unit());
-    }
-    catch (ParseException e) {
-      e.printStackTrace();
-    }
-    catch (DatatypeConfigurationException e) {
-      e.printStackTrace();
-    }
-    return null;
-  }
-
-  /**
-   * @return A Measurement instance for testing.
-   */
-  public static Measurement getMeasurementTwo() {
-    try {
-      Date measTime = DateConvert.parseCalStringToDate("2013-11-20T14:35:37.925-1000");
-      Double value = 100.0;
-      return new Measurement(getSensor().getId(), measTime, value, getMeasurementType().unit());
-    }
-    catch (ParseException e) {
-      e.printStackTrace();
-    }
-    catch (DatatypeConfigurationException e) {
-      e.printStackTrace();
-    }
-    return null;
-  }
-
-  /**
-   * @return A MeasurementType instance for testing.
-   */
-  public static MeasurementType getMeasurementType() {
-    Unit<?> unit = UnitsHelper.quantities.get("Flow Rate (gal/s)");
-    return new MeasurementType("Test MeasurementType Name", unit);
-  }
-
-  /**
-   * @return A MeasurementType instance for testing.
-   */
-  public static MeasurementType getMeasurementType2() {
-    Unit<?> unit = UnitsHelper.quantities.get("Flow Rate (gal/s)");
-    return new MeasurementType("Test MeasurementType Name2", unit);
-  }
-
-  /**
-   * @return A Property instance for testing.
-   */
-  public static Property getProperty() {
-    return new Property("test_key", "test_value");
-  }
-
-  /**
-   * @return A Sensor instance for testing.
-   */
-  public static Sensor getSensor() {
-    return new Sensor("Test Sensor", "test_sensor_uri", getSensorModel().getId(), getOrganization()
-        .getId());
-  }
-
-  /**
-   * @return A SensorGroup instance for testing.
-   */
-  public static SensorGroup getSensorGroup() {
-    Set<String> sensors = new HashSet<String>();
-    sensors.add(getSensor().getId());
-    return new SensorGroup("Test Sensor Group", sensors, getOrganization().getId());
-  }
-
-  /**
-   * @return A SensorModel instance for testing.
-   */
-  public static SensorModel getSensorModel() {
-    return new SensorModel("Test Sensor Model", "test_model_protocol", "test_model_type",
-        "test_model_version");
-  }
-
-  /**
-   * @return A CollectorProcessDefinition instance for testing.
-   */
-  public static CollectorProcessDefinition getCollectorProcessDefinition() {
-    return new CollectorProcessDefinition("Test Collector Process Defintion", getSensor().getId(),
-        10L, getDepository().getId(), getOrganization().getId());
-  }
-
-  /**
-   * @return A Organization instance for testing.
-   */
-  public static Organization getOrganization() {
-    Set<String> users = new HashSet<String>();
-    users.add(getUserInfo().getUid());
-    return new Organization("Test User Group", users);
-  }
-
-  /**
-   * @return A second Organization instance for testing.
-   */
-  public static Organization getOrganization2() {
-    Set<String> users = new HashSet<String>();
-    users.add(getUserInfo2().getUid());
-    return new Organization("Test User Group2", users);
   }
 
   /**

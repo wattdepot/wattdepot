@@ -32,6 +32,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
 import org.wattdepot.common.domainmodel.InstanceFactory;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Measurement;
@@ -94,7 +95,7 @@ public class TestWattDepotPersistenceImpl {
   public void setUp() throws UniqueIdException {
     // 1. define the organization w/o any users.
     try {
-      impl.getOrganization(testOrg.getId());
+      impl.getOrganization(testOrg.getId(), true);
     }
     catch (IdNotFoundException e) {
       try {
@@ -109,7 +110,7 @@ public class TestWattDepotPersistenceImpl {
     }
     // 2. define the user
     try {
-      impl.getUser(testUser.getUid(), testUser.getOrganizationId());
+      impl.getUser(testUser.getUid(), testUser.getOrganizationId(), true);
     }
     catch (IdNotFoundException e) {
       try {
@@ -139,7 +140,7 @@ public class TestWattDepotPersistenceImpl {
   public void tearDown() {
     Organization testO;
     try {
-      testO = impl.getOrganization(testOrg.getId());
+      testO = impl.getOrganization(testOrg.getId(), true);
       if (testO != null) {
         impl.deleteOrganization(testO.getId());
       }
@@ -155,7 +156,7 @@ public class TestWattDepotPersistenceImpl {
     }
     UserPassword testP;
     try {
-      testP = impl.getUserPassword(testPassword.getUid(), testPassword.getOrganizationId());
+      testP = impl.getUserPassword(testPassword.getUid(), testPassword.getOrganizationId(), true);
       if (testP != null) {
         impl.deleteUserPassword(testP.getUid(), testPassword.getOrganizationId());
       }
@@ -165,7 +166,7 @@ public class TestWattDepotPersistenceImpl {
     }
     UserInfo testU;
     try {
-      testU = impl.getUser(testUser.getUid(), testUser.getOrganizationId());
+      testU = impl.getUser(testUser.getUid(), testUser.getOrganizationId(), true);
       if (testU != null) {
         impl.deleteUser(testU.getUid(), testU.getOrganizationId());
       }
@@ -177,14 +178,13 @@ public class TestWattDepotPersistenceImpl {
 
   /**
    * Test methods for dealing with CollectorProcessDefinitions.
-   * 
    */
   @Test
   public void testCollectorProcessDefinitions() {
     // get the list of CollectorProcessDefinitions
     List<CollectorProcessDefinition> list = null;
     try {
-      list = impl.getCollectorProcessDefinitions(testOrg.getId());
+      list = impl.getCollectorProcessDefinitions(testOrg.getId(), true);
     }
     catch (IdNotFoundException e3) {
       fail(e3.getMessage() + " should not happen");
@@ -195,7 +195,8 @@ public class TestWattDepotPersistenceImpl {
     CollectorProcessDefinition cpd = InstanceFactory.getCollectorProcessDefinition();
     try {
       impl.defineCollectorProcessDefinition(cpd.getSensorId(), cpd.getName(), cpd.getSensorId(),
-          cpd.getPollingInterval(), cpd.getDepositoryId(), cpd.getProperties(), cpd.getOrganizationId());
+          cpd.getPollingInterval(), cpd.getDepositoryId(), cpd.getProperties(),
+          cpd.getOrganizationId());
     }
     catch (UniqueIdException e) {
       fail(cpd.getId() + " should not exist in persistence.");
@@ -228,7 +229,8 @@ public class TestWattDepotPersistenceImpl {
     }
     try {
       impl.defineCollectorProcessDefinition(cpd.getId(), cpd.getName(), cpd.getSensorId(),
-          cpd.getPollingInterval(), cpd.getDepositoryId(), cpd.getProperties(), cpd.getOrganizationId());
+          cpd.getPollingInterval(), cpd.getDepositoryId(), cpd.getProperties(),
+          cpd.getOrganizationId());
     }
     catch (UniqueIdException e) {
       e.printStackTrace();
@@ -249,7 +251,8 @@ public class TestWattDepotPersistenceImpl {
     // try to define it again.
     try {
       impl.defineCollectorProcessDefinition(cpd.getId(), cpd.getName(), cpd.getSensorId(),
-          cpd.getPollingInterval(), cpd.getDepositoryId(), cpd.getProperties(), cpd.getOrganizationId());
+          cpd.getPollingInterval(), cpd.getDepositoryId(), cpd.getProperties(),
+          cpd.getOrganizationId());
     }
     catch (UniqueIdException e2) {
       // expected result
@@ -268,7 +271,7 @@ public class TestWattDepotPersistenceImpl {
     }
 
     try {
-      list = impl.getCollectorProcessDefinitions(testOrg.getId());
+      list = impl.getCollectorProcessDefinitions(testOrg.getId(), true);
     }
     catch (IdNotFoundException e2) {
       fail(e2.getMessage() + " should not happen");
@@ -276,7 +279,7 @@ public class TestWattDepotPersistenceImpl {
     assertTrue(numCollector + 1 == list.size());
     List<String> ids = null;
     try {
-      ids = impl.getCollectorProcessDefinitionIds(testOrg.getId());
+      ids = impl.getCollectorProcessDefinitionIds(testOrg.getId(), true);
     }
     catch (IdNotFoundException e2) {
       fail(e2.getMessage() + " should not happen");
@@ -284,7 +287,7 @@ public class TestWattDepotPersistenceImpl {
     assertTrue(list.size() == ids.size());
     try {
       CollectorProcessDefinition defined = impl.getCollectorProcessDefinition(cpd.getId(),
-          cpd.getOrganizationId());
+          cpd.getOrganizationId(), true);
       assertNotNull(defined);
       assertTrue(defined.equals(cpd));
       assertTrue(defined.toString().equals(cpd.toString()));
@@ -292,7 +295,7 @@ public class TestWattDepotPersistenceImpl {
       // Update the instance
       impl.updateCollectorProcessDefinition(defined);
       CollectorProcessDefinition updated = impl.getCollectorProcessDefinition(cpd.getId(),
-          cpd.getOrganizationId());
+          cpd.getOrganizationId(), true);
       assertNotNull(updated);
       assertTrue(defined.equals(updated));
       assertFalse(updated.equals(cpd));
@@ -317,7 +320,7 @@ public class TestWattDepotPersistenceImpl {
     }
     try {
       impl.deleteCollectorProcessDefinition(cpd.getId(), cpd.getOrganizationId());
-      list = impl.getCollectorProcessDefinitions(testOrg.getId());
+      list = impl.getCollectorProcessDefinitions(testOrg.getId(), true);
       assertTrue(numCollector == list.size());
     }
     catch (IdNotFoundException e) {
@@ -349,7 +352,7 @@ public class TestWattDepotPersistenceImpl {
     // get the depositories.
     List<Depository> list = null;
     try {
-      list = impl.getDepositories(testOrg.getId());
+      list = impl.getDepositories(testOrg.getId(), true);
     }
     catch (IdNotFoundException e3) {
       fail(e3.getMessage() + " should not happen");
@@ -359,7 +362,8 @@ public class TestWattDepotPersistenceImpl {
     // Create a new instance
     Depository dep = InstanceFactory.getDepository();
     try {
-      impl.defineDepository(dep.getId(), dep.getName(), dep.getMeasurementType(), dep.getOrganizationId());
+      impl.defineDepository(dep.getId(), dep.getName(), dep.getMeasurementType(),
+          dep.getOrganizationId());
     }
     catch (BadSlugException e) {
       e.printStackTrace();
@@ -380,10 +384,11 @@ public class TestWattDepotPersistenceImpl {
       }
     }
     try {
-      impl.defineDepository(dep.getId(), dep.getName(), dep.getMeasurementType(), dep.getOrganizationId());
-      list = impl.getDepositories(testOrg.getId());
+      impl.defineDepository(dep.getId(), dep.getName(), dep.getMeasurementType(),
+          dep.getOrganizationId());
+      list = impl.getDepositories(testOrg.getId(), true);
       assertTrue(numDepository + 1 == list.size());
-      List<String> ids = impl.getDepositoryIds(testOrg.getId());
+      List<String> ids = impl.getDepositoryIds(testOrg.getId(), true);
       assertTrue(list.size() == ids.size());
     }
     catch (BadSlugException e) {
@@ -400,7 +405,8 @@ public class TestWattDepotPersistenceImpl {
     }
     // try to define it again.
     try {
-      impl.defineDepository(dep.getId(), dep.getName(), dep.getMeasurementType(), dep.getOrganizationId());
+      impl.defineDepository(dep.getId(), dep.getName(), dep.getMeasurementType(),
+          dep.getOrganizationId());
       fail("Should not be able to define second depository with same name.");
     }
     catch (UniqueIdException e2) {
@@ -415,11 +421,11 @@ public class TestWattDepotPersistenceImpl {
       fail(e.getMessage() + " should not happen");
     }
     try {
-      Depository defined = impl.getDepository(dep.getId(), dep.getOrganizationId());
+      Depository defined = impl.getDepository(dep.getId(), dep.getOrganizationId(), true);
       assertNotNull(defined);
       assertTrue(defined.equals(dep));
       assertTrue(defined.toString().equals(dep.toString()));
-      Depository copy = impl.getDepository(dep.getId(), dep.getOrganizationId());
+      Depository copy = impl.getDepository(dep.getId(), dep.getOrganizationId(), true);
       assertTrue(copy.equals(defined));
     }
     catch (IdNotFoundException e) {
@@ -449,7 +455,7 @@ public class TestWattDepotPersistenceImpl {
       fail("should not happen");
     }
     try {
-      list = impl.getDepositories(testOrg.getId());
+      list = impl.getDepositories(testOrg.getId(), true);
     }
     catch (IdNotFoundException e1) {
       fail(e1.getMessage() + " should not happen");
@@ -471,6 +477,155 @@ public class TestWattDepotPersistenceImpl {
   }
 
   /**
+   * Tests for GarbageCollectionDefinitions.
+   */
+  @Test
+  public void testGarbageCollectionDefinitions() {
+    // get the list of GarbageCollectionDefinitions
+    List<GarbageCollectionDefinition> list = null;
+    try {
+      list = impl.getGarbageCollectionDefinitions(testOrg.getId(), true);
+    }
+    catch (IdNotFoundException e3) {
+      fail(e3.getMessage() + " should not happen");
+    }
+    int numCollector = list.size();
+    assertTrue(numCollector >= 0);
+    // Create a new instance
+    GarbageCollectionDefinition gcd = InstanceFactory.getGarbageCollectionDefinition();
+    try {
+      impl.defineGarbageCollectionDefinition(gcd.getId(), gcd.getName(), gcd.getDepositoryId(),
+          gcd.getSensorId(), gcd.getOrganizationId(), gcd.getIgnoreWindowDays(),
+          gcd.getCollectWindowDays(), gcd.getMinGapSeconds());
+    }
+    catch (UniqueIdException e) {
+      fail(gcd.getId() + " should not exist in persistence.");
+    }
+    catch (BadSlugException e) {
+      fail(gcd.getId() + " is valid.");
+    }
+    catch (IdNotFoundException e) {
+      // This is expected.
+      try {
+        addSensor();
+        addMeasurementType();
+        addDepository();
+      }
+      catch (MisMatchedOwnerException e1) {
+        e1.printStackTrace();
+        fail(e1.getMessage() + " shouldn't happen");
+      }
+      catch (UniqueIdException e1) {
+        e1.printStackTrace();
+        fail(e1.getMessage() + " shouldn't happen");
+      }
+      catch (IdNotFoundException e1) {
+        e1.printStackTrace();
+        fail(e1.getMessage() + " shouldn't happen");
+      }
+    }
+    try {
+      impl.defineGarbageCollectionDefinition(gcd.getId(), gcd.getName(), gcd.getDepositoryId(),
+          gcd.getSensorId(), gcd.getOrganizationId(), gcd.getIgnoreWindowDays(),
+          gcd.getCollectWindowDays(), gcd.getMinGapSeconds());
+    }
+    catch (UniqueIdException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " shouldn't happen");
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " shouldn't happen");
+    }
+    catch (BadSlugException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " shouldn't happen");
+    }
+    // try to define it again.
+    try {
+      impl.defineGarbageCollectionDefinition(gcd.getId(), gcd.getName(), gcd.getDepositoryId(),
+          gcd.getSensorId(), gcd.getOrganizationId(), gcd.getIgnoreWindowDays(),
+          gcd.getCollectWindowDays(), gcd.getMinGapSeconds());
+    }
+    catch (UniqueIdException e2) {
+      // expected result
+    }
+    catch (IdNotFoundException e2) {
+      e2.printStackTrace();
+      fail(e2.getMessage() + " shouldn't happen");
+    }
+    catch (BadSlugException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " shouldn't happen");
+    }
+
+    try {
+      list = impl.getGarbageCollectionDefinitions(testOrg.getId(), true);
+    }
+    catch (IdNotFoundException e2) {
+      fail(e2.getMessage() + " should not happen");
+    }
+    assertTrue(numCollector + 1 == list.size());
+    List<String> ids = null;
+    try {
+      ids = impl.getGarbageCollectionDefinitionIds(testOrg.getId(), true);
+    }
+    catch (IdNotFoundException e2) {
+      fail(e2.getMessage() + " should not happen");
+    }
+    assertTrue(list.size() == ids.size());
+    try {
+      GarbageCollectionDefinition defined = impl.getGarbageCollectionDefinition(gcd.getId(),
+          gcd.getOrganizationId(), true);
+      assertNotNull(defined);
+      assertTrue(defined.equals(gcd));
+      assertTrue(defined.toString().equals(gcd.toString()));
+      defined.setName("New Name");
+      // Update the instance
+      impl.updateGarbageCollectionDefinition(defined);
+      GarbageCollectionDefinition updated = impl.getGarbageCollectionDefinition(gcd.getId(),
+          gcd.getOrganizationId(), true);
+      assertNotNull(updated);
+      assertTrue(defined.equals(updated));
+      assertFalse(updated.equals(gcd));
+      assertTrue(defined.hashCode() == updated.hashCode());
+      assertFalse(updated.hashCode() == gcd.hashCode());
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+      fail("should not happen");
+    }
+    // Delete the instance
+    try {
+      impl.deleteGarbageCollectionDefinition("bogus-collector-3921", gcd.getOrganizationId());
+      fail("should be able to delete bogus GarbageCollectionDefinition.");
+    }
+    catch (IdNotFoundException e1) {
+      // expected.
+    }
+    try {
+      impl.deleteGarbageCollectionDefinition(gcd.getId(), gcd.getOrganizationId());
+      list = impl.getGarbageCollectionDefinitions(testOrg.getId(), true);
+      assertTrue(numCollector == list.size());
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+      fail("should not happen");
+    }
+    try {
+      deleteSensor();
+    }
+    catch (MisMatchedOwnerException e) {
+      e.printStackTrace();
+      fail("should not happen");
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+      fail("should not happen");
+    }
+  }
+
+  /**
    * Tests for dealing with Measurements.
    */
   @Test
@@ -486,8 +641,9 @@ public class TestWattDepotPersistenceImpl {
     Depository dep = InstanceFactory.getDepository();
     String sensorId = null;
     try {
-      impl.defineDepository(dep.getId(), dep.getName(), dep.getMeasurementType(), dep.getOrganizationId());
-      Depository d = impl.getDepository(dep.getId(), dep.getOrganizationId());
+      impl.defineDepository(dep.getId(), dep.getName(), dep.getMeasurementType(),
+          dep.getOrganizationId());
+      Depository d = impl.getDepository(dep.getId(), dep.getOrganizationId(), true);
       MeasurementType type = d.getMeasurementType();
       assertTrue(type.equals(InstanceFactory.getMeasurementType()));
       Measurement m1 = InstanceFactory.getMeasurementOne();
@@ -498,23 +654,25 @@ public class TestWattDepotPersistenceImpl {
       impl.putMeasurement(dep.getId(), dep.getOrganizationId(), m1);
       impl.putMeasurement(dep.getId(), dep.getOrganizationId(), m2);
       impl.putMeasurement(dep.getId(), dep.getOrganizationId(), m3);
-      Measurement defined = impl.getMeasurement(dep.getId(), dep.getOrganizationId(), m1.getId());
+      Measurement defined = impl.getMeasurement(dep.getId(), dep.getOrganizationId(), m1.getId(),
+          true);
       assertNotNull(defined);
       assertTrue(defined.equals(m1));
       assertTrue(defined.toString().equals(m1.toString()));
       // assertTrue(defined.hashCode() == m1.hashCode());
-      List<Measurement> list = impl.getMeasurements(dep.getId(), dep.getOrganizationId(), sensorId);
+      List<Measurement> list = impl.getMeasurements(dep.getId(), dep.getOrganizationId(), sensorId,
+          true);
       assertTrue(list.size() == 3);
       list = impl.getMeasurements(dep.getId(), dep.getOrganizationId(), sensorId,
-          InstanceFactory.getTimeBetweenM1andM2(), InstanceFactory.getTimeBetweenM1andM3());
+          InstanceFactory.getTimeBetweenM1andM2(), InstanceFactory.getTimeBetweenM1andM3(), true);
       assertTrue(list.size() == 1);
       try {
         Double val = impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId,
-            InstanceFactory.getTimeBetweenM1andM2());
+            InstanceFactory.getTimeBetweenM1andM2(), true);
         assertTrue(Math.abs(val - m1.getValue()) < 0.001);
         try {
           Double val2 = impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId,
-              InstanceFactory.getTimeBetweenM1andM2(), 700L);
+              InstanceFactory.getTimeBetweenM1andM2(), 700L, true);
           assertTrue(Math.abs(val - val2) < 0.001);
         }
         catch (MeasurementGapException e) {
@@ -522,7 +680,8 @@ public class TestWattDepotPersistenceImpl {
           fail(e.getMessage() + " should not happen");
         }
         try {
-          Double val2 = impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId, m2.getDate(), 700L);
+          Double val2 = impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId, m2.getDate(),
+              700L, true);
           assertTrue(Math.abs(val - val2) < 0.001);
         }
         catch (MeasurementGapException e) {
@@ -531,13 +690,13 @@ public class TestWattDepotPersistenceImpl {
         }
         try {
           impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId,
-              InstanceFactory.getTimeBetweenM1andM2(), 7L);
+              InstanceFactory.getTimeBetweenM1andM2(), 7L, true);
           fail("Should detect gap.");
         }
         catch (MeasurementGapException e) {
           // expected
         }
-        val = impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId, m1.getDate());
+        val = impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId, m1.getDate(), true);
         assertTrue(Math.abs(val - m1.getValue()) < 0.0001);
       }
       catch (NoMeasurementException e) {
@@ -545,22 +704,24 @@ public class TestWattDepotPersistenceImpl {
         fail(e.getMessage() + " should not happen");
       }
       try {
-        impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId, InstanceFactory.getTimeBeforeM1());
+        impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId,
+            InstanceFactory.getTimeBeforeM1(), true);
         fail("Should throw NoMeasurementException.");
       }
       catch (NoMeasurementException e) {
         // expected
       }
       try {
-        impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId, InstanceFactory.getTimeAfterM3());
+        impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId,
+            InstanceFactory.getTimeAfterM3(), true);
         fail("Should throw NoMeasurementException.");
       }
       catch (NoMeasurementException e) {
         // expected
       }
       try {
-        impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId, InstanceFactory.getTimeBeforeM1(),
-            700L);
+        impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId,
+            InstanceFactory.getTimeBeforeM1(), 700L, true);
         fail("Should throw NoMeasurementException.");
       }
       catch (NoMeasurementException e) {
@@ -571,8 +732,8 @@ public class TestWattDepotPersistenceImpl {
         fail(e.getMessage() + " should not happen");
       }
       try {
-        impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId, InstanceFactory.getTimeAfterM3(),
-            700L);
+        impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId,
+            InstanceFactory.getTimeAfterM3(), 700L, true);
         fail("Should throw NoMeasurementException.");
       }
       catch (NoMeasurementException e) {
@@ -584,7 +745,7 @@ public class TestWattDepotPersistenceImpl {
       }
       try {
         Double val = impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId,
-            InstanceFactory.getTimeBetweenM1andM2(), InstanceFactory.getTimeBetweenM1andM3());
+            InstanceFactory.getTimeBetweenM1andM2(), InstanceFactory.getTimeBetweenM1andM3(), true);
         assertTrue(Math.abs(val - 0.0) < 0.001);
       }
       catch (NoMeasurementException e) {
@@ -593,7 +754,8 @@ public class TestWattDepotPersistenceImpl {
       }
       try {
         Double val = impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId,
-            InstanceFactory.getTimeBetweenM1andM2(), InstanceFactory.getTimeBetweenM1andM3(), 700L);
+            InstanceFactory.getTimeBetweenM1andM2(), InstanceFactory.getTimeBetweenM1andM3(), 700L,
+            true);
         assertTrue(Math.abs(val - 0.0) < 0.001);
       }
       catch (NoMeasurementException e) {
@@ -605,16 +767,16 @@ public class TestWattDepotPersistenceImpl {
         fail(e.getMessage() + " shouldn't happen");
       }
       try {
-        InterpolatedValue earliest = impl.getEarliestMeasuredValue(dep.getId(), dep.getOrganizationId(),
-            sensorId);
+        InterpolatedValue earliest = impl.getEarliestMeasuredValue(dep.getId(),
+            dep.getOrganizationId(), sensorId, true);
         assertNotNull(earliest);
         assertTrue(earliest.equivalent(m1));
         assertTrue(earliest.getSensorId().equals(m1.getSensorId()));
         assertTrue(earliest.getValue().equals(m1.getValue()));
         assertTrue(earliest.getMeasurementType().getUnits().equals(m1.getMeasurementType()));
         assertTrue(earliest.getDate().equals(m1.getDate()));
-        InterpolatedValue latest = impl.getLatestMeasuredValue(dep.getId(), dep.getOrganizationId(),
-            sensorId);
+        InterpolatedValue latest = impl.getLatestMeasuredValue(dep.getId(),
+            dep.getOrganizationId(), sensorId, true);
         assertNotNull(latest);
         assertTrue(latest.equivalent(m3));
         assertTrue(latest.getSensorId().equals(m3.getSensorId()));
@@ -623,7 +785,7 @@ public class TestWattDepotPersistenceImpl {
         e.printStackTrace();
         fail(e.getMessage() + " should not happen");
       }
-      List<String> sensors = impl.listSensors(dep.getId(), dep.getOrganizationId());
+      List<String> sensors = impl.listSensors(dep.getId(), dep.getOrganizationId(), true);
       assertNotNull(sensors);
       assertTrue(sensors.contains(sensorId));
       impl.deleteMeasurement(dep.getId(), dep.getOrganizationId(), m1.getId());
@@ -685,7 +847,7 @@ public class TestWattDepotPersistenceImpl {
     }
     MeasurementType defined = null;
     try {
-      defined = impl.getMeasurementType(type.getId());
+      defined = impl.getMeasurementType(type.getId(), true);
     }
     catch (IdNotFoundException e1) {
       e1.printStackTrace();
@@ -702,7 +864,7 @@ public class TestWattDepotPersistenceImpl {
     assertTrue(numMeasurementTypes + 1 == list.size());
     MeasurementType update = null;
     try {
-      update = impl.getMeasurementType(type.getId());
+      update = impl.getMeasurementType(type.getId(), true);
     }
     catch (IdNotFoundException e1) {
       e1.printStackTrace();
@@ -752,7 +914,7 @@ public class TestWattDepotPersistenceImpl {
       assertTrue(numOrgs + 1 == list.size());
       List<String> ids = impl.getOrganizationIds();
       assertTrue(list.size() == ids.size());
-      Organization defined = impl.getOrganization(org.getId());
+      Organization defined = impl.getOrganization(org.getId(), true);
       assertNotNull(defined);
       // assertTrue(defined.equals(org));
       // assertTrue(defined.toString().equals(org.toString()));
@@ -763,7 +925,7 @@ public class TestWattDepotPersistenceImpl {
       impl.updateOrganization(defined);
       list = impl.getOrganizations();
       assertTrue(numOrgs + 1 == list.size());
-      Organization updated = impl.getOrganization(org.getId());
+      Organization updated = impl.getOrganization(org.getId(), true);
       assertFalse(org.equals(updated));
       assertFalse(org.toString().equals(updated.toString()));
       assertFalse(org.hashCode() == updated.hashCode());
@@ -802,7 +964,7 @@ public class TestWattDepotPersistenceImpl {
   public void testSensors() {
     List<Sensor> list = null;
     try {
-      list = impl.getSensors(testOrg.getId());
+      list = impl.getSensors(testOrg.getId(), true);
     }
     catch (IdNotFoundException e2) {
       fail(e2.getMessage() + " should not happen");
@@ -839,20 +1001,20 @@ public class TestWattDepotPersistenceImpl {
     try {
       impl.defineSensor(sens.getId(), sens.getName(), sens.getUri(), sens.getModelId(),
           sens.getProperties(), sens.getOrganizationId());
-      list = impl.getSensors(testOrg.getId());
+      list = impl.getSensors(testOrg.getId(), true);
       assertTrue(numSensors + 1 == list.size());
-      List<String> ids = impl.getSensorIds(testOrg.getId());
+      List<String> ids = impl.getSensorIds(testOrg.getId(), true);
       assertTrue(list.size() == ids.size());
-      Sensor defined = impl.getSensor(sens.getId(), sens.getOrganizationId());
+      Sensor defined = impl.getSensor(sens.getId(), sens.getOrganizationId(), true);
       assertNotNull(defined);
       assertTrue(defined.equals(sens));
       assertTrue(defined.toString().equals(sens.toString()));
       defined.setName("New Name");
       impl.updateSensor(defined);
-      Sensor updated = impl.getSensor(sens.getId(), sens.getOrganizationId());
+      Sensor updated = impl.getSensor(sens.getId(), sens.getOrganizationId(), true);
       assertFalse(updated.equals(sens));
       assertFalse(updated.toString().equals(sens.toString()));
-      list = impl.getSensors(testOrg.getId());
+      list = impl.getSensors(testOrg.getId(), true);
       assertTrue(numSensors + 1 == list.size());
     }
     catch (BadSlugException e) {
@@ -939,7 +1101,7 @@ public class TestWattDepotPersistenceImpl {
     List<SensorGroup> list = null;
     int numGroups = 0;
     try {
-      list = impl.getSensorGroups(testOrg.getId());
+      list = impl.getSensorGroups(testOrg.getId(), true);
     }
     catch (IdNotFoundException e2) {
       fail(e2.getMessage() + " should not happen");
@@ -948,7 +1110,8 @@ public class TestWattDepotPersistenceImpl {
     assertTrue(numGroups >= 0);
     SensorGroup group = InstanceFactory.getSensorGroup();
     try {
-      impl.defineSensorGroup(group.getId(), group.getName(), group.getSensors(), group.getOrganizationId());
+      impl.defineSensorGroup(group.getId(), group.getName(), group.getSensors(),
+          group.getOrganizationId());
     }
     catch (BadSlugException e) {
       e.printStackTrace();
@@ -981,20 +1144,21 @@ public class TestWattDepotPersistenceImpl {
       }
     }
     try {
-      impl.defineSensorGroup(group.getId(), group.getName(), group.getSensors(), group.getOrganizationId());
-      list = impl.getSensorGroups(testOrg.getId());
+      impl.defineSensorGroup(group.getId(), group.getName(), group.getSensors(),
+          group.getOrganizationId());
+      list = impl.getSensorGroups(testOrg.getId(), true);
       assertTrue(numGroups + 1 == list.size());
-      List<String> ids = impl.getSensorGroupIds(testOrg.getId());
+      List<String> ids = impl.getSensorGroupIds(testOrg.getId(), true);
       assertTrue(list.size() == ids.size());
-      SensorGroup defined = impl.getSensorGroup(group.getId(), group.getOrganizationId());
+      SensorGroup defined = impl.getSensorGroup(group.getId(), group.getOrganizationId(), true);
       assertNotNull(defined);
       assertTrue(defined.equals(group));
       assertTrue(defined.toString().equals(group.toString()));
       defined.setName("New Name");
       impl.updateSensorGroup(defined);
-      list = impl.getSensorGroups(testOrg.getId());
+      list = impl.getSensorGroups(testOrg.getId(), true);
       assertTrue(numGroups + 1 == list.size());
-      SensorGroup updated = impl.getSensorGroup(group.getId(), group.getOrganizationId());
+      SensorGroup updated = impl.getSensorGroup(group.getId(), group.getOrganizationId(), true);
       assertFalse(updated.equals(group));
       assertFalse(updated.toString().equals(group.toString()));
       assertFalse(updated.hashCode() == group.hashCode());
@@ -1027,7 +1191,7 @@ public class TestWattDepotPersistenceImpl {
     }
     try {
       impl.deleteSensorGroup(group.getId(), group.getOrganizationId());
-      list = impl.getSensorGroups(testOrg.getId());
+      list = impl.getSensorGroups(testOrg.getId(), true);
       assertTrue(numGroups == list.size());
       deleteSensor();
     }
@@ -1060,7 +1224,7 @@ public class TestWattDepotPersistenceImpl {
       assertTrue(list.size() == ids.size());
       SensorModel defined = null;
       try {
-        defined = impl.getSensorModel(model.getId());
+        defined = impl.getSensorModel(model.getId(), true);
       }
       catch (IdNotFoundException e) {
         e.printStackTrace();
@@ -1081,7 +1245,7 @@ public class TestWattDepotPersistenceImpl {
       assertTrue(numModels + 1 == list.size());
       SensorModel updated = null;
       try {
-        updated = impl.getSensorModel(model.getId());
+        updated = impl.getSensorModel(model.getId(), true);
       }
       catch (IdNotFoundException e) {
         e.printStackTrace();
@@ -1125,7 +1289,7 @@ public class TestWattDepotPersistenceImpl {
     UserInfo user = InstanceFactory.getUserInfo2();
     List<UserInfo> list = null;
     try {
-      list = impl.getUsers(user.getOrganizationId());
+      list = impl.getUsers(user.getOrganizationId(), true);
     }
     catch (IdNotFoundException e2) { // NOPMD
       // expected org2 not defined.
@@ -1151,13 +1315,13 @@ public class TestWattDepotPersistenceImpl {
           fail(e.getMessage() + " should not happen");
         }
       }
-      list = impl.getUsers(user.getOrganizationId());
+      list = impl.getUsers(user.getOrganizationId(), true);
       assertTrue("expecting " + (numUsers + 1) + " got " + list.size(), numUsers + 1 == list.size());
-      List<String> ids = impl.getUserIds(user.getOrganizationId());
+      List<String> ids = impl.getUserIds(user.getOrganizationId(), true);
       assertTrue(list.size() == ids.size());
       UserInfo defined = null;
       try {
-        defined = impl.getUser(user.getUid(), user.getOrganizationId());
+        defined = impl.getUser(user.getUid(), user.getOrganizationId(), true);
       }
       catch (IdNotFoundException e) {
         e.printStackTrace();
@@ -1174,11 +1338,11 @@ public class TestWattDepotPersistenceImpl {
         e.printStackTrace();
         fail(e.getMessage() + " should not happen");
       }
-      list = impl.getUsers(user.getOrganizationId());
+      list = impl.getUsers(user.getOrganizationId(), true);
       assertTrue(numUsers + 1 == list.size());
       UserInfo updated = null;
       try {
-        updated = impl.getUser(user.getUid(), user.getOrganizationId());
+        updated = impl.getUser(user.getUid(), user.getOrganizationId(), true);
       }
       catch (IdNotFoundException e) {
         e.printStackTrace();
@@ -1190,7 +1354,7 @@ public class TestWattDepotPersistenceImpl {
       assertFalse(updated.hashCode() == user.hashCode());
       Organization group = null;
       try {
-        group = impl.getOrganization(user.getOrganizationId());
+        group = impl.getOrganization(user.getOrganizationId(), true);
       }
       catch (IdNotFoundException e) {
         e.printStackTrace();
@@ -1198,7 +1362,7 @@ public class TestWattDepotPersistenceImpl {
       }
       assertNotNull(group);
       try {
-        group = impl.getOrganization(InstanceFactory.getUserInfo2().getOrganizationId());
+        group = impl.getOrganization(InstanceFactory.getUserInfo2().getOrganizationId(), true);
       }
       catch (IdNotFoundException e) {
         e.printStackTrace();
@@ -1224,7 +1388,7 @@ public class TestWattDepotPersistenceImpl {
     }
     try {
       impl.deleteUser(user.getUid(), user.getOrganizationId());
-      list = impl.getUsers(user.getOrganizationId());
+      list = impl.getUsers(user.getOrganizationId(), true);
       assertTrue(numUsers == list.size());
     }
     catch (IdNotFoundException e) {
@@ -1255,7 +1419,7 @@ public class TestWattDepotPersistenceImpl {
     }
     UserPassword defined = null;
     try {
-      defined = impl.getUserPassword(password.getUid(), password.getOrganizationId());
+      defined = impl.getUserPassword(password.getUid(), password.getOrganizationId(), true);
     }
     catch (IdNotFoundException e) {
       e.printStackTrace();
@@ -1273,7 +1437,7 @@ public class TestWattDepotPersistenceImpl {
     }
     UserPassword updated = null;
     try {
-      updated = impl.getUserPassword(password.getUid(), password.getOrganizationId());
+      updated = impl.getUserPassword(password.getUid(), password.getOrganizationId(), true);
     }
     catch (IdNotFoundException e) {
       e.printStackTrace();
@@ -1304,7 +1468,7 @@ public class TestWattDepotPersistenceImpl {
   private void addSensorModel() throws UniqueIdException {
     SensorModel model = InstanceFactory.getSensorModel();
     try {
-      impl.getSensorModel(model.getId());
+      impl.getSensorModel(model.getId(), true);
     }
     catch (IdNotFoundException e1) {
       try {
@@ -1322,7 +1486,7 @@ public class TestWattDepotPersistenceImpl {
    */
   private void deleteSensorModel() throws IdNotFoundException {
     SensorModel model = InstanceFactory.getSensorModel();
-    SensorModel defined = impl.getSensorModel(model.getId());
+    SensorModel defined = impl.getSensorModel(model.getId(), true);
     if (defined != null) {
       impl.deleteSensorModel(model.getId());
     }
@@ -1338,7 +1502,7 @@ public class TestWattDepotPersistenceImpl {
     addSensorModel();
     Sensor sensor = InstanceFactory.getSensor();
     try {
-      impl.getSensor(sensor.getId(), sensor.getOrganizationId());
+      impl.getSensor(sensor.getId(), sensor.getOrganizationId(), true);
     }
     catch (IdNotFoundException e) {
       try {
@@ -1357,7 +1521,7 @@ public class TestWattDepotPersistenceImpl {
    */
   private void deleteSensor() throws MisMatchedOwnerException, IdNotFoundException {
     Sensor sensor = InstanceFactory.getSensor();
-    Sensor defined = impl.getSensor(sensor.getId(), sensor.getOrganizationId());
+    Sensor defined = impl.getSensor(sensor.getId(), sensor.getOrganizationId(), true);
     if (defined != null) {
       impl.deleteSensor(sensor.getId(), sensor.getOrganizationId());
     }
@@ -1371,7 +1535,7 @@ public class TestWattDepotPersistenceImpl {
   private void addDepository() throws UniqueIdException, IdNotFoundException {
     Depository depot = InstanceFactory.getDepository();
     try {
-      impl.getDepository(depot.getId(), depot.getOrganizationId());
+      impl.getDepository(depot.getId(), depot.getOrganizationId(), true);
     }
     catch (IdNotFoundException e) {
       try {
@@ -1396,11 +1560,12 @@ public class TestWattDepotPersistenceImpl {
     addSensor();
     CollectorProcessDefinition cpd = InstanceFactory.getCollectorProcessDefinition();
     CollectorProcessDefinition defined = impl.getCollectorProcessDefinition(cpd.getId(),
-        cpd.getOrganizationId());
+        cpd.getOrganizationId(), true);
     if (defined == null) {
       try {
         impl.defineCollectorProcessDefinition(cpd.getId(), cpd.getName(), cpd.getSensorId(),
-            cpd.getPollingInterval(), cpd.getDepositoryId(), cpd.getProperties(), cpd.getOrganizationId());
+            cpd.getPollingInterval(), cpd.getDepositoryId(), cpd.getProperties(),
+            cpd.getOrganizationId());
       }
       catch (BadSlugException e) {
         e.printStackTrace();
@@ -1414,7 +1579,7 @@ public class TestWattDepotPersistenceImpl {
   private void addMeasurementType() throws UniqueIdException {
     MeasurementType type = InstanceFactory.getMeasurementType();
     try {
-      impl.getMeasurementType(type.getId());
+      impl.getMeasurementType(type.getId(), true);
     }
     catch (IdNotFoundException e1) {
       try {
@@ -1431,7 +1596,7 @@ public class TestWattDepotPersistenceImpl {
    */
   private void deleteMeasurementType() throws IdNotFoundException {
     MeasurementType type = InstanceFactory.getMeasurementType();
-    MeasurementType defined = impl.getMeasurementType(type.getId());
+    MeasurementType defined = impl.getMeasurementType(type.getId(), true);
     if (defined != null) {
       impl.deleteMeasurementType(type.getId());
     }
@@ -1461,7 +1626,7 @@ public class TestWattDepotPersistenceImpl {
    */
   private void addEmptyOrganization(Organization org) {
     try {
-      impl.getOrganization(org.getId());
+      impl.getOrganization(org.getId(), true);
     }
     catch (IdNotFoundException e) {
       try {

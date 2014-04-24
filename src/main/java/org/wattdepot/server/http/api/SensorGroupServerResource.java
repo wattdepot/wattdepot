@@ -64,7 +64,7 @@ public class SensorGroupServerResource extends WattDepotServerResource implement
     if (isInRole(orgId)) {
       SensorGroup group = null;
       try {
-        group = depot.getSensorGroup(sensorGroupId, orgId);
+        group = depot.getSensorGroup(sensorGroupId, orgId, true);
       }
       catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
@@ -94,13 +94,13 @@ public class SensorGroupServerResource extends WattDepotServerResource implement
         .log(Level.INFO, "POST /wattdepot/{" + orgId + "}/sensor-group/ with " + sensorgroup);
     if (isInRole(orgId)) {
       try {
-        depot.getOrganization(orgId);
+        depot.getOrganization(orgId, true);
       }
       catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
       }
       try {
-        if (depot.getSensorGroupIds(orgId).contains(sensorgroup.getId())) {
+        if (depot.getSensorGroupIds(orgId, true).contains(sensorgroup.getId())) {
           depot.updateSensorGroup(sensorgroup);
         }
         else {

@@ -57,8 +57,8 @@ public class OrgVisualizerServerResource extends WattDepotServerResource {
    */
   @Get()
   public Representation toHtml() {
-    getLogger()
-        .log(Level.INFO, "GET " + API.BASE_URI + "{" + orgId + "}/" + Labels.VISUALIZE + "/");
+    getLogger().log(Level.INFO,
+        "GET " + API.BASE_URI + "{" + orgId + "}/" + Labels.VISUALIZE + "/");
     if (isInRole(orgId) || isInRole(Organization.ADMIN_GROUP.getId())) {
       Map<String, Object> dataModel = new HashMap<String, Object>();
       dataModel.put("orgId", orgId);
@@ -66,9 +66,10 @@ public class OrgVisualizerServerResource extends WattDepotServerResource {
       TemplateRepresentation template = null;
       try {
         // Long startTime = System.nanoTime();
-        List<Depository> depos = depot.getDepositories(orgId);
-        List<Sensor> sensors = depot.getSensors(orgId);
-        List<SensorGroup> sensorGroups = depot.getSensorGroups(orgId);
+        depot.getOrganization(orgId, true);
+        List<Depository> depos = depot.getDepositories(orgId, false);
+        List<Sensor> sensors = depot.getSensors(orgId, false);
+        List<SensorGroup> sensorGroups = depot.getSensorGroups(orgId, false);
         // Long endTime = System.nanoTime();
         // Long diff = endTime - startTime;
         // getLogger().log(Level.INFO,
@@ -80,17 +81,19 @@ public class OrgVisualizerServerResource extends WattDepotServerResource {
           depotSensorInfo.put(d.getId(), sensorInfo);
           List<Sensor> sensorList = new ArrayList<Sensor>();
           depoSensors.put(d.getId(), sensorList);
-          for (String sensorId : depot.listSensors(d.getId(), orgId)) {
+          for (String sensorId : depot.listSensors(d.getId(), orgId, false)) {
             // startTime = System.nanoTime();
-            Sensor s = depot.getSensor(sensorId, orgId);
+            Sensor s = depot.getSensor(sensorId, orgId, false);
             // endTime = System.nanoTime();
             // diff = endTime - startTime;
             // getLogger().log(Level.INFO,
             // "getSensor took " + (diff / 1E9) + " seconds");
             sensorList.add(s);
             try {
-              InterpolatedValue earliest = depot.getEarliestMeasuredValue(d.getId(), orgId, sensorId);
-              InterpolatedValue latest = depot.getLatestMeasuredValue(d.getId(), orgId, sensorId);
+              InterpolatedValue earliest = depot.getEarliestMeasuredValue(
+                  d.getId(), orgId, sensorId, false);
+              InterpolatedValue latest = depot.getLatestMeasuredValue(
+                  d.getId(), orgId, sensorId, false);
               List<Date> info = new ArrayList<Date>();
               info.add(earliest.getDate());
               info.add(latest.getDate());
@@ -101,14 +104,63 @@ public class OrgVisualizerServerResource extends WattDepotServerResource {
               e.printStackTrace();
             }
           }
+          for (String groupId : depot.getSensorGroupIds(orgId, false)) {
+            SensorGroup group = depot.getSensorGroup(groupId, orgId, false);
+            List<Date> info = new ArrayList<Date>();
+            InterpolatedValue earliest = null;
+            InterpolatedValue latest = null;
+            for (String sensorId : group.getSensors()) {
+              try {
+                InterpolatedValue temp = depot.getEarliestMeasuredValue(
+                    d.getId(), orgId, sensorId, false);
+                if (temp != null) {
+                  if (earliest == null) {
+                    earliest = temp;
+                  }
+                  else if (earliest.getDate().after(temp.getDate())) {
+                    earliest = temp;
+                  }
+                }
+                temp = depot.getLatestMeasuredValue(d.getId(), orgId, sensorId,
+                    false);
+                if (temp != null) {
+                  if (latest == null) {
+                    latest = temp;
+                  }
+                  else if (latest.getDate().before(temp.getDate())) {
+                    latest = temp;
+                  }
+                }
+              }
+              catch (NoMeasurementException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+              }
+            }
+            if (earliest != null) {
+              info.add(earliest.getDate());
+            }
+            else {
+              // CAM what is a value we can use for no data?
+              info.add(new Date(0l));
+            }
+            if (latest != null) {
+              info.add(latest.getDate());
+            }
+            else {
+              // CAM what is a value we can use for no data?
+              info.add(new Date(0l));
+            }
+            sensorInfo.put(groupId, info);
+          }
         }
         dataModel.put("depositories", depos);
         dataModel.put("sensors", sensors);
         dataModel.put("sensorgroups", sensorGroups);
         dataModel.put("depoSensors", depoSensors);
         dataModel.put("depotSensorInfo", depotSensorInfo);
-        rep = new ClientResource(LocalReference.createClapReference(getClass().getPackage())
-            + "/Visualizer.ftl").get();
+        rep = new ClientResource(LocalReference.createClapReference(getClass()
+            .getPackage()) + "/Visualizer.ftl").get();
       }
       catch (IdNotFoundException e) {
         e.printStackTrace();

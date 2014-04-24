@@ -4,25 +4,29 @@
 <title>WattDepot Organization Measurement Visualization</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- Bootstrap -->
-<link rel="stylesheet" href="/webroot/bower_components/bootstrap/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="/webroot/dist/css/bootstrap.min.css">
 <!-- Optional theme -->
-<link rel="stylesheet" href="/webroot/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="/webroot/dist/css/bootstrap-theme.min.css">
 <link rel="stylesheet" href="/webroot/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
+<link rel="stylesheet" href="/webroot/dist/css/normalize.css">
 <link rel="stylesheet/less" type="text/css" href="/webroot/dist/css/style.less">
 <script src="/webroot/dist/js/less-1.3.0.min.js"></script>
+
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="/webroot/bower_components/jquery/dist/jquery.js"></script>
 <script src="/webroot/bower_components/moment/min/moment.min.js"></script>
 <script src="/webroot/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="/webroot/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+<script src="/webroot/dist/js/wattdepot-permalink.js"></script>
 <script src="/webroot/dist/js/wattdepot-visualizer.js"></script>
 <script src="/webroot/dist/js/org.wattdepot.client.js"></script>
+<!--Load the Google AJAX API-->
 <script type='text/javascript' src='http://www.google.com/jsapi'></script>
 
 <script> 
    // Load the Visualization API and Annotated Timeline visualization
-   google.load('visualization', '1', {
-     'packages':['annotatedtimeline']
+   google.load('visualization', '1.0', {
+     'packages':['corechart']
    });
            
    // Set a callback to run when the API is loaded.
@@ -33,7 +37,7 @@
 </script> 
 
 </head>
-<body>
+<body onload="loadPage()">
 <nav class="navbar navbar-default" role="navigation">
   <!-- Brand and toggle get grouped for better mobile display -->
   <div class="navbar-header">
@@ -49,9 +53,9 @@
   <!-- Collect the nav links, forms, and other content for toggling -->
   <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     <ul class="nav navbar-nav">
-      <li><a href="/wattdepot/${orgId}/">Definitions</a></li>
-      <li><a href="/wattdepot/${orgId}/summary/">Measurement, Depository Summary</a></li>
-      <li class="active"><a href="/wattdepot/${orgId}/visualize/">Measurement Visualization</a></li>
+      <li><a href="/wattdepot/${orgId}/">Settings</a></li>
+      <li><a href="/wattdepot/${orgId}/summary/">Summary</a></li>
+      <li class="active"><a href="/wattdepot/${orgId}/visualize/">Chart</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li><a href="#">${orgId}</a></li>
@@ -70,63 +74,11 @@
         <div class="col-xs-2">Sample Frequency:</div>
       </div>
       <div id="visualizerFormsDiv">
-<!--        <div class="row form" id="form1">
-            <div id="depositoryDiv1" class="col-xs-3 control-group">
-              <div class="col-xs-2">
-                <label class="checkbox"><input type="checkbox" id="show1" value="now"></label>
-              </div>
-              <div class="col-xs-9">
-                <select id="depositorySelect1" class="col-xs-12" data-placehoder="Choose Depository..." onchange="selectedDepository(1)" data-toggle="tooltip" title="Choose Depository...">
-                  <#list depositories as d>
-                  <option value="${d.id}">${d.name}</option>
-                  </#list>
-                </select>
-              </div>
-            </div>
-            <div id="sensorDiv1" class="col-xs-2 control-group">
-              <select id="sensorSelect1" class="col-xs-12" onchange="selectedSensor(1)">
-              </select>
-            </div>
-            <div class="form-group col-xs-2">
-                <div class='input-group date' id='startdatetimepicker1'>
-                    <input type='text' class="form-control" data-format="MM/DD/YY HH:mm"/>
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                </div>
-                <div id="startInfo1"></div>
-            </div>
-            <div class="form-group col-xs-2">
-                <div class='input-group date' id='enddatetimepicker1'>
-                    <input type='text' class="form-control" data-format="MM/DD/YY HH:mm"/>
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span>
-                    </span>
-                </div>
-                <div id="endInfo1"></div>
-                <div><label class="checkbox"><input type="checkbox" id="endTimeNow1" value="now">Now</label></div>
-            </div>
-            <div class="col-xs-2 control-group">
-              <select id="dataInterval1">
-                <option value="point">Point Value</option>
-                <option value="interval">Cummulative Value</option>
-              </select>
-            </div>
-            <div class="col-xs-1 control-group">
-              <select id="interval1">
-                <option value="5">5 mins</option>
-                <option value="15">15 mins</option>
-                <option value="30">30 mins</option>
-                <option value="60">1 hr</option>
-                <option value="120">2 hr</option>
-                <option value="1400">1 Day</option>
-                <option value="10080">1 Week</option>
-                <option value="43200">1 Month</option>
-              </select>
-            </div> 
-          </div> -->
       </div>
       <div id="controlPanelButtonRow" class="row">
         <div class="col-xs-8 control-group">
           <button id="visualizeButton" class="col-xs-2 btn btn-primary" onclick="visualize();" diabled>Visualize!</button>
+          <div class="col-xs-10 control-group" id="permalink" style="display:none">Share URL:<input id="linkSpace" class="input-large" type="text" placeholder="Your Permalink" style="width:80%"></div>
         </div>
         <div class="col-xs-3"></div>
         <div class="col-xs-1 control-group">
@@ -134,7 +86,7 @@
         </div>
       </div>
     </div>
-    <div id='chartDiv' style='height: 400px; z-index: -1;'></div>    
+    <div id='chartDiv' style='height: 500px;'></div>    
   </div>
   <div class="modal fade" id="progressWindow" tabindex="-1"
     role="dialog">
@@ -166,58 +118,12 @@
     </div><!-- /.modal-dialog -->
   </div>
 <script>
-
 var server = window.location.protocol + "//" + window.location.host + "/wattdepot/";
-var wdClient = org.WattDepot.Client(server);
-
-$(document).ready(function() {
-    addRow();
-});
-
-/*$(function () {
-    activeIndex.push({
-        formIndex: 1,
-        disabled: false,
-        sourceSelected: false
-    });
-    $("#show1").prop('checked', true); 
-    // Bind event for when Show checkbox is checked
-    $("#show1").click(function() {
-        var form = activeIndex[findActiveIndex(1)];    
-        if($("#show1").is(":checked")) {
-            if($("#visualizeButton").prop("disabled")) {
-                $('#visualizeButton').prop("disabled", false);
-            }
-            form.disabled = false; 
-            numShow++;
-            $("#form1").css('background-color', '#fff');
-        }
-        else {
-            form.disabled = true;
-            numShow--; 
-            $("#form1").css('background-color', '#ddd');
-        }
-    });
-
-    // Bind event for when the Now checkbox is checked
-    $("#endTimeNow1").click(function() {
-        if($("#endTimeNow1").is(':checked')) {
-            $("#enddatetimepicker1").data("DateTimePicker").disable();
-        }
-        else {
-            $("#enddatetimepicker1").data("DateTimePicker").enable();     
-        }
-    });
-
-    $('#startdatetimepicker1').datetimepicker();
-    $('#enddatetimepicker1').datetimepicker();
-});
-*/
 
 var ORGID = "${orgId}";
 var DEPOSITORIES = {};
 <#list depositories as d>
-DEPOSITORIES["${d.id}"] = {"id": "${d.id}", "name": "${d.name}", "measurementType": "${d.measurementType.id}", "organizationId": "${d.organizationId}"};
+DEPOSITORIES["${d.id}"] = {"id": "${d.id}", "name": "${d.name}", "measurementType": "${d.measurementType.id}", "typeString" : "${d.measurementType.units}", "organizationId": "${d.organizationId}"};
 </#list>
 var SENSORS = {};
 <#list sensors as s>

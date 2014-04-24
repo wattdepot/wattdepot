@@ -138,6 +138,8 @@ public class ServerProperties {
   public void setTestProperties() {
     properties.setProperty(PORT_KEY, properties.getProperty(TEST_PORT_KEY));
     properties.setProperty(WATT_DEPOT_IMPL_KEY, properties.getProperty(TEST_WATT_DEPOT_IMPL_KEY));
+    // turn off logging during testing.
+    properties.setProperty(LOGGING_LEVEL_KEY, "SEVERE");
     trimProperties(properties);
     // update the system properties object to reflect these new values.
     Properties systemProperties = System.getProperties();

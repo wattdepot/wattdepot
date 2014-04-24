@@ -11,8 +11,8 @@ import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 /**
- * Utility class that facilitates Timestamp representation and processing. There are too many
- * classes already named "Timestamp", thus the abbreviated name.
+ * Utility class that facilitates Timestamp representation and processing. There
+ * are too many classes already named "Timestamp", thus the abbreviated name.
  * 
  * @author Philip Johnson
  */
@@ -28,7 +28,8 @@ public final class Tstamp {
   private static long MILLISECS_PER_DAY = 24 * 60 * 60 * 1000;
 
   /**
-   * Returns true if the passed string can be parsed into an XMLGregorianCalendar object.
+   * Returns true if the passed string can be parsed into an
+   * XMLGregorianCalendar object.
    * 
    * @param lexicalRepresentation The string representation.
    * @return True if the string is a legal XMLGregorianCalendar.
@@ -46,8 +47,9 @@ public final class Tstamp {
   }
 
   /**
-   * Returns an XMLGregorianCalendar, given its string representation. Missing hours, minutes,
-   * second, millisecond, and timezone fields are given defaults.
+   * Returns an XMLGregorianCalendar, given its string representation. Missing
+   * hours, minutes, second, millisecond, and timezone fields are given
+   * defaults.
    * 
    * @param rep The string representation.
    * @return The timestamp.
@@ -60,7 +62,8 @@ public final class Tstamp {
   }
 
   /**
-   * Converts a javax.sql.Timestamp into a javax.xml.datatype.XMLGregorianCalendar.
+   * Converts a javax.sql.Timestamp into a
+   * javax.xml.datatype.XMLGregorianCalendar.
    * 
    * @param tstamp The javax.sql.Timestamp
    * @return A new instance of a javax.xml.datatype.XmlGregorianCalendar
@@ -79,7 +82,8 @@ public final class Tstamp {
   }
 
   /**
-   * Converts the specified time in milliseconds into a javax.xml.datatype.XMLGregorianCalendar.
+   * Converts the specified time in milliseconds into a
+   * javax.xml.datatype.XMLGregorianCalendar.
    * 
    * @param timeInMillis the specified time in milliseconds to convert.
    * @return A new instance of a javax.xml.datatype.XmlGregorianCalendar
@@ -98,7 +102,8 @@ public final class Tstamp {
   }
 
   // /**
-  // * Converts the specified Day into a javax.xml.datatype.XMLGregorianCalendar.
+  // * Converts the specified Day into a
+  // javax.xml.datatype.XMLGregorianCalendar.
   // * @param day The day to be converted.
   // * @return A new instance of a javax.xml.datatype.XmlGregorianCalendar.
   // */
@@ -116,8 +121,8 @@ public final class Tstamp {
   // }
 
   /**
-   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp incremented by the number
-   * of days.
+   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp
+   * incremented by the number of days.
    * 
    * @param tstamp The base date and time.
    * @param days The number of days to increment. This can be a negative number.
@@ -139,11 +144,12 @@ public final class Tstamp {
   }
 
   /**
-   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp incremented by the number
-   * of hours.
+   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp
+   * incremented by the number of hours.
    * 
    * @param tstamp The base date and time.
-   * @param hours The number of hours to increment. This can be a negative number.
+   * @param hours The number of hours to increment. This can be a negative
+   *        number.
    * @return A new XMLGregorianCalendar instance representing the inc'd time.
    */
   public static XMLGregorianCalendar incrementHours(XMLGregorianCalendar tstamp, int hours) {
@@ -162,11 +168,12 @@ public final class Tstamp {
   }
 
   /**
-   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp incremented by the number
-   * of minutes.
+   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp
+   * incremented by the number of minutes.
    * 
    * @param tstamp The base date and time.
-   * @param minutes The number of minutes to increment. This can be a negative number.
+   * @param minutes The number of minutes to increment. This can be a negative
+   *        number.
    * @return A new XMLGregorianCalendar instance representing the inc'd time.
    */
   public static XMLGregorianCalendar incrementMinutes(XMLGregorianCalendar tstamp, int minutes) {
@@ -185,11 +192,12 @@ public final class Tstamp {
   }
 
   /**
-   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp incremented by the number
-   * of seconds.
+   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp
+   * incremented by the number of seconds.
    * 
    * @param tstamp The base date and time.
-   * @param seconds The number of seconds to increment. This can be a negative number.
+   * @param seconds The number of seconds to increment. This can be a negative
+   *        number.
    * @return A new XMLGregorianCalendar instance representing the inc'd time.
    */
   public static XMLGregorianCalendar incrementSeconds(XMLGregorianCalendar tstamp, int seconds) {
@@ -208,11 +216,12 @@ public final class Tstamp {
   }
 
   /**
-   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp incremented by the number
-   * of milliseconds.
+   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp
+   * incremented by the number of milliseconds.
    * 
    * @param tstamp The base date and time.
-   * @param milliseconds The number of milliseconds to increment. This can be a negative number.
+   * @param milliseconds The number of milliseconds to increment. This can be a
+   *        negative number.
    * @return A new XMLGregorianCalendar instance representing the inc'd time.
    */
   public static XMLGregorianCalendar incrementMilliseconds(XMLGregorianCalendar tstamp,
@@ -232,7 +241,8 @@ public final class Tstamp {
   }
 
   /**
-   * Returns a new java.sql.Timestamp created from a javax.xml.datatype.XMLGregorianCalendar.
+   * Returns a new java.sql.Timestamp created from a
+   * javax.xml.datatype.XMLGregorianCalendar.
    * 
    * @param calendar The XML timestamp.
    * @return The SQL timestamp.
@@ -286,8 +296,9 @@ public final class Tstamp {
   }
 
   /**
-   * Returns the number of days between time1 and time2. Returns a negative number if day1 is after
-   * day2. Takes into account daylight savings time issues.
+   * Returns the number of days between time1 and time2. Returns a negative
+   * number if day1 is after day2. Takes into account daylight savings time
+   * issues.
    * 
    * @param day1 The first day.
    * @param day2 The second day.
@@ -298,7 +309,8 @@ public final class Tstamp {
   }
 
   /**
-   * Returns a long representing the number of days since the Unix epoch to the passed day.
+   * Returns a long representing the number of days since the Unix epoch to the
+   * passed day.
    * 
    * @param day The day of interest.
    * @return The number of days since the epoch.
@@ -306,15 +318,14 @@ public final class Tstamp {
   private static long getUnixDay(XMLGregorianCalendar day) {
     GregorianCalendar greg = day.toGregorianCalendar();
     long offset = greg.get(Calendar.ZONE_OFFSET) + greg.get(Calendar.DST_OFFSET);
-    long daysSinceEpoch =
-        (long) Math.floor((double) (greg.getTime().getTime() + offset)
-            / ((double) MILLISECS_PER_DAY));
+    long daysSinceEpoch = (long) Math.floor((double) (greg.getTime().getTime() + offset)
+        / ((double) MILLISECS_PER_DAY));
     return daysSinceEpoch;
   }
 
   /**
-   * Returns true if timeString1 > timeString2. Throws an unchecked IllegalArgument exception if the
-   * strings can't be converted to timestamps.
+   * Returns true if timeString1 > timeString2. Throws an unchecked
+   * IllegalArgument exception if the strings can't be converted to timestamps.
    * 
    * @param timeString1 The first time.
    * @param timeString2 The second time.
@@ -372,26 +383,26 @@ public final class Tstamp {
   }
 
   /**
-   * Returns true if the passed timestamp indicates some time today or some time in the future.
+   * Returns true if the passed timestamp indicates some time today or some time
+   * in the future.
    * 
    * @param timestamp The timestamp of interest.
    * @return True if it's today or some day in the future.
    */
   public static boolean isTodayOrLater(XMLGregorianCalendar timestamp) {
     XMLGregorianCalendar today = Tstamp.makeTimestamp();
-    boolean isToday =
-        (today.getYear() == timestamp.getYear()) && (today.getMonth() == timestamp.getMonth())
-            && (today.getDay() == timestamp.getDay());
-    boolean afterToday =
-        today.toGregorianCalendar().getTimeInMillis() < timestamp.toGregorianCalendar()
-            .getTimeInMillis();
+    boolean isToday = (today.getYear() == timestamp.getYear())
+        && (today.getMonth() == timestamp.getMonth()) && (today.getDay() == timestamp.getDay());
+    boolean afterToday = today.toGregorianCalendar().getTimeInMillis() < timestamp
+        .toGregorianCalendar().getTimeInMillis();
     return (isToday || afterToday);
   }
 
   /**
-   * Returns true if the passed timestamp indicates some time yesterday or some time in the future.
-   * This is useful for the Commit/Churn DPDs, where the sensor typically sends data not from the
-   * current day, but from the day before.
+   * Returns true if the passed timestamp indicates some time yesterday or some
+   * time in the future. This is useful for the Commit/Churn DPDs, where the
+   * sensor typically sends data not from the current day, but from the day
+   * before.
    * 
    * @param timestamp The timestamp of interest.
    * @return True if it's today or some day in the future.
@@ -399,13 +410,11 @@ public final class Tstamp {
   public static boolean isYesterdayOrLater(XMLGregorianCalendar timestamp) {
     XMLGregorianCalendar yesterday = Tstamp.incrementDays(Tstamp.makeTimestamp(), -1);
 
-    boolean isYesterday =
-        (yesterday.getYear() == timestamp.getYear())
-            && (yesterday.getMonth() == timestamp.getMonth())
-            && (yesterday.getDay() == timestamp.getDay());
-    boolean afterYesterday =
-        yesterday.toGregorianCalendar().getTimeInMillis() < timestamp.toGregorianCalendar()
-            .getTimeInMillis();
+    boolean isYesterday = (yesterday.getYear() == timestamp.getYear())
+        && (yesterday.getMonth() == timestamp.getMonth())
+        && (yesterday.getDay() == timestamp.getDay());
+    boolean afterYesterday = yesterday.toGregorianCalendar().getTimeInMillis() < timestamp
+        .toGregorianCalendar().getTimeInMillis();
     return (isYesterday || afterYesterday);
   }
 
@@ -422,8 +431,8 @@ public final class Tstamp {
   }
 
   /**
-   * Helper function that prepares a List timestamps, between the start time and end time, at the
-   * given sampling interval.
+   * Helper function that prepares a List timestamps, between the start time and
+   * end time, at the given sampling interval.
    * 
    * @param startTime The start of the range requested.
    * @param endTime The start of the range requested.
@@ -448,7 +457,8 @@ public final class Tstamp {
       intervalMilliseconds = rangeLength / 10;
     }
     else if ((intervalMinutes * minutesToMilliseconds) > rangeLength) {
-      // TODO BOGUS, should throw an exception so callers can distinguish between problems
+      // TODO BOGUS, should throw an exception so callers can distinguish
+      // between problems
       return null;
     }
     else {
@@ -456,10 +466,12 @@ public final class Tstamp {
       intervalMilliseconds = intervalMinutes * minutesToMilliseconds;
     }
     // DEBUG
-    // System.out.format("%nstartTime=%s, endTime=%s, interval=%d min%n", startTime, endTime,
+    // System.out.format("%nstartTime=%s, endTime=%s, interval=%d min%n",
+    // startTime, endTime,
     // intervalMilliseconds / minutesToMilliseconds);
 
-    // Build list of timestamps, starting with startTime, separated by intervalMilliseconds
+    // Build list of timestamps, starting with startTime, separated by
+    // intervalMilliseconds
     List<XMLGregorianCalendar> timestampList = new ArrayList<XMLGregorianCalendar>();
     XMLGregorianCalendar timestamp = startTime;
     while (Tstamp.lessThan(timestamp, endTime)) {
@@ -467,9 +479,41 @@ public final class Tstamp {
       // System.out.format("timestamp=%s%n", timestamp); // DEBUG
       timestamp = Tstamp.incrementMilliseconds(timestamp, intervalMilliseconds);
     }
-    // add endTime to cover the last runt interval which is <= intervalMilliseconds
+    // add endTime to cover the last runt interval which is <=
+    // intervalMilliseconds
     timestampList.add(endTime);
     // System.out.format("timestamp=%s%n", endTime); // DEBUG
     return timestampList;
+  }
+
+  /**
+   * Produces a list of n + 1 XMLGregorianCalendar instances that span the given
+   * time interval by dividing the interval by n.
+   * 
+   * @param n The number of timestamps to generate.
+   * @param startTime The start of the interval.
+   * @param endTime The end of the interval.
+   * @return A List<XMLGregorianCalendar> of size n.
+   */
+  public static List<XMLGregorianCalendar> getNTimestampList(int n, XMLGregorianCalendar startTime,
+      XMLGregorianCalendar endTime) {
+    long rangeLength = Tstamp.diff(startTime, endTime);
+    long sampleIntervalMilliseconds = rangeLength / n;
+    
+    // Build list of timestamps, starting with startTime, separated by
+    // intervalMilliseconds
+    List<XMLGregorianCalendar> timestampList = new ArrayList<XMLGregorianCalendar>();
+    XMLGregorianCalendar timestamp = startTime;
+    while (Tstamp.lessThan(timestamp, endTime) || Tstamp.equal(timestamp, endTime)) {
+      timestampList.add(timestamp);
+      // System.out.format("timestamp=%s%n", timestamp); // DEBUG
+      timestamp = Tstamp.incrementMilliseconds(timestamp, sampleIntervalMilliseconds);
+    }
+    // add endTime to cover the last runt interval which is <=
+    // intervalMilliseconds
+    timestampList.add(endTime);
+    // System.out.format("timestamp=%s%n", endTime); // DEBUG
+    return timestampList;
+
   }
 }

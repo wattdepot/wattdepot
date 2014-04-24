@@ -53,7 +53,7 @@ public class UserInfoPutServerResource extends WattDepotServerResource implement
     if (isInRole(orgId) || isInRole(Organization.ADMIN_GROUP.getId())) {
       if (orgId.equals(user.getOrganizationId()) || orgId.equals(Organization.ADMIN_GROUP_NAME)) {
         try {
-          if (!depot.getUserIds(orgId).contains(user.getUid())) {
+          if (!depot.getUserIds(orgId, true).contains(user.getUid())) {
             try {
               UserInfo defined = depot.defineUserInfo(user.getUid(), user.getFirstName(),
                   user.getLastName(), user.getEmail(), user.getOrganizationId(),

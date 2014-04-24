@@ -34,10 +34,11 @@ public interface CollectorProcessDefinitionResource {
 
   /**
    * Defines GET
-   * /wattdepot/collector-process-definition/{collector-process-definition-id}
-   * API call.
+   * /wattdepot/{org-id}/collector-process-definition/{collector-process
+   * -definition-id} API call.
    * 
-   * @return The SensorProcess with the given id. The id is sent in the request.
+   * @return The CollectorProcessDefinition with the given id. The id is sent in
+   *         the request.
    */
   @Get("json")
   // Use JSON as transport encoding.
@@ -45,19 +46,18 @@ public interface CollectorProcessDefinitionResource {
 
   /**
    * Defines the POST
-   * /wattdepot/collector-process-definition/{collector-process-definition-id}
-   * API call.
+   * /wattdepot/{org-id}/collector-process-definition/{collector
+   * -process-definition-id} API call.
    * 
-   * @param definition
-   *          The SensorProcess to store.
+   * @param definition The CollectorProcessDefinition to update.
    */
   @Post
   public void update(CollectorProcessDefinition definition);
 
   /**
    * Defined the DEL
-   * /wattdepot/collector-process-definition/{collector-process-definition-id}
-   * API call. The id is sent in the request.
+   * /wattdepot/{org-id}/collector-process-definition/{collector-
+   * process-definition-id} API call. The id is sent in the request.
    */
   @Delete
   public void remove();

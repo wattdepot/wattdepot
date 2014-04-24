@@ -47,14 +47,14 @@ public class SensorPutServerResource extends WattDepotServerResource implements 
     getLogger().log(Level.INFO, "PUT /wattdepot/{" + orgId + "}/sensor/ with " + sensor);
     if (isInRole(orgId)) {
       try {
-        depot.getOrganization(orgId);
+        depot.getOrganization(orgId, true);
       }
       catch (IdNotFoundException e1) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
       }
       try {
-        if (!depot.getSensorGroupIds(orgId).contains(sensor.getId())) {
-          if (!depot.getSensorIds(orgId).contains(sensor.getId())) {
+        if (!depot.getSensorGroupIds(orgId, true).contains(sensor.getId())) {
+          if (!depot.getSensorIds(orgId, true).contains(sensor.getId())) {
             try {
               depot.defineSensor(sensor.getId(), sensor.getName(), sensor.getUri(),
                   sensor.getModelId(), sensor.getProperties(), orgId);

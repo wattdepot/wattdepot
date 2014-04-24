@@ -18,6 +18,7 @@
  */
 package org.wattdepot.server.http.api;
 
+
 import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
@@ -49,10 +50,8 @@ public class WattDepotComponent extends Component {
   /**
    * Sets up the WattDepotComponent with the given WattDepot.
    * 
-   * @param depot
-   *          The persitent store.
-   * @param port
-   *          the port number on which the restlet server listens.
+   * @param depot The persitent store.
+   * @param port the port number on which the restlet server listens.
    */
   public WattDepotComponent(WattDepotPersistence depot, int port) {
     setName("WattDepot HTTP API Server");
@@ -89,10 +88,19 @@ public class WattDepotComponent extends Component {
     getRealms().add(realm);
     for (Organization group : app.getDepot().getOrganizations()) {
       app.getRoles().add(new Role(group.getId()));
+      if (Organization.ADMIN_GROUP.getName().equals(group.getName())) {
+        // need to ensure the admin user is available.
+        User user = new User(UserInfo.ROOT.getUid(), StrongAES.getInstance()
+            .decrypt(UserPassword.ROOT.getEncryptedPassword()),
+            UserInfo.ROOT.getFirstName(), UserInfo.ROOT.getLastName(),
+            UserInfo.ROOT.getEmail());
+        realm.getUsers().add(user);
+        realm.map(user, app.getRole(group.getId()));
+      }
       for (String userId : group.getUsers()) {
         UserPassword up = null;
         try {
-          up = app.getDepot().getUserPassword(userId, group.getId());
+          up = app.getDepot().getUserPassword(userId, group.getId(), true);
         }
         catch (IdNotFoundException e) {
           e.printStackTrace();
@@ -109,7 +117,7 @@ public class WattDepotComponent extends Component {
           else {
             UserInfo info;
             try {
-              info = app.getDepot().getUser(userId, group.getId());
+              info = app.getDepot().getUser(userId, group.getId(), true);
               user = new User(info.getUid(), StrongAES.getInstance().decrypt(
                   up.getEncryptedPassword()), info.getFirstName(),
                   info.getLastName(), info.getEmail());
@@ -128,31 +136,31 @@ public class WattDepotComponent extends Component {
     app.getContext().setDefaultEnroler(realm.getEnroler());
     app.getContext().setDefaultVerifier(realm.getVerifier());
 
-//    Properties props = new Properties();
-//    InputStream inputStream = this.getClass().getClassLoader()
-//        .getResourceAsStream("log.properties");
-//    if (inputStream != null) {
-//      try {
-//        props.load(inputStream);
-//      }
-//      catch (IOException e) {
-//        // TODO Auto-generated catch block
-//        e.printStackTrace();
-//      }
-//    }
-//    // // // Configure the log service
-//    getLogService().setLoggerName("WattDepot.AccessLog");
-//    try {
-//      LogManager.getLogManager().readConfiguration(inputStream);
-//    }
-//    catch (SecurityException e) {
-//      // TODO Auto-generated catch block
-//      e.printStackTrace();
-//    }
-//    catch (IOException e) {
-//      // TODO Auto-generated catch block
-//      e.printStackTrace();
-//    }
+    // Properties props = new Properties();
+    // InputStream inputStream = this.getClass().getClassLoader()
+    // .getResourceAsStream("log.properties");
+    // if (inputStream != null) {
+    // try {
+    // props.load(inputStream);
+    // }
+    // catch (IOException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    // }
+    // // // // Configure the log service
+    // getLogService().setLoggerName("WattDepot.AccessLog");
+    // try {
+    // LogManager.getLogManager().readConfiguration(inputStream);
+    // }
+    // catch (SecurityException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    // catch (IOException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
     //
     // getLogService().setLogPropertiesRef("log.properties");
 

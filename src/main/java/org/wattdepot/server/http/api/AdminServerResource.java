@@ -33,6 +33,7 @@ import org.restlet.resource.Get;
 import org.restlet.security.User;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Sensor;
@@ -92,18 +93,24 @@ public class AdminServerResource extends WattDepotServerResource {
       else {
         try {
           // regular organization, can manipulate sensors, depositories
-          List<Depository> depos = depot.getDepositories(orgId);
-          List<Sensor> sensors = depot.getSensors(orgId);
+          depot.getOrganization(orgId, true);
+          List<Depository> depos = depot.getDepositories(orgId, false);
+          List<Sensor> sensors = depot.getSensors(orgId, false);
           List<SensorModel> sensorModels = depot.getSensorModels();
-          List<SensorGroup> sensorGroups = depot.getSensorGroups(orgId);
-          List<CollectorProcessDefinition> cpds = depot.getCollectorProcessDefinitions(orgId);
+          List<SensorGroup> sensorGroups = depot.getSensorGroups(orgId, false);
+          List<CollectorProcessDefinition> cpds = depot
+              .getCollectorProcessDefinitions(orgId, false);
           List<MeasurementType> measurementTypes = depot.getMeasurementTypes();
+          List<GarbageCollectionDefinition> gcds = depot.getGarbageCollectionDefinitions(orgId,
+              false);
           dataModel.put("depositories", depos);
           dataModel.put("sensors", sensors);
           dataModel.put("sensorgroups", sensorGroups);
           dataModel.put("sensormodels", sensorModels);
           dataModel.put("cpds", cpds);
           dataModel.put("measurementtypes", measurementTypes);
+          dataModel.put("gcds", gcds);
+          getLogger().log(Level.INFO, gcds.toString());
           rep = new ClientResource(LocalReference.createClapReference(getClass().getPackage())
               + "/OrganizationAdmin.ftl").get();
         }

@@ -22,16 +22,16 @@ import org.restlet.resource.Get;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
 
 /**
- * SensorProcessesResouce - HTTP Interface for SensorProcesses.
+ * SensorProcessesResouce - HTTP Interface for CollectorProcessDefinitions.
  * 
  * @author Cam Moore
  * 
  */
 public interface CollectorProcessDefinitionsResource {
   /**
-   * Defines the GET /wattdepot/sensorprocesses/ API call.
+   * Defines the GET /wattdepot/{org-id}/collector-process-definitions/ API call.
    * 
-   * @return a List of the defined SensorProcesses.
+   * @return a List of the defined CollectorProcessDefinitions.
    */
   @Get("json") // Use JSON as transport encoding.
   public CollectorProcessDefinitionList retrieve();

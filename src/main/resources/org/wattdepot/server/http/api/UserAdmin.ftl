@@ -7,10 +7,12 @@
 <link rel="stylesheet" href="/webroot/dist/css/bootstrap.min.css">
 <!-- Optional theme -->
 <link rel="stylesheet" href="/webroot/dist/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="/webroot/dist/css/themes/blue/style.css">
 <link rel="stylesheet/less" type="text/css" href="/webroot/dist/css/style.less">
 <script src="/webroot/dist/js/less-1.3.0.min.js"></script>
 <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="/webroot/dist/js/jquery.js"></script>
+<script src="/webroot/dist/js/jquery.tablesorter.js"></script>
 <script src="/webroot/dist/js/bootstrap.min.js"></script>
 <script src="/webroot/dist/js/wattdepot-user-admin.js"></script>
 <script> 
@@ -33,9 +35,7 @@
   <!-- Collect the nav links, forms, and other content for toggling -->
   <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     <ul class="nav navbar-nav">
-      <li class="active"><a href="#">Definitions</a></li>
-      <li><a href="/wattdepot/admin/summary/">Measurement, Depository Summary</a></li>
-      <li><a href="/wattdepot/admin/visualize/">Measurement Visualization</a></li>
+      <li class="active"><a href="#">Settings</a></li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li><a href="#">${orgId}</a></li>
@@ -49,7 +49,7 @@
   <div class="panel-group" id="help">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <a class="panel-title" data-toggle="collapse" data-parent="#help" href="#collapseHelp">Help <img src="/webroot/dist/icon-help-sm.png"></a>
+        <a class="panel-title text-right accordion-toggle collapsed" data-toggle="collapse" data-parent="#help" href="#collapseHelp">Help </a>
       </div>
       <div id="collapseHelp" class="panel-collapse collapse">
         <div class="panel-body">
@@ -65,18 +65,21 @@
   </div>
   <!-- Nav tabs -->
     <ul class="nav nav-tabs">
-        <li><a id="organization_tab_link" href="#orgs" data-toggle="tab">Organizations</a></li>
+        <li><a id="organizations_tab_link" href="#organizations" data-toggle="tab">Organizations</a></li>
         <li><a id="users_tab_link" href="#users" data-toggle="tab">Users</a></li>
     </ul>
     <!-- Tab panes -->
     <div class="tab-content">
-        <div class="tab-pane active" id="orgs">
-            <div class="well">
-                <table class="table">
+        <div class="tab-pane active" id="organizations">
+<!--            <div class="well">  -->
+                <div class="row">
+                  <div class="col-xs-5"><h3>Organizations</h3></div>
+                  <div class="col-xs-6"></div>
+                  <div class="col-xs-1"><button data-toggle="modal" data-target="#addOrganizationModal" class="btn btn-primary btn-sm add-button"><span class="glyphicon glyphicon-plus"></span></button></div>
+                </div>
+                
+                <table id="organizationTable" class="table tablesorter">
                     <thead>
-                        <tr>
-                            <th colspan="2"><h3>Organizations</h3></th>      
-                        </tr>
                         <tr>
                             <th>Id</th>
                             <th>Name</th>
@@ -90,24 +93,27 @@
                         <#if g.id != adminId>
                         <tr><td>${g.id}</td><td>${g.name}</td><td><#list g.users as u>${u} </#list></td>
                             <td>
-                                <#if g.id != "admin"><span class="glyphicon glyphicon-pencil" onclick="edit_organization_dialog(event, '${g.id}');"></span></#if>
+                                <#if g.id != "admin"><a href="#"><span class="glyphicon glyphicon-pencil" onclick="edit_organization_dialog(event, '${g.id}');"></span></a></#if>
                             </td>
                             <td>
-                                <#if g.id != "admin"><span class="glyphicon glyphicon-remove" onclick="delete_organization_dialog(event, '${g.id}');"></span></#if>
+                                <#if g.id != "admin"><a href="#"><span class="glyphicon glyphicon-remove" onclick="delete_organization_dialog(event, '${g.id}');"></span></a></#if>
                             </td>
                         </tr>
                         </#if>
                     </#list>
                     </tbody>
                 </table>
-                <button data-toggle="modal" data-target="#addOrganizationModal" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> Add Organization</button>
-            </div>        
+<!--            </div>  -->        
         </div>
         <div class="tab-pane" id="users">
-            <div class="well">
-                <table class="table">
+<!--            <div class="well">  -->
+                <div class="row">
+                  <div class="col-xs-5"><h3>Users</h3></div>
+                  <div class="col-xs-6"></div>
+                  <div class="col-xs-1"><button data-toggle="modal" data-target="#addUserModal" class="btn btn-primary btn-sm add-button"><span class="glyphicon glyphicon-plus"></span></button></div>
+                </div>
+                <table id="userTable" class="table tablesorter">
                     <thead>
-                      <tr><th colspan="5"><h3>Users</h3></th></tr>
                         <tr>
                             <th>First Name</th>
                             <th>Last Name</th>
@@ -123,17 +129,16 @@
                         <#if u.uid != rootUid>
                         <tr><td>${u.firstName!}</td><td>${u.lastName!}</td><td>${u.uid}</td><td>${u.email!}</td><td>${u.organizationId!}</td>
                             <td>
-                                <#if u.uid != rootUid><span class="glyphicon glyphicon-pencil" onclick="edit_user_dialog(event, '${u.uid}');"></span></#if>
+                                <#if u.uid != rootUid><a href="#"><span class="glyphicon glyphicon-pencil" onclick="edit_user_dialog(event, '${u.uid}');"></span></a></#if>
                             </td>
                             <td>
-                                <#if u.uid != rootUid><span class="glyphicon glyphicon-remove" onclick="delete_user_dialog(event, '${u.uid}');"></span></#if>
+                                <#if u.uid != rootUid><a href="#"><span class="glyphicon glyphicon-remove" onclick="delete_user_dialog(event, '${u.uid}');"></span></a></#if>
                             </td>
                         </tr>
                         </#if>
                     </#list>
                     </tbody>
                 </table>
-                <button data-toggle="modal" data-target="#addUserModal" class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-plus"></span> Add User</button>
             </div>
         </div>       
     </div>  
@@ -479,8 +484,24 @@ $(document).ready(function () {
     if (selected_tab != null) {
         $('#' + selected_tab + '_tab_link').tab('show');
     }
-    
+    else {
+        $('#organizations_tab_link').tab('show');
+    }
+    $('#organizationTable').tablesorter();
+    $('#userTable').tablesorter();
 });
+
+$('#tabs a').click(function (e) {
+    e.preventDefault();
+    $(this).tab('show');
+});
+
+// store the currently selected tab in the hash value
+$("ul.nav-tabs > li > a").on("shown.bs.tab", function (e) {
+    var id = $(e.target).attr("href").substr(1);
+    setCookie('selected-tab', id);
+});
+
 
 var ORGID = "${orgId}";
 var USERS = {};

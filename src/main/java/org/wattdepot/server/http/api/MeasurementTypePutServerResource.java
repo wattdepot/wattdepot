@@ -52,7 +52,7 @@ public class MeasurementTypePutServerResource extends WattDepotServerResource
     if (isInRole(Organization.ADMIN_GROUP.getId())) {
       MeasurementType mt = null;
       try {
-        mt = depot.getMeasurementType(measurementType.getId());
+        mt = depot.getMeasurementType(measurementType.getId(), true);
       }
       catch (IdNotFoundException e1) { // NOPMD
         // possible out come.

@@ -87,7 +87,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
       if (start != null && end != null && interval != null) {
         MeasuredValueList ret = new MeasuredValueList();
         try {
-          Depository depository = depot.getDepository(depositoryId, orgId);
+          Depository depository = depot.getDepository(depositoryId, orgId, true);
           if (depository != null) {
             XMLGregorianCalendar startTime = DateConvert.parseCalString(start);
             XMLGregorianCalendar endTime = DateConvert.parseCalString(end);
@@ -96,88 +96,88 @@ public class DepositoryValuesServer extends WattDepotServerResource {
             int intervalMinutes = Integer.parseInt(interval);
 
             // Build list of timestamps, starting with startTime, separated by
-            // intervalMilliseconds
+            // intervalMinutes
             List<XMLGregorianCalendar> timestampList = Tstamp.getTimestampList(startTime, endTime,
                 intervalMinutes);
-
-            Sensor sensor = depot.getSensor(sensorId, orgId);
-            if (sensor != null && timestampList != null) {
-              Date previous = null;
-              for (int i = 0; i < timestampList.size(); i++) {
-                Date timestamp = DateConvert.convertXMLCal(timestampList.get(i));
-                Double value = new Double(0);
-                if ("point".equals(dataType)) {
-                  try {
-                    value = depot.getValue(depositoryId, orgId, sensor.getId(), timestamp);
-                  }
-                  catch (NoMeasurementException e) { // NOPMD
-                    // no measurements around the time so return 0?
-                  }
-                }
-                else {
-                  if (previous != null) {
+            if (timestampList != null) {
+              Sensor sensor = depot.getSensor(sensorId, orgId, false);
+              if (sensor != null) {
+                Date previous = null;
+                for (int i = 0; i < timestampList.size(); i++) {
+                  Date timestamp = DateConvert.convertXMLCal(timestampList.get(i));
+                  Double value = new Double(0);
+                  if ("point".equals(dataType)) {
                     try {
-                      value = depot.getValue(depositoryId, orgId, sensor.getId(), previous,
-                          timestamp);
+                      value = depot.getValue(depositoryId, orgId, sensor.getId(), timestamp, true);
                     }
                     catch (NoMeasurementException e) { // NOPMD
-                      // No measurements so return 0,
+                      // no measurements around the time so return 0?
                     }
                   }
-                  previous = timestamp;
-                }
-                InterpolatedValue mValue = new InterpolatedValue(sensor.getId(), value,
-                    depository.getMeasurementType(), timestamp);
-
-                mValue.setDate(timestamp);
-
-                ret.getMeasuredValues().add(mValue);
-              }
-            }
-            else {
-              // TODO CAM this code doesn't work! Need to aggregate the values not just put them in.
-              SensorGroup group = depot.getSensorGroup(sensorId, orgId);
-              if (group != null) {
-                for (String s : group.getSensors()) {
-                  Sensor sens = depot.getSensor(s, orgId);
-                  if (sens != null && timestampList != null) {
-                    Date previous = null;
-                    for (int i = 0; i < timestampList.size(); i++) {
-                      Date timestamp = DateConvert.convertXMLCal(timestampList.get(i));
-                      Double value = new Double(0);
-                      if ("point".equals(dataType)) {
-                        try {
-                          value = depot.getValue(depositoryId, orgId, sens.getId(), timestamp);
-                        }
-                        catch (NoMeasurementException e) { // NOPMD
-                          // No measurements so return 0;
-                        }                        
+                  else {
+                    if (previous != null) {
+                      try {
+                        value = depot.getValue(depositoryId, orgId, sensor.getId(), previous,
+                            timestamp, true);
                       }
-                      else {
-                        if (previous != null) {
-                          try {
-                            value = depot.getValue(depositoryId, orgId, sensor.getId(), previous,
-                                timestamp);
-                          }
-                          catch (NoMeasurementException e) { // NOPMD
-                            // No measurements so return 0,
-                          }
-                        }
-                        previous = timestamp;                        
+                      catch (NoMeasurementException e) { // NOPMD
+                        // No measurements so return 0,
                       }
-                      InterpolatedValue mValue = new InterpolatedValue(sens.getId(), value,
-                          depository.getMeasurementType(), timestamp);
-
-                      mValue.setDate(timestamp);
-
-                      ret.getMeasuredValues().add(mValue);
                     }
+                    previous = timestamp;
                   }
+                  InterpolatedValue mValue = new InterpolatedValue(sensor.getId(), value,
+                      depository.getMeasurementType(), timestamp);
+
+                  mValue.setDate(timestamp);
+
+                  ret.getMeasuredValues().add(mValue);
                 }
               }
               else {
-                setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensorId + " is not defined");
+                SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
+                if (group != null) {
+                  Date previous = null;
+                  for (int i = 0; i < timestampList.size(); i++) {
+                    Date timestamp = DateConvert.convertXMLCal(timestampList.get(i));
+                    Double value = new Double(0);
+                    for (String s : group.getSensors()) {
+                      Sensor sens = depot.getSensor(s, orgId, true);
+                      if (sens != null) {
+                        if ("point".equals(dataType)) {
+                          try {
+                            value += depot.getValue(depositoryId, orgId, sens.getId(), timestamp,
+                                true);
+                          }
+                          catch (NoMeasurementException e) { // NOPMD
+                            // No measurements so return 0;
+                          }
+                        }
+                        else {
+                          if (previous != null) {
+                            try {
+                              value += depot.getValue(depositoryId, orgId, sens.getId(),
+                                  previous, timestamp, true);
+                            }
+                            catch (NoMeasurementException e) { // NOPMD
+                              // No measurements so return 0,
+                            }
+                          }
+                        }
+                      }
+                    }
+                    previous = timestamp;
+                    InterpolatedValue mValue = new InterpolatedValue(group.getId(), value,
+                        depository.getMeasurementType(), timestamp);
+
+                    mValue.setDate(timestamp);
+                    ret.getMeasuredValues().add(mValue);
+                  }
+                }
               }
+            }
+            else {
+              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad start, end, or interval.");
             }
           }
           else {

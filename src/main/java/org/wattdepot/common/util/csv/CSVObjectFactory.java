@@ -27,6 +27,7 @@ import javax.measure.unit.Unit;
 
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.Property;
 import org.wattdepot.common.domainmodel.Sensor;
@@ -119,7 +120,7 @@ public class CSVObjectFactory {
     buf.append(depo.getOrganizationId());
     return buf.toString();
   }
-  
+
   /**
    * @param csv The CSV entity to parse.
    * @return The Depository
@@ -143,7 +144,7 @@ public class CSVObjectFactory {
     }
     return null;
   }
-  
+
   /**
    * @param sensor The Sensor.
    * @return The CSV string representing the Sensor.
@@ -169,7 +170,7 @@ public class CSVObjectFactory {
     buf.append(getPropertiesCSV(sensor.getProperties()));
     return buf.toString();
   }
-  
+
   /**
    * @param csv The CSV entity to parse.
    * @return the Sensor.
@@ -193,7 +194,7 @@ public class CSVObjectFactory {
     }
     return null;
   }
-  
+
   /**
    * @param group The SensorGroup to convert.
    * @return The CSV for the group.
@@ -217,7 +218,7 @@ public class CSVObjectFactory {
     }
     return buf.toString();
   }
-  
+
   /**
    * @param csv The CSV representation of the SensorGroup
    * @return The SensorGroup
@@ -243,7 +244,69 @@ public class CSVObjectFactory {
     }
     return null;
   }
-  
+
+  /**
+   * @param gcd The GarbageCollectionDefinition to convert.
+   * @return The CSV for the GarbageCollectionDefinition.
+   */
+  public static String toCSV(GarbageCollectionDefinition gcd) {
+    StringBuffer buf = new StringBuffer();
+    // class name
+    buf.append(gcd.getClass().getSimpleName());
+    buf.append(",");
+    // name
+    buf.append(gcd.getName());
+    buf.append(",");
+    // depositoryId
+    buf.append(gcd.getDepositoryId());
+    buf.append(",");
+    // sensorId
+    buf.append(gcd.getSensorId());
+    buf.append(",");
+    // organizationId
+    buf.append(gcd.getOrgId());
+    buf.append(",");
+    // ignore Window
+    buf.append(gcd.getIgnoreWindowDays());
+    buf.append(",");
+    // collection window
+    buf.append(gcd.getCollectWindowDays());
+    buf.append(",");
+    // min gap
+    buf.append(gcd.getMinGapSeconds());
+    buf.append(",");
+    return buf.toString();
+  }
+
+  /**
+   * @param csv The CSV representation of the SensorGroup
+   * @return The SensorGroup
+   * @throws IOException if there is a problem parsing the String.
+   */
+  public static GarbageCollectionDefinition buildGarbageCollectionDefinition(String csv)
+      throws IOException {
+    CSVReader reader = new CSVReader(new StringReader(csv));
+    try {
+      String[] line = reader.readNext();
+      if (line.length == 8 && GarbageCollectionDefinition.class.getSimpleName().equals(line[0])) {
+        String name = line[1];
+        String depositoryId = line[2];
+        String sensorId = line[3];
+        String orgId = line[4];
+        Integer ignore = Integer.parseInt(line[5]);
+        Integer collect = Integer.parseInt(line[6]);
+        Integer gap = Integer.parseInt(line[7]);
+        return new GarbageCollectionDefinition(name, depositoryId, sensorId, orgId, ignore,
+            collect, gap);
+      }
+    }
+    finally {
+      reader.close();
+    }
+    return null;
+
+  }
+
   /**
    * @param properties Set of properties.
    * @return The properties as a CSV entry with trailing ,.

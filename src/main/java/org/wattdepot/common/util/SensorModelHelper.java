@@ -38,6 +38,10 @@ public class SensorModelHelper {
   public static final String MODBUS = "Modbus";
   /** Stress test Model. */
   public static final String STRESS = "Stress";
+  /** NOAA Weather Model. */
+  public static final String WEATHER = "NOAA Weather";
+  /** Type of weather observation. */
+  public static final String CURRENT_OBSERVATION = "Current Observation";
   /** Holds the default SensorModels. */
   public static final Map<String, SensorModel> models = new HashMap<String, SensorModel>();
   
@@ -45,5 +49,6 @@ public class SensorModelHelper {
     models.put(EGAUGE, new SensorModel(EGAUGE, "xml", EGAUGE, "1.0"));
     models.put(SHARK, new SensorModel(SHARK, MODBUS, SHARK, "1.03"));
     models.put(STRESS, new SensorModel(STRESS, "stress", "stress-test", "1.0"));
+    models.put(WEATHER, new SensorModel(WEATHER, "xml", CURRENT_OBSERVATION, "0.1"));
   }
 }

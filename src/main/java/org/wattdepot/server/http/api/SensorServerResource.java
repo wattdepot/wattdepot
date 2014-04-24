@@ -84,7 +84,7 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
     if (isInRole(orgId)) {
       Sensor sensor = null;
       try {
-        sensor = depot.getSensor(sensorId, orgId);
+        sensor = depot.getSensor(sensorId, orgId, true);
       }
       catch (MisMatchedOwnerException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
@@ -115,14 +115,14 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
     getLogger().log(Level.INFO,
         "POST /wattdepot/{" + orgId + "}/sensor/{" + sensorId + "} with " + sensor);
     try {
-      depot.getOrganization(orgId);
+      depot.getOrganization(orgId, true);
     }
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
     if (sensorId.equals(sensor.getId())) {
       try {
-        if (depot.getSensorIds(orgId).contains(sensor.getId())) {
+        if (depot.getSensorIds(orgId, true).contains(sensor.getId())) {
           try {
             depot.updateSensor(sensor);
           }
