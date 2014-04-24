@@ -367,6 +367,7 @@
                     <argLine>${surefireArgLine}</argLine>                
                     <excludes>
                         <exclude>**/TestDb*.java</exclude>
+                        <exclude>**/TestMeasurementGarbageCollector.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
