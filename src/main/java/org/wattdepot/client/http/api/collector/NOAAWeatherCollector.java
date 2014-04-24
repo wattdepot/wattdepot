@@ -287,7 +287,7 @@ public class NOAAWeatherCollector extends MultiThreadedCollector {
   }
 
   /**
-   * Processes the command line arguments and starts the eGauge Collector.
+   * Processes the command line arguments and starts the NOAA Weather Collector.
    * 
    * @param args command line arguments.
    */

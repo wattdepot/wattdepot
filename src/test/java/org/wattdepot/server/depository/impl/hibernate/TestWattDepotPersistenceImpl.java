@@ -577,8 +577,6 @@ public class TestWattDepotPersistenceImpl {
     try {
       GarbageCollectionDefinition defined = impl.getGarbageCollectionDefinition(gcd.getId(),
           gcd.getOrganizationId(), true);
-      System.out.println(gcd);
-      System.out.println(defined);
       assertNotNull(defined);
       assertTrue(defined.equals(gcd));
       assertTrue(defined.toString().equals(gcd.toString()));

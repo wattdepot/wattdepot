@@ -18,6 +18,7 @@
  */
 package org.wattdepot.server.garbage.collector;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,8 +27,15 @@ import java.util.TimerTask;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
 import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.util.DateConvert;
@@ -46,6 +54,7 @@ public class MeasurementGarbageCollector extends TimerTask {
 
   private WattDepotPersistence persistance;
   private GarbageCollectionDefinition definition;
+  private boolean debug;
 
   /**
    * Create a MeasurementGarbageCollector.
@@ -53,16 +62,18 @@ public class MeasurementGarbageCollector extends TimerTask {
    * @param properties The ServerProperties that define the type of persistence.
    * @param gcdId The id of the GarbageCollectionDefintion.
    * @param orgId The id of the Organization.
+   * @param debug true if want debugging information.
    * @throws Exception If there is a problem instantiating the
    *         WattDepotPersistence.
    */
-  public MeasurementGarbageCollector(ServerProperties properties, String gcdId, String orgId)
-      throws Exception {
+  public MeasurementGarbageCollector(ServerProperties properties, String gcdId, String orgId,
+      boolean debug) throws Exception {
     // Get the WattDepotPersistence implementation.
     String depotClass = properties.get(ServerProperties.WATT_DEPOT_IMPL_KEY);
     this.persistance = (WattDepotPersistence) Class.forName(depotClass)
         .getConstructor(ServerProperties.class).newInstance(properties);
     this.definition = this.persistance.getGarbageCollectionDefinition(gcdId, orgId, true);
+    this.debug = debug;
   }
 
   /**
@@ -178,6 +189,58 @@ public class MeasurementGarbageCollector extends TimerTask {
     return ret;
   }
 
+  /**
+   * Processes the command line arguments and runs the
+   * MeasurementGarbageCollector one time.
+   * 
+   * @param args The command line arguments.
+   * @throws Exception if there is a problem.
+   */
+  public static void main(String[] args) throws Exception {
+    Options options = new Options();
+    options.addOption("h", "help", false,
+        "Usage: MeasurementGarbageCollector -o <orgId> -g <garbage collection definition id> [-d]");
+    options.addOption("o", "orgId", true, "Organization Id.");
+    options.addOption("g", "gcd", true, "GarbageCollectionDefinition Id.");
+    options.addOption("d", "debug", false, "Display debugging information.");
+
+    CommandLine cmd = null;
+    String orgId = null;
+    String gcdId = null;
+    boolean debug = false;
+    CommandLineParser parser = new PosixParser();
+    HelpFormatter formatter = new HelpFormatter();
+    try {
+      cmd = parser.parse(options, args);
+    }
+    catch (ParseException e) {
+      System.err.println("Command line parsing failed. Reason: " + e.getMessage() + ". Exiting.");
+      System.exit(1);
+    }
+    if (cmd.hasOption("h")) {
+      formatter.printHelp("MeasurementGarbageCollector", options);
+      System.exit(0);
+    }
+    if (cmd.hasOption("o")) {
+      orgId = cmd.getOptionValue("o");
+    }
+    else {
+      orgId = Organization.ADMIN_GROUP.getId();
+    }
+    if (cmd.hasOption("g")) {
+      gcdId = cmd.getOptionValue("g");
+    }
+    debug = cmd.hasOption("d");
+    if (debug) {
+      System.out.println("Measurement Garbage Collection:");
+      System.out.println("Org Id = " + orgId);
+      System.out.println("GCD Id = " + gcdId);
+    }
+    MeasurementGarbageCollector mgc = new MeasurementGarbageCollector(new ServerProperties(),
+        gcdId, orgId, debug);
+    mgc.run();
+  }
+
   /*
    * (non-Javadoc)
    * 
@@ -186,6 +249,9 @@ public class MeasurementGarbageCollector extends TimerTask {
   @Override
   public void run() {
     Date lastStarted = new Date();
+    if (debug) {
+      System.out.println("Starting run at " + new SimpleDateFormat().format(lastStarted));
+    }
     Integer deleted = 0;
     try {
       for (Measurement m : getMeasurementsToDelete()) {
@@ -208,6 +274,10 @@ public class MeasurementGarbageCollector extends TimerTask {
     catch (IdNotFoundException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
+    }
+    if (debug) {
+      System.out.println("Finished run at " + new SimpleDateFormat().format(lastCompleted));
+      System.out.println("Deleted " + deleted + " measurements.");
     }
   }
 }

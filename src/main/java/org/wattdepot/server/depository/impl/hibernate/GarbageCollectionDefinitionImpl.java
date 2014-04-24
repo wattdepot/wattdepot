@@ -392,8 +392,12 @@ public class GarbageCollectionDefinitionImpl {
    * @return the GarbageCollectionDefinition equivalent.
    */
   public GarbageCollectionDefinition toGCD() {
-    return new GarbageCollectionDefinition(id, name, depository.getId(), sensor,
+    GarbageCollectionDefinition ret =  new GarbageCollectionDefinition(id, name, depository.getId(), sensor,
         org.getId(), ignoreWindowDays, collectWindowDays, minGapSeconds);
+    ret.setLastStarted(lastStarted);
+    ret.setLastCompleted(lastCompleted);
+    ret.setNumMeasurementsCollected(numMeasurementsCollected);
+    return ret;
   }
 
   /*

@@ -110,6 +110,7 @@ public class AdminServerResource extends WattDepotServerResource {
           dataModel.put("cpds", cpds);
           dataModel.put("measurementtypes", measurementTypes);
           dataModel.put("gcds", gcds);
+          getLogger().log(Level.INFO, gcds.toString());
           rep = new ClientResource(LocalReference.createClapReference(getClass().getPackage())
               + "/OrganizationAdmin.ftl").get();
         }

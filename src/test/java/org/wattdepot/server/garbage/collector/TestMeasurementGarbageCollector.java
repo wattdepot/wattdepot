@@ -196,7 +196,7 @@ public class TestMeasurementGarbageCollector {
   public void testGetMeasurementsToDelete() throws Exception {
     populateMeasurements(2);
     MeasurementGarbageCollector mgc = new MeasurementGarbageCollector(properties, gcd.getId(),
-        gcd.getOrganizationId());
+        gcd.getOrganizationId(), false);
     List<Measurement> toDel = mgc.getMeasurementsToDelete();
     assertTrue(toDel.size() > 0);
     assertTrue(toDel.size() < totalMeasurements);
@@ -209,7 +209,7 @@ public class TestMeasurementGarbageCollector {
   public void testGarbageCollection() throws Exception {
     populateMeasurements(2);
     MeasurementGarbageCollector mgc = new MeasurementGarbageCollector(properties, gcd.getId(),
-        gcd.getOrganizationId());
+        gcd.getOrganizationId(), false);
     int numToDel = mgc.getMeasurementsToDelete().size();
     mgc.run();
     List<Measurement> toDel = mgc.getMeasurementsToDelete();
