@@ -43,7 +43,7 @@ used by the instance on Heroku:
 ## Deploy to Heroku
 Here is the command to deploy to Heroku:
 
-    $ git push heroku
+    $ git push heroku master
 
 This step will deploy the wattdepot system to Heroku and initialize the wattdepot system. After the initialization, you need to set the following Heroku environment variable to prevent the system
 to run initialization again (This step may be removed in the future release):
