@@ -20,7 +20,11 @@ package org.wattdepot.common.domainmodel;
 
 import java.util.Date;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+
+import org.wattdepot.common.util.DateConvert;
 import org.wattdepot.common.util.Slug;
+import org.wattdepot.common.util.tstamp.Tstamp;
 
 /**
  * GarbageCollectionDefinition - Represents the information about a process that
@@ -54,6 +58,8 @@ public class GarbageCollectionDefinition implements IDomainModel {
   private Date lastCompleted;
   /** The number of measurements deleted during the last gc run.. */
   private Integer numMeasurementsCollected;
+  /** The expected time of the next run. */
+  private Date nextRun;
 
   /**
    * Default constructor.
@@ -195,6 +201,18 @@ public class GarbageCollectionDefinition implements IDomainModel {
   public String getDepositoryId() {
     return depositoryId;
   }
+  
+  /**
+   * @return The duration of the last run in milliseconds.
+   */
+  public Long getDuration() {
+    if (lastStarted != null && lastCompleted != null) {
+      return lastCompleted.getTime() - lastStarted.getTime();
+    }
+    else {
+      return 0l;
+    }
+  }
 
   /**
    * @return the id
@@ -242,6 +260,13 @@ public class GarbageCollectionDefinition implements IDomainModel {
    */
   public String getName() {
     return name;
+  }
+
+  /**
+   * @return the nextRun
+   */
+  public Date getNextRun() {
+    return nextRun;
   }
 
   /**
@@ -329,6 +354,14 @@ public class GarbageCollectionDefinition implements IDomainModel {
   public void setLastCompleted(Date lastCompleted) {
     if (lastCompleted != null) {
       this.lastCompleted = new Date(lastCompleted.getTime());
+      try {
+        this.nextRun = DateConvert.convertXMLCal(Tstamp.incrementDays(
+            DateConvert.convertDate(lastCompleted), collectWindowDays - 1));
+      }
+      catch (DatatypeConfigurationException e) { 
+        // shouldn't happen
+        e.printStackTrace();
+      }
     }
   }
 
@@ -353,6 +386,13 @@ public class GarbageCollectionDefinition implements IDomainModel {
    */
   public void setName(String name) {
     this.name = name;
+  }
+
+  /**
+   * @param nextRun the nextRun to set
+   */
+  public void setNextRun(Date nextRun) {
+    this.nextRun = nextRun;
   }
 
   /**

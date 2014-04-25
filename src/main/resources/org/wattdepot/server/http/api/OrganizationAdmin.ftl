@@ -53,7 +53,7 @@
         <li><a id="sensors_tab_link" href="#sensors" data-toggle="tab" name="sensors">Sensors</a></li>
         <li><a id="sensorgroups_tab_link" href="#sensorgroups" data-toggle="tab" name="sensorgroups">Sensor Groups</a></li>
         <li><a id="sensorprocesses_tab_link" href="#sensorprocesses" data-toggle="tab" name="sensorprocesses">Collector Process Definitions</a></li>
-        <li><a id="garbagecollection_tab_link" href="#garbagecollection" data-toggle="tab" name="garbagecollection">Garbage Collection Definitions</a></li>
+        <li><a id="garbagecollection_tab_link" href="#garbagecollection" data-toggle="tab" name="garbagecollection">Measurement Pruning Definitions</a></li>
     </ul>
     <a name="sensorprocesses"></a>
     <!-- Tab panes -->
@@ -311,14 +311,14 @@
                   </div>
                   <div id="GCDCollapseHelp" class="panel-collapse collapse">
                     <div class="panel-body">
-                      <p>Garbage collection is a way of reducing the number of measurements stored in the WattDepot database. Most applications will want high resolution measurmement data for a period of time, but not require that amount of historical data. The Garbage Collection Definition allows you to manage how much measurement data is kept.</p>
-                      <p>Garbage Collection Definitions help define the how much data is kept in the database. They contain the Depository, the Sensor, the number of days to keep high resolution data, the collection window a number of days to reduce the number of measurements in, and the minimum gap in seconds between measurements. A separate process can use this definition to remove measurement in the collection window if they have a smaller gap between them than the minimum measurement gap.</p>
+                      <p>Measurement pruning is a way of reducing the number of measurements stored in the WattDepot database. Most applications will want high resolution measurmement data for a period of time, but not require that amount of historical data. The Garbage Collection Definition allows you to manage how much measurement data is kept.</p>
+                      <p>Measurement Pruning Definitions help define the how much data is kept in the database. They contain the Depository, the Sensor, the number of days to keep high resolution data, the collection window a number of days to reduce the number of measurements in, and the minimum gap in seconds between measurements. A separate process can use this definition to remove measurement in the collection window if they have a smaller gap between them than the minimum measurement gap.</p>
                     </div>
                   </div>
                 </div>
               </div>
               <div class="row">
-                <div class="col-xs-5"><h3>Garbage Collection Definitions</h3></div>
+                <div class="col-xs-5"><h3>Measurement Pruning Definitions</h3></div>
                 <div class="col-xs-6"></div>
                 <div class="col-xs-1"><button data-toggle="modal" data-target="#addGCDModal" class="btn btn-primary btn-sm add-button"><span class="glyphicon glyphicon-plus"></span></button></div>
               </div>
@@ -329,12 +329,13 @@
                             <th>Name</th>
                             <th>Depository</th>
                             <th>Sensor</th>
-                            <th>Ignore Window</th>
-                            <th>Collection Window</th>
-                            <th>Minimum Gap</th>
+                            <th>Ignore Window (Days)</th>
+                            <th>Collection Window (Days)</th>
+                            <th>Minimum Gap (sec)</th>
                             <th>Last Run</th>
-                            <th>Last Completed</th>
-                            <th>Measurements Cleaned</th>
+                            <th>Duration (sec)</th>
+                            <th>Measurements Pruned</th>
+                            <th>Expected Next Run</th>
                             <th style="width: 7px;"></th>
                             <th style="width: 7px;"></th>
                         </tr>
@@ -349,8 +350,9 @@
                             <td>${g.collectWindowDays}</td>
                             <td>${g.minGapSeconds}</td>
                             <td>${(g.lastStarted?datetime)!"Never"}</td>
-                            <td>${(g.lastCompleted?datetime)!"Never"}</td>
-                            <td>${g.numMeasurementsCollected!0}</td>                            
+                            <td>${(g.getDuration() / 1000)!0}</td>
+                            <td>${g.numMeasurementsCollected!0}</td>   
+                            <td>${(g.nextRun?datetime)!"Now"}</td>                         
                             <td>
                                 <a href="#"><span class="glyphicon glyphicon-pencil" onclick="edit_gcd_dialog(event, '${g.id}');"></span></a>
                             </td>
@@ -1211,21 +1213,21 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title">Add Garbage Collection Definition</h4>
+          <h4 class="modal-title">Add Measurement Pruning Definition</h4>
         </div>
         <div class="modal-body">
           <div class="container">
             <form>
               <input type="hidden" name="meta_id" value="">
             <div class="form-group">
-              <label class="col-md-3 control-label">Garbage Collection (GC) Definition Id</label>
+              <label class="col-md-3 control-label">Measurement Pruning Definition Id</label>
                 <div class="col-md-9">
                   <input type="text" name="gcd_id" class="form-control">
-                  <p class="help-block">GC Definition id must be unique and be a slug. Slugs consist of lowercase letter, numbers and '-', no other characters are allowed.</p>
+                  <p class="help-block">The id must be unique and be a slug. Slugs consist of lowercase letter, numbers and '-', no other characters are allowed.</p>
                 </div>
               </div>
               <div class="form-group">
-                 <label class="col-sm-3 control-label">GC Definition Name</label>
+                 <label class="col-sm-3 control-label">Measurement Pruning Definition Name</label>
                  <div class="col-sm-9">
                    <input class="form-control" type="text" name="gcd_name" class="form-control">
                    <p class="help-block">Unique name for the definition.</p>
@@ -1292,21 +1294,21 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title">Edit Garbage Collection Definition</h4>
+          <h4 class="modal-title">Edit Measurement Pruning Definition</h4>
         </div>
         <div class="modal-body">
           <div class="container">
             <form>
               <input type="hidden" name="gcd_id" value="">
             <div class="form-group">
-              <label class="col-md-3 control-label">Garbage Collection Definition Id</label>
+              <label class="col-md-3 control-label">Measurement Pruning Definition Id</label>
                 <div class="col-md-9">
                   <input type="text" name="edit_gcd_id" class="form-control" disabled>
-                  <p class="help-block">Garbage Collection Definition id cannot be changed once created.</p>
+                  <p class="help-block">The id cannot be changed once created.</p>
                 </div>
               </div>
               <div class="form-group">
-                 <label class="col-sm-3 control-label">GC Definition Name</label>
+                 <label class="col-sm-3 control-label">Measurement Pruning Definition Name</label>
                  <div class="col-sm-9">
                    <input class="form-control" type="text" name="edit_gcd_name" class="form-control">
                    <p class="help-block">Unique name for the definition.</p>
@@ -1376,11 +1378,11 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"
                     aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Delete Garbage Collection Definition</h4>
+                <h4 class="modal-title">Delete Measurement Pruning Definition</h4>
             </div>
             <div class="modal-body">
                 <p>
-                    <b>Delete Garbage Collection Definition </b>
+                    <b>Delete Measurement Pruning Definition </b>
                 </p>
                 <div id="del_gcd_id"></div>
             </div>
@@ -1390,7 +1392,7 @@
                 <button id="delete_button" type="button"
                     class="btn btn-primary"
                     onclick="deleteGCD();">Delete
-                    Garbage Collection Definition</button>
+                    Measurement Pruning Definition</button>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -1415,6 +1417,7 @@ $(document).ready(function () {
     $("#sensorModelTable").tablesorter(); 
     $("#sensorGroupTable").tablesorter(); 
     $("#cpdTable").tablesorter(); 
+    $("#gcdTable").tablesorter();
 });
 
 $('#tabs a').click(function (e) {

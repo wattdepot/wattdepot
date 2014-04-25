@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -238,7 +239,42 @@ public class MeasurementGarbageCollector extends TimerTask {
     }
     MeasurementGarbageCollector mgc = new MeasurementGarbageCollector(new ServerProperties(),
         gcdId, orgId, debug);
-    mgc.run();
+    // Set up the TimerTask to run the gc at the right time.
+    Timer t = new Timer();
+    t.schedule(mgc, mgc.millisToNextRun(), mgc.getGCPeriod());
+  }
+
+  /**
+   * @return The number of milliseconds to wait till the next expected run time.
+   */
+  private long millisToNextRun() {
+    if (debug) {
+      System.out.print("milliseconds to next run is ");
+    }
+    if (definition.getNextRun() == null) {
+      if (debug) {
+        System.out.println("0");
+      }
+      return 0l;
+    }
+    else {
+      long delay = definition.getNextRun().getTime() - (new Date().getTime());
+      if (debug) {
+        System.out.println(delay);
+      }
+      return delay;
+    }
+  }
+
+  /**
+   * @return The number of milliseconds to wait between GC runs.
+   */
+  private long getGCPeriod() {
+    long period = (definition.getCollectWindowDays() - 1) * 24 * 60 * 60 * 1000;
+    if (debug) {
+      System.out.println("GC period is " + period + " milliseconds.");
+    }
+    return period;
   }
 
   /*
