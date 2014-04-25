@@ -239,6 +239,9 @@ public class MeasurementGarbageCollector extends TimerTask {
     }
     MeasurementGarbageCollector mgc = new MeasurementGarbageCollector(new ServerProperties(),
         gcdId, orgId, debug);
+    if (debug) {
+      System.out.println("Setting up Timer for " + mgc);
+    }
     // Set up the TimerTask to run the gc at the right time.
     Timer t = new Timer();
     t.schedule(mgc, mgc.millisToNextRun(), mgc.getGCPeriod());
@@ -270,9 +273,12 @@ public class MeasurementGarbageCollector extends TimerTask {
    * @return The number of milliseconds to wait between GC runs.
    */
   private long getGCPeriod() {
-    long period = (definition.getCollectWindowDays() - 1) * 24 * 60 * 60 * 1000;
-    if (debug) {
-      System.out.println("GC period is " + period + " milliseconds.");
+    int period = 24 * 60 * 60 * 1000; // defaults to once a day
+    if (definition.getCollectWindowDays() > 1) {
+      period = (definition.getCollectWindowDays() - 1) * 24 * 60 * 60 * 1000;
+      if (debug) {
+        System.out.println("GC period is " + period + " milliseconds.");
+      }
     }
     return period;
   }

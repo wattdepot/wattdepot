@@ -201,7 +201,7 @@ public class GarbageCollectionDefinition implements IDomainModel {
   public String getDepositoryId() {
     return depositoryId;
   }
-  
+
   /**
    * @return The duration of the last run in milliseconds.
    */
@@ -266,7 +266,12 @@ public class GarbageCollectionDefinition implements IDomainModel {
    * @return the nextRun
    */
   public Date getNextRun() {
-    return nextRun;
+    if (nextRun != null) {
+      return new Date(nextRun.getTime());
+    }
+    else {
+      return null;
+    }
   }
 
   /**
@@ -355,10 +360,16 @@ public class GarbageCollectionDefinition implements IDomainModel {
     if (lastCompleted != null) {
       this.lastCompleted = new Date(lastCompleted.getTime());
       try {
-        this.nextRun = DateConvert.convertXMLCal(Tstamp.incrementDays(
-            DateConvert.convertDate(lastCompleted), collectWindowDays - 1));
+        if (collectWindowDays > 1) {
+          this.nextRun = DateConvert.convertXMLCal(Tstamp.incrementDays(
+              DateConvert.convertDate(lastCompleted), collectWindowDays - 1));
+        }
+        else {
+          this.nextRun = DateConvert.convertXMLCal(Tstamp.incrementDays(
+              DateConvert.convertDate(lastCompleted), 1));
+        }
       }
-      catch (DatatypeConfigurationException e) { 
+      catch (DatatypeConfigurationException e) {
         // shouldn't happen
         e.printStackTrace();
       }
@@ -392,7 +403,7 @@ public class GarbageCollectionDefinition implements IDomainModel {
    * @param nextRun the nextRun to set
    */
   public void setNextRun(Date nextRun) {
-    this.nextRun = nextRun;
+    this.nextRun = new Date(nextRun.getTime());
   }
 
   /**
