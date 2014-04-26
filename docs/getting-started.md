@@ -61,7 +61,14 @@ Click the add user button, the plus button in the upper right, to open the add u
 
 Fill in the information about the user and choose the organization they belong to. In this case Cam belongs to the Univerisity of Hawaii, Manoa organization. Remember the user's password, we'll be using it to login later.
 
+![Cam defined](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/add-user.png "Figure 7. User Defined.")
+**Figure 7. User cmoore defined.**
+
 ## Step 3. Define Your Depositories, Sensors, Sensor Groups, Collectors, and Measurement Pruning scheme.
+To define the objects in the University of Hawaii, Manoa organization we need to login as a user in that organization. Close your browser and start it again. Open the Administration URL. This time supply the username and password for your user, not the WattDepot administrator.
+
+![Login as a User](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/login-as-user.png "Figure 8. Login as a User.")
+**Figure 8. Login as a User***
 
 
 ## Step 4. Start your Collectors.
