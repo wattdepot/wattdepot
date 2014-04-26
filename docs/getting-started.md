@@ -32,12 +32,12 @@ At the end of step 1, you should have a running WattDepot server. In a browser o
 
 You will have to provide the Administrator's username and password to view the page.
 
-![Organization and User Administration](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/organization-start.png "Figure 2. Organization and User Administration")
-**Figure 2. Organization and User Administration**
-
 ## Step 2. Define Your Organization and Users
 
 WattDepot uses organizations to manage the different objects. Every user, sensor, depository, collector, etc. belong to a single organization.  This allows a single WattDepot server to support multiple groups while maintaining their data privacy.
+
+![Organization and User Administration](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/organization-start.png "Figure 2. Organization and User Administration")
+**Figure 2. Organization and User Administration**
 
 Figure 2 shows the empty Organization and Users administration page.  WattDepot starts with a default public organization.  You can define your own organization by clicking the add button in the upper right corner of the Organizations tab.
 
@@ -68,7 +68,8 @@ Fill in the information about the user and choose the organization they belong t
 To define the objects in the University of Hawaii, Manoa organization we need to login as a user in that organization. Close your browser and start it again. Open the Administration URL. This time supply the username and password for your user, not the WattDepot administrator.
 
 ![Login as a User](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/login-as-user.png "Figure 8. Login as a User.")
-**Figure 8. Login as a User***
+
+**Figure 8. Login as a User**
 
 
 ## Step 4. Start your Collectors.
