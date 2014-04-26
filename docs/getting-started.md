@@ -27,11 +27,13 @@ At the end of step 1, you should have a running WattDepot server. In a browser o
   * Local installation http://localhost:8192/wattdepot/admin/
   * Heroku installation http://[wattdepot_app_name].herokuapp.com/wattdepot/admin/
   
-![Admin Login](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/Admin-password.png "Figure 1. WattDepot login")
+![Admin Login](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/Admin-password.png "Figure 1. WattDepot Login")
+**Figure 1. WattDepot Login**
 
 You will have to provide the Administrator's username and password to view the page.
 
-![Organization and User Administration](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/organization-start.png "Figure 2. Organization and User administration")
+![Organization and User Administration](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/organization-start.png "Figure 2. Organization and User Administration")
+**Figure 2. Organization and User Administration**
 
 ## Step 2. Define Your Organization and Users
 
@@ -40,18 +42,22 @@ WattDepot uses organizations to manage the different objects. Every user, sensor
 Figure 2 shows the empty Organization and Users administration page.  WattDepot starts with a default public organization.  You can define your own organization by clicking the add button in the upper right corner of the Organizations tab.
 
 ![Add Organization UH](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/add-org-dialog.png "Figure 3. Add Organization Dialog Box.")
+**Figure 3. Add Organization Dialog Box**
 
 Figure 3 shows the definition of the University of Hawaii, Manoa organization.  The organization's id must be unique for all organizations. Clicking Save Changes will create the new organization.
 
 ![UH Defined](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/uh-defined.png "Figure 4. Organization UH is defined.")
+**Figure 4. Organization UH is defined.**
 
 Figure 4 shows the public and University of Hawaii, Manoa organizations. Currently, there are not members of either organization. To create Users click on the Users tab.
 
 ![Users Tab](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/user-admin.png "Figure 5. Users Tab.")
+**Figure 5. Users tab**
 
 Click the add user button, the plus button in the upper right, to open the add user dialog box.
 
 ![Add User](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/add-user.png "Figure 6. Add User Dialog box.")
+**Figure 6. Add User Dialog box.**
 
 Fill in the information about the user and choose the organization they belong to. In this case Cam belongs to the Univerisity of Hawaii, Manoa organization. Remember the user's password, we'll be using it to login later.
 
@@ -61,4 +67,4 @@ Fill in the information about the user and choose the organization they belong t
 ## Step 4. Start your Collectors.
 
 
-## Step 5. Start your Measurment Pruning.
+## Step 5. Start your Measurement Pruning.
