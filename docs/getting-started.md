@@ -27,7 +27,7 @@ At the end of step 1, you should have a running WattDepot server. In a browser o
   * Local installation http://localhost:8192/wattdepot/admin/
   * Heroku installation http://[wattdepot_app_name].herokuapp.com/wattdepot/admin/
   
-![Admin Login](http://github.com/wattdepot/wattdepot/blob/master/docs/Admin-password.png)
+![Admin Login](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/Admin-password.png)
 
 You will have to provide the Administrator's username and password to view the page.
 
