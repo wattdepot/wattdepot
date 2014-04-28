@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -112,6 +113,11 @@ public class MeasurementGarbageCollector extends TimerTask {
   private List<Measurement> getMeasurementsToCheck(String sensorId) throws IdNotFoundException {
     Date start = getStartDate();
     Date end = getEndDate();
+    if (debug) {
+      SimpleDateFormat df = new SimpleDateFormat();
+      System.out.println("Collection window for " + sensorId + " is from " + df.format(start)
+          + " to " + df.format(end));
+    }
     return this.persistance.getMeasurements(this.definition.getDepositoryId(),
         this.definition.getOrgId(), sensorId, end, start, false);
   }
@@ -123,6 +129,12 @@ public class MeasurementGarbageCollector extends TimerTask {
    *         GarbageCollectionDefinition.
    */
   public List<Measurement> getMeasurementsToDelete() throws IdNotFoundException {
+    Long startTime = 0l;
+    Long endTime = 0l;
+    Long diff = 0l;
+    if (debug) {
+      startTime = System.nanoTime();
+    }
     List<Measurement> ret = new ArrayList<Measurement>();
     SensorGroup group = this.persistance.getSensorGroup(this.definition.getSensorId(),
         this.definition.getOrgId(), false);
@@ -133,6 +145,11 @@ public class MeasurementGarbageCollector extends TimerTask {
     }
     else {
       ret = getMeasurementsToDelete(this.definition.getSensorId());
+    }
+    if (debug) {
+      endTime = System.nanoTime();
+      diff = endTime - startTime;
+      System.out.println("getMeasurementsToDelete() took " + (diff / 1E9) + " secs.");      
     }
     return ret;
   }
@@ -203,11 +220,13 @@ public class MeasurementGarbageCollector extends TimerTask {
     options.addOption("o", "orgId", true, "Organization Id.");
     options.addOption("g", "gcd", true, "GarbageCollectionDefinition Id.");
     options.addOption("d", "debug", false, "Display debugging information.");
+    options.addOption("s", "single", false, "Run gc only once, right away.");
 
     CommandLine cmd = null;
     String orgId = null;
     String gcdId = null;
     boolean debug = false;
+    boolean single = false;
     CommandLineParser parser = new PosixParser();
     HelpFormatter formatter = new HelpFormatter();
     try {
@@ -231,14 +250,62 @@ public class MeasurementGarbageCollector extends TimerTask {
       gcdId = cmd.getOptionValue("g");
     }
     debug = cmd.hasOption("d");
+    single = cmd.hasOption("s");
     if (debug) {
       System.out.println("Measurement Garbage Collection:");
       System.out.println("Org Id = " + orgId);
       System.out.println("GCD Id = " + gcdId);
+      System.out.println("Single run = " + single);
     }
     MeasurementGarbageCollector mgc = new MeasurementGarbageCollector(new ServerProperties(),
         gcdId, orgId, debug);
-    mgc.run();
+    if (debug) {
+      System.out.println("Setting up Timer for " + mgc);
+    }
+    if (single) {
+      mgc.run();
+    }
+    else {
+      // Set up the TimerTask to run the gc at the right time.
+      Timer t = new Timer();
+      t.schedule(mgc, mgc.millisToNextRun(), mgc.getGCPeriod());
+    }
+  }
+
+  /**
+   * @return The number of milliseconds to wait till the next expected run time.
+   */
+  private long millisToNextRun() {
+    if (debug) {
+      System.out.print("milliseconds to next run is ");
+    }
+    if (definition.getNextRun() == null) {
+      if (debug) {
+        System.out.println("0");
+      }
+      return 0l;
+    }
+    else {
+      long delay = definition.getNextRun().getTime() - (new Date().getTime());
+      if (debug) {
+        System.out.println(delay);
+      }
+      return delay;
+    }
+  }
+
+  /**
+   * @return The number of milliseconds to wait between GC runs.
+   */
+  private long getGCPeriod() {
+    int period = 24 * 60 * 60 * 1000; // defaults to once a day
+    if (definition.getCollectWindowDays() > 1) {
+      period = (definition.getCollectWindowDays() - 1) * 24 * 60 * 60 * 1000;
+      if (debug) {
+        System.out.println("GC period is " + period + " milliseconds.");
+      }
+    }
+    return period;
   }
 
   /*
