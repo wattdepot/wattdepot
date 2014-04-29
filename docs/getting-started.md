@@ -68,9 +68,16 @@ Fill in the information about the user and choose the organization they belong t
 To define the objects in the University of Hawaii, Manoa organization we need to login as a user in that organization. Close your browser and start it again. Open the Administration URL. This time supply the username and password for your user, not the WattDepot administrator.
 
 ![Login as a User](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/login-as-user.png "Figure 8. Login as a User.")
-
 **Figure 8. Login as a User**
 
+Figure 9. shows the Administration page for an Organization. Here you can define the depositories, sensors, sensor groups, collector processes, and measurment pruning.
+
+![UHM Organization Admin](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/org-admin.png "Figure 9. UHM Organization Administration.")
+**Figure 9. UHM Organization Admin**
+
+The first thing to do is to define the Depositories. Depositories hold measurements of the same type. To collect Energy data we need to define an Energy depository. To define a new Depository click the Add button on the Depositories tab.  Figure 10 shows the Add Depository Dialog box, filled out for our Energy depository. Choose the id, name and measurement type for your depository.
+
+![Add Depository Dialog](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/add-energy-depository.png "Figure 10. Add Energy Depository Dialog.")
 
 ## Step 4. Start your Collectors.
 
