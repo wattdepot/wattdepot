@@ -58,7 +58,7 @@ import org.wattdepot.common.util.tstamp.Tstamp;
 import org.xml.sax.SAXException;
 
 /**
- * NOAAWeatherCollector - Collector for eGauge meters.
+ * NOAAWeatherCollector - Collector for NOAA Weather Current Observations.
  * 
  * @author Cam Moore
  * 

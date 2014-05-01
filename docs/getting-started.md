@@ -36,7 +36,7 @@ You will have to provide the Administrator's username and password to view the p
 
 WattDepot uses organizations to manage the different objects. Every user, sensor, depository, collector, etc. belong to a single organization.  This allows a single WattDepot server to support multiple groups while maintaining their data privacy.
 
-![Organization and User Administration](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/organization-start.png "Figure 2. Organization and User Administration")
+![Organization and User Administration](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/wattdepot-admin-start.png "Figure 2. Organization and User Administration")
 **Figure 2. Organization and User Administration**
 
 Figure 2 shows the empty Organization and Users administration page.  WattDepot starts with a default public organization.  You can define your own organization by clicking the add button in the upper right corner of the Organizations tab.
@@ -72,12 +72,54 @@ To define the objects in the University of Hawaii, Manoa organization we need to
 
 Figure 9. shows the Administration page for an Organization. Here you can define the depositories, sensors, sensor groups, collector processes, and measurment pruning.
 
-![UHM Organization Admin](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/org-admin.png "Figure 9. UHM Organization Administration.")
+![UHM Organization Admin](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/organization-admin-start.png "Figure 9. UHM Organization Administration.")
 **Figure 9. UHM Organization Admin**
 
-The first thing to do is to define the Depositories. Depositories hold measurements of the same type. To collect Energy data we need to define an Energy depository. To define a new Depository click the Add button on the Depositories tab.  Figure 10 shows the Add Depository Dialog box, filled out for our Energy depository. Choose the id, name and measurement type for your depository.
+The first thing to do is to define the Depositories. Depositories hold measurements of the same type. To collect Energy data we need to define an Energy depository. To define a new Depository click the Add button on the Depositories tab.  Figure 10 shows the Add Depository Dialog box, filled out for our Energy depository. Choose the id, name and measurement type for your depository. 
 
-![Add Depository Dialog](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/add-energy-depository.png "Figure 10. Add Energy Depository Dialog.")
+WattDepot has fourteen defined measurement types.
+
+* Mass
+  * Kilograms (kg)
+  * Avoirdupois Pounds (lb)
+* Volume
+  * Liters (L)
+  * Gallons (gal)
+* Flow Rate
+  * Liters per second (L/s)
+  * Gallons per second (gal/s)
+* Temperature
+  * Degrees Celcius (C)
+  * Degrees Fahrenheit (F)
+* Power
+  * Watts (W)
+* Energy
+  * Watt hours (Wh)
+* Frequency
+  * Hertz (Hz)
+* Concentration
+  * Parts per million (ppm)
+* Humidity
+  * Percentage (%)
+* Cloud Coverage
+  * Percentage (%)
+
+![Add Energy Depository Dialog](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/add-energy-depository.png "Figure 10. Add Energy Depository Dialog.")
+**Figure 10. Add Energy Depository Dialog**
+
+You need a Depository for every type of measurement you are interested in collecting. Figure 11 shows a simple example of the depositories for collecting energy, power, and the temperature.
+
+![Depositories Defined](http://raw.githubusercontent.com/wattdepot/wattdepot/master/docs/depositories-defined.png "Figure 11. Depositories for Energy, Power, and Temperature.")
+**Figure 11. Energy, Power and Temperature Depositories**
+
+The second thing to do is to define the Sensors that will be making the measurements. Sensors represent a device that measures (or predicts) a physical phenomena. They have a SensorModel, the type of sensor and protocol used to read the measurement or prediction. WattDepot has four pre-defined sensor models:
+
+1. eGauge, www.egauge.net. eGauge is an affordable, flexible, secure, web-based electric energy and power meter that can measure up to 12 circuits on up to 3-phases (120V−480V, 50−60Hz).
+2. Shark, www.electroind.com. The Electro Industries Shark meters use the industrial protocol standard Modbus.
+3. NOAA Weather, National Oceanic and Atmospheric Administration's National Weather Service. NOAA provides current weather observations in XML format for the United States.
+4. Stress, a stress test model. The stress test sensor model is used by developers to stress WattDepot servers to determine their measurement through put.
+ 
+To define a sensor use the add sensor button. Figure 12 shows the Add Sensor Dialog box. Provide the sensor id, name, URI and choose the sensor's model.  The URI is the uniform resource identifier used to connect to the physical meter to get the measurements or predictions.
 
 ## Step 4. Start your Collectors.
 
