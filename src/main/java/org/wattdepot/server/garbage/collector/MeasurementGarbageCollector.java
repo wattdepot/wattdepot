@@ -100,7 +100,6 @@ public class MeasurementGarbageCollector extends TimerTask {
       now = DateConvert.convertDate(new Date());
       XMLGregorianCalendar endCal = Tstamp
           .incrementDays(now, -1 * definition.getIgnoreWindowDays());
-      endCal = Tstamp.incrementDays(endCal, -1 * definition.getCollectWindowDays());
       ret = DateConvert.convertXMLCal(endCal);
     }
     catch (DatatypeConfigurationException e) {
@@ -201,8 +200,9 @@ public class MeasurementGarbageCollector extends TimerTask {
     Date ret = null;
     try {
       now = DateConvert.convertDate(new Date());
-      XMLGregorianCalendar startCal = Tstamp.incrementDays(now,
-          -1 * definition.getIgnoreWindowDays());
+      XMLGregorianCalendar startCal = Tstamp
+          .incrementDays(now, -1 * definition.getIgnoreWindowDays());
+      startCal = Tstamp.incrementDays(startCal, -1 * definition.getCollectWindowDays());
       ret = DateConvert.convertXMLCal(startCal);
     }
     catch (DatatypeConfigurationException e) {
