@@ -53,6 +53,12 @@ import org.wattdepot.server.WattDepotPersistence;
  */
 public class MeasurementGarbageCollector extends TimerTask {
 
+  /**
+   * The window to get the measurements. Hopefully allows for quicker
+   * performance.
+   */
+  public static final int PRUNE_WINDOW = 6 * 60;
+
   private WattDepotPersistence persistance;
   private GarbageCollectionDefinition definition;
   private boolean debug;
@@ -149,7 +155,7 @@ public class MeasurementGarbageCollector extends TimerTask {
     if (debug) {
       endTime = System.nanoTime();
       diff = endTime - startTime;
-      System.out.println("getMeasurementsToDelete() took " + (diff / 1E9) + " secs.");      
+      System.out.println("getMeasurementsToDelete() took " + (diff / 1E9) + " secs.");
     }
     return ret;
   }
@@ -259,14 +265,14 @@ public class MeasurementGarbageCollector extends TimerTask {
     }
     MeasurementGarbageCollector mgc = new MeasurementGarbageCollector(new ServerProperties(),
         gcdId, orgId, debug);
-    if (debug) {
-      System.out.println("Setting up Timer for " + mgc);
-    }
     if (single) {
-      mgc.run();
+      mgc.pruneMeasurements();
     }
     else {
       // Set up the TimerTask to run the gc at the right time.
+      if (debug) {
+        System.out.println("Setting up Timer for " + mgc);
+      }
       Timer t = new Timer();
       t.schedule(mgc, mgc.millisToNextRun(), mgc.getGCPeriod());
     }
@@ -342,6 +348,89 @@ public class MeasurementGarbageCollector extends TimerTask {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
+    if (debug) {
+      System.out.println("Finished run at " + new SimpleDateFormat().format(lastCompleted));
+      System.out.println("Deleted " + deleted + " measurements.");
+    }
+  }
+
+  /**
+   * Prunes the measurements.
+   * 
+   * @throws DatatypeConfigurationException if there is a problem with
+   *         DateConvert.
+   * @throws IdNotFoundException if there is a problem with persistence.
+   */
+  public void pruneMeasurements() throws DatatypeConfigurationException, IdNotFoundException {
+    Date lastStarted = new Date();
+    Integer deleted = 0;
+    if (debug) {
+      System.out.println("Starting run at " + new SimpleDateFormat().format(lastStarted));
+    }
+    // figure out the 6 hour windows to delete
+    XMLGregorianCalendar start = DateConvert.convertDate(getStartDate());
+    XMLGregorianCalendar end = DateConvert.convertDate(getEndDate());
+    List<XMLGregorianCalendar> windows = Tstamp.getTimestampList(start, end, PRUNE_WINDOW);
+    String sensorId = this.definition.getSensorId();
+    SensorGroup group = this.persistance
+        .getSensorGroup(sensorId, this.definition.getOrgId(), false);
+    if (group != null) {
+      for (String s : group.getSensors()) {
+        for (int i = 0; i < windows.size() - 1; i++) {
+          Date windowStart = DateConvert.convertXMLCal(windows.get(i));
+          Date windowEnd = DateConvert.convertXMLCal(windows.get(i + 1));
+          List<Measurement> check = this.persistance.getMeasurements(
+              this.definition.getDepositoryId(), this.definition.getOrgId(), s, windowStart,
+              windowEnd, false);
+          int size = check.size();
+          int index = 1;
+          int baseIndex = 0;
+          while (index < size - 1) {
+            long secondsBetween = Math.abs((check.get(index).getDate().getTime() - check.get(baseIndex)
+                .getDate().getTime()) / 1000);
+            if (secondsBetween < definition.getMinGapSeconds()) {
+              this.persistance.deleteMeasurement(this.definition.getDepositoryId(),
+                  this.definition.getOrganizationId(), check.get(index++).getId());
+              deleted++;
+            }
+            else {
+              baseIndex = index;
+              index++;
+            }
+          }
+        }
+
+      }
+    }
+    else {
+      for (int i = 0; i < windows.size() - 1; i++) {
+        Date windowStart = DateConvert.convertXMLCal(windows.get(i));
+        Date windowEnd = DateConvert.convertXMLCal(windows.get(i + 1));
+        List<Measurement> check = this.persistance.getMeasurements(
+            this.definition.getDepositoryId(), this.definition.getOrgId(), sensorId, windowStart,
+            windowEnd, false);
+        int size = check.size();
+        if (debug) {
+          System.out.println(windowStart + " to " + windowEnd + " has " + size + " measurements");
+        }
+        int index = 1;
+        int baseIndex = 0;
+        while (index < size - 1) {
+          long secondsBetween = Math.abs((check.get(index).getDate().getTime() - check.get(baseIndex)
+              .getDate().getTime()) / 1000);
+          if (secondsBetween < definition.getMinGapSeconds()) {
+            this.persistance.deleteMeasurement(this.definition.getDepositoryId(),
+                this.definition.getOrganizationId(), check.get(index++).getId());
+            deleted++;
+          }
+          else {
+            baseIndex = index;
+            index++;
+          }
+        }
+      }
+    }
+    Date lastCompleted = new Date();
     if (debug) {
       System.out.println("Finished run at " + new SimpleDateFormat().format(lastCompleted));
       System.out.println("Deleted " + deleted + " measurements.");
