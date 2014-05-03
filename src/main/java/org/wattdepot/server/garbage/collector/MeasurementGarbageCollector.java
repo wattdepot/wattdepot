@@ -395,6 +395,9 @@ public class MeasurementGarbageCollector extends TimerTask {
               this.persistance.deleteMeasurement(this.definition.getDepositoryId(),
                   this.definition.getOrganizationId(), check.get(index++).getId());
               deleted++;
+              if (debug) {
+                System.out.print("del " + deleted + " ");
+              }
             }
             else {
               baseIndex = index;
@@ -425,6 +428,9 @@ public class MeasurementGarbageCollector extends TimerTask {
             this.persistance.deleteMeasurement(this.definition.getDepositoryId(),
                 this.definition.getOrganizationId(), check.get(index++).getId());
             deleted++;
+            if (debug) {
+              System.out.print("del " + deleted + " ");
+            }
           }
           else {
             baseIndex = index;
