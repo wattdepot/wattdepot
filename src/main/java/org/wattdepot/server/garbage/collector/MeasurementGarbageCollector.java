@@ -371,6 +371,9 @@ public class MeasurementGarbageCollector extends TimerTask {
     XMLGregorianCalendar start = DateConvert.convertDate(getStartDate());
     XMLGregorianCalendar end = DateConvert.convertDate(getEndDate());
     List<XMLGregorianCalendar> windows = Tstamp.getTimestampList(start, end, PRUNE_WINDOW);
+    if (debug) {
+      System.out.println("Start = " + start + " end = " + end + " windows = " + windows);
+    }
     String sensorId = this.definition.getSensorId();
     SensorGroup group = this.persistance
         .getSensorGroup(sensorId, this.definition.getOrgId(), false);
