@@ -424,6 +424,9 @@ public class MeasurementGarbageCollector extends TimerTask {
         while (index < size - 1) {
           long secondsBetween = Math.abs((check.get(index).getDate().getTime() - check.get(baseIndex)
               .getDate().getTime()) / 1000);
+          if (debug) {
+            System.out.println("gap = " + secondsBetween + " minGap = " + definition.getMinGapSeconds());
+          }
           if (secondsBetween < definition.getMinGapSeconds()) {
             this.persistance.deleteMeasurement(this.definition.getDepositoryId(),
                 this.definition.getOrganizationId(), check.get(index++).getId());
