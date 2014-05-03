@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.server.garbage.collector;
+package org.wattdepot.server.measurement.pruning;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ import org.wattdepot.server.WattDepotPersistence;
  * @author Cam Moore
  * 
  */
-public class MeasurementGarbageCollector extends TimerTask {
+public class MeasurementPruner extends TimerTask {
 
   /**
    * The window to get the measurements. Hopefully allows for quicker
@@ -73,8 +73,8 @@ public class MeasurementGarbageCollector extends TimerTask {
    * @throws Exception If there is a problem instantiating the
    *         WattDepotPersistence.
    */
-  public MeasurementGarbageCollector(ServerProperties properties, String gcdId, String orgId,
-      boolean debug) throws Exception {
+  public MeasurementPruner(ServerProperties properties, String gcdId, String orgId, boolean debug)
+      throws Exception {
     // Get the WattDepotPersistence implementation.
     String depotClass = properties.get(ServerProperties.WATT_DEPOT_IMPL_KEY);
     this.persistance = (WattDepotPersistence) Class.forName(depotClass)
@@ -222,9 +222,10 @@ public class MeasurementGarbageCollector extends TimerTask {
   public static void main(String[] args) throws Exception {
     Options options = new Options();
     options.addOption("h", "help", false,
-        "Usage: MeasurementGarbageCollector -o <orgId> -g <garbage collection definition id> [-d]");
+        "Usage: MeasurementPruner -o <orgId> -m <measurement pruning definition id>"
+            + " [-d] [-s]");
     options.addOption("o", "orgId", true, "Organization Id.");
-    options.addOption("g", "gcd", true, "GarbageCollectionDefinition Id.");
+    options.addOption("m", "mpd", true, "MeasurementPruningDefinition Id.");
     options.addOption("d", "debug", false, "Display debugging information.");
     options.addOption("s", "single", false, "Run gc only once, right away.");
 
@@ -268,8 +269,7 @@ public class MeasurementGarbageCollector extends TimerTask {
     // properties.set(ServerProperties.SERVER_TIMING_KEY,
     // ServerProperties.TRUE);
     // }
-    MeasurementGarbageCollector mgc = new MeasurementGarbageCollector(properties, gcdId, orgId,
-        debug);
+    MeasurementPruner mgc = new MeasurementPruner(properties, gcdId, orgId, debug);
     if (single) {
       mgc.pruneMeasurements();
     }
@@ -326,36 +326,14 @@ public class MeasurementGarbageCollector extends TimerTask {
    */
   @Override
   public void run() {
-    Date lastStarted = new Date();
-    if (debug) {
-      System.out.println("Starting run at " + new SimpleDateFormat().format(lastStarted));
-    }
-    Integer deleted = 0;
     try {
-      for (Measurement m : getMeasurementsToDelete()) {
-        this.persistance.deleteMeasurement(this.definition.getDepositoryId(),
-            this.definition.getOrganizationId(), m.getId());
-        deleted++;
-      }
+      pruneMeasurements();
     }
-    catch (IdNotFoundException e) {
-      // TODO Auto-generated catch block
+    catch (DatatypeConfigurationException e) {
       e.printStackTrace();
     }
-    Date lastCompleted = new Date();
-    this.definition.setLastStarted(lastStarted);
-    this.definition.setLastCompleted(lastCompleted);
-    this.definition.setNumMeasurementsCollected(deleted);
-    try {
-      this.persistance.updateGarbageCollectionDefinition(this.definition);
-    }
     catch (IdNotFoundException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
-    }
-    if (debug) {
-      System.out.println("Finished run at " + new SimpleDateFormat().format(lastCompleted));
-      System.out.println("Deleted " + deleted + " measurements.");
     }
   }
 
@@ -441,6 +419,15 @@ public class MeasurementGarbageCollector extends TimerTask {
       }
     }
     Date lastCompleted = new Date();
+    this.definition.setLastStarted(lastStarted);
+    this.definition.setLastCompleted(lastCompleted);
+    this.definition.setNumMeasurementsCollected(deleted);
+    try {
+      this.persistance.updateGarbageCollectionDefinition(this.definition);
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+    }
     if (debug) {
       System.out.println("Finished run at " + new SimpleDateFormat().format(lastCompleted));
       System.out.println("Deleted " + deleted + " measurements.");
