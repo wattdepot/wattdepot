@@ -264,9 +264,9 @@ public class MeasurementGarbageCollector extends TimerTask {
       System.out.println("Single run = " + single);
     }
     ServerProperties properties = new ServerProperties();
-    if (debug) {
-      properties.set(ServerProperties.SERVER_TIMING_KEY, ServerProperties.TRUE);
-    }
+//    if (debug) {
+//      properties.set(ServerProperties.SERVER_TIMING_KEY, ServerProperties.TRUE);
+//    }
     MeasurementGarbageCollector mgc = new MeasurementGarbageCollector(properties,
         gcdId, orgId, debug);
     if (single) {
