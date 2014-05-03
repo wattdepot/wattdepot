@@ -200,8 +200,8 @@ public class MeasurementGarbageCollector extends TimerTask {
     Date ret = null;
     try {
       now = DateConvert.convertDate(new Date());
-      XMLGregorianCalendar startCal = Tstamp
-          .incrementDays(now, -1 * definition.getIgnoreWindowDays());
+      XMLGregorianCalendar startCal = Tstamp.incrementDays(now,
+          -1 * definition.getIgnoreWindowDays());
       startCal = Tstamp.incrementDays(startCal, -1 * definition.getCollectWindowDays());
       ret = DateConvert.convertXMLCal(startCal);
     }
@@ -264,11 +264,12 @@ public class MeasurementGarbageCollector extends TimerTask {
       System.out.println("Single run = " + single);
     }
     ServerProperties properties = new ServerProperties();
-//    if (debug) {
-//      properties.set(ServerProperties.SERVER_TIMING_KEY, ServerProperties.TRUE);
-//    }
-    MeasurementGarbageCollector mgc = new MeasurementGarbageCollector(properties,
-        gcdId, orgId, debug);
+    // if (debug) {
+    // properties.set(ServerProperties.SERVER_TIMING_KEY,
+    // ServerProperties.TRUE);
+    // }
+    MeasurementGarbageCollector mgc = new MeasurementGarbageCollector(properties, gcdId, orgId,
+        debug);
     if (single) {
       mgc.pruneMeasurements();
     }
@@ -390,18 +391,19 @@ public class MeasurementGarbageCollector extends TimerTask {
               this.definition.getDepositoryId(), this.definition.getOrgId(), s, windowStart,
               windowEnd, false);
           int size = check.size();
+          if (debug) {
+            System.out.println("Sensor " + s + ": " + windowStart + " to " + windowEnd + " has "
+                + size + " measurements");
+          }
           int index = 1;
           int baseIndex = 0;
           while (index < size - 1) {
-            long secondsBetween = Math.abs((check.get(index).getDate().getTime() - check.get(baseIndex)
-                .getDate().getTime()) / 1000);
+            long secondsBetween = Math.abs((check.get(index).getDate().getTime() - check
+                .get(baseIndex).getDate().getTime()) / 1000);
             if (secondsBetween < definition.getMinGapSeconds()) {
               this.persistance.deleteMeasurement(this.definition.getDepositoryId(),
                   this.definition.getOrganizationId(), check.get(index++).getId());
               deleted++;
-              if (debug) {
-                System.out.print("del " + deleted + " ");
-              }
             }
             else {
               baseIndex = index;
@@ -421,23 +423,18 @@ public class MeasurementGarbageCollector extends TimerTask {
             windowEnd, false);
         int size = check.size();
         if (debug) {
-          System.out.println(windowStart + " to " + windowEnd + " has " + size + " measurements");
+          System.out.println("Sensor " + sensorId + ": " + windowStart + " to " + windowEnd
+              + " has " + size + " measurements");
         }
         int index = 1;
         int baseIndex = 0;
         while (index < size - 1) {
-          long secondsBetween = Math.abs((check.get(index).getDate().getTime() - check.get(baseIndex)
-              .getDate().getTime()) / 1000);
-          if (debug) {
-            System.out.println("gap = " + secondsBetween + " minGap = " + definition.getMinGapSeconds());
-          }
+          long secondsBetween = Math.abs((check.get(index).getDate().getTime() - check
+              .get(baseIndex).getDate().getTime()) / 1000);
           if (secondsBetween < definition.getMinGapSeconds()) {
             this.persistance.deleteMeasurement(this.definition.getDepositoryId(),
                 this.definition.getOrganizationId(), check.get(index++).getId());
             deleted++;
-            if (debug) {
-              System.out.print("del " + deleted + " ");
-            }
           }
           else {
             baseIndex = index;
