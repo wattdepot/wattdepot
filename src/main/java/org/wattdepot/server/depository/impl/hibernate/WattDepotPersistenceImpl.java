@@ -704,9 +704,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       padding += "  ";
       startTime = System.nanoTime();
     }
-    getOrganization(orgId, true);
-    getDepository(depotId, orgId, true);
-    getMeasurement(depotId, orgId, measId, true);
+//    getOrganization(orgId, true);
+//    getDepository(depotId, orgId, true);
+//    getMeasurement(depotId, orgId, measId, true);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     session.beginTransaction();
     MeasurementImpl impl = retrieveMeasurement(session, depotId, orgId, measId);
