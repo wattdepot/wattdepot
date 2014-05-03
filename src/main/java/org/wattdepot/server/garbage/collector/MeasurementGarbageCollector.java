@@ -263,7 +263,11 @@ public class MeasurementGarbageCollector extends TimerTask {
       System.out.println("GCD Id = " + gcdId);
       System.out.println("Single run = " + single);
     }
-    MeasurementGarbageCollector mgc = new MeasurementGarbageCollector(new ServerProperties(),
+    ServerProperties properties = new ServerProperties();
+    if (debug) {
+      properties.set(ServerProperties.SERVER_TIMING_KEY, ServerProperties.TRUE);
+    }
+    MeasurementGarbageCollector mgc = new MeasurementGarbageCollector(properties,
         gcdId, orgId, debug);
     if (single) {
       mgc.pruneMeasurements();
