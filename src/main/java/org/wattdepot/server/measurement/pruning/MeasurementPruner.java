@@ -221,9 +221,10 @@ public class MeasurementPruner extends TimerTask {
    */
   public static void main(String[] args) throws Exception {
     Options options = new Options();
-    options.addOption("h", "help", false,
-        "Usage: MeasurementPruner -o <orgId> -m <measurement pruning definition id>"
-            + " [-d] [-s]");
+    options
+        .addOption("h", "help", false,
+            "Usage: MeasurementPruner -o <orgId> -m <measurement pruning definition id>"
+                + " [-d] [-s]");
     options.addOption("o", "orgId", true, "Organization Id.");
     options.addOption("m", "mpd", true, "MeasurementPruningDefinition Id.");
     options.addOption("d", "debug", false, "Display debugging information.");
