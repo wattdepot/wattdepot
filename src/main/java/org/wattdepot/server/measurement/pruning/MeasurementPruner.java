@@ -254,8 +254,8 @@ public class MeasurementPruner extends TimerTask {
     else {
       orgId = Organization.ADMIN_GROUP.getId();
     }
-    if (cmd.hasOption("g")) {
-      gcdId = cmd.getOptionValue("g");
+    if (cmd.hasOption("m")) {
+      gcdId = cmd.getOptionValue("m");
     }
     debug = cmd.hasOption("d");
     single = cmd.hasOption("s");
