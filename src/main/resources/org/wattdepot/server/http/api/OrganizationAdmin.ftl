@@ -1460,7 +1460,7 @@ CPDS["${sp.id}"] = {"id": "${sp.id}", "name": "${sp.name}",  "sensorId": "${sp.s
 </#list>
 var GCDS = {};
 <#list gcds as g>
-GCDS["${g.id}"] = {"id": "${g.id}", "name": "${g.name}", "depositoryId": "${g.depositoryId}", "sensorId": "${g.sensorId}", "organizationId": "${g.organizationId}", "ignoreWindowDays": ${g.ignoreWindowDays}, "collectWindowDays": ${g.collectWindowDays}, "minGapSeconds": ${g.minGapSeconds}, "lastStarted": "${(g.lastStarted?datetime)!"Never"}", "lastCompleted": "${(g.lastCompleted?datetime)!"Never"}", "numMeasurementsCollected": ${g.numMeasurementsCollected!0}};
+GCDS["${g.id}"] = {"id": "${g.id}", "name": "${g.name}", "depositoryId": "${g.depositoryId}", "sensorId": "${g.sensorId}", "organizationId": "${g.organizationId}", "ignoreWindowDays": ${g.ignoreWindowDays}, "collectWindowDays": ${g.collectWindowDays}, "minGapSeconds": ${g.minGapSeconds?string.computer}, "lastStarted": "${(g.lastStarted?datetime)!"Never"}", "lastCompleted": "${(g.lastCompleted?datetime)!"Never"}", "numMeasurementsCollected": ${g.numMeasurementsCollected?string.computer!0}};
 </#list>
 var MEASUREMENTTYPES = {};
 <#list measurementtypes as mt>
