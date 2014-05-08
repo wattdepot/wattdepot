@@ -21,4 +21,4 @@
  * @author Cam Moore
  *
  */
-package org.wattdepot.server.garbage.collector;
+package org.wattdepot.server.measurement.pruning;

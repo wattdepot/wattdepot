@@ -52,6 +52,7 @@ import org.wattdepot.common.util.tstamp.Tstamp;
 import org.wattdepot.server.ServerProperties;
 import org.wattdepot.server.WattDepotPersistence;
 import org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl;
+import org.wattdepot.server.measurement.pruning.MeasurementPruner;
 
 /**
  * TestMeasurementGarbageCollector test cases for the
@@ -187,7 +188,7 @@ public class TestMeasurementGarbageCollector {
 
   /**
    * Test method for
-   * {@link org.wattdepot.server.garbage.collector.MeasurementGarbageCollector#getMeasurementsToDelete()}
+   * {@link org.wattdepot.server.measurement.pruning.MeasurementPruner#getMeasurementsToDelete()}
    * .
    * 
    * @throws Exception if there is a problem.
@@ -195,7 +196,7 @@ public class TestMeasurementGarbageCollector {
   @Test
   public void testGetMeasurementsToDelete() throws Exception {
     populateMeasurements(2);
-    MeasurementGarbageCollector mgc = new MeasurementGarbageCollector(properties, gcd.getId(),
+    MeasurementPruner mgc = new MeasurementPruner(properties, gcd.getId(),
         gcd.getOrganizationId(), false);
     List<Measurement> toDel = mgc.getMeasurementsToDelete();
     assertTrue(toDel.size() > 0);
@@ -208,7 +209,7 @@ public class TestMeasurementGarbageCollector {
   @Test
   public void testGarbageCollection() throws Exception {
     populateMeasurements(2);
-    MeasurementGarbageCollector mgc = new MeasurementGarbageCollector(properties, gcd.getId(),
+    MeasurementPruner mgc = new MeasurementPruner(properties, gcd.getId(),
         gcd.getOrganizationId(), false);
     int numToDel = mgc.getMeasurementsToDelete().size();
     mgc.run();

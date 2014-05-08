@@ -191,6 +191,15 @@ public class ServerProperties {
   }
 
   /**
+   * Sets the given property.
+   * @param key the key.
+   * @param value the value
+   */
+  public void set(String key, String value) {
+    this.properties.setProperty(key, value);
+  }
+  
+  /**
    * Ensures that the there is no leading or trailing whitespace in the property
    * values. The fact that we need to do this indicates a bug in Java's
    * Properties implementation to me.

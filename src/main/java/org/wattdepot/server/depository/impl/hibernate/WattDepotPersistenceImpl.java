@@ -695,9 +695,18 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public void deleteMeasurement(String depotId, String orgId, String measId)
       throws IdNotFoundException {
-    getOrganization(orgId, true);
-    getDepository(depotId, orgId, true);
-    getMeasurement(depotId, orgId, measId, true);
+    Long startTime = 0l;
+    Long endTime = 0l;
+    Long diff = 0l;
+    if (timingp) {
+      timingLogger.log(Level.SEVERE, padding + "Start deleteMeasurement(" + depotId + ", " + orgId
+          + ", " + measId + ")");
+      padding += "  ";
+      startTime = System.nanoTime();
+    }
+//    getOrganization(orgId, true);
+//    getDepository(depotId, orgId, true);
+//    getMeasurement(depotId, orgId, measId, true);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     session.beginTransaction();
     MeasurementImpl impl = retrieveMeasurement(session, depotId, orgId, measId);
@@ -709,6 +718,13 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     }
     session.getTransaction().commit();
     session.close();
+    if (timingp) {
+      endTime = System.nanoTime();
+      diff = endTime - startTime;
+      padding = padding.substring(0, padding.length() - 2);
+      timingLogger.log(Level.SEVERE, padding + "deleteMeasurement(" + depotId + ", " + orgId + ", "
+          + measId + ") took " + (diff / 1E9) + " secs.");
+    }    
   }
 
   /*

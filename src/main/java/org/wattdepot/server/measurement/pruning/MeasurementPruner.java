@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.server.garbage.collector;
+package org.wattdepot.server.measurement.pruning;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,7 +51,13 @@ import org.wattdepot.server.WattDepotPersistence;
  * @author Cam Moore
  * 
  */
-public class MeasurementGarbageCollector extends TimerTask {
+public class MeasurementPruner extends TimerTask {
+
+  /**
+   * The window to get the measurements. Hopefully allows for quicker
+   * performance.
+   */
+  public static final int PRUNE_WINDOW = 6 * 60;
 
   private WattDepotPersistence persistance;
   private GarbageCollectionDefinition definition;
@@ -67,8 +73,8 @@ public class MeasurementGarbageCollector extends TimerTask {
    * @throws Exception If there is a problem instantiating the
    *         WattDepotPersistence.
    */
-  public MeasurementGarbageCollector(ServerProperties properties, String gcdId, String orgId,
-      boolean debug) throws Exception {
+  public MeasurementPruner(ServerProperties properties, String gcdId, String orgId, boolean debug)
+      throws Exception {
     // Get the WattDepotPersistence implementation.
     String depotClass = properties.get(ServerProperties.WATT_DEPOT_IMPL_KEY);
     this.persistance = (WattDepotPersistence) Class.forName(depotClass)
@@ -94,7 +100,6 @@ public class MeasurementGarbageCollector extends TimerTask {
       now = DateConvert.convertDate(new Date());
       XMLGregorianCalendar endCal = Tstamp
           .incrementDays(now, -1 * definition.getIgnoreWindowDays());
-      endCal = Tstamp.incrementDays(endCal, -1 * definition.getCollectWindowDays());
       ret = DateConvert.convertXMLCal(endCal);
     }
     catch (DatatypeConfigurationException e) {
@@ -149,7 +154,7 @@ public class MeasurementGarbageCollector extends TimerTask {
     if (debug) {
       endTime = System.nanoTime();
       diff = endTime - startTime;
-      System.out.println("getMeasurementsToDelete() took " + (diff / 1E9) + " secs.");      
+      System.out.println("getMeasurementsToDelete() took " + (diff / 1E9) + " secs.");
     }
     return ret;
   }
@@ -197,6 +202,7 @@ public class MeasurementGarbageCollector extends TimerTask {
       now = DateConvert.convertDate(new Date());
       XMLGregorianCalendar startCal = Tstamp.incrementDays(now,
           -1 * definition.getIgnoreWindowDays());
+      startCal = Tstamp.incrementDays(startCal, -1 * definition.getCollectWindowDays());
       ret = DateConvert.convertXMLCal(startCal);
     }
     catch (DatatypeConfigurationException e) {
@@ -215,10 +221,12 @@ public class MeasurementGarbageCollector extends TimerTask {
    */
   public static void main(String[] args) throws Exception {
     Options options = new Options();
-    options.addOption("h", "help", false,
-        "Usage: MeasurementGarbageCollector -o <orgId> -g <garbage collection definition id> [-d]");
+    options
+        .addOption("h", "help", false,
+            "Usage: MeasurementPruner -o <orgId> -m <measurement pruning definition id>"
+                + " [-d] [-s]");
     options.addOption("o", "orgId", true, "Organization Id.");
-    options.addOption("g", "gcd", true, "GarbageCollectionDefinition Id.");
+    options.addOption("m", "mpd", true, "MeasurementPruningDefinition Id.");
     options.addOption("d", "debug", false, "Display debugging information.");
     options.addOption("s", "single", false, "Run gc only once, right away.");
 
@@ -246,8 +254,8 @@ public class MeasurementGarbageCollector extends TimerTask {
     else {
       orgId = Organization.ADMIN_GROUP.getId();
     }
-    if (cmd.hasOption("g")) {
-      gcdId = cmd.getOptionValue("g");
+    if (cmd.hasOption("m")) {
+      gcdId = cmd.getOptionValue("m");
     }
     debug = cmd.hasOption("d");
     single = cmd.hasOption("s");
@@ -257,16 +265,20 @@ public class MeasurementGarbageCollector extends TimerTask {
       System.out.println("GCD Id = " + gcdId);
       System.out.println("Single run = " + single);
     }
-    MeasurementGarbageCollector mgc = new MeasurementGarbageCollector(new ServerProperties(),
-        gcdId, orgId, debug);
-    if (debug) {
-      System.out.println("Setting up Timer for " + mgc);
-    }
+    ServerProperties properties = new ServerProperties();
+    // if (debug) {
+    // properties.set(ServerProperties.SERVER_TIMING_KEY,
+    // ServerProperties.TRUE);
+    // }
+    MeasurementPruner mgc = new MeasurementPruner(properties, gcdId, orgId, debug);
     if (single) {
-      mgc.run();
+      mgc.pruneMeasurements();
     }
     else {
       // Set up the TimerTask to run the gc at the right time.
+      if (debug) {
+        System.out.println("Setting up Timer for " + mgc);
+      }
       Timer t = new Timer();
       t.schedule(mgc, mgc.millisToNextRun(), mgc.getGCPeriod());
     }
@@ -315,21 +327,97 @@ public class MeasurementGarbageCollector extends TimerTask {
    */
   @Override
   public void run() {
+    try {
+      pruneMeasurements();
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Prunes the measurements.
+   * 
+   * @throws DatatypeConfigurationException if there is a problem with
+   *         DateConvert.
+   * @throws IdNotFoundException if there is a problem with persistence.
+   */
+  public void pruneMeasurements() throws DatatypeConfigurationException, IdNotFoundException {
     Date lastStarted = new Date();
+    Integer deleted = 0;
     if (debug) {
       System.out.println("Starting run at " + new SimpleDateFormat().format(lastStarted));
     }
-    Integer deleted = 0;
-    try {
-      for (Measurement m : getMeasurementsToDelete()) {
-        this.persistance.deleteMeasurement(this.definition.getDepositoryId(),
-            this.definition.getOrganizationId(), m.getId());
-        deleted++;
+    // figure out the 6 hour windows to delete
+    XMLGregorianCalendar start = DateConvert.convertDate(getStartDate());
+    XMLGregorianCalendar end = DateConvert.convertDate(getEndDate());
+    List<XMLGregorianCalendar> windows = Tstamp.getTimestampList(start, end, PRUNE_WINDOW);
+    String sensorId = this.definition.getSensorId();
+    SensorGroup group = this.persistance
+        .getSensorGroup(sensorId, this.definition.getOrgId(), false);
+    if (group != null) {
+      for (String s : group.getSensors()) {
+        for (int i = 0; i < windows.size() - 1; i++) {
+          Date windowStart = DateConvert.convertXMLCal(windows.get(i));
+          Date windowEnd = DateConvert.convertXMLCal(windows.get(i + 1));
+          List<Measurement> check = this.persistance.getMeasurements(
+              this.definition.getDepositoryId(), this.definition.getOrgId(), s, windowStart,
+              windowEnd, false);
+          int size = check.size();
+          if (debug) {
+            System.out.println("Sensor " + s + ": " + windowStart + " to " + windowEnd + " has "
+                + size + " measurements");
+          }
+          int index = 1;
+          int baseIndex = 0;
+          while (index < size - 1) {
+            long secondsBetween = Math.abs((check.get(index).getDate().getTime() - check
+                .get(baseIndex).getDate().getTime()) / 1000);
+            if (secondsBetween < definition.getMinGapSeconds()) {
+              this.persistance.deleteMeasurement(this.definition.getDepositoryId(),
+                  this.definition.getOrganizationId(), check.get(index++).getId());
+              deleted++;
+            }
+            else {
+              baseIndex = index;
+              index++;
+            }
+          }
+        }
+
       }
     }
-    catch (IdNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    else {
+      for (int i = 0; i < windows.size() - 1; i++) {
+        Date windowStart = DateConvert.convertXMLCal(windows.get(i));
+        Date windowEnd = DateConvert.convertXMLCal(windows.get(i + 1));
+        List<Measurement> check = this.persistance.getMeasurements(
+            this.definition.getDepositoryId(), this.definition.getOrgId(), sensorId, windowStart,
+            windowEnd, false);
+        int size = check.size();
+        if (debug) {
+          System.out.println("Sensor " + sensorId + ": " + windowStart + " to " + windowEnd
+              + " has " + size + " measurements");
+        }
+        int index = 1;
+        int baseIndex = 0;
+        while (index < size - 1) {
+          long secondsBetween = Math.abs((check.get(index).getDate().getTime() - check
+              .get(baseIndex).getDate().getTime()) / 1000);
+          if (secondsBetween < definition.getMinGapSeconds()) {
+            this.persistance.deleteMeasurement(this.definition.getDepositoryId(),
+                this.definition.getOrganizationId(), check.get(index++).getId());
+            deleted++;
+          }
+          else {
+            baseIndex = index;
+            index++;
+          }
+        }
+      }
     }
     Date lastCompleted = new Date();
     this.definition.setLastStarted(lastStarted);
@@ -339,7 +427,6 @@ public class MeasurementGarbageCollector extends TimerTask {
       this.persistance.updateGarbageCollectionDefinition(this.definition);
     }
     catch (IdNotFoundException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
     if (debug) {
