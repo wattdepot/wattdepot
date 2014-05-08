@@ -71,7 +71,7 @@
 <span class="sourceLineNo">063</span>    UserInfo user = null;<a name="line.63"></a>
 <span class="sourceLineNo">064</span>    if (isInRole(orgId) || isInRole(Organization.ADMIN_GROUP.getId())) {<a name="line.64"></a>
 <span class="sourceLineNo">065</span>      try {<a name="line.65"></a>
-<span class="sourceLineNo">066</span>        user = depot.getUser(userId, orgId);<a name="line.66"></a>
+<span class="sourceLineNo">066</span>        user = depot.getUser(userId, orgId, true);<a name="line.66"></a>
 <span class="sourceLineNo">067</span>      }<a name="line.67"></a>
 <span class="sourceLineNo">068</span>      catch (IdNotFoundException e) {<a name="line.68"></a>
 <span class="sourceLineNo">069</span>        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "User " + userId + " is not defined.");<a name="line.69"></a>
@@ -96,7 +96,7 @@
 <span class="sourceLineNo">088</span>    if (isInRole(Organization.ADMIN_GROUP.getId())) {<a name="line.88"></a>
 <span class="sourceLineNo">089</span>      try {<a name="line.89"></a>
 <span class="sourceLineNo">090</span>        depot.updateUserInfo(user);<a name="line.90"></a>
-<span class="sourceLineNo">091</span>        UserPassword password = depot.getUserPassword(user.getUid(), user.getOrganizationId());<a name="line.91"></a>
+<span class="sourceLineNo">091</span>        UserPassword password = depot.getUserPassword(user.getUid(), user.getOrganizationId(), true);<a name="line.91"></a>
 <span class="sourceLineNo">092</span>        password.setPassword(user.getPassword());<a name="line.92"></a>
 <span class="sourceLineNo">093</span>        depot.updateUserPassword(password);<a name="line.93"></a>
 <span class="sourceLineNo">094</span>        WattDepotApplication app = (WattDepotApplication) getApplication();<a name="line.94"></a>

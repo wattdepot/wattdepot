@@ -66,34 +66,35 @@
 <span class="sourceLineNo">058</span>    quantities.put(buildName("Mass", NonSI.POUND), NonSI.POUND);<a name="line.58"></a>
 <span class="sourceLineNo">059</span>    quantities.put(buildName("Humidity", NonSI.PERCENT), NonSI.PERCENT);<a name="line.59"></a>
 <span class="sourceLineNo">060</span>    quantities.put(buildName("Concentration", SI.MICRO(Unit.ONE)), SI.MICRO(Unit.ONE));<a name="line.60"></a>
-<span class="sourceLineNo">061</span><a name="line.61"></a>
-<span class="sourceLineNo">062</span>  }<a name="line.62"></a>
-<span class="sourceLineNo">063</span><a name="line.63"></a>
-<span class="sourceLineNo">064</span>  /**<a name="line.64"></a>
-<span class="sourceLineNo">065</span>   * @param type<a name="line.65"></a>
-<span class="sourceLineNo">066</span>   *          The type of the unit, Energy, Power, Mass, etc.<a name="line.66"></a>
-<span class="sourceLineNo">067</span>   * @param unit<a name="line.67"></a>
-<span class="sourceLineNo">068</span>   *          The Unit&lt;?&gt;.<a name="line.68"></a>
-<span class="sourceLineNo">069</span>   * @return The name.<a name="line.69"></a>
-<span class="sourceLineNo">070</span>   */<a name="line.70"></a>
-<span class="sourceLineNo">071</span>  public static String buildName(String type, Unit&lt;?&gt; unit) {<a name="line.71"></a>
-<span class="sourceLineNo">072</span>    String s = unit.toString();<a name="line.72"></a>
-<span class="sourceLineNo">073</span>    String s1 = Normalizer.normalize(s, Normalizer.Form.NFKD);<a name="line.73"></a>
-<span class="sourceLineNo">074</span>    String regex = Pattern.quote("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");<a name="line.74"></a>
-<span class="sourceLineNo">075</span><a name="line.75"></a>
-<span class="sourceLineNo">076</span>    try {<a name="line.76"></a>
-<span class="sourceLineNo">077</span>      String s2 = new String(s1.replaceAll(regex, "").getBytes("ascii"), "ascii");<a name="line.77"></a>
-<span class="sourceLineNo">078</span>      s2 = s2.replace("?", "");<a name="line.78"></a>
-<span class="sourceLineNo">079</span>      return type + " (" + s2 + ")";<a name="line.79"></a>
-<span class="sourceLineNo">080</span>      <a name="line.80"></a>
-<span class="sourceLineNo">081</span>    }<a name="line.81"></a>
-<span class="sourceLineNo">082</span>    catch (UnsupportedEncodingException e) {<a name="line.82"></a>
-<span class="sourceLineNo">083</span>      e.printStackTrace();<a name="line.83"></a>
-<span class="sourceLineNo">084</span>    }<a name="line.84"></a>
-<span class="sourceLineNo">085</span>    return type + " (" + s1 + ")";<a name="line.85"></a>
-<span class="sourceLineNo">086</span>  }<a name="line.86"></a>
-<span class="sourceLineNo">087</span><a name="line.87"></a>
-<span class="sourceLineNo">088</span>}<a name="line.88"></a>
+<span class="sourceLineNo">061</span>    quantities.put(buildName("Cloud Coverage", NonSI.PERCENT), NonSI.PERCENT);<a name="line.61"></a>
+<span class="sourceLineNo">062</span><a name="line.62"></a>
+<span class="sourceLineNo">063</span>  }<a name="line.63"></a>
+<span class="sourceLineNo">064</span><a name="line.64"></a>
+<span class="sourceLineNo">065</span>  /**<a name="line.65"></a>
+<span class="sourceLineNo">066</span>   * @param type<a name="line.66"></a>
+<span class="sourceLineNo">067</span>   *          The type of the unit, Energy, Power, Mass, etc.<a name="line.67"></a>
+<span class="sourceLineNo">068</span>   * @param unit<a name="line.68"></a>
+<span class="sourceLineNo">069</span>   *          The Unit&lt;?&gt;.<a name="line.69"></a>
+<span class="sourceLineNo">070</span>   * @return The name.<a name="line.70"></a>
+<span class="sourceLineNo">071</span>   */<a name="line.71"></a>
+<span class="sourceLineNo">072</span>  public static String buildName(String type, Unit&lt;?&gt; unit) {<a name="line.72"></a>
+<span class="sourceLineNo">073</span>    String s = unit.toString();<a name="line.73"></a>
+<span class="sourceLineNo">074</span>    String s1 = Normalizer.normalize(s, Normalizer.Form.NFKD);<a name="line.74"></a>
+<span class="sourceLineNo">075</span>    String regex = Pattern.quote("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");<a name="line.75"></a>
+<span class="sourceLineNo">076</span><a name="line.76"></a>
+<span class="sourceLineNo">077</span>    try {<a name="line.77"></a>
+<span class="sourceLineNo">078</span>      String s2 = new String(s1.replaceAll(regex, "").getBytes("ascii"), "ascii");<a name="line.78"></a>
+<span class="sourceLineNo">079</span>      s2 = s2.replace("?", "");<a name="line.79"></a>
+<span class="sourceLineNo">080</span>      return type + " (" + s2 + ")";<a name="line.80"></a>
+<span class="sourceLineNo">081</span>      <a name="line.81"></a>
+<span class="sourceLineNo">082</span>    }<a name="line.82"></a>
+<span class="sourceLineNo">083</span>    catch (UnsupportedEncodingException e) {<a name="line.83"></a>
+<span class="sourceLineNo">084</span>      e.printStackTrace();<a name="line.84"></a>
+<span class="sourceLineNo">085</span>    }<a name="line.85"></a>
+<span class="sourceLineNo">086</span>    return type + " (" + s1 + ")";<a name="line.86"></a>
+<span class="sourceLineNo">087</span>  }<a name="line.87"></a>
+<span class="sourceLineNo">088</span><a name="line.88"></a>
+<span class="sourceLineNo">089</span>}<a name="line.89"></a>
 
 
 

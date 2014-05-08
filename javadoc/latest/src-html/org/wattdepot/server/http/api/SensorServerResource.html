@@ -92,7 +92,7 @@
 <span class="sourceLineNo">084</span>    if (isInRole(orgId)) {<a name="line.84"></a>
 <span class="sourceLineNo">085</span>      Sensor sensor = null;<a name="line.85"></a>
 <span class="sourceLineNo">086</span>      try {<a name="line.86"></a>
-<span class="sourceLineNo">087</span>        sensor = depot.getSensor(sensorId, orgId);<a name="line.87"></a>
+<span class="sourceLineNo">087</span>        sensor = depot.getSensor(sensorId, orgId, true);<a name="line.87"></a>
 <span class="sourceLineNo">088</span>      }<a name="line.88"></a>
 <span class="sourceLineNo">089</span>      catch (MisMatchedOwnerException e) {<a name="line.89"></a>
 <span class="sourceLineNo">090</span>        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());<a name="line.90"></a>
@@ -123,14 +123,14 @@
 <span class="sourceLineNo">115</span>    getLogger().log(Level.INFO,<a name="line.115"></a>
 <span class="sourceLineNo">116</span>        "POST /wattdepot/{" + orgId + "}/sensor/{" + sensorId + "} with " + sensor);<a name="line.116"></a>
 <span class="sourceLineNo">117</span>    try {<a name="line.117"></a>
-<span class="sourceLineNo">118</span>      depot.getOrganization(orgId);<a name="line.118"></a>
+<span class="sourceLineNo">118</span>      depot.getOrganization(orgId, true);<a name="line.118"></a>
 <span class="sourceLineNo">119</span>    }<a name="line.119"></a>
 <span class="sourceLineNo">120</span>    catch (IdNotFoundException e) {<a name="line.120"></a>
 <span class="sourceLineNo">121</span>      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");<a name="line.121"></a>
 <span class="sourceLineNo">122</span>    }<a name="line.122"></a>
 <span class="sourceLineNo">123</span>    if (sensorId.equals(sensor.getId())) {<a name="line.123"></a>
 <span class="sourceLineNo">124</span>      try {<a name="line.124"></a>
-<span class="sourceLineNo">125</span>        if (depot.getSensorIds(orgId).contains(sensor.getId())) {<a name="line.125"></a>
+<span class="sourceLineNo">125</span>        if (depot.getSensorIds(orgId, true).contains(sensor.getId())) {<a name="line.125"></a>
 <span class="sourceLineNo">126</span>          try {<a name="line.126"></a>
 <span class="sourceLineNo">127</span>            depot.updateSensor(sensor);<a name="line.127"></a>
 <span class="sourceLineNo">128</span>          }<a name="line.128"></a>
