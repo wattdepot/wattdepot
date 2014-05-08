@@ -25,7 +25,6 @@ import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.resource.Directory;
-import org.restlet.routing.Redirector;
 import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
 import org.wattdepot.common.http.api.API;
@@ -133,27 +132,12 @@ public class WattDepotApplication extends Application {
   @Override
   public Restlet createInboundRoot() {
     Router router = new Router(getContext());
-    String webRoot = "file:///" + System.getProperty("user.dir") + "/target/classes";
-    Directory directory = new Directory(getContext(), webRoot);
-    directory.setListingAllowed(true);
-    router.attach("/webroot/", directory);
 
     // Use CLAP (ClassLoader Access Protocol) to access SPA directory from
     // filesystem or JAR
-    // Directory directory = new Directory(getContext(),
-    // "clap://application/spa/");
-    String spaRoot = "file:///" + System.getProperty("user.dir") + "/target/classes/dist/spa";
-    Directory spaDirectory = new Directory(getContext(), spaRoot);
-    spaDirectory.setIndexName("index.html");
-    router.attach("/spa/", spaDirectory);
-    router.attach("/spa", spaDirectory);
-
-    // For some reason, going directly to /spa/ does not direct users to
-    // index.hml, so create a
-    // different path that sends clients directly there.
-    Redirector redirector = new Redirector(getContext(), "/wattdepot/spa/index.html",
-        Redirector.MODE_CLIENT_PERMANENT);
-    router.attach("/app/", redirector);
+    Directory directory = new Directory(getContext(), "clap://dist/");
+    directory.setListingAllowed(true);
+    router.attach("/webroot/", directory);
 
     router.attach(API.BASE_URI, IsAliveServerResource.class);
     // router.attach("/wattdepot/", LoginPageServerResource.class);
