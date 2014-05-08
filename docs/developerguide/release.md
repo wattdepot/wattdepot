@@ -11,7 +11,7 @@ ready for release, all unit tests, checkstyle, findbugs, pmd, etc. pass
 ## Step 1 Create release branch in Github and merge it into the master branch.
 
 1. Create a release branch from the `develop` branch. Release branches support preparation of a 
-new production release. They allow for last-minute dotting of i’s and crossing t’s. Furthermore,
+new production release. They allow for last-minute dotting of i's and crossing t's. Furthermore,
 they allow for minor bug fixes and preparing meta-data for a release (version number, build dates, 
 etc.). By doing all of this work on a release branch, the develop branch is cleared to receive 
 features for the next big release. 
@@ -84,24 +84,23 @@ new wattdepot-*version number*.jar file.
     
 ## Step 3 Create a GitHub release.
 
-1. Go to the [WattDepot GitHub page](https://github.com/wattdepot/wattdepot).
+1. Create a zip file, named wattdepot-<version>-bin.zip, with the wattdepot-<version>.jar file, wattdepot-client.properties, wattdepot-server.properties, and a README.txt file.  
 
-2. Click on the `release(s)` link in the toolbar.
+2. Go to the [WattDepot GitHub page](https://github.com/wattdepot/wattdepot).
 
-3. On the Releases page click the `Draft a new release` button.
+3. Click on the `release(s)` link in the toolbar.
 
-4. Fill out the Tag version input field with the version of the release (e.g. 3.0.1) on branch 
+4. On the Releases page click the `Draft a new release` button.
+
+5. Fill out the Tag version input field with the version of the release (e.g. 3.0.1) on branch 
 `master`.
 
-5. Fill in the Release title (e.g. 'Release 3.0.1').
+6. Fill in the Release title (e.g. 'Release 3.0.1').
 
-6. Fill in the description of the release.
+7. Fill in the description of the release.
 
-7. Drag the wattdepot-<version>.jar file from your `target` directory to the "Attach binaries for
+8. Drag the wattdepot-<version>-bin.zip file to the "Attach binaries for
 this release by dropping them here." box.
-
-8. Drag the wattdepot-client.properties and wattdepot-server.properties files from `target/classes` 
-directory to the "Attach binaries for this release by dropping them here." box.
 
 9. Click the "This is a pre-release" checkbox if it is.
 
