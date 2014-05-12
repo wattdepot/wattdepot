@@ -459,217 +459,155 @@
     </div><!-- /.modal-dialog -->
 </div><!-- / .modal -->
     
-    
-<!-- ********************** Sensor Modal Dialog Boxes **************************** -->
-  <!-- Add Sensor -->
-  <div class="modal fade" id="addSensorModal" tabindex="-1" role="dialog" aria-labelledby="addSensorModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title">Add Sensor</h4>
-        </div>
-        <div class="modal-body">
-          <div class="container">
-            <form>
-              <div class="form-group">
-                <label class="col-md-3 control-label">Sensor Id</label>
-                <div class="col-md-9">
-                  <input type="text" name="sensor_id" class="form-control">
-                  <p class="help-block">Sensor id must be unique and be a slug. Slugs consist of lowercase letter, numbers and '-', no other characters are allowed.</p>
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="col-md-3 control-label" for="sensor_id">Sensor Name</label>
-                <div class="col-md-9">
-                  <input type="text" name="sensor_name" class="form-control">
-                  <p class="help-block">Sensor names must be unique.</p>
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="col-md-3 control-label" for="sensor_uri">Sensor URI</label>
-                <div class="col-md-9">
-                  <input type="text" name="sensor_uri" class="form-control">
-                  <p class="help-block">The URI to contact the sensor.</p>
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="col-md-3 control-label" for="sensor_model">Model</label>
-                <div class="col-md-9">
-                  <select class="form-control" name="sensor_model">
-                  <#list sensormodels as sm>
-                    <option value="${sm.id}">${sm.name}</option>
-                  </#list>
-                  </select>
-                  <p class="help-block">Select the model for the sensor.</p>
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="col-sm-3 control-label">Properties</label>
-                <div class="col-sm-9">
-                  <div id="sensor_properties">
-                  </div>
-                  <p class="help-block">List of the Sensor's Properties.</p>
-                </div>
-              </div>
-              <div class="clearfix"></div>
-            </form>
-            <button class="btn-xs btn-success" data-toggle="collapse" data-target="#newModelForm"><span class="glyphicon glyphicon-plus"></span> Model</button>
-            <div id="newModelForm" class="collapse"> 
-              <form>
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Sensor Model Name</label> 
-                  <div class="col-md-9">
-                    <input type="text" name="inline_model_id" class="form-control">
-                    <p class="help-block">Unique model name.</p>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Protocol</label>
-                  <div class="col-md-9">
-                    <input type="text" name="inline_model_protocol" class="form-control">
-                    <p class="help-block">The protocol used by the sensor.</p>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Type</label>
-                  <div class="col-md-9">
-                    <input type="text" name="inline_model_type" class="form-control">
-                    <p class="help-block">The type of the sensor.</p>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Version</label>
-                  <div class="col-md-9">
-                    <input type="text" name="inline_model_version" class="form-control">
-                    <p class="help-block">The version.</p>
-                  </div>
-                </div>
-                <div class="clearfix"></div>
-              </form>
-              <button type="button" class="btn-sm btn-primary"
-                        onclick="putNewInlineModel();">Save Model</button>
-              <p></p>
-            </div>                
-            <button class="btn-xs btn-success" data-toggle="collapse" data-target="#newSensorPropertyForm"><span class="glyphicon glyphicon-plus"></span> Property</button>                
-            <div id="newSensorPropertyForm" class="collapse">
-              <form>
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Key</label>
-                  <div class="col-md-9">
-                    <input type="text" name="inline_sensor_key" class="form-control">
-                    <p class="help-block">The property key.</p>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Value</label>
-                  <div class="col-md-9">
-                    <input type="text" name="inline_sensor_value" class="form-control">
-                    <p class="help-block">The property value.</p>
-                  </div>
-                </div>
-              </form>
-              <button type="button" class="btn-sm btn-primary"
-                      onclick="putNewInlineSensorProperty();">Add Property</button>
-              <p></p>
-            </div>
-                
-            </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick="putNewSensor();">Save changes</button>
-        </div>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->    
 
-  <!-- Edit Sensor -->
-  <div class="modal fade" id="editSensorModal" tabindex="-1" role="dialog" aria-labelledby="editSensorModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title">Edit Sensor</h4>
-        </div>
-        <div class="modal-body">
-          <div class="container">
-            <form>
-              <div class="form-group">
-                <label class="col-md-3 control-label">Sensor Id</label>
-                <div class="col-md-9">
-                  <input type="text" name="edit_sensor_id" class="form-control" disabled>
-                  <p class="help-block">You cannot change a Sensor id once it is created.</p>
-                </div>
+<!-- ********************** Sensor Modal Dialog Boxes **************************** -->
+<!-- Add Sensor -->
+<div class="modal fade" id="addSensorModal" tabindex="-1" role="dialog" aria-labelledby="addSensorModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Add Sensor</h4>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <form>
+            <div class="form-group">
+              <label class="col-md-3 control-label">Sensor Id</label>
+              <div class="col-md-9">
+                <input type="text" name="sensor_id" class="form-control">
+                <p class="help-block">Sensor id must be unique and be a slug. Slugs consist of lowercase letter, numbers and '-', no other characters are allowed.</p>
               </div>
-              <div class="form-group">
-                <label class="col-md-3 control-label" for="sensor_id">Sensor Name</label>
-                <div class="col-md-9">
-                  <input type="text" name="edit_sensor_name" class="form-control">
-                  <p class="help-block">Sensor names must be unique.</p>
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="col-md-3 control-label" for="sensor_uri">Sensor URI</label>
-                <div class="col-md-9">
-                  <input type="text" name="edit_sensor_uri" class="form-control">
-                  <p class="help-block">The URI to contact the sensor.</p>
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="col-md-3 control-label" for="sensor_model">Model</label>
-                <div class="col-md-9">
-                  <select class="form-control" name="edit_sensor_model">
-                  <#list sensormodels as sm>
-                    <option value="${sm.id}">${sm.name}</option>
-                  </#list>
-                  </select>
-                  <p class="help-block">Select the model for the sensor.</p>
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="col-sm-3 control-label">Properties</label>
-                <div class="col-sm-9">
-                  <div id="sensor_properties">
-                  </div>
-                  <p class="help-block">List of the Sensor's Properties.</p>
-                </div>
-              </div>
-              <div class="clearfix"></div>
-            </form>
-<!--
-            <button class="btn-xs btn-success" data-toggle="collapse" data-target="#newSensorPropertyForm"><span class="glyphicon glyphicon-plus"></span> Property</button>                
-            <div id="newSensorPropertyForm" class="collapse">
-              <form>
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Key</label>
-                  <div class="col-md-9">
-                    <input type="text" name="inline_sensor_key" class="form-control">
-                    <p class="help-block">The property key.</p>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Value</label>
-                  <div class="col-md-9">
-                    <input type="text" name="inline_sensor_value" class="form-control">
-                    <p class="help-block">The property value.</p>
-                  </div>
-                </div>
-              </form>
-              <button type="button" class="btn-sm btn-primary"
-                      onclick="putNewInlineSensorProperty();">Add Property</button>
-              <p></p>
             </div>
--->                            
-          </div>
+            <div class="form-group">
+              <label class="col-md-3 control-label" for="sensor_id">Sensor Name</label>
+              <div class="col-md-9">
+                <input type="text" name="sensor_name" class="form-control">
+                <p class="help-block">Sensor names must be unique.</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-3 control-label" for="sensor_uri">Sensor URI</label>
+              <div class="col-md-9">
+                <input type="text" name="sensor_uri" class="form-control">
+                <p class="help-block">The URI to contact the sensor.</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-3 control-label" for="sensor_model">Model</label>
+              <div class="col-md-9">
+                <select class="form-control" name="sensor_model">
+                <#list sensormodels as sm>
+                  <option value="${sm.id}">${sm.name}</option>
+                </#list>
+                </select>
+                <p class="help-block">Select the model for the sensor.</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 control-label">Properties</label>
+              <div class="col-sm-9">
+                <div id="sensor_properties">
+                  <table id="sensor_prop_table">
+                    <thead>
+                      <th>Property</th><th>Value</th>
+                    </thead>
+                    <tbody id="add_sensor_props">
+                      <tr>
+                        <td>
+                          <input type="text" name="sensor_prop1" class="form-control">
+                        </td>
+                        <td>
+                          <input type="text" name="sensor_val1" class="form-control" onchange="addSensorProp()">
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <p class="help-block">List of the Sensor's Properties.</p>
+              </div>
+            </div>
+            <div class="clearfix"></div>
+          </form>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary" onclick="updateSensor();">Save changes</button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="putNewSensor();">Save changes</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->    
+
+<!-- Edit Sensor -->
+<div class="modal fade" id="editSensorModal" tabindex="-1" role="dialog" aria-labelledby="editSensorModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Edit Sensor</h4>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <form>
+            <div class="form-group">
+              <label class="col-md-3 control-label">Sensor Id</label>
+              <div class="col-md-9">
+                <input type="text" name="edit_sensor_id" class="form-control" disabled>
+                <p class="help-block">You cannot change a Sensor id once it is created.</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-3 control-label" for="sensor_id">Sensor Name</label>
+              <div class="col-md-9">
+                <input type="text" name="edit_sensor_name" class="form-control">
+                <p class="help-block">Sensor names must be unique.</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-3 control-label" for="sensor_uri">Sensor URI</label>
+              <div class="col-md-9">
+                <input type="text" name="edit_sensor_uri" class="form-control">
+                <p class="help-block">The URI to contact the sensor.</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-md-3 control-label" for="sensor_model">Model</label>
+              <div class="col-md-9">
+                <select class="form-control" name="edit_sensor_model">
+                <#list sensormodels as sm>
+                  <option value="${sm.id}">${sm.name}</option>
+                </#list>
+                </select>
+                <p class="help-block">Select the model for the sensor.</p>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-sm-3 control-label">Properties</label>
+              <div class="col-sm-9">
+                <div id="sensor_properties">
+                  <table id="edit_sensor_prop_table">
+                    <thead>
+                      <th>Property</th><th>Value</th>
+                    </thead>
+                    <tbody id="edit_sensor_props">
+                    </tbody>
+                  </table>
+                </div>
+                <p class="help-block">List of the Sensor's Properties.</p>
+              </div>
+            </div>
+            <div class="clearfix"></div>
+         </form>
         </div>
-      </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-  </div><!-- /.modal -->    
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="updateSensor();">Save changes</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->    
 
 <!-- Delete Sensor -->
 <div class="modal fade" id="deleteSensorModal" tabindex="-1"
