@@ -585,7 +585,7 @@
             <div class="form-group">
               <label class="col-sm-3 control-label">Properties</label>
               <div class="col-sm-9">
-                <div id="sensor_properties">
+                <div id="edit_sensor_properties">
                   <table id="edit_sensor_prop_table">
                     <thead>
                       <th>Property</th><th>Value</th>
@@ -974,35 +974,28 @@
               <div class="form-group">
                 <label class="col-sm-3 control-label">Properties</label>
                 <div class="col-sm-9">
-                  <div id="metadata_properties">
+                  <div id="cpd_properties">
+                    <table id="cpd_prop_table">
+                      <thead>
+                        <th>Property</th><th>Value</th>
+                      </thead>
+                      <tbody id="add_cpd_props">
+                        <tr>
+                          <td>
+                            <input type="text" name="cpd_prop1" class="form-control">
+                          </td>
+                          <td>
+                            <input type="text" name="cpd_val1" class="form-control" onchange="addCPDProp()">
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                   <p class="help-block">List of the Collector's Properties.</p>
                 </div>
               </div>
               <div class="clearfix"></div>
             </form>
-            <button class="btn-xs btn-success" data-toggle="collapse" data-target="#newMetaPropertyForm"><span class="glyphicon glyphicon-plus"></span> Property</button>                
-            <div id="newMetaPropertyForm" class="collapse">
-              <form>
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Key</label>
-                  <div class="col-md-9">
-                    <input type="text" name="inline_meta_key" class="form-control">
-                    <p class="help-block">The property key.</p>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Value</label>
-                  <div class="col-md-9">
-                    <input type="text" name="inline_meta_value" class="form-control">
-                    <p class="help-block">The property value.</p>
-                  </div>
-                </div>
-              </form>
-              <button type="button" class="btn-sm btn-primary"
-                      onclick="putNewInlineMetaProperty();">Add Property</button>
-              <p></p>
-            </div>
           </div>
         </div> <!-- /.modal-body -->                
         <div class="modal-footer">
@@ -1013,7 +1006,7 @@
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->    
 
-  <!-- Add Collector Process Defintion -->
+  <!-- Edit Collector Process Defintion -->
   <div class="modal fade" id="editCPDModal" tabindex="-1" role="dialog" aria-labelledby="editCPDModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -1071,37 +1064,20 @@
               <div class="form-group">
                 <label class="col-sm-3 control-label">Properties</label>
                 <div class="col-sm-9">
-                  <div id="metadata_properties">
+                  <div id="edit_cpd_properties">
+                    <table id="edit_cpd_prop_table">
+                      <thead>
+                        <th>Property</th><th>Value</th>
+                      </thead>
+                      <tbody id="edit_cpd_props">
+                      </tbody>
+                    </table>
                   </div>
                   <p class="help-block">List of the Collector's Properties.</p>
                 </div>
               </div>
               <div class="clearfix"></div>
             </form>
-<!--            
-            <button class="btn-xs btn-success" data-toggle="collapse" data-target="#newMetaPropertyForm"><span class="glyphicon glyphicon-plus"></span> Property</button>                
-            <div id="newMetaPropertyForm" class="collapse">
-              <form>
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Key</label>
-                  <div class="col-md-9">
-                    <input type="text" name="inline_meta_key" class="form-control">
-                    <p class="help-block">The property key.</p>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Value</label>
-                  <div class="col-md-9">
-                    <input type="text" name="inline_meta_value" class="form-control">
-                    <p class="help-block">The property value.</p>
-                  </div>
-                </div>
-              </form>
-              <button type="button" class="btn-sm btn-primary"
-                      onclick="putNewInlineMetaProperty();">Add Property</button>
-              <p></p>
-            </div>
--->
           </div>
         </div> <!-- /.modal-body -->                
         <div class="modal-footer">

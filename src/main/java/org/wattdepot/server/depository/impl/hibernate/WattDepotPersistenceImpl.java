@@ -3607,6 +3607,11 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
         process.getOrganizationId()));
     impl.setSensor(retrieveSensor(session, process.getSensorId(), process.getOrganizationId()));
     impl.setOrg(retrieveOrganization(session, process.getOrganizationId()));
+    Set<PropertyImpl> props = new HashSet<PropertyImpl>();
+    for (Property p : process.getProperties()) {
+      props.add(new PropertyImpl(p));
+    }
+    impl.setProperties(props);
     storeCollectorProcessDefinition(session, impl);
     ret = impl.toCPD();
     session.getTransaction().commit();

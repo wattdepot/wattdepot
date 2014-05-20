@@ -494,18 +494,49 @@ function deleteModel() {
 };
 
 // ****************** Collector Process Definitions **************************
+var numCPDProps = 1;
+
+function addCPDProp() {
+  // check empty last row
+  var lastProp = $("input[name='cpd_prop" + numSensorProps + "']").val();
+  var lastVal = $("input[name='cpd_val" + numSensorProps + "']").val();
+  if (lastProp != "" && lastVal != "") {
+    numSensorProps++;
+    var body = $("#add_cpd_props");
+    body.append('<tr>');
+    body.append('<td><input type="text" name="cpd_prop' + numSensorProps
+        + '" class="form-control"></td>');
+    body.append('<td><input type="text" name="cpd_val' + numSensorProps
+        + '" class="form-control" onchange="addCPDProp()"></td>');
+    body.append('</tr>');
+  }
+};
+
+
 function putNewCPD() {
   var id = $("input[name='cpd_id']").val();
   var name = $("input[name='cpd_name']").val();
   var selected_sensor = $("select[name='cpd_sensor']").val();
   var interval = $("input[name='cpd_polling']").val();
   var selected_depository = $("select[name='cpd_depository']").val();
+  var properties = [];
+  for (var i = 1; i < numSensorProps; i++) {
+    var property = {};
+    var prop = $("input[name='cpd_prop" + i + "']").val();
+    var val = $("input[name='cpd_val" + i + "']").val();
+    if (prop != "" || val != "") {
+      property["key"] = prop;
+      property["value"] = val;
+      properties.push(property);
+    }
+  }
   var process = {
     "id" : id,
     "name" : name,
     "sensorId" : selected_sensor,
     "pollingInterval" : interval,
     "depositoryId" : selected_depository,
+    "properties" : properties,
     "organizationId" : ORGID
   };
   setSelectedTab('sensorprocesses');
@@ -520,6 +551,25 @@ function putNewCPD() {
   });
 };
 
+var numEditCPDProps = 1;
+
+function editCPDProp() {
+  // check empty last row
+  var lastProp = $("input[name='edit_cpd_prop" + numEditCPDProps + "']").val();
+  var lastVal = $("input[name='edit_cpd_val" + numEditCPDProps + "']").val();
+  if (lastProp != "" && lastVal != "") {
+    numEditSensorProps++;
+    var body = $("#edit_cpd_props");
+    body.append('<tr>');
+    body.append('<td><input type="text" name="edit_cpd_prop' + numEditCPDProps
+        + '" class="form-control"></td>');
+    body.append('<td><input type="text" name="edit_CPD_val' + numEditCPDProps
+        + '" class="form-control" onchange="editCPDProp()"></td>');
+    body.append('</tr>');
+  }
+};
+
+
 function edit_cpd_dialog(event, id) {
   setSelectedTab('sensorprocesses');
   var modalElement = $('#editCPDModal');
@@ -530,7 +580,7 @@ function edit_cpd_dialog(event, id) {
   });
   var process = getKnownCPD(id);
   $("input[name='edit_cpd_id']").val(id);
-  $("input[name='edit_cpd_name']").val(process['id']);
+  $("input[name='edit_cpd_name']").val(process['name']);
   var lid = process.sensorId;
   $('select[name="edit_cpd_sensor"] option[value="' + lid + '"]').prop(
       "selected", "selected");
@@ -540,10 +590,23 @@ function edit_cpd_dialog(event, id) {
       "selected", "selected");
   var properties = process.properties;
   var prop_str = "";
-  for (var i = 0; i < properties.length; i++) {
-    prop_str += properties[i].key + " : " + properties[i].value;
+  var body = $("#edit_cpd_props");
+  body.empty();
+  var i = 0;
+  for (i = 0; i < properties.length; i++) {
+    body.append('<tr>');
+    body.append('<td><input type="text" name="edit_cpd_prop' + i
+        + '" value="' + properties[i].key + '" class="form-control"></td>');
+    body.append('<td><input type="text" name="edit_cpd_val' + i
+        + '" value="' + properties[i].value + '" class="form-control"></td>');
+    body.append('</tr>');
   }
-  $('#metadata_properties').text(prop_str);
+  body.append('<tr>');
+  body.append('<td><input type="text" name="edit_cpd_prop' + i
+      + '" class="form-control"></td>');
+  body.append('<td><input type="text" name="edit_cpd_val' + i
+      + '" class="form-control" onchange="editCPDProp()"></td>');
+  body.append('</tr>');
   modalElement.modal('show');
 };
 
@@ -553,12 +616,24 @@ function updateCPD() {
   var selected_sensor = $("select[name='edit_cpd_sensor']").val();
   var interval = $("input[name='edit_cpd_polling']").val();
   var selected_depository = $("select[name='edit_cpd_depository']").val();
+  var properties = [];
+  for (var i = 0; i < numEditSensorProps; i++) {
+    var property = {};
+    var prop = $("input[name='edit_cpd_prop" + i + "']").val();
+    var val = $("input[name='edit_cpd_val" + i + "']").val();
+    if (prop != "" || val != "") {
+      property["key"] = prop;
+      property["value"] = val;
+      properties.push(property);
+    }
+  }
   var process = {
     "id" : id,
     "name" : name,
     "sensorId" : selected_sensor,
     "pollingInterval" : interval,
     "depositoryId" : selected_depository,
+    "properties" : properties,
     "organizationId" : ORGID
   };
   setSelectedTab('sensorprocesses');
