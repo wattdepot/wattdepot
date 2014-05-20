@@ -14,7 +14,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wattdepot</groupId>
     <artifactId>wattdepot</artifactId>
-    <version>3.0.0-M12</version>
+    <version>3.0.0-RC1</version>
     <name>WattDepot</name>
     <url>https://github.com/wattdepot/wattdepot/</url>
     <packaging>jar</packaging>
