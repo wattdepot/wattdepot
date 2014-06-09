@@ -33,7 +33,7 @@ import org.restlet.resource.Get;
 import org.restlet.security.User;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Sensor;
@@ -101,7 +101,7 @@ public class AdminServerResource extends WattDepotServerResource {
           List<CollectorProcessDefinition> cpds = depot
               .getCollectorProcessDefinitions(orgId, false);
           List<MeasurementType> measurementTypes = depot.getMeasurementTypes();
-          List<GarbageCollectionDefinition> gcds = depot.getGarbageCollectionDefinitions(orgId,
+          List<MeasurementPruningDefinition> gcds = depot.getGarbageCollectionDefinitions(orgId,
               false);
           dataModel.put("depositories", depos);
           dataModel.put("sensors", sensors);

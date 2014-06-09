@@ -24,7 +24,7 @@ import java.util.Set;
 
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementRateSummary;
@@ -124,7 +124,7 @@ public abstract class WattDepotPersistence {
    * @throws IdNotFoundException If the depository, sensor or organization are
    *         not defined.
    */
-  public abstract GarbageCollectionDefinition defineGarbageCollectionDefinition(String id,
+  public abstract MeasurementPruningDefinition defineGarbageCollectionDefinition(String id,
       String name, String depositoryId, String sensorId, String orgId, Integer ignore,
       Integer collect, Integer gap) throws UniqueIdException, BadSlugException, IdNotFoundException;
 
@@ -404,7 +404,7 @@ public abstract class WattDepotPersistence {
    * @return The defined GarbageCollectionDefinition.
    * @throws IdNotFoundException if the id is not defined.
    */
-  public abstract GarbageCollectionDefinition getGarbageCollectionDefinition(String id,
+  public abstract MeasurementPruningDefinition getGarbageCollectionDefinition(String id,
       String orgId, boolean check) throws IdNotFoundException;
 
   /**
@@ -422,7 +422,7 @@ public abstract class WattDepotPersistence {
    * @return A list of the defined GarbageCollectionDefinitions.
    * @throws IdNotFoundException If there is a problem with the ids.
    */
-  public abstract List<GarbageCollectionDefinition> getGarbageCollectionDefinitions(String orgId,
+  public abstract List<MeasurementPruningDefinition> getGarbageCollectionDefinitions(String orgId,
       boolean check) throws IdNotFoundException;
 
   /**
@@ -870,8 +870,8 @@ public abstract class WattDepotPersistence {
    * @return The updated GarbageCollectionDefinition from persistence.
    * @throws IdNotFoundException If there is a problem with the ids.
    */
-  public abstract GarbageCollectionDefinition updateGarbageCollectionDefinition(
-      GarbageCollectionDefinition gcd) throws IdNotFoundException;
+  public abstract MeasurementPruningDefinition updateGarbageCollectionDefinition(
+      MeasurementPruningDefinition gcd) throws IdNotFoundException;
 
   /**
    * Updates the given measurement type in the persistent store.

@@ -34,8 +34,8 @@ import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.DepositoryList;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinitionList;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinitionList;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
@@ -202,7 +202,7 @@ public class WattDepotClient implements WattDepotInterface {
   }
 
   @Override
-  public void deleteGarbageCollectionDefinition(GarbageCollectionDefinition gcd) {
+  public void deleteMeasurementPruningDefinition(MeasurementPruningDefinition gcd) {
 
   }
 
@@ -474,13 +474,13 @@ public class WattDepotClient implements WattDepotInterface {
    * java.lang.String)
    */
   @Override
-  public GarbageCollectionDefinition getGarbageCollectionDefinition(String id)
+  public MeasurementPruningDefinition getMeasurementPruningDefinition(String id)
       throws IdNotFoundException {
     ClientResource client = makeClient(this.organizationId + "/"
         + Labels.GARBAGE_COLLECTION_DEFINITION + "/" + id);
     GarbageCollectionDefinitionResource resource = client
         .wrap(GarbageCollectionDefinitionResource.class);
-    GarbageCollectionDefinition ret;
+    MeasurementPruningDefinition ret;
     try {
       ret = resource.retrieve();
     }
@@ -500,12 +500,12 @@ public class WattDepotClient implements WattDepotInterface {
    * org.wattdepot.client.WattDepotInterface#getGarbageCollectionDefinitions()
    */
   @Override
-  public GarbageCollectionDefinitionList getGarbageCollectionDefinitions() {
+  public MeasurementPruningDefinitionList getMeasurementPruningDefinitions() {
     ClientResource client = makeClient(this.organizationId + "/"
         + Labels.GARBAGE_COLLECTION_DEFINITIONS + "/");
     GarbageCollectionDefinitionsResource resource = client
         .wrap(GarbageCollectionDefinitionsResource.class);
-    GarbageCollectionDefinitionList ret = resource.retrieve();
+    MeasurementPruningDefinitionList ret = resource.retrieve();
     client.release();
     return ret;
   }
@@ -1027,9 +1027,9 @@ public class WattDepotClient implements WattDepotInterface {
    * (java.lang.String)
    */
   @Override
-  public boolean isDefinedGarbageCollectionDefinition(String id) {
+  public boolean isDefinedMeasurementPruningDefinition(String id) {
     try {
-      getGarbageCollectionDefinition(id);
+      getMeasurementPruningDefinition(id);
       return true;
     }
     catch (IdNotFoundException idnf) {
@@ -1186,7 +1186,7 @@ public class WattDepotClient implements WattDepotInterface {
    * org.wattdepot.common.domainmodel.GarbageCollectionDefinition)
    */
   @Override
-  public void putGarbageCollectionDefinition(GarbageCollectionDefinition gcd) {
+  public void putMeasurementPruningDefinition(MeasurementPruningDefinition gcd) {
     ClientResource client = makeClient(this.organizationId + "/"
         + Labels.GARBAGE_COLLECTION_DEFINITION + "/");
     GarbageCollectionDefinitionPutResource resource = client
@@ -1337,7 +1337,7 @@ public class WattDepotClient implements WattDepotInterface {
    * (org.wattdepot.common.domainmodel.GarbageCollectionDefinition)
    */
   @Override
-  public void updateGarbageCollectionDefinition(GarbageCollectionDefinition gcd) {
+  public void updateMeasurementPruningDefinition(MeasurementPruningDefinition gcd) {
     ClientResource client = makeClient(this.organizationId + "/"
         + Labels.GARBAGE_COLLECTION_DEFINITION + "/" + gcd.getId());
     GarbageCollectionDefinitionResource resource = client

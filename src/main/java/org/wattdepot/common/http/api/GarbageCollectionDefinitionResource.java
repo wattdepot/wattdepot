@@ -21,7 +21,7 @@ package org.wattdepot.common.http.api;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 
 /**
  * GarbageCollectionDefinitionReasource - HTTP Interface for
@@ -42,7 +42,7 @@ public interface GarbageCollectionDefinitionResource {
    */
   @Get("json")
   // Use JSON as transport encoding.
-  public GarbageCollectionDefinition retrieve();
+  public MeasurementPruningDefinition retrieve();
 
   /**
    * Defines the POST
@@ -52,7 +52,7 @@ public interface GarbageCollectionDefinitionResource {
    * @param definition The GarbageCollectionDefinition to update.
    */
   @Post
-  public void update(GarbageCollectionDefinition definition);
+  public void update(MeasurementPruningDefinition definition);
 
   /**
    * Defined the DEL

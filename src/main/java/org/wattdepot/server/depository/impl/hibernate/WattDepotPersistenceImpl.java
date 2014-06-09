@@ -31,7 +31,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.hibernate.Session;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementRateSummary;
@@ -343,7 +343,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * java.lang.String, java.lang.Integer, java.lang.Integer, java.lang.Integer)
    */
   @Override
-  public GarbageCollectionDefinition defineGarbageCollectionDefinition(String id, String name,
+  public MeasurementPruningDefinition defineGarbageCollectionDefinition(String id, String name,
       String depositoryId, String sensorId, String orgId, Integer ignore, Integer collect,
       Integer gap) throws UniqueIdException, BadSlugException, IdNotFoundException {
     if (!Slug.validateSlug(id)) {
@@ -357,7 +357,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     catch (IdNotFoundException e) {
       getSensorGroup(sensorId, orgId, true);
     }
-    GarbageCollectionDefinition gcd = null;
+    MeasurementPruningDefinition gcd = null;
     try {
       gcd = getGarbageCollectionDefinition(id, orgId, true);
       if (gcd != null) {
@@ -1329,7 +1329,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * (java.lang.String, java.lang.String, boolean)
    */
   @Override
-  public GarbageCollectionDefinition getGarbageCollectionDefinition(String id, String orgId,
+  public MeasurementPruningDefinition getGarbageCollectionDefinition(String id, String orgId,
       boolean check) throws IdNotFoundException {
     Long startTime = 0l;
     Long endTime = 0l;
@@ -1343,7 +1343,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     if (check) {
       getOrganization(orgId, check);
     }
-    GarbageCollectionDefinition gcd = getGarbageCollectionDefinitionNoCheck(id, orgId);
+    MeasurementPruningDefinition gcd = getGarbageCollectionDefinitionNoCheck(id, orgId);
     if (timingp) {
       endTime = System.nanoTime();
       diff = endTime - startTime;
@@ -1368,7 +1368,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   public List<String> getGarbageCollectionDefinitionIds(String orgId, boolean check)
       throws IdNotFoundException {
     ArrayList<String> ret = new ArrayList<String>();
-    for (GarbageCollectionDefinition gcd : getGarbageCollectionDefinitions(orgId, check)) {
+    for (MeasurementPruningDefinition gcd : getGarbageCollectionDefinitions(orgId, check)) {
       ret.add(gcd.getId());
     }
     return ret;
@@ -1380,8 +1380,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * @return The GarbageCollectionDefinition with the given id and orgId, or
    *         null if not defined.
    */
-  private GarbageCollectionDefinition getGarbageCollectionDefinitionNoCheck(String id, String orgId) {
-    GarbageCollectionDefinition ret = null;
+  private MeasurementPruningDefinition getGarbageCollectionDefinitionNoCheck(String id, String orgId) {
+    MeasurementPruningDefinition ret = null;
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
@@ -1403,7 +1403,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * (java.lang.String, boolean)
    */
   @Override
-  public List<GarbageCollectionDefinition> getGarbageCollectionDefinitions(String orgId,
+  public List<MeasurementPruningDefinition> getGarbageCollectionDefinitions(String orgId,
       boolean check) throws IdNotFoundException {
     if (check) {
       getOrganization(orgId, check);
@@ -1415,12 +1415,12 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * @param orgId The Organization's id.
    * @return A list of defined GarbageCollectionDefinitions.
    */
-  private List<GarbageCollectionDefinition> getGarbageCollectionDefinitionsNoCheck(String orgId) {
+  private List<MeasurementPruningDefinition> getGarbageCollectionDefinitionsNoCheck(String orgId) {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
     List<GarbageCollectionDefinitionImpl> r = retrieveGarbageCollectionDefinitions(session, orgId);
-    List<GarbageCollectionDefinition> ret = new ArrayList<GarbageCollectionDefinition>();
+    List<MeasurementPruningDefinition> ret = new ArrayList<MeasurementPruningDefinition>();
     for (GarbageCollectionDefinitionImpl gcd : r) {
       ret.add(gcd.toGCD());
     }
@@ -3628,8 +3628,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * (org.wattdepot.common.domainmodel.GarbageCollectionDefinition)
    */
   @Override
-  public GarbageCollectionDefinition updateGarbageCollectionDefinition(
-      GarbageCollectionDefinition gcd) throws IdNotFoundException {
+  public MeasurementPruningDefinition updateGarbageCollectionDefinition(
+      MeasurementPruningDefinition gcd) throws IdNotFoundException {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();

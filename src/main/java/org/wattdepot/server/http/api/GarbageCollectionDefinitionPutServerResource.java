@@ -21,7 +21,7 @@ package org.wattdepot.server.http.api;
 import java.util.logging.Level;
 
 import org.restlet.data.Status;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.exception.BadSlugException;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -49,7 +49,7 @@ public class GarbageCollectionDefinitionPutServerResource extends WattDepotServe
    * (org.wattdepot.common.domainmodel.GarbageCollectionDefinition)
    */
   @Override
-  public void store(GarbageCollectionDefinition definition) {
+  public void store(MeasurementPruningDefinition definition) {
     getLogger().log(
         Level.INFO,
         "PUT " + API.BASE_URI + "{" + orgId + "}/" + Labels.GARBAGE_COLLECTION_DEFINITION

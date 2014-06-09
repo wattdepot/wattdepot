@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.InstanceFactory;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementType;
@@ -70,7 +70,7 @@ public class TestMeasurementGarbageCollector {
   private static ServerProperties properties;
   private static Depository depository;
   private static Sensor sensor;
-  private static GarbageCollectionDefinition gcd;
+  private static MeasurementPruningDefinition gcd;
 
   private XMLGregorianCalendar now;
   private XMLGregorianCalendar start;

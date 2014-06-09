@@ -26,7 +26,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 
 /**
  * GarbageCollectionDefinitionImpl - Hibernate implementation of
@@ -391,8 +391,8 @@ public class GarbageCollectionDefinitionImpl {
   /**
    * @return the GarbageCollectionDefinition equivalent.
    */
-  public GarbageCollectionDefinition toGCD() {
-    GarbageCollectionDefinition ret =  new GarbageCollectionDefinition(id, name, depository.getId(), sensor,
+  public MeasurementPruningDefinition toGCD() {
+    MeasurementPruningDefinition ret =  new MeasurementPruningDefinition(id, name, depository.getId(), sensor,
         org.getId(), ignoreWindowDays, collectWindowDays, minGapSeconds);
     ret.setLastStarted(lastStarted);
     ret.setLastCompleted(lastCompleted);

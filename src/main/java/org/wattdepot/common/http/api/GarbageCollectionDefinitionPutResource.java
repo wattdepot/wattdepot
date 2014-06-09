@@ -19,7 +19,7 @@
 package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Put;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 
 /**
  * GarbageCollectionDefinitionPutResource - HTTP Interface for putting
@@ -37,5 +37,5 @@ public interface GarbageCollectionDefinitionPutResource {
    * @param definition The GarbageCollectionDefinition to store.
    */
   @Put
-  public void store(GarbageCollectionDefinition definition);
+  public void store(MeasurementPruningDefinition definition);
 }

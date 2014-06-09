@@ -32,7 +32,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.InstanceFactory;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Measurement;
@@ -482,7 +482,7 @@ public class TestWattDepotPersistenceImpl {
   @Test
   public void testGarbageCollectionDefinitions() {
     // get the list of GarbageCollectionDefinitions
-    List<GarbageCollectionDefinition> list = null;
+    List<MeasurementPruningDefinition> list = null;
     try {
       list = impl.getGarbageCollectionDefinitions(testOrg.getId(), true);
     }
@@ -492,7 +492,7 @@ public class TestWattDepotPersistenceImpl {
     int numCollector = list.size();
     assertTrue(numCollector >= 0);
     // Create a new instance
-    GarbageCollectionDefinition gcd = InstanceFactory.getGarbageCollectionDefinition();
+    MeasurementPruningDefinition gcd = InstanceFactory.getGarbageCollectionDefinition();
     try {
       impl.defineGarbageCollectionDefinition(gcd.getId(), gcd.getName(), gcd.getDepositoryId(),
           gcd.getSensorId(), gcd.getOrganizationId(), gcd.getIgnoreWindowDays(),
@@ -575,7 +575,7 @@ public class TestWattDepotPersistenceImpl {
     }
     assertTrue(list.size() == ids.size());
     try {
-      GarbageCollectionDefinition defined = impl.getGarbageCollectionDefinition(gcd.getId(),
+      MeasurementPruningDefinition defined = impl.getGarbageCollectionDefinition(gcd.getId(),
           gcd.getOrganizationId(), true);
       assertNotNull(defined);
       assertTrue(defined.equals(gcd));
@@ -583,7 +583,7 @@ public class TestWattDepotPersistenceImpl {
       defined.setName("New Name");
       // Update the instance
       impl.updateGarbageCollectionDefinition(defined);
-      GarbageCollectionDefinition updated = impl.getGarbageCollectionDefinition(gcd.getId(),
+      MeasurementPruningDefinition updated = impl.getGarbageCollectionDefinition(gcd.getId(),
           gcd.getOrganizationId(), true);
       assertNotNull(updated);
       assertTrue(defined.equals(updated));

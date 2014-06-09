@@ -34,7 +34,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.SensorGroup;
@@ -60,7 +60,7 @@ public class MeasurementPruner extends TimerTask {
   public static final int PRUNE_WINDOW = 6 * 60;
 
   private WattDepotPersistence persistance;
-  private GarbageCollectionDefinition definition;
+  private MeasurementPruningDefinition definition;
   private boolean debug;
 
   /**
@@ -86,7 +86,7 @@ public class MeasurementPruner extends TimerTask {
   /**
    * @return the definition
    */
-  public GarbageCollectionDefinition getDefinition() {
+  public MeasurementPruningDefinition getDefinition() {
     return definition;
   }
 

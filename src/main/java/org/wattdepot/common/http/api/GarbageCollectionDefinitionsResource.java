@@ -19,7 +19,7 @@
 package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinitionList;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinitionList;
 
 /**
  * GarbageCollectionDefinitionsResource - HTTP Interface for
@@ -38,6 +38,6 @@ public interface GarbageCollectionDefinitionsResource {
    */
   @Get("json")
   // Use JSON as transport encoding.
-  public GarbageCollectionDefinitionList retrieve();
+  public MeasurementPruningDefinitionList retrieve();
 
 }

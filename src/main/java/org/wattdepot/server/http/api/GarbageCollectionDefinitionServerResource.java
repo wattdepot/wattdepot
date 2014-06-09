@@ -22,7 +22,7 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.http.api.API;
@@ -59,12 +59,12 @@ public class GarbageCollectionDefinitionServerResource extends WattDepotServerRe
    * ()
    */
   @Override
-  public GarbageCollectionDefinition retrieve() {
+  public MeasurementPruningDefinition retrieve() {
     getLogger().log(
         Level.INFO,
         "GET " + API.BASE_URI + "{" + orgId + "}/" + Labels.GARBAGE_COLLECTION_DEFINITION + "/{"
             + gcdId + "}");
-    GarbageCollectionDefinition gcd = null;
+    MeasurementPruningDefinition gcd = null;
     if (isInRole(orgId)) {
       try {
         gcd = depot.getGarbageCollectionDefinition(gcdId, orgId, true);
@@ -91,7 +91,7 @@ public class GarbageCollectionDefinitionServerResource extends WattDepotServerRe
    * (org.wattdepot.common.domainmodel.GarbageCollectionDefinition)
    */
   @Override
-  public void update(GarbageCollectionDefinition definition) {
+  public void update(MeasurementPruningDefinition definition) {
     getLogger().log(
         Level.INFO,
         "POST " + API.BASE_URI + "{" + orgId + "}/" + Labels.GARBAGE_COLLECTION_DEFINITION + "/{"

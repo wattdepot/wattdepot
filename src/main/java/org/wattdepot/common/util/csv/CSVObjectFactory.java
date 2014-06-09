@@ -27,7 +27,7 @@ import javax.measure.unit.Unit;
 
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.Property;
 import org.wattdepot.common.domainmodel.Sensor;
@@ -249,7 +249,7 @@ public class CSVObjectFactory {
    * @param gcd The GarbageCollectionDefinition to convert.
    * @return The CSV for the GarbageCollectionDefinition.
    */
-  public static String toCSV(GarbageCollectionDefinition gcd) {
+  public static String toCSV(MeasurementPruningDefinition gcd) {
     StringBuffer buf = new StringBuffer();
     // class name
     buf.append(gcd.getClass().getSimpleName());
@@ -283,12 +283,12 @@ public class CSVObjectFactory {
    * @return The SensorGroup
    * @throws IOException if there is a problem parsing the String.
    */
-  public static GarbageCollectionDefinition buildGarbageCollectionDefinition(String csv)
+  public static MeasurementPruningDefinition buildGarbageCollectionDefinition(String csv)
       throws IOException {
     CSVReader reader = new CSVReader(new StringReader(csv));
     try {
       String[] line = reader.readNext();
-      if (line.length == 8 && GarbageCollectionDefinition.class.getSimpleName().equals(line[0])) {
+      if (line.length == 8 && MeasurementPruningDefinition.class.getSimpleName().equals(line[0])) {
         String name = line[1];
         String depositoryId = line[2];
         String sensorId = line[3];
@@ -296,7 +296,7 @@ public class CSVObjectFactory {
         Integer ignore = Integer.parseInt(line[5]);
         Integer collect = Integer.parseInt(line[6]);
         Integer gap = Integer.parseInt(line[7]);
-        return new GarbageCollectionDefinition(name, depositoryId, sensorId, orgId, ignore,
+        return new MeasurementPruningDefinition(name, depositoryId, sensorId, orgId, ignore,
             collect, gap);
       }
     }

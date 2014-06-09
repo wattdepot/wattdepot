@@ -34,7 +34,7 @@ import org.wattdepot.common.util.tstamp.Tstamp;
  * @author Cam Moore
  * 
  */
-public class GarbageCollectionDefinition implements IDomainModel {
+public class MeasurementPruningDefinition implements IDomainModel {
 
   /** The unique id for the GarbageCollectorDefinition. */
   private String id;
@@ -64,7 +64,7 @@ public class GarbageCollectionDefinition implements IDomainModel {
   /**
    * Default constructor.
    */
-  public GarbageCollectionDefinition() {
+  public MeasurementPruningDefinition() {
 
   }
 
@@ -77,7 +77,7 @@ public class GarbageCollectionDefinition implements IDomainModel {
    * @param collect The number of days to garbage collect in.
    * @param gap The minimum gap between measurements in seconds.
    */
-  public GarbageCollectionDefinition(String name, String depositoryId, String sensorId,
+  public MeasurementPruningDefinition(String name, String depositoryId, String sensorId,
       String orgId, Integer ignore, Integer collect, Integer gap) {
     this(Slug.slugify(name), name, depositoryId, sensorId, orgId, ignore, collect, gap);
   }
@@ -92,7 +92,7 @@ public class GarbageCollectionDefinition implements IDomainModel {
    * @param collect The number of days to garbage collect in.
    * @param gap The minimum gap between measurements in seconds.
    */
-  public GarbageCollectionDefinition(String slug, String name, String depositoryId,
+  public MeasurementPruningDefinition(String slug, String name, String depositoryId,
       String sensorId, String orgId, Integer ignore, Integer collect, Integer gap) {
     this.id = slug;
     this.name = name;
@@ -120,7 +120,7 @@ public class GarbageCollectionDefinition implements IDomainModel {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    GarbageCollectionDefinition other = (GarbageCollectionDefinition) obj;
+    MeasurementPruningDefinition other = (MeasurementPruningDefinition) obj;
     if (collectWindowDays == null) {
       if (other.collectWindowDays != null) {
         return false;
