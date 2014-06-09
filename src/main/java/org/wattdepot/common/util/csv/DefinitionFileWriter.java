@@ -81,7 +81,7 @@ public class DefinitionFileWriter {
   }
 
   /**
-   * @param arg0 The GarbageCollectionDefinition to add.
+   * @param arg0 The MeasurementPruningDefinition to add.
    * @return true if it is added.
    * @see java.util.Set#add(java.lang.Object)
    */
@@ -124,7 +124,7 @@ public class DefinitionFileWriter {
   /**
    * @return the gcds
    */
-  public Set<MeasurementPruningDefinition> getGarbageCollectionDefinitions() {
+  public Set<MeasurementPruningDefinition> getMeasurementPruningDefinitions() {
     return gcds;
   }
 
@@ -159,7 +159,7 @@ public class DefinitionFileWriter {
   /**
    * @param gcds the gcds to set
    */
-  public void setGarbageCollectionDefinitions(Set<MeasurementPruningDefinition> gcds) {
+  public void setMeasurementPruningDefinitions(Set<MeasurementPruningDefinition> gcds) {
     this.gcds = gcds;
   }
 
@@ -213,9 +213,9 @@ public class DefinitionFileWriter {
       writer.write(CSVObjectFactory.toCSV(cpd));
       writer.newLine();
     }
-    // GarbageCollectionDefinitions
+    // MeasurementPruningDefinitions
     writer
-        .write("# GarbageCollectionDefinitions: 'GarbageCollectionDefinition', Name, DepositoryId, SensorId, OrgId, ignore window days, collect window days, minimum gap seconds");
+        .write("# MeasurementPruningDefinitions: 'MeasurementPruningDefinition', Name, DepositoryId, SensorId, OrgId, ignore window days, collect window days, minimum gap seconds");
     writer.newLine();
     for (MeasurementPruningDefinition gcd : gcds) {
       writer.write(CSVObjectFactory.toCSV(gcd));

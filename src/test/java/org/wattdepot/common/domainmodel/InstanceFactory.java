@@ -63,10 +63,10 @@ public class InstanceFactory {
   }
 
   /**
-   * @return A GarbageCollectionDefinition for testing.
+   * @return A MeasurementPruningDefinition for testing.
    */
-  public static MeasurementPruningDefinition getGarbageCollectionDefinition() {
-    return new MeasurementPruningDefinition("Test GarbageCollectionDefinition", getDepository()
+  public static MeasurementPruningDefinition getMeasurementPruningDefinition() {
+    return new MeasurementPruningDefinition("Test MeasurementPruningDefinition", getDepository()
         .getId(), getSensor().getId(), getOrganization().getId(), 1, 1, 300);
   }
 

@@ -1,5 +1,5 @@
 /**
- * GarbageCollectionDefinitionImpl.java This file is part of WattDepot.
+ * MeasurementPruningDefinitionImpl.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
  *
@@ -29,20 +29,20 @@ import javax.persistence.Table;
 import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 
 /**
- * GarbageCollectionDefinitionImpl - Hibernate implementation of
- * GarbageCollectionDefinition.
+ * MeasurementPruningDefinitionImpl - Hibernate implementation of
+ * MeasurementPruningDefinition.
  * 
  * @author Cam Moore
  * 
  */
 @Entity
 @Table(name = "GC_DEFINITIONS")
-public class GarbageCollectionDefinitionImpl {
+public class MeasurementPruningDefinitionImpl {
   /** Database primary key. */
   @Id
   @GeneratedValue
   private Long pk;
-  /** A unique id for the GarbageCollectionDefinition. */
+  /** A unique id for the MeasurementPruningDefinition. */
   private String id;
   /** The human readable name. */
   private String name;
@@ -70,7 +70,7 @@ public class GarbageCollectionDefinitionImpl {
   /**
    * Default constructor.
    */
-  public GarbageCollectionDefinitionImpl() {
+  public MeasurementPruningDefinitionImpl() {
 
   }
 
@@ -84,7 +84,7 @@ public class GarbageCollectionDefinitionImpl {
    * @param collect The collection window.
    * @param gap The minimum gap between measurements.
    */
-  public GarbageCollectionDefinitionImpl(String id, String name, DepositoryImpl depository,
+  public MeasurementPruningDefinitionImpl(String id, String name, DepositoryImpl depository,
       String sensor, OrganizationImpl org, Integer ignore, Integer collect, Integer gap) {
     this.id = id;
     this.name = name;
@@ -112,7 +112,7 @@ public class GarbageCollectionDefinitionImpl {
     if (getClass() != obj.getClass()) {
       return false;
     }
-    GarbageCollectionDefinitionImpl other = (GarbageCollectionDefinitionImpl) obj;
+    MeasurementPruningDefinitionImpl other = (MeasurementPruningDefinitionImpl) obj;
     if (collectWindowDays == null) {
       if (other.collectWindowDays != null) {
         return false;
@@ -389,11 +389,11 @@ public class GarbageCollectionDefinitionImpl {
   }
 
   /**
-   * @return the GarbageCollectionDefinition equivalent.
+   * @return the MeasurementPruningDefinition equivalent.
    */
-  public MeasurementPruningDefinition toGCD() {
-    MeasurementPruningDefinition ret =  new MeasurementPruningDefinition(id, name, depository.getId(), sensor,
-        org.getId(), ignoreWindowDays, collectWindowDays, minGapSeconds);
+  public MeasurementPruningDefinition toMPD() {
+    MeasurementPruningDefinition ret = new MeasurementPruningDefinition(id, name,
+        depository.getId(), sensor, org.getId(), ignoreWindowDays, collectWindowDays, minGapSeconds);
     ret.setLastStarted(lastStarted);
     ret.setLastCompleted(lastCompleted);
     ret.setNumMeasurementsCollected(numMeasurementsCollected);
@@ -407,7 +407,7 @@ public class GarbageCollectionDefinitionImpl {
    */
   @Override
   public String toString() {
-    return "GarbageCollectionDefinitionImpl [pk=" + pk + ", id=" + id + ", name=" + name
+    return "MeasurementPruningDefinitionImpl [pk=" + pk + ", id=" + id + ", name=" + name
         + ", depository=" + depository + ", sensor=" + sensor + ", organization=" + org
         + ", ignoreWindowDays=" + ignoreWindowDays + ", collectWindowDays=" + collectWindowDays
         + ", minGapSeconds=" + minGapSeconds + ", lastStarted=" + lastStarted + ", lastCompleted="

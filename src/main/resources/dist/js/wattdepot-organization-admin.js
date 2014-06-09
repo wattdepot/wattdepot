@@ -692,9 +692,9 @@ function putNewGCD() {
     "minGapSeconds" : gap,
     "organizationId" : ORGID
   };
-  setSelectedTab('garbagecollection');
+  setSelectedTab('measurementpruning');
   $.ajax({
-    url : '/wattdepot/' + ORGID + '/garbage-collection-definition/',
+    url : '/wattdepot/' + ORGID + '/measurement-pruning-definition/',
     type : 'PUT',
     contentType : 'application/json',
     data : JSON.stringify(gcd),
@@ -705,7 +705,7 @@ function putNewGCD() {
 };
 
 function edit_gcd_dialog(event, id) {
-  setSelectedTab('garbagecollection');
+  setSelectedTab('measurementpruning');
   var modalElement = $('#editGCDModal');
   modalElement.modal({
     backdrop : true,
@@ -745,9 +745,9 @@ function updateGCD() {
     "minGapSeconds" : gap,
     "organizationId" : ORGID
   };
-  setSelectedTab('garbagecollection');
+  setSelectedTab('measurementpruning');
   $.ajax({
-    url : '/wattdepot/' + ORGID + '/garbage-collection-definition/' + id,
+    url : '/wattdepot/' + ORGID + '/measurement-pruning-definition/' + id,
     type : 'POST',
     contentType : 'application/json',
     data : JSON.stringify(gcd),
@@ -771,9 +771,9 @@ function delete_gcd_dialog(event, id) {
 
 function deleteGCD() {
   var id = $('#del_gcd_id').html();
-  setSelectedTab('garbagecollection');
+  setSelectedTab('measurementpruning');
   $.ajax({
-    url : '/wattdepot/' + ORGID + '/garbage-collection-definition/' + id,
+    url : '/wattdepot/' + ORGID + '/measurement-pruning-definition/' + id,
     type : 'DELETE',
     contentType : 'application/json',
     success : function() {

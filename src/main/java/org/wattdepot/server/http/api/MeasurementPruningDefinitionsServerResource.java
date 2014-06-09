@@ -1,5 +1,5 @@
 /**
- * GarbageCollectionDefinitionsServerResource.java This file is part of WattDepot.
+ * MeasurementPruningDefinitionsServerResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
  *
@@ -24,24 +24,24 @@ import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.MeasurementPruningDefinitionList;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.http.api.GarbageCollectionDefinitionsResource;
+import org.wattdepot.common.http.api.MeasurementPruningDefinitionsResource;
 
 /**
- * GarbageCollectionDefinitionsServerResource - Handles the
- * GarbageCollectionDefinition HTTP API
+ * MeasurementPruningDefinitionsServerResource - Handles the
+ * MeasurementPruningDefinition HTTP API
  * ("/wattdepot/{org-id}/garbage-collection-definitions/").
  * 
  * @author Cam Moore
  * 
  */
-public class GarbageCollectionDefinitionsServerResource extends WattDepotServerResource implements
-    GarbageCollectionDefinitionsResource {
+public class MeasurementPruningDefinitionsServerResource extends WattDepotServerResource implements
+    MeasurementPruningDefinitionsResource {
 
   /*
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.common.http.api.GarbageCollectionDefinitionsResource#retrieve
+   * org.wattdepot.common.http.api.MeasurementPruningDefinitionsResource#retrieve
    * ()
    */
   @Override
@@ -50,7 +50,7 @@ public class GarbageCollectionDefinitionsServerResource extends WattDepotServerR
     if (isInRole(orgId)) {
       MeasurementPruningDefinitionList ret = new MeasurementPruningDefinitionList();
       try {
-        for (MeasurementPruningDefinition gcd : depot.getGarbageCollectionDefinitions(orgId, true)) {
+        for (MeasurementPruningDefinition gcd : depot.getMeasurementPruningDefinitions(orgId, true)) {
           ret.add(gcd);
         }
       }

@@ -1,5 +1,5 @@
 /**
- * GarbageCollectionDefinitionPutResource.java This file is part of WattDepot.
+ * MeasurementPruningDefinitionsResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
  *
@@ -18,24 +18,26 @@
  */
 package org.wattdepot.common.http.api;
 
-import org.restlet.resource.Put;
-import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
+import org.restlet.resource.Get;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinitionList;
 
 /**
- * GarbageCollectionDefinitionPutResource - HTTP Interface for putting
- * GarbageCollectionDefinitions.
+ * MeasurementPruningDefinitionsResource - HTTP Interface for
+ * MeasurementPruningDefinitions.
  * 
  * @author Cam Moore
  * 
  */
-public interface GarbageCollectionDefinitionPutResource {
+public interface MeasurementPruningDefinitionsResource {
 
   /**
-   * Defines the PUT /wattdepot/{org-id}/garbage-collection-definition/ API
+   * Defines the GET /wattdepot/{org-id}/measurement-pruning-definitions/ API
    * call.
    * 
-   * @param definition The GarbageCollectionDefinition to store.
+   * @return a List of the defined MeasurementPruningDefinitions.
    */
-  @Put
-  public void store(MeasurementPruningDefinition definition);
+  @Get("json")
+  // Use JSON as transport encoding.
+  public MeasurementPruningDefinitionList retrieve();
+
 }

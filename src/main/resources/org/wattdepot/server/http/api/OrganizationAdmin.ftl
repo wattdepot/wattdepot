@@ -53,7 +53,7 @@
         <li><a id="sensors_tab_link" href="#sensors" data-toggle="tab" name="sensors">Sensors</a></li>
         <li><a id="sensorgroups_tab_link" href="#sensorgroups" data-toggle="tab" name="sensorgroups">Sensor Groups</a></li>
         <li><a id="sensorprocesses_tab_link" href="#sensorprocesses" data-toggle="tab" name="sensorprocesses">Collector Process Definitions</a></li>
-        <li><a id="garbagecollection_tab_link" href="#garbagecollection" data-toggle="tab" name="garbagecollection">Measurement Pruning Definitions</a></li>
+        <li><a id="measurementpruning_tab_link" href="#measurementpruning" data-toggle="tab" name="measurementpruning">Measurement Pruning Definitions</a></li>
     </ul>
     <a name="sensorprocesses"></a>
     <!-- Tab panes -->
@@ -302,7 +302,7 @@
                 
 <!--            </div>  -->       
         </div>
-        <div class="tab-pane" id="garbagecollection">
+        <div class="tab-pane" id="measurementpruning">
 <!--            <div class="well">  -->
               <div class="panel-group" id="help">
                 <div class="panel panel-default">
@@ -1120,7 +1120,7 @@
 </div>
 <!-- / .modal -->
 
-<!-- ********************** GarbageCollectionDefinition Modal Dialog Boxes **************************** -->
+<!-- ********************** MeasurementPruningDefinition Modal Dialog Boxes **************************** -->
   <!-- Add Garbage Collection Defintion -->
   <div class="modal fade" id="addGCDModal" tabindex="-1" role="dialog" aria-labelledby="addGCDModalLabel" aria-hidden="true">
     <div class="modal-dialog">

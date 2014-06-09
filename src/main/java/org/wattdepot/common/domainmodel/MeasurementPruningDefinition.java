@@ -1,5 +1,5 @@
 /**
- * GarbageCollectionDefinition.java This file is part of WattDepot.
+ * MeasurementPruningDefinition.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
  *
@@ -27,9 +27,9 @@ import org.wattdepot.common.util.Slug;
 import org.wattdepot.common.util.tstamp.Tstamp;
 
 /**
- * GarbageCollectionDefinition - Represents the information about a process that
- * down samples the measurements for a particular Depository and Sensor. The
- * process ensures that there is a minimum gap between measurements.
+ * MeasurementPruningDefinition - Represents the information about a process
+ * that down samples the measurements for a particular Depository and Sensor.
+ * The process ensures that there is a minimum gap between measurements.
  * 
  * @author Cam Moore
  * 
@@ -447,7 +447,7 @@ public class MeasurementPruningDefinition implements IDomainModel {
    */
   @Override
   public String toString() {
-    return "GarbageCollectionDefinition [id=" + id + ", name=" + name + ", depositoryId="
+    return "MeasurementPruningDefinition [id=" + id + ", name=" + name + ", depositoryId="
         + depositoryId + ", sensorId=" + sensorId + ", orgId=" + orgId + ", ignoreWindowDays="
         + ignoreWindowDays + ", collectWindowDays=" + collectWindowDays + ", minGapSeconds="
         + minGapSeconds + ", lastStarted=" + lastStarted + ", lastCompleted=" + lastCompleted

@@ -246,8 +246,8 @@ public class CSVObjectFactory {
   }
 
   /**
-   * @param gcd The GarbageCollectionDefinition to convert.
-   * @return The CSV for the GarbageCollectionDefinition.
+   * @param gcd The MeasurementPruningDefinition to convert.
+   * @return The CSV for the MeasurementPruningDefinition.
    */
   public static String toCSV(MeasurementPruningDefinition gcd) {
     StringBuffer buf = new StringBuffer();
@@ -283,7 +283,7 @@ public class CSVObjectFactory {
    * @return The SensorGroup
    * @throws IOException if there is a problem parsing the String.
    */
-  public static MeasurementPruningDefinition buildGarbageCollectionDefinition(String csv)
+  public static MeasurementPruningDefinition buildMeasurementPruningDefinition(String csv)
       throws IOException {
     CSVReader reader = new CSVReader(new StringReader(csv));
     try {

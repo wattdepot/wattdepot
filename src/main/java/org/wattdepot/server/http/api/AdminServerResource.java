@@ -101,7 +101,7 @@ public class AdminServerResource extends WattDepotServerResource {
           List<CollectorProcessDefinition> cpds = depot
               .getCollectorProcessDefinitions(orgId, false);
           List<MeasurementType> measurementTypes = depot.getMeasurementTypes();
-          List<MeasurementPruningDefinition> gcds = depot.getGarbageCollectionDefinitions(orgId,
+          List<MeasurementPruningDefinition> gcds = depot.getMeasurementPruningDefinitions(orgId,
               false);
           dataModel.put("depositories", depos);
           dataModel.put("sensors", sensors);

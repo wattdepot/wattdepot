@@ -62,18 +62,18 @@ public class Labels {
   /** The label for the end timestamp. */
   public static final String END = "end";
 
-  /** The label for a given GarbageCollectionDefinition. */
-  public static final String GARBAGE_COLLECTION_DEFINITION = "garbage-collection-definition";
+  /** The label for a given MeasurementPruningDefinition. */
+  public static final String MEASUREMENT_PRUNING_DEFINITION = "measurement-pruning-definition";
 
-  /** The label for the GarbageCollectionDefinition id. */
-  public static final String GARBAGE_COLLECTION_DEFINITION_ID = "garbage-collection-definition-id";
+  /** The label for the MeasurementPruningDefinition id. */
+  public static final String MEASUREMENT_PRUNING_DEFINITION_ID = "measurement-pruning-definition-id";
 
-  /** The label for the GarbageCollectionDefinition id variable. */
-  public static final String GARBAGE_COLLECTION_DEFINITION_ID_VAR = "{"
-      + GARBAGE_COLLECTION_DEFINITION_ID + "}";
+  /** The label for the MeasurementPruningDefinition id variable. */
+  public static final String MEASUREMENT_PRUNING_DEFINITION_ID_VAR = "{"
+      + MEASUREMENT_PRUNING_DEFINITION_ID + "}";
 
-  /** The label for all GarbageCollectionDefinitions. */
-  public static final String GARBAGE_COLLECTION_DEFINITIONS = "garbage-collection-definitions";
+  /** The label for all MeasurementPruningDefinitions. */
+  public static final String MEASUREMENT_PRUNING_DEFINITIONS = "measurement-pruning-definitions";
   
   /** The label for gap. */
   public static final String GAP = "gap";

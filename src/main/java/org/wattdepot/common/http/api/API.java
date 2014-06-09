@@ -101,27 +101,27 @@ public class API {
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR;
 
   /**
-   * <b>/wattdepot/{org-id}/garbage-collection-definition/</b> URI for putting a
-   * GarbageCollectionDefinition. Use PUT requests.
+   * <b>/wattdepot/{org-id}/measurement-pruning-definition/</b> URI for putting a
+   * MeasurementPruningDefinition. Use PUT requests.
    */
   public static final String GARBAGE_COLLECTION_DEFINITION_PUT_URI = BASE_URI
-      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.GARBAGE_COLLECTION_DEFINITION + "/";
+      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.MEASUREMENT_PRUNING_DEFINITION + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/garbage-collection-definition/{garbage-collection-
-   * definition-id}</b> URI for getting a GarbageCollectionDefinition. Use GET
+   * <b>/wattdepot/{org-id}/measurement-pruning-definition/{measurement-pruning-
+   * definition-id}</b> URI for getting a MeasurementPruningDefinition. Use GET
    * requests.
    */
   public static final String GARBAGE_COLLECTION_DEFINITION_URI = BASE_URI
-      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.GARBAGE_COLLECTION_DEFINITION + "/"
-      + Labels.GARBAGE_COLLECTION_DEFINITION_ID_VAR;
+      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.MEASUREMENT_PRUNING_DEFINITION + "/"
+      + Labels.MEASUREMENT_PRUNING_DEFINITION_ID_VAR;
 
   /**
-   * <b>/wattdepot/{org-id}/garbage-collection-definitions/</b> URI for getting
-   * all defined GarbageCollectionDefinition. Use GET requests.
+   * <b>/wattdepot/{org-id}/measurement-pruning-definitions/</b> URI for getting
+   * all defined MeasurementPruningDefinition. Use GET requests.
    */
   public static final String GARBAGE_COLLECTION_DEFINITIONS_URI = BASE_URI
-      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.GARBAGE_COLLECTION_DEFINITIONS + "/";
+      + Labels.ORGANIZATION_ID_VAR + "/" + Labels.MEASUREMENT_PRUNING_DEFINITIONS + "/";
 
   /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/measurement/</b> URI for

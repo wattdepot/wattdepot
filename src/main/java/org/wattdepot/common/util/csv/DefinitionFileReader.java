@@ -83,7 +83,7 @@ public class DefinitionFileReader {
   /**
    * @return the gcds
    */
-  public Set<MeasurementPruningDefinition> getGarbageCollectionDefinitions() {
+  public Set<MeasurementPruningDefinition> getMeasurementPruningDefinitions() {
     return gcds;
   }
 
@@ -125,8 +125,8 @@ public class DefinitionFileReader {
         else if (line.startsWith("CollectorProcessDefinition")) {
           cpds.add(CSVObjectFactory.buildCPD(line));
         }
-        else if (line.startsWith("GarbageCollectionDefinition")) {
-          gcds.add(CSVObjectFactory.buildGarbageCollectionDefinition(line));
+        else if (line.startsWith("MeasurementPruningDefinition")) {
+          gcds.add(CSVObjectFactory.buildMeasurementPruningDefinition(line));
         }
       }
       line = reader.readLine();

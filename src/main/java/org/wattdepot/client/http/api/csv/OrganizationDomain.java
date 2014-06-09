@@ -106,7 +106,7 @@ public class OrganizationDomain {
         client.putCollectorProcessDefinition(cpd);
       }
     }
-    for (MeasurementPruningDefinition gcd : reader.getGarbageCollectionDefinitions()) {
+    for (MeasurementPruningDefinition gcd : reader.getMeasurementPruningDefinitions()) {
       if (!client.isDefinedMeasurementPruningDefinition(gcd.getId())) {
         client.putMeasurementPruningDefinition(gcd);
       }
