@@ -302,6 +302,9 @@ public class MeasurementPruner extends TimerTask {
       if (debug) {
         System.out.println(delay);
       }
+      if (delay < 0) {
+        delay = 0l;
+      }
       return delay;
     }
   }
