@@ -223,9 +223,11 @@ public class IntervalValue {
   @Override
   public String toString() {
     try {
-      return "IntervalValue [sensorId=" + sensorId + ", value=" + value + ", measurementType="
-          + measurementType + ", start=" + DateConvert.convertDate(start) + ", end="
-          + DateConvert.convertDate(end) + "]";
+      if (start != null && end != null) {
+        return "IntervalValue [sensorId=" + sensorId + ", value=" + value + ", measurementType="
+            + measurementType + ", start=" + DateConvert.convertDate(start) + ", end="
+            + DateConvert.convertDate(end) + "]";
+      }
     }
     catch (DatatypeConfigurationException e) {
       // shouldn't happen
