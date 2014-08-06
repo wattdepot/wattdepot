@@ -1,3 +1,4 @@
+.idea
 /berkeleyDb
 /target
 *.class
@@ -6,5 +7,6 @@
 *.jar
 *.war
 *.ear
-/target
 /bin
+wattdepot.iml
+

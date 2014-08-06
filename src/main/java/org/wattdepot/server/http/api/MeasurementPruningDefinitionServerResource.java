@@ -1,5 +1,5 @@
 /**
- * GarbageCollectionDefinitionServerResource.java This file is part of WattDepot.
+ * MeasurementPruningDefinitionServerResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
  *
@@ -22,22 +22,22 @@ import java.util.logging.Level;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.http.api.API;
-import org.wattdepot.common.http.api.GarbageCollectionDefinitionResource;
+import org.wattdepot.common.http.api.MeasurementPruningDefinitionResource;
 
 /**
- * GarbageCollectionDefinitionServerResource - Handles the
- * GarbageCollectionDefinition HTTP API
+ * MeasurementPruningDefinitionServerResource - Handles the
+ * MeasurementPruningDefinition HTTP API
  * ("/wattdepot/{org-id}/garbage-collection-definition/{gcd-id}").
  * 
  * @author Cam Moore
  * 
  */
-public class GarbageCollectionDefinitionServerResource extends WattDepotServerResource implements
-    GarbageCollectionDefinitionResource {
+public class MeasurementPruningDefinitionServerResource extends WattDepotServerResource implements
+    MeasurementPruningDefinitionResource {
   private String gcdId;
 
   /*
@@ -48,32 +48,32 @@ public class GarbageCollectionDefinitionServerResource extends WattDepotServerRe
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.gcdId = getAttribute(Labels.GARBAGE_COLLECTION_DEFINITION_ID);
+    this.gcdId = getAttribute(Labels.MEASUREMENT_PRUNING_DEFINITION_ID);
   }
 
   /*
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.common.http.api.GarbageCollectionDefinitionReasource#retrieve
+   * org.wattdepot.common.http.api.MeasurementPruningDefinitionReasource#retrieve
    * ()
    */
   @Override
-  public GarbageCollectionDefinition retrieve() {
+  public MeasurementPruningDefinition retrieve() {
     getLogger().log(
         Level.INFO,
-        "GET " + API.BASE_URI + "{" + orgId + "}/" + Labels.GARBAGE_COLLECTION_DEFINITION + "/{"
+        "GET " + API.BASE_URI + "{" + orgId + "}/" + Labels.MEASUREMENT_PRUNING_DEFINITION + "/{"
             + gcdId + "}");
-    GarbageCollectionDefinition gcd = null;
+    MeasurementPruningDefinition gcd = null;
     if (isInRole(orgId)) {
       try {
-        gcd = depot.getGarbageCollectionDefinition(gcdId, orgId, true);
+        gcd = depot.getMeasurementPruningDefinition(gcdId, orgId, true);
       }
       catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
       if (gcd == null) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "GarbageCollectionDefinition " + gcdId
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "MeasurementPruningDefinition " + gcdId
             + " is not defined.");
       }
     }
@@ -87,21 +87,21 @@ public class GarbageCollectionDefinitionServerResource extends WattDepotServerRe
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.common.http.api.GarbageCollectionDefinitionReasource#update
-   * (org.wattdepot.common.domainmodel.GarbageCollectionDefinition)
+   * org.wattdepot.common.http.api.MeasurementPruningDefinitionReasource#update
+   * (org.wattdepot.common.domainmodel.MeasurementPruningDefinition)
    */
   @Override
-  public void update(GarbageCollectionDefinition definition) {
+  public void update(MeasurementPruningDefinition definition) {
     getLogger().log(
         Level.INFO,
-        "POST " + API.BASE_URI + "{" + orgId + "}/" + Labels.GARBAGE_COLLECTION_DEFINITION + "/{"
+        "POST " + API.BASE_URI + "{" + orgId + "}/" + Labels.MEASUREMENT_PRUNING_DEFINITION + "/{"
             + gcdId + "} with " + definition);
     if (isInRole(orgId)) {
       if (definition.getId().equals(gcdId)) {
         try {
-          if (depot.getGarbageCollectionDefinitionIds(orgId, true).contains(definition.getId())) {
+          if (depot.getMeasurementPruningDefinitionIds(orgId, true).contains(definition.getId())) {
             try {
-              depot.updateGarbageCollectionDefinition(definition);
+              depot.updateMeasurementPruningDefinition(definition);
             }
             catch (IdNotFoundException e) {
               setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
@@ -125,17 +125,17 @@ public class GarbageCollectionDefinitionServerResource extends WattDepotServerRe
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.common.http.api.GarbageCollectionDefinitionReasource#remove()
+   * org.wattdepot.common.http.api.MeasurementPruningDefinitionReasource#remove()
    */
   @Override
   public void remove() {
     getLogger().log(
         Level.INFO,
-        "DEL " + API.BASE_URI + "{" + orgId + "}/" + Labels.GARBAGE_COLLECTION_DEFINITION + "/{"
+        "DEL " + API.BASE_URI + "{" + orgId + "}/" + Labels.MEASUREMENT_PRUNING_DEFINITION + "/{"
             + gcdId + "}");
     if (isInRole(orgId)) {
       try {
-        depot.deleteGarbageCollectionDefinition(gcdId, orgId);
+        depot.deleteMeasurementPruningDefinition(gcdId, orgId);
       }
       catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());

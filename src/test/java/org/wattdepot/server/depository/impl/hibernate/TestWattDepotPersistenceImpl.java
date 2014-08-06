@@ -32,7 +32,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.InstanceFactory;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Measurement;
@@ -477,14 +477,14 @@ public class TestWattDepotPersistenceImpl {
   }
 
   /**
-   * Tests for GarbageCollectionDefinitions.
+   * Tests for MeasurementPruningDefinitions.
    */
   @Test
-  public void testGarbageCollectionDefinitions() {
-    // get the list of GarbageCollectionDefinitions
-    List<GarbageCollectionDefinition> list = null;
+  public void testMeasurementPruningDefinitions() {
+    // get the list of MeasurementPruningDefinitions
+    List<MeasurementPruningDefinition> list = null;
     try {
-      list = impl.getGarbageCollectionDefinitions(testOrg.getId(), true);
+      list = impl.getMeasurementPruningDefinitions(testOrg.getId(), true);
     }
     catch (IdNotFoundException e3) {
       fail(e3.getMessage() + " should not happen");
@@ -492,9 +492,9 @@ public class TestWattDepotPersistenceImpl {
     int numCollector = list.size();
     assertTrue(numCollector >= 0);
     // Create a new instance
-    GarbageCollectionDefinition gcd = InstanceFactory.getGarbageCollectionDefinition();
+    MeasurementPruningDefinition gcd = InstanceFactory.getMeasurementPruningDefinition();
     try {
-      impl.defineGarbageCollectionDefinition(gcd.getId(), gcd.getName(), gcd.getDepositoryId(),
+      impl.defineMeasurementPruningDefinition(gcd.getId(), gcd.getName(), gcd.getDepositoryId(),
           gcd.getSensorId(), gcd.getOrganizationId(), gcd.getIgnoreWindowDays(),
           gcd.getCollectWindowDays(), gcd.getMinGapSeconds());
     }
@@ -525,7 +525,7 @@ public class TestWattDepotPersistenceImpl {
       }
     }
     try {
-      impl.defineGarbageCollectionDefinition(gcd.getId(), gcd.getName(), gcd.getDepositoryId(),
+      impl.defineMeasurementPruningDefinition(gcd.getId(), gcd.getName(), gcd.getDepositoryId(),
           gcd.getSensorId(), gcd.getOrganizationId(), gcd.getIgnoreWindowDays(),
           gcd.getCollectWindowDays(), gcd.getMinGapSeconds());
     }
@@ -543,7 +543,7 @@ public class TestWattDepotPersistenceImpl {
     }
     // try to define it again.
     try {
-      impl.defineGarbageCollectionDefinition(gcd.getId(), gcd.getName(), gcd.getDepositoryId(),
+      impl.defineMeasurementPruningDefinition(gcd.getId(), gcd.getName(), gcd.getDepositoryId(),
           gcd.getSensorId(), gcd.getOrganizationId(), gcd.getIgnoreWindowDays(),
           gcd.getCollectWindowDays(), gcd.getMinGapSeconds());
     }
@@ -560,7 +560,7 @@ public class TestWattDepotPersistenceImpl {
     }
 
     try {
-      list = impl.getGarbageCollectionDefinitions(testOrg.getId(), true);
+      list = impl.getMeasurementPruningDefinitions(testOrg.getId(), true);
     }
     catch (IdNotFoundException e2) {
       fail(e2.getMessage() + " should not happen");
@@ -568,22 +568,22 @@ public class TestWattDepotPersistenceImpl {
     assertTrue(numCollector + 1 == list.size());
     List<String> ids = null;
     try {
-      ids = impl.getGarbageCollectionDefinitionIds(testOrg.getId(), true);
+      ids = impl.getMeasurementPruningDefinitionIds(testOrg.getId(), true);
     }
     catch (IdNotFoundException e2) {
       fail(e2.getMessage() + " should not happen");
     }
     assertTrue(list.size() == ids.size());
     try {
-      GarbageCollectionDefinition defined = impl.getGarbageCollectionDefinition(gcd.getId(),
+      MeasurementPruningDefinition defined = impl.getMeasurementPruningDefinition(gcd.getId(),
           gcd.getOrganizationId(), true);
       assertNotNull(defined);
       assertTrue(defined.equals(gcd));
       assertTrue(defined.toString().equals(gcd.toString()));
       defined.setName("New Name");
       // Update the instance
-      impl.updateGarbageCollectionDefinition(defined);
-      GarbageCollectionDefinition updated = impl.getGarbageCollectionDefinition(gcd.getId(),
+      impl.updateMeasurementPruningDefinition(defined);
+      MeasurementPruningDefinition updated = impl.getMeasurementPruningDefinition(gcd.getId(),
           gcd.getOrganizationId(), true);
       assertNotNull(updated);
       assertTrue(defined.equals(updated));
@@ -597,15 +597,15 @@ public class TestWattDepotPersistenceImpl {
     }
     // Delete the instance
     try {
-      impl.deleteGarbageCollectionDefinition("bogus-collector-3921", gcd.getOrganizationId());
-      fail("should be able to delete bogus GarbageCollectionDefinition.");
+      impl.deleteMeasurementPruningDefinition("bogus-collector-3921", gcd.getOrganizationId());
+      fail("should be able to delete bogus MeasurementPruningDefinition.");
     }
     catch (IdNotFoundException e1) {
       // expected.
     }
     try {
-      impl.deleteGarbageCollectionDefinition(gcd.getId(), gcd.getOrganizationId());
-      list = impl.getGarbageCollectionDefinitions(testOrg.getId(), true);
+      impl.deleteMeasurementPruningDefinition(gcd.getId(), gcd.getOrganizationId());
+      list = impl.getMeasurementPruningDefinitions(testOrg.getId(), true);
       assertTrue(numCollector == list.size());
     }
     catch (IdNotFoundException e) {

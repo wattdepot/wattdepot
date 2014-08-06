@@ -11,6 +11,10 @@ if (typeof (org) != "Object") {
   org.WattDepot = {};
 }
 
+/*
+ * Create a new client with the given server URL. The server URL must include the organization
+ * id. The URL must end with '/'.
+ */
 org.WattDepot.Client = function(url) {
 
   var serverUrl = url;

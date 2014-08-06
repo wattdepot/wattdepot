@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
 
@@ -44,7 +44,7 @@ public class DefinitionFileWriter {
   private Set<SensorGroup> groups;
   private Set<Sensor> sensors;
   private Set<CollectorProcessDefinition> cpds;
-  private Set<GarbageCollectionDefinition> gcds;
+  private Set<MeasurementPruningDefinition> gcds;
 
   /**
    * Creates a new DefinitionFileReader.
@@ -59,7 +59,7 @@ public class DefinitionFileWriter {
     this.groups = new HashSet<SensorGroup>();
     this.sensors = new HashSet<Sensor>();
     this.cpds = new HashSet<CollectorProcessDefinition>();
-    this.gcds = new HashSet<GarbageCollectionDefinition>();
+    this.gcds = new HashSet<MeasurementPruningDefinition>();
   }
 
   /**
@@ -81,11 +81,11 @@ public class DefinitionFileWriter {
   }
 
   /**
-   * @param arg0 The GarbageCollectionDefinition to add.
+   * @param arg0 The MeasurementPruningDefinition to add.
    * @return true if it is added.
    * @see java.util.Set#add(java.lang.Object)
    */
-  public boolean add(GarbageCollectionDefinition arg0) {
+  public boolean add(MeasurementPruningDefinition arg0) {
     return gcds.add(arg0);
   }
 
@@ -124,7 +124,7 @@ public class DefinitionFileWriter {
   /**
    * @return the gcds
    */
-  public Set<GarbageCollectionDefinition> getGarbageCollectionDefinitions() {
+  public Set<MeasurementPruningDefinition> getMeasurementPruningDefinitions() {
     return gcds;
   }
 
@@ -159,7 +159,7 @@ public class DefinitionFileWriter {
   /**
    * @param gcds the gcds to set
    */
-  public void setGarbageCollectionDefinitions(Set<GarbageCollectionDefinition> gcds) {
+  public void setMeasurementPruningDefinitions(Set<MeasurementPruningDefinition> gcds) {
     this.gcds = gcds;
   }
 
@@ -213,11 +213,11 @@ public class DefinitionFileWriter {
       writer.write(CSVObjectFactory.toCSV(cpd));
       writer.newLine();
     }
-    // GarbageCollectionDefinitions
+    // MeasurementPruningDefinitions
     writer
-        .write("# GarbageCollectionDefinitions: 'GarbageCollectionDefinition', Name, DepositoryId, SensorId, OrgId, ignore window days, collect window days, minimum gap seconds");
+        .write("# MeasurementPruningDefinitions: 'MeasurementPruningDefinition', Name, DepositoryId, SensorId, OrgId, ignore window days, collect window days, minimum gap seconds");
     writer.newLine();
-    for (GarbageCollectionDefinition gcd : gcds) {
+    for (MeasurementPruningDefinition gcd : gcds) {
       writer.write(CSVObjectFactory.toCSV(gcd));
       writer.newLine();
     }

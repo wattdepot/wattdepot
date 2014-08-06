@@ -23,7 +23,7 @@ import java.io.IOException;
 import org.wattdepot.client.http.api.WattDepotClient;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.exception.BadCredentialException;
@@ -106,9 +106,9 @@ public class OrganizationDomain {
         client.putCollectorProcessDefinition(cpd);
       }
     }
-    for (GarbageCollectionDefinition gcd : reader.getGarbageCollectionDefinitions()) {
-      if (!client.isDefinedGarbageCollectionDefinition(gcd.getId())) {
-        client.putGarbageCollectionDefinition(gcd);
+    for (MeasurementPruningDefinition gcd : reader.getMeasurementPruningDefinitions()) {
+      if (!client.isDefinedMeasurementPruningDefinition(gcd.getId())) {
+        client.putMeasurementPruningDefinition(gcd);
       }
     }
   }

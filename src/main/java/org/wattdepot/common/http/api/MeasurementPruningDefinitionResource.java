@@ -1,5 +1,5 @@
 /**
- * GarbageCollectionDefinitionReasource.java This file is part of WattDepot.
+ * MeasurementPruningDefinitionReasource.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
  *
@@ -21,42 +21,42 @@ package org.wattdepot.common.http.api;
 import org.restlet.resource.Delete;
 import org.restlet.resource.Get;
 import org.restlet.resource.Post;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 
 /**
- * GarbageCollectionDefinitionReasource - HTTP Interface for
- * GarbageCollectionDefinition.
+ * MeasurementPruningDefinitionReasource - HTTP Interface for
+ * MeasurementPruningDefinition.
  * 
  * @author Cam Moore
  * 
  */
-public interface GarbageCollectionDefinitionResource {
+public interface MeasurementPruningDefinitionResource {
 
   /**
    * Defines GET
-   * /wattdepot/{org-id}/garbage-collection-definition/{garbage-collection
+   * /wattdepot/{org-id}/measurement-pruning-definition/{measurement-pruning
    * -definition-id} API call.
    * 
-   * @return The GarbageCollectionDefinition with the given id. The id is sent
+   * @return The MeasurementPruningDefinition with the given id. The id is sent
    *         in the request.
    */
   @Get("json")
   // Use JSON as transport encoding.
-  public GarbageCollectionDefinition retrieve();
+  public MeasurementPruningDefinition retrieve();
 
   /**
    * Defines the POST
-   * /wattdepot/{org-id}/garbage-collection-definition/{garbage-
+   * /wattdepot/{org-id}/measurement-pruning-definition/{garbage-
    * collection-definition-id} API call.
    * 
-   * @param definition The GarbageCollectionDefinition to update.
+   * @param definition The MeasurementPruningDefinition to update.
    */
   @Post
-  public void update(GarbageCollectionDefinition definition);
+  public void update(MeasurementPruningDefinition definition);
 
   /**
    * Defined the DEL
-   * /wattdepot/garbage-collection-definition/{garbage-collection-definition-id}
+   * /wattdepot/measurement-pruning-definition/{measurement-pruning-definition-id}
    * API call. The id is sent in the request.
    */
   @Delete

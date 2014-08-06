@@ -24,7 +24,7 @@ import java.util.Set;
 
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementRateSummary;
@@ -108,7 +108,7 @@ public abstract class WattDepotPersistence {
       BadSlugException;
 
   /**
-   * Defines a new GarbageCollectionDefinition.
+   * Defines a new MeasurementPruningDefinition.
    * 
    * @param id The id of the garbage collection definition.
    * @param name The name of the garbage collection definition.
@@ -118,13 +118,13 @@ public abstract class WattDepotPersistence {
    * @param ignore The number of days to ignore starting from now.
    * @param collect The number of days to garbage collect in.
    * @param gap The minimum gap between measurements in seconds.
-   * @return the defined GarbageCollectionDefinition.
+   * @return the defined MeasurementPruningDefinition.
    * @throws UniqueIdException if the id derived from name is already defined.
    * @throws BadSlugException if the id isn't valid.
    * @throws IdNotFoundException If the depository, sensor or organization are
    *         not defined.
    */
-  public abstract GarbageCollectionDefinition defineGarbageCollectionDefinition(String id,
+  public abstract MeasurementPruningDefinition defineMeasurementPruningDefinition(String id,
       String name, String depositoryId, String sensorId, String orgId, Integer ignore,
       Integer collect, Integer gap) throws UniqueIdException, BadSlugException, IdNotFoundException;
 
@@ -249,13 +249,13 @@ public abstract class WattDepotPersistence {
       MisMatchedOwnerException;
 
   /**
-   * Deletes the given GarbageCollectionDefinition.
+   * Deletes the given MeasurementPruningDefinition.
    * 
-   * @param id The id of the GarbageCollectionDefinition to delete.
+   * @param id The id of the MeasurementPruningDefinition to delete.
    * @param orgId The Organization's id.
    * @throws IdNotFoundException if the id is not defined.
    */
-  public abstract void deleteGarbageCollectionDefinition(String id, String orgId)
+  public abstract void deleteMeasurementPruningDefinition(String id, String orgId)
       throws IdNotFoundException;
 
   /**
@@ -398,31 +398,31 @@ public abstract class WattDepotPersistence {
       String sensorId, boolean check) throws NoMeasurementException, IdNotFoundException;
 
   /**
-   * @param id The id of the GarbageCollectionDefinition.
+   * @param id The id of the MeasurementPruningDefinition.
    * @param orgId The Organization's id.
    * @param check true if want to check the ids.
-   * @return The defined GarbageCollectionDefinition.
+   * @return The defined MeasurementPruningDefinition.
    * @throws IdNotFoundException if the id is not defined.
    */
-  public abstract GarbageCollectionDefinition getGarbageCollectionDefinition(String id,
+  public abstract MeasurementPruningDefinition getMeasurementPruningDefinition(String id,
       String orgId, boolean check) throws IdNotFoundException;
 
   /**
    * @param orgId The Organization's id.
    * @param check true if want to check the ids.
-   * @return A list of the defined GarbageCollectionDefinition ids.
+   * @return A list of the defined MeasurementPruningDefinition ids.
    * @throws IdNotFoundException if there is a problem with the ids.
    */
-  public abstract List<String> getGarbageCollectionDefinitionIds(String orgId, boolean check)
+  public abstract List<String> getMeasurementPruningDefinitionIds(String orgId, boolean check)
       throws IdNotFoundException;
 
   /**
    * @param orgId The Organization's id.
    * @param check true if want to check the ids.
-   * @return A list of the defined GarbageCollectionDefinitions.
+   * @return A list of the defined MeasurementPruningDefinitions.
    * @throws IdNotFoundException If there is a problem with the ids.
    */
-  public abstract List<GarbageCollectionDefinition> getGarbageCollectionDefinitions(String orgId,
+  public abstract List<MeasurementPruningDefinition> getMeasurementPruningDefinitions(String orgId,
       boolean check) throws IdNotFoundException;
 
   /**
@@ -864,14 +864,14 @@ public abstract class WattDepotPersistence {
       CollectorProcessDefinition process) throws IdNotFoundException;
 
   /**
-   * Updates the given GarbageCollectionDefinition in the persistent store.
+   * Updates the given MeasurementPruningDefinition in the persistent store.
    * 
-   * @param gcd The updated GarbageCollectionDefinition.
-   * @return The updated GarbageCollectionDefinition from persistence.
+   * @param gcd The updated MeasurementPruningDefinition.
+   * @return The updated MeasurementPruningDefinition from persistence.
    * @throws IdNotFoundException If there is a problem with the ids.
    */
-  public abstract GarbageCollectionDefinition updateGarbageCollectionDefinition(
-      GarbageCollectionDefinition gcd) throws IdNotFoundException;
+  public abstract MeasurementPruningDefinition updateMeasurementPruningDefinition(
+      MeasurementPruningDefinition gcd) throws IdNotFoundException;
 
   /**
    * Updates the given measurement type in the persistent store.

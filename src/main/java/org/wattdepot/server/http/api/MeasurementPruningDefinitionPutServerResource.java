@@ -1,5 +1,5 @@
 /**
- * GarbageCollectionDefinitionPutServerResource.java This file is part of WattDepot.
+ * MeasurementPruningDefinitionPutServerResource.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
  *
@@ -21,43 +21,43 @@ package org.wattdepot.server.http.api;
 import java.util.logging.Level;
 
 import org.restlet.data.Status;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.exception.BadSlugException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.http.api.API;
-import org.wattdepot.common.http.api.GarbageCollectionDefinitionPutResource;
+import org.wattdepot.common.http.api.MeasurementPruningDefinitionPutResource;
 
 /**
- * GarbageCollectionDefinitionPutServerResource - Handles the
- * GarbageCollectionDefinition HTTP API
+ * MeasurementPruningDefinitionPutServerResource - Handles the
+ * MeasurementPruningDefinition HTTP API
  * ("/wattdepot/{org-id}/garbage-collection-definition/") PUT requests.
  * 
  * 
  * @author Cam Moore
  * 
  */
-public class GarbageCollectionDefinitionPutServerResource extends WattDepotServerResource implements
-    GarbageCollectionDefinitionPutResource {
+public class MeasurementPruningDefinitionPutServerResource extends WattDepotServerResource implements
+    MeasurementPruningDefinitionPutResource {
 
   /*
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.common.http.api.GarbageCollectionDefinitionPutResource#store
-   * (org.wattdepot.common.domainmodel.GarbageCollectionDefinition)
+   * org.wattdepot.common.http.api.MeasurementPruningDefinitionPutResource#store
+   * (org.wattdepot.common.domainmodel.MeasurementPruningDefinition)
    */
   @Override
-  public void store(GarbageCollectionDefinition definition) {
+  public void store(MeasurementPruningDefinition definition) {
     getLogger().log(
         Level.INFO,
-        "PUT " + API.BASE_URI + "{" + orgId + "}/" + Labels.GARBAGE_COLLECTION_DEFINITION
+        "PUT " + API.BASE_URI + "{" + orgId + "}/" + Labels.MEASUREMENT_PRUNING_DEFINITION
             + "/ with " + definition);
     if (isInRole(orgId)) {
       try {
         depot.getOrganization(orgId, true);
-        depot.defineGarbageCollectionDefinition(definition.getId(), definition.getName(),
+        depot.defineMeasurementPruningDefinition(definition.getId(), definition.getName(),
             definition.getDepositoryId(), definition.getSensorId(), definition.getOrganizationId(),
             definition.getIgnoreWindowDays(), definition.getCollectWindowDays(),
             definition.getMinGapSeconds());

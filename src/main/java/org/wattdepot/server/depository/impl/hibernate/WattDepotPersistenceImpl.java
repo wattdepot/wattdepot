@@ -31,7 +31,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.hibernate.Session;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementRateSummary;
@@ -338,12 +338,12 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.server.WattDepotPersistence#defineGarbageCollectionDefinition
+   * org.wattdepot.server.WattDepotPersistence#defineMeasurementPruningDefinition
    * (java.lang.String, java.lang.String, java.lang.String, java.lang.String,
    * java.lang.String, java.lang.Integer, java.lang.Integer, java.lang.Integer)
    */
   @Override
-  public GarbageCollectionDefinition defineGarbageCollectionDefinition(String id, String name,
+  public MeasurementPruningDefinition defineMeasurementPruningDefinition(String id, String name,
       String depositoryId, String sensorId, String orgId, Integer ignore, Integer collect,
       Integer gap) throws UniqueIdException, BadSlugException, IdNotFoundException {
     if (!Slug.validateSlug(id)) {
@@ -357,11 +357,11 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     catch (IdNotFoundException e) {
       getSensorGroup(sensorId, orgId, true);
     }
-    GarbageCollectionDefinition gcd = null;
+    MeasurementPruningDefinition gcd = null;
     try {
-      gcd = getGarbageCollectionDefinition(id, orgId, true);
+      gcd = getMeasurementPruningDefinition(id, orgId, true);
       if (gcd != null) {
-        throw new UniqueIdException(name + " is already a GarbageCollectionDefinition name.");
+        throw new UniqueIdException(name + " is already a MeasurementPruningDefinition name.");
       }
     }
     catch (IdNotFoundException e) { // NOPMD
@@ -372,9 +372,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.beginTransaction();
     DepositoryImpl dep = retrieveDepository(session, depositoryId, orgId);
     OrganizationImpl org = retrieveOrganization(session, orgId);
-    GarbageCollectionDefinitionImpl impl = new GarbageCollectionDefinitionImpl(id, name, dep,
+    MeasurementPruningDefinitionImpl impl = new MeasurementPruningDefinitionImpl(id, name, dep,
         sensorId, org, ignore, collect, gap);
-    gcd = impl.toGCD();
+    gcd = impl.toMPD();
     session.save(impl);
     session.getTransaction().commit();
     session.close();
@@ -669,16 +669,16 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.server.WattDepotPersistence#deleteGarbageCollectionDefinition
+   * org.wattdepot.server.WattDepotPersistence#deleteMeasurementPruningDefinition
    * (java.lang.String)
    */
   @Override
-  public void deleteGarbageCollectionDefinition(String id, String orgId) throws IdNotFoundException {
-    getGarbageCollectionDefinition(id, orgId, true);
+  public void deleteMeasurementPruningDefinition(String id, String orgId) throws IdNotFoundException {
+    getMeasurementPruningDefinition(id, orgId, true);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    GarbageCollectionDefinitionImpl impl = retrieveGarbageCollectionDefinition(session, id, orgId);
+    MeasurementPruningDefinitionImpl impl = retrieveMeasurementPruningDefinition(session, id, orgId);
     session.delete(impl);
     session.getTransaction().commit();
     session.close();
@@ -780,11 +780,11 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-    // Remove Organization owned GarbageCollectionDefinitions
+    // Remove Organization owned MeasurementPruningDefinitions
     session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    for (GarbageCollectionDefinitionImpl sp : retrieveGarbageCollectionDefinitions(session, id)) {
+    for (MeasurementPruningDefinitionImpl sp : retrieveMeasurementPruningDefinitions(session, id)) {
       session.delete(sp);
     }
     session.getTransaction().commit();
@@ -1325,17 +1325,17 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.server.WattDepotPersistence#getGarbageCollectionDefinition
+   * org.wattdepot.server.WattDepotPersistence#getMeasurementPruningDefinition
    * (java.lang.String, java.lang.String, boolean)
    */
   @Override
-  public GarbageCollectionDefinition getGarbageCollectionDefinition(String id, String orgId,
+  public MeasurementPruningDefinition getMeasurementPruningDefinition(String id, String orgId,
       boolean check) throws IdNotFoundException {
     Long startTime = 0l;
     Long endTime = 0l;
     Long diff = 0l;
     if (timingp) {
-      timingLogger.log(Level.SEVERE, padding + "Start getGarbageCollectionDefinition(" + id + ", "
+      timingLogger.log(Level.SEVERE, padding + "Start getMeasurementPruningDefinition(" + id + ", "
           + orgId + ")");
       padding += "  ";
       startTime = System.nanoTime();
@@ -1343,16 +1343,16 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     if (check) {
       getOrganization(orgId, check);
     }
-    GarbageCollectionDefinition gcd = getGarbageCollectionDefinitionNoCheck(id, orgId);
+    MeasurementPruningDefinition gcd = getMeasurementPruningDefinitionNoCheck(id, orgId);
     if (timingp) {
       endTime = System.nanoTime();
       diff = endTime - startTime;
       padding = padding.substring(0, padding.length() - 2);
-      timingLogger.log(Level.SEVERE, padding + "getGarbageCollectionDefinition(" + id + ", "
+      timingLogger.log(Level.SEVERE, padding + "getMeasurementPruningDefinition(" + id + ", "
           + orgId + ") took " + (diff / 1E9) + " secs.");
     }
     if (gcd == null) {
-      throw new IdNotFoundException(id + " is not a defined GarbageCollectionDefinition id.");
+      throw new IdNotFoundException(id + " is not a defined MeasurementPruningDefinition id.");
     }
     return gcd;
   }
@@ -1361,33 +1361,33 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.server.WattDepotPersistence#getGarbageCollectionDefinitionIds
+   * org.wattdepot.server.WattDepotPersistence#getMeasurementPruningDefinitionIds
    * (java.lang.String, boolean)
    */
   @Override
-  public List<String> getGarbageCollectionDefinitionIds(String orgId, boolean check)
+  public List<String> getMeasurementPruningDefinitionIds(String orgId, boolean check)
       throws IdNotFoundException {
     ArrayList<String> ret = new ArrayList<String>();
-    for (GarbageCollectionDefinition gcd : getGarbageCollectionDefinitions(orgId, check)) {
+    for (MeasurementPruningDefinition gcd : getMeasurementPruningDefinitions(orgId, check)) {
       ret.add(gcd.getId());
     }
     return ret;
   }
 
   /**
-   * @param id The GarbageCollectionDefinition's id.
+   * @param id The MeasurementPruningDefinition's id.
    * @param orgId The Organization's id.
-   * @return The GarbageCollectionDefinition with the given id and orgId, or
+   * @return The MeasurementPruningDefinition with the given id and orgId, or
    *         null if not defined.
    */
-  private GarbageCollectionDefinition getGarbageCollectionDefinitionNoCheck(String id, String orgId) {
-    GarbageCollectionDefinition ret = null;
+  private MeasurementPruningDefinition getMeasurementPruningDefinitionNoCheck(String id, String orgId) {
+    MeasurementPruningDefinition ret = null;
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    GarbageCollectionDefinitionImpl gcd = retrieveGarbageCollectionDefinition(session, id, orgId);
+    MeasurementPruningDefinitionImpl gcd = retrieveMeasurementPruningDefinition(session, id, orgId);
     if (gcd != null) {
-      ret = gcd.toGCD();
+      ret = gcd.toMPD();
     }
     session.getTransaction().commit();
     session.close();
@@ -1399,30 +1399,30 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.server.WattDepotPersistence#getGarbageCollectionDefinitions
+   * org.wattdepot.server.WattDepotPersistence#getMeasurementPruningDefinitions
    * (java.lang.String, boolean)
    */
   @Override
-  public List<GarbageCollectionDefinition> getGarbageCollectionDefinitions(String orgId,
+  public List<MeasurementPruningDefinition> getMeasurementPruningDefinitions(String orgId,
       boolean check) throws IdNotFoundException {
     if (check) {
       getOrganization(orgId, check);
     }
-    return getGarbageCollectionDefinitionsNoCheck(orgId);
+    return getMeasurementPruningDefinitionsNoCheck(orgId);
   }
 
   /**
    * @param orgId The Organization's id.
-   * @return A list of defined GarbageCollectionDefinitions.
+   * @return A list of defined MeasurementPruningDefinitions.
    */
-  private List<GarbageCollectionDefinition> getGarbageCollectionDefinitionsNoCheck(String orgId) {
+  private List<MeasurementPruningDefinition> getMeasurementPruningDefinitionsNoCheck(String orgId) {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    List<GarbageCollectionDefinitionImpl> r = retrieveGarbageCollectionDefinitions(session, orgId);
-    List<GarbageCollectionDefinition> ret = new ArrayList<GarbageCollectionDefinition>();
-    for (GarbageCollectionDefinitionImpl gcd : r) {
-      ret.add(gcd.toGCD());
+    List<MeasurementPruningDefinitionImpl> r = retrieveMeasurementPruningDefinitions(session, orgId);
+    List<MeasurementPruningDefinition> ret = new ArrayList<MeasurementPruningDefinition>();
+    for (MeasurementPruningDefinitionImpl gcd : r) {
+      ret.add(gcd.toMPD());
     }
     session.getTransaction().commit();
     session.close();
@@ -3276,16 +3276,16 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
 
   /**
    * @param session The session with an open transaction.
-   * @param id the GarbageCollectionDefinition's id.
+   * @param id the MeasurementPruningDefinition's id.
    * @param orgId The Organization's id.
-   * @return The GarbageCollectionDefinitionImpl or null if not defined.
+   * @return The MeasurementPruningDefinitionImpl or null if not defined.
    */
-  private GarbageCollectionDefinitionImpl retrieveGarbageCollectionDefinition(Session session,
+  private MeasurementPruningDefinitionImpl retrieveMeasurementPruningDefinition(Session session,
       String id, String orgId) {
     OrganizationImpl org = retrieveOrganization(session, orgId);
     @SuppressWarnings("unchecked")
-    List<GarbageCollectionDefinitionImpl> result = (List<GarbageCollectionDefinitionImpl>) session
-        .createQuery("FROM GarbageCollectionDefinitionImpl WHERE id = :id AND org = :org")
+    List<MeasurementPruningDefinitionImpl> result = (List<MeasurementPruningDefinitionImpl>) session
+        .createQuery("FROM MeasurementPruningDefinitionImpl WHERE id = :id AND org = :org")
         .setParameter("id", id).setParameter("org", org).list();
     if (result.size() == 1) {
       return result.get(0);
@@ -3296,14 +3296,14 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   /**
    * @param session The Session with an open transaction.
    * @param orgId The Organization's id.
-   * @return A list of the defined GarbageCollectionDefinitionImpls.
+   * @return A list of the defined MeasurementPruningDefinitionImpls.
    */
-  private List<GarbageCollectionDefinitionImpl> retrieveGarbageCollectionDefinitions(
+  private List<MeasurementPruningDefinitionImpl> retrieveMeasurementPruningDefinitions(
       Session session, String orgId) {
     OrganizationImpl org = retrieveOrganization(session, orgId);
     @SuppressWarnings("unchecked")
-    List<GarbageCollectionDefinitionImpl> result = (List<GarbageCollectionDefinitionImpl>) session
-        .createQuery("FROM GarbageCollectionDefinitionImpl WHERE org = :org")
+    List<MeasurementPruningDefinitionImpl> result = (List<MeasurementPruningDefinitionImpl>) session
+        .createQuery("FROM MeasurementPruningDefinitionImpl WHERE org = :org")
         .setParameter("org", org).list();
     return result;
   }
@@ -3607,6 +3607,11 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
         process.getOrganizationId()));
     impl.setSensor(retrieveSensor(session, process.getSensorId(), process.getOrganizationId()));
     impl.setOrg(retrieveOrganization(session, process.getOrganizationId()));
+    Set<PropertyImpl> props = new HashSet<PropertyImpl>();
+    for (Property p : process.getProperties()) {
+      props.add(new PropertyImpl(p));
+    }
+    impl.setProperties(props);
     storeCollectorProcessDefinition(session, impl);
     ret = impl.toCPD();
     session.getTransaction().commit();
@@ -3619,16 +3624,16 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    * (non-Javadoc)
    * 
    * @see
-   * org.wattdepot.server.WattDepotPersistence#updateGarbageCollectionDefinition
-   * (org.wattdepot.common.domainmodel.GarbageCollectionDefinition)
+   * org.wattdepot.server.WattDepotPersistence#updateMeasurementPruningDefinition
+   * (org.wattdepot.common.domainmodel.MeasurementPruningDefinition)
    */
   @Override
-  public GarbageCollectionDefinition updateGarbageCollectionDefinition(
-      GarbageCollectionDefinition gcd) throws IdNotFoundException {
+  public MeasurementPruningDefinition updateMeasurementPruningDefinition(
+      MeasurementPruningDefinition gcd) throws IdNotFoundException {
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
-    GarbageCollectionDefinitionImpl impl = retrieveGarbageCollectionDefinition(session,
+    MeasurementPruningDefinitionImpl impl = retrieveMeasurementPruningDefinition(session,
         gcd.getId(), gcd.getOrganizationId());
     impl.setName(gcd.getName());
     impl.setDepository(retrieveDepository(session, gcd.getDepositoryId(), gcd.getOrganizationId()));

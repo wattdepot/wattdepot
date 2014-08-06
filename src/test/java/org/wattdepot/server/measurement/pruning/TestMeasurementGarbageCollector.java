@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.server.garbage.collector;
+package org.wattdepot.server.measurement.pruning;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -32,9 +32,9 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
 import org.wattdepot.common.domainmodel.InstanceFactory;
 import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Sensor;
@@ -52,7 +52,6 @@ import org.wattdepot.common.util.tstamp.Tstamp;
 import org.wattdepot.server.ServerProperties;
 import org.wattdepot.server.WattDepotPersistence;
 import org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl;
-import org.wattdepot.server.measurement.pruning.MeasurementPruner;
 
 /**
  * TestMeasurementGarbageCollector test cases for the
@@ -70,7 +69,7 @@ public class TestMeasurementGarbageCollector {
   private static ServerProperties properties;
   private static Depository depository;
   private static Sensor sensor;
-  private static GarbageCollectionDefinition gcd;
+  private static MeasurementPruningDefinition gcd;
 
   private XMLGregorianCalendar now;
   private XMLGregorianCalendar start;
@@ -140,7 +139,7 @@ public class TestMeasurementGarbageCollector {
     addSensor();
     addMeasurementType();
     addDepository();
-    addGarbageCollectionDefinition();
+    addMeasurementPruningDefinition();
   }
 
   /**
@@ -207,7 +206,7 @@ public class TestMeasurementGarbageCollector {
    * @throws Exception if there is a problem.
    */
   @Test
-  public void testGarbageCollection() throws Exception {
+  public void testMeasurementPruning() throws Exception {
     populateMeasurements(2);
     MeasurementPruner mgc = new MeasurementPruner(properties, gcd.getId(),
         gcd.getOrganizationId(), false);
@@ -304,16 +303,16 @@ public class TestMeasurementGarbageCollector {
   }
 
   /**
-   * Adds the predefined GarbageCollectionDefinition.
+   * Adds the predefined MeasurementPruningDefinition.
    */
-  private void addGarbageCollectionDefinition() {
-    TestMeasurementGarbageCollector.gcd = InstanceFactory.getGarbageCollectionDefinition();
+  private void addMeasurementPruningDefinition() {
+    TestMeasurementGarbageCollector.gcd = InstanceFactory.getMeasurementPruningDefinition();
     try {
-      impl.getGarbageCollectionDefinition(gcd.getId(), gcd.getOrganizationId(), true);
+      impl.getMeasurementPruningDefinition(gcd.getId(), gcd.getOrganizationId(), true);
     }
     catch (IdNotFoundException e) {
       try {
-        impl.defineGarbageCollectionDefinition(gcd.getId(), gcd.getName(), gcd.getDepositoryId(),
+        impl.defineMeasurementPruningDefinition(gcd.getId(), gcd.getName(), gcd.getDepositoryId(),
             gcd.getSensorId(), gcd.getOrganizationId(), gcd.getIgnoreWindowDays(),
             gcd.getCollectWindowDays(), gcd.getMinGapSeconds());
       }

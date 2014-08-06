@@ -34,7 +34,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
-import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.SensorGroup;
@@ -60,14 +60,14 @@ public class MeasurementPruner extends TimerTask {
   public static final int PRUNE_WINDOW = 6 * 60;
 
   private WattDepotPersistence persistance;
-  private GarbageCollectionDefinition definition;
+  private MeasurementPruningDefinition definition;
   private boolean debug;
 
   /**
    * Create a MeasurementGarbageCollector.
    * 
    * @param properties The ServerProperties that define the type of persistence.
-   * @param gcdId The id of the GarbageCollectionDefintion.
+   * @param gcdId The id of the MeasurementPruningDefintion.
    * @param orgId The id of the Organization.
    * @param debug true if want debugging information.
    * @throws Exception If there is a problem instantiating the
@@ -79,14 +79,14 @@ public class MeasurementPruner extends TimerTask {
     String depotClass = properties.get(ServerProperties.WATT_DEPOT_IMPL_KEY);
     this.persistance = (WattDepotPersistence) Class.forName(depotClass)
         .getConstructor(ServerProperties.class).newInstance(properties);
-    this.definition = this.persistance.getGarbageCollectionDefinition(gcdId, orgId, true);
+    this.definition = this.persistance.getMeasurementPruningDefinition(gcdId, orgId, true);
     this.debug = debug;
   }
 
   /**
    * @return the definition
    */
-  public GarbageCollectionDefinition getDefinition() {
+  public MeasurementPruningDefinition getDefinition() {
     return definition;
   }
 
@@ -113,7 +113,7 @@ public class MeasurementPruner extends TimerTask {
    * @param sensorId the id of the sensor to get measurements for.
    * @return The Measurements in the collection window.
    * @throws IdNotFoundException if there is a problem with the
-   *         GarbageCollectionDefintion.
+   *         MeasurementPruningDefintion.
    */
   private List<Measurement> getMeasurementsToCheck(String sensorId) throws IdNotFoundException {
     Date start = getStartDate();
@@ -131,7 +131,7 @@ public class MeasurementPruner extends TimerTask {
    * @return A list of measurements to garbage collect. They are at a higher
    *         sample rate than desired.
    * @throws IdNotFoundException if there is a problem with the
-   *         GarbageCollectionDefinition.
+   *         MeasurementPruningDefinition.
    */
   public List<Measurement> getMeasurementsToDelete() throws IdNotFoundException {
     Long startTime = 0l;
@@ -302,6 +302,9 @@ public class MeasurementPruner extends TimerTask {
       if (debug) {
         System.out.println(delay);
       }
+      if (delay < 0) {
+        delay = 0l;
+      }
       return delay;
     }
   }
@@ -424,7 +427,7 @@ public class MeasurementPruner extends TimerTask {
     this.definition.setLastCompleted(lastCompleted);
     this.definition.setNumMeasurementsCollected(deleted);
     try {
-      this.persistance.updateGarbageCollectionDefinition(this.definition);
+      this.persistance.updateMeasurementPruningDefinition(this.definition);
     }
     catch (IdNotFoundException e) {
       e.printStackTrace();

@@ -1,5 +1,5 @@
 /**
- * GarbageCollectionDefinitionList.java This file is part of WattDepot.
+ * MeasurementPruningDefinitionList.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
  *
@@ -21,42 +21,42 @@ package org.wattdepot.common.domainmodel;
 import java.util.ArrayList;
 
 /**
- * GarbageCollectionDefinitionList - Encapsulates an ArrayList of
- * GarbageCollectionDefinitions so Restlet can convert it to a JSON object.
+ * MeasurementPruningDefinitionList - Encapsulates an ArrayList of
+ * MeasurementPruningDefinitions so Restlet can convert it to a JSON object.
  * 
  * @author Cam Moore
  * 
  */
-public class GarbageCollectionDefinitionList {
-  private ArrayList<GarbageCollectionDefinition> definitions;
+public class MeasurementPruningDefinitionList {
+  private ArrayList<MeasurementPruningDefinition> definitions;
 
   /**
    * Default constructor.
    */
-  public GarbageCollectionDefinitionList() {
-    definitions = new ArrayList<GarbageCollectionDefinition>();
+  public MeasurementPruningDefinitionList() {
+    definitions = new ArrayList<MeasurementPruningDefinition>();
   }
 
   /**
-   * @param e a GarbageCollectionDefinition to add to the list.
+   * @param e a MeasurementPruningDefinition to add to the list.
    * @return true if successful.
    * @see java.util.ArrayList#add(java.lang.Object)
    */
-  public boolean add(GarbageCollectionDefinition e) {
+  public boolean add(MeasurementPruningDefinition e) {
     return definitions.add(e);
   }
 
   /**
    * @return the definitions
    */
-  public ArrayList<GarbageCollectionDefinition> getDefinitions() {
+  public ArrayList<MeasurementPruningDefinition> getDefinitions() {
     return definitions;
   }
 
   /**
    * @param definitions the definitions to set
    */
-  public void setDefinitions(ArrayList<GarbageCollectionDefinition> definitions) {
+  public void setDefinitions(ArrayList<MeasurementPruningDefinition> definitions) {
     this.definitions = definitions;
   }
 
