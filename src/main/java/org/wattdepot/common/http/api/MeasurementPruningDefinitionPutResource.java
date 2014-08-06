@@ -36,6 +36,6 @@ public interface MeasurementPruningDefinitionPutResource {
    * 
    * @param definition The MeasurementPruningDefinition to store.
    */
-  @Put
+  @Put("json")
   public void store(MeasurementPruningDefinition definition);
 }

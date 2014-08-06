@@ -41,24 +41,7 @@ import org.junit.Test;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.client.ClientProperties;
-import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
-import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
-import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.DepositoryList;
-import org.wattdepot.common.domainmodel.InterpolatedValue;
-import org.wattdepot.common.domainmodel.Measurement;
-import org.wattdepot.common.domainmodel.MeasurementList;
-import org.wattdepot.common.domainmodel.MeasurementType;
-import org.wattdepot.common.domainmodel.MeasurementTypeList;
-import org.wattdepot.common.domainmodel.Organization;
-import org.wattdepot.common.domainmodel.Property;
-import org.wattdepot.common.domainmodel.Sensor;
-import org.wattdepot.common.domainmodel.SensorGroup;
-import org.wattdepot.common.domainmodel.SensorGroupList;
-import org.wattdepot.common.domainmodel.SensorList;
-import org.wattdepot.common.domainmodel.SensorModel;
-import org.wattdepot.common.domainmodel.SensorModelList;
-import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.domainmodel.*;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementGapException;
@@ -89,6 +72,7 @@ public class TestWattDepotClient {
   private MeasurementType testMeasurementType = null;
   private Depository testDepository = null;
   private CollectorProcessDefinition testCPD = null;
+  private MeasurementPruningDefinition testMPD = null;
   private Measurement testMeasurement1 = null;
   private Measurement testMeasurement2 = null;
   private Measurement testMeasurement3 = null;
@@ -142,6 +126,8 @@ public class TestWattDepotClient {
     testDepository = new Depository("Test Depository", testMeasurementType, testOrg.getId());
     testCPD = new CollectorProcessDefinition("TestWattDepotClient Collector Process Defintion",
         testSensor.getId(), 10L, testDepository.getId(), testOrg.getId());
+    testMPD = new MeasurementPruningDefinition("TestWattDepotClient MPD", testDepository.getId(), testSensor.getId(),
+        testOrg.getId(), 7, 10, 30);
     try {
       Date measTime1 = DateConvert.parseCalStringToDate("2013-11-20T14:35:27.925-1000");
       Date measTime2 = DateConvert.parseCalStringToDate("2013-11-20T14:35:37.925-1000");
@@ -239,9 +225,7 @@ public class TestWattDepotClient {
   }
 
   /**
-   * Test method for
-   * {@link org.wattdepot.client.http.api.WattDepotClient#WattDepotClient(java.lang.String, java.lang.String, java.lang.String)}
-   * .
+   * Test method for WattDepotClient constructors.
    */
   @Test
   public void testWattDepotClient() {
@@ -646,6 +630,54 @@ public class TestWattDepotClient {
     }
     catch (IdNotFoundException e) {
       // this is what we want.
+    }
+  }
+
+  @Test
+  public void testMeasurementPruningDefinition() {
+    MeasurementPruningDefinition data = testMPD;
+    // Get the list of defined MPDs
+    MeasurementPruningDefinitionList list = test.getMeasurementPruningDefinitions();
+    assertNotNull(list);
+    assertTrue(list.getDefinitions().size() == 0);
+    try {
+      // Put new instance (CREATE)
+      test.putMeasurementPruningDefinition(data);
+    }
+    catch (ResourceException e) {
+      if (e.getStatus().equals(Status.CLIENT_ERROR_BAD_REQUEST)) {
+        addSensorModel();
+        addSensor();
+        addDepository();
+        test.putMeasurementPruningDefinition(data);
+      }
+    }
+    list = test.getMeasurementPruningDefinitions();
+    assertTrue(list.getDefinitions().contains(data));
+    try {
+      // get instance (READ)
+      MeasurementPruningDefinition ret = test.getMeasurementPruningDefinition(data.getId());
+      assertNotNull(ret);
+      assertTrue(data.equals(ret));
+//      ret.setDepositoryId("new depotistory_id");
+//      try {
+//        test.updateMeasurementPruningDefinition(ret);
+//        fail("Should not be able to update to bogus depository id.");
+//      }
+//      catch (Exception e) { // NOPMD
+//        // we expect this
+//      }
+      // delete instance (DELETE)
+      test.deleteMeasurementPruningDefinition(data);
+      try {
+        ret = test.getMeasurementPruningDefinition(data.getId());
+        assertNull(ret);
+      }
+      catch (IdNotFoundException e) {
+        // this is what we want.
+      }
+    } catch (IdNotFoundException e) {
+      fail("Should have " + data);
     }
   }
 

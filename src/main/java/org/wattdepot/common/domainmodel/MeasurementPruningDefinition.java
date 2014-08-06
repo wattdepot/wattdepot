@@ -102,6 +102,10 @@ public class MeasurementPruningDefinition implements IDomainModel {
     this.ignoreWindowDays = ignore;
     this.collectWindowDays = collect;
     this.minGapSeconds = gap;
+    this.lastStarted = new Date();
+    this.lastCompleted = lastStarted;
+    this.nextRun = lastCompleted;
+    this.numMeasurementsCollected = 0;
   }
 
   /*

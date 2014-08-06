@@ -84,8 +84,10 @@ public interface WattDepotInterface {
    * Deletes the given MeasurementPruningDefinition from the WattDepotServer.
    * 
    * @param gcd The MeasurementPruningDefinition to delete.
+   * @throws org.wattdepot.common.exception.IdNotFoundException if the MPD is not
+   * found.
    */
-  public void deleteMeasurementPruningDefinition(MeasurementPruningDefinition gcd);
+  public void deleteMeasurementPruningDefinition(MeasurementPruningDefinition gcd) throws IdNotFoundException;
 
   /**
    * Deletes the given MeasurementType.
