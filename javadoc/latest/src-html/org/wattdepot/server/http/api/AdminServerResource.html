@@ -41,7 +41,7 @@
 <span class="sourceLineNo">033</span>import org.restlet.security.User;<a name="line.33"></a>
 <span class="sourceLineNo">034</span>import org.wattdepot.common.domainmodel.CollectorProcessDefinition;<a name="line.34"></a>
 <span class="sourceLineNo">035</span>import org.wattdepot.common.domainmodel.Depository;<a name="line.35"></a>
-<span class="sourceLineNo">036</span>import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;<a name="line.36"></a>
+<span class="sourceLineNo">036</span>import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;<a name="line.36"></a>
 <span class="sourceLineNo">037</span>import org.wattdepot.common.domainmodel.MeasurementType;<a name="line.37"></a>
 <span class="sourceLineNo">038</span>import org.wattdepot.common.domainmodel.Organization;<a name="line.38"></a>
 <span class="sourceLineNo">039</span>import org.wattdepot.common.domainmodel.Sensor;<a name="line.39"></a>
@@ -109,7 +109,7 @@
 <span class="sourceLineNo">101</span>          List&lt;CollectorProcessDefinition&gt; cpds = depot<a name="line.101"></a>
 <span class="sourceLineNo">102</span>              .getCollectorProcessDefinitions(orgId, false);<a name="line.102"></a>
 <span class="sourceLineNo">103</span>          List&lt;MeasurementType&gt; measurementTypes = depot.getMeasurementTypes();<a name="line.103"></a>
-<span class="sourceLineNo">104</span>          List&lt;GarbageCollectionDefinition&gt; gcds = depot.getGarbageCollectionDefinitions(orgId,<a name="line.104"></a>
+<span class="sourceLineNo">104</span>          List&lt;MeasurementPruningDefinition&gt; gcds = depot.getMeasurementPruningDefinitions(orgId,<a name="line.104"></a>
 <span class="sourceLineNo">105</span>              false);<a name="line.105"></a>
 <span class="sourceLineNo">106</span>          dataModel.put("depositories", depos);<a name="line.106"></a>
 <span class="sourceLineNo">107</span>          dataModel.put("sensors", sensors);<a name="line.107"></a>
@@ -118,20 +118,19 @@
 <span class="sourceLineNo">110</span>          dataModel.put("cpds", cpds);<a name="line.110"></a>
 <span class="sourceLineNo">111</span>          dataModel.put("measurementtypes", measurementTypes);<a name="line.111"></a>
 <span class="sourceLineNo">112</span>          dataModel.put("gcds", gcds);<a name="line.112"></a>
-<span class="sourceLineNo">113</span>          getLogger().log(Level.INFO, gcds.toString());<a name="line.113"></a>
-<span class="sourceLineNo">114</span>          rep = new ClientResource(LocalReference.createClapReference(getClass().getPackage())<a name="line.114"></a>
-<span class="sourceLineNo">115</span>              + "/OrganizationAdmin.ftl").get();<a name="line.115"></a>
-<span class="sourceLineNo">116</span>        }<a name="line.116"></a>
-<span class="sourceLineNo">117</span>        catch (IdNotFoundException e) {<a name="line.117"></a>
-<span class="sourceLineNo">118</span>          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());<a name="line.118"></a>
-<span class="sourceLineNo">119</span>        }<a name="line.119"></a>
-<span class="sourceLineNo">120</span>      }<a name="line.120"></a>
-<span class="sourceLineNo">121</span>      template = new TemplateRepresentation(rep, dataModel, MediaType.TEXT_HTML);<a name="line.121"></a>
-<span class="sourceLineNo">122</span>      return template;<a name="line.122"></a>
-<span class="sourceLineNo">123</span>    }<a name="line.123"></a>
-<span class="sourceLineNo">124</span>    return null;<a name="line.124"></a>
-<span class="sourceLineNo">125</span>  }<a name="line.125"></a>
-<span class="sourceLineNo">126</span>}<a name="line.126"></a>
+<span class="sourceLineNo">113</span>          rep = new ClientResource(LocalReference.createClapReference(getClass().getPackage())<a name="line.113"></a>
+<span class="sourceLineNo">114</span>              + "/OrganizationAdmin.ftl").get();<a name="line.114"></a>
+<span class="sourceLineNo">115</span>        }<a name="line.115"></a>
+<span class="sourceLineNo">116</span>        catch (IdNotFoundException e) {<a name="line.116"></a>
+<span class="sourceLineNo">117</span>          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());<a name="line.117"></a>
+<span class="sourceLineNo">118</span>        }<a name="line.118"></a>
+<span class="sourceLineNo">119</span>      }<a name="line.119"></a>
+<span class="sourceLineNo">120</span>      template = new TemplateRepresentation(rep, dataModel, MediaType.TEXT_HTML);<a name="line.120"></a>
+<span class="sourceLineNo">121</span>      return template;<a name="line.121"></a>
+<span class="sourceLineNo">122</span>    }<a name="line.122"></a>
+<span class="sourceLineNo">123</span>    return null;<a name="line.123"></a>
+<span class="sourceLineNo">124</span>  }<a name="line.124"></a>
+<span class="sourceLineNo">125</span>}<a name="line.125"></a>
 
 
 

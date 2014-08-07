@@ -39,7 +39,7 @@
 <span class="sourceLineNo">031</span>import org.hibernate.Session;<a name="line.31"></a>
 <span class="sourceLineNo">032</span>import org.wattdepot.common.domainmodel.CollectorProcessDefinition;<a name="line.32"></a>
 <span class="sourceLineNo">033</span>import org.wattdepot.common.domainmodel.Depository;<a name="line.33"></a>
-<span class="sourceLineNo">034</span>import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;<a name="line.34"></a>
+<span class="sourceLineNo">034</span>import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;<a name="line.34"></a>
 <span class="sourceLineNo">035</span>import org.wattdepot.common.domainmodel.InterpolatedValue;<a name="line.35"></a>
 <span class="sourceLineNo">036</span>import org.wattdepot.common.domainmodel.Measurement;<a name="line.36"></a>
 <span class="sourceLineNo">037</span>import org.wattdepot.common.domainmodel.MeasurementRateSummary;<a name="line.37"></a>
@@ -346,12 +346,12 @@
 <span class="sourceLineNo">338</span>   * (non-Javadoc)<a name="line.338"></a>
 <span class="sourceLineNo">339</span>   * <a name="line.339"></a>
 <span class="sourceLineNo">340</span>   * @see<a name="line.340"></a>
-<span class="sourceLineNo">341</span>   * org.wattdepot.server.WattDepotPersistence#defineGarbageCollectionDefinition<a name="line.341"></a>
+<span class="sourceLineNo">341</span>   * org.wattdepot.server.WattDepotPersistence#defineMeasurementPruningDefinition<a name="line.341"></a>
 <span class="sourceLineNo">342</span>   * (java.lang.String, java.lang.String, java.lang.String, java.lang.String,<a name="line.342"></a>
 <span class="sourceLineNo">343</span>   * java.lang.String, java.lang.Integer, java.lang.Integer, java.lang.Integer)<a name="line.343"></a>
 <span class="sourceLineNo">344</span>   */<a name="line.344"></a>
 <span class="sourceLineNo">345</span>  @Override<a name="line.345"></a>
-<span class="sourceLineNo">346</span>  public GarbageCollectionDefinition defineGarbageCollectionDefinition(String id, String name,<a name="line.346"></a>
+<span class="sourceLineNo">346</span>  public MeasurementPruningDefinition defineMeasurementPruningDefinition(String id, String name,<a name="line.346"></a>
 <span class="sourceLineNo">347</span>      String depositoryId, String sensorId, String orgId, Integer ignore, Integer collect,<a name="line.347"></a>
 <span class="sourceLineNo">348</span>      Integer gap) throws UniqueIdException, BadSlugException, IdNotFoundException {<a name="line.348"></a>
 <span class="sourceLineNo">349</span>    if (!Slug.validateSlug(id)) {<a name="line.349"></a>
@@ -365,11 +365,11 @@
 <span class="sourceLineNo">357</span>    catch (IdNotFoundException e) {<a name="line.357"></a>
 <span class="sourceLineNo">358</span>      getSensorGroup(sensorId, orgId, true);<a name="line.358"></a>
 <span class="sourceLineNo">359</span>    }<a name="line.359"></a>
-<span class="sourceLineNo">360</span>    GarbageCollectionDefinition gcd = null;<a name="line.360"></a>
+<span class="sourceLineNo">360</span>    MeasurementPruningDefinition gcd = null;<a name="line.360"></a>
 <span class="sourceLineNo">361</span>    try {<a name="line.361"></a>
-<span class="sourceLineNo">362</span>      gcd = getGarbageCollectionDefinition(id, orgId, true);<a name="line.362"></a>
+<span class="sourceLineNo">362</span>      gcd = getMeasurementPruningDefinition(id, orgId, true);<a name="line.362"></a>
 <span class="sourceLineNo">363</span>      if (gcd != null) {<a name="line.363"></a>
-<span class="sourceLineNo">364</span>        throw new UniqueIdException(name + " is already a GarbageCollectionDefinition name.");<a name="line.364"></a>
+<span class="sourceLineNo">364</span>        throw new UniqueIdException(name + " is already a MeasurementPruningDefinition name.");<a name="line.364"></a>
 <span class="sourceLineNo">365</span>      }<a name="line.365"></a>
 <span class="sourceLineNo">366</span>    }<a name="line.366"></a>
 <span class="sourceLineNo">367</span>    catch (IdNotFoundException e) { // NOPMD<a name="line.367"></a>
@@ -380,9 +380,9 @@
 <span class="sourceLineNo">372</span>    session.beginTransaction();<a name="line.372"></a>
 <span class="sourceLineNo">373</span>    DepositoryImpl dep = retrieveDepository(session, depositoryId, orgId);<a name="line.373"></a>
 <span class="sourceLineNo">374</span>    OrganizationImpl org = retrieveOrganization(session, orgId);<a name="line.374"></a>
-<span class="sourceLineNo">375</span>    GarbageCollectionDefinitionImpl impl = new GarbageCollectionDefinitionImpl(id, name, dep,<a name="line.375"></a>
+<span class="sourceLineNo">375</span>    MeasurementPruningDefinitionImpl impl = new MeasurementPruningDefinitionImpl(id, name, dep,<a name="line.375"></a>
 <span class="sourceLineNo">376</span>        sensorId, org, ignore, collect, gap);<a name="line.376"></a>
-<span class="sourceLineNo">377</span>    gcd = impl.toGCD();<a name="line.377"></a>
+<span class="sourceLineNo">377</span>    gcd = impl.toMPD();<a name="line.377"></a>
 <span class="sourceLineNo">378</span>    session.save(impl);<a name="line.378"></a>
 <span class="sourceLineNo">379</span>    session.getTransaction().commit();<a name="line.379"></a>
 <span class="sourceLineNo">380</span>    session.close();<a name="line.380"></a>
@@ -677,16 +677,16 @@
 <span class="sourceLineNo">669</span>   * (non-Javadoc)<a name="line.669"></a>
 <span class="sourceLineNo">670</span>   * <a name="line.670"></a>
 <span class="sourceLineNo">671</span>   * @see<a name="line.671"></a>
-<span class="sourceLineNo">672</span>   * org.wattdepot.server.WattDepotPersistence#deleteGarbageCollectionDefinition<a name="line.672"></a>
+<span class="sourceLineNo">672</span>   * org.wattdepot.server.WattDepotPersistence#deleteMeasurementPruningDefinition<a name="line.672"></a>
 <span class="sourceLineNo">673</span>   * (java.lang.String)<a name="line.673"></a>
 <span class="sourceLineNo">674</span>   */<a name="line.674"></a>
 <span class="sourceLineNo">675</span>  @Override<a name="line.675"></a>
-<span class="sourceLineNo">676</span>  public void deleteGarbageCollectionDefinition(String id, String orgId) throws IdNotFoundException {<a name="line.676"></a>
-<span class="sourceLineNo">677</span>    getGarbageCollectionDefinition(id, orgId, true);<a name="line.677"></a>
+<span class="sourceLineNo">676</span>  public void deleteMeasurementPruningDefinition(String id, String orgId) throws IdNotFoundException {<a name="line.676"></a>
+<span class="sourceLineNo">677</span>    getMeasurementPruningDefinition(id, orgId, true);<a name="line.677"></a>
 <span class="sourceLineNo">678</span>    Session session = Manager.getFactory(getServerProperties()).openSession();<a name="line.678"></a>
 <span class="sourceLineNo">679</span>    sessionOpen++;<a name="line.679"></a>
 <span class="sourceLineNo">680</span>    session.beginTransaction();<a name="line.680"></a>
-<span class="sourceLineNo">681</span>    GarbageCollectionDefinitionImpl impl = retrieveGarbageCollectionDefinition(session, id, orgId);<a name="line.681"></a>
+<span class="sourceLineNo">681</span>    MeasurementPruningDefinitionImpl impl = retrieveMeasurementPruningDefinition(session, id, orgId);<a name="line.681"></a>
 <span class="sourceLineNo">682</span>    session.delete(impl);<a name="line.682"></a>
 <span class="sourceLineNo">683</span>    session.getTransaction().commit();<a name="line.683"></a>
 <span class="sourceLineNo">684</span>    session.close();<a name="line.684"></a>
@@ -788,11 +788,11 @@
 <span class="sourceLineNo">780</span>    session.getTransaction().commit();<a name="line.780"></a>
 <span class="sourceLineNo">781</span>    session.close();<a name="line.781"></a>
 <span class="sourceLineNo">782</span>    sessionClose++;<a name="line.782"></a>
-<span class="sourceLineNo">783</span>    // Remove Organization owned GarbageCollectionDefinitions<a name="line.783"></a>
+<span class="sourceLineNo">783</span>    // Remove Organization owned MeasurementPruningDefinitions<a name="line.783"></a>
 <span class="sourceLineNo">784</span>    session = Manager.getFactory(getServerProperties()).openSession();<a name="line.784"></a>
 <span class="sourceLineNo">785</span>    sessionOpen++;<a name="line.785"></a>
 <span class="sourceLineNo">786</span>    session.beginTransaction();<a name="line.786"></a>
-<span class="sourceLineNo">787</span>    for (GarbageCollectionDefinitionImpl sp : retrieveGarbageCollectionDefinitions(session, id)) {<a name="line.787"></a>
+<span class="sourceLineNo">787</span>    for (MeasurementPruningDefinitionImpl sp : retrieveMeasurementPruningDefinitions(session, id)) {<a name="line.787"></a>
 <span class="sourceLineNo">788</span>      session.delete(sp);<a name="line.788"></a>
 <span class="sourceLineNo">789</span>    }<a name="line.789"></a>
 <span class="sourceLineNo">790</span>    session.getTransaction().commit();<a name="line.790"></a>
@@ -1333,17 +1333,17 @@
 <span class="sourceLineNo">1325</span>   * (non-Javadoc)<a name="line.1325"></a>
 <span class="sourceLineNo">1326</span>   * <a name="line.1326"></a>
 <span class="sourceLineNo">1327</span>   * @see<a name="line.1327"></a>
-<span class="sourceLineNo">1328</span>   * org.wattdepot.server.WattDepotPersistence#getGarbageCollectionDefinition<a name="line.1328"></a>
+<span class="sourceLineNo">1328</span>   * org.wattdepot.server.WattDepotPersistence#getMeasurementPruningDefinition<a name="line.1328"></a>
 <span class="sourceLineNo">1329</span>   * (java.lang.String, java.lang.String, boolean)<a name="line.1329"></a>
 <span class="sourceLineNo">1330</span>   */<a name="line.1330"></a>
 <span class="sourceLineNo">1331</span>  @Override<a name="line.1331"></a>
-<span class="sourceLineNo">1332</span>  public GarbageCollectionDefinition getGarbageCollectionDefinition(String id, String orgId,<a name="line.1332"></a>
+<span class="sourceLineNo">1332</span>  public MeasurementPruningDefinition getMeasurementPruningDefinition(String id, String orgId,<a name="line.1332"></a>
 <span class="sourceLineNo">1333</span>      boolean check) throws IdNotFoundException {<a name="line.1333"></a>
 <span class="sourceLineNo">1334</span>    Long startTime = 0l;<a name="line.1334"></a>
 <span class="sourceLineNo">1335</span>    Long endTime = 0l;<a name="line.1335"></a>
 <span class="sourceLineNo">1336</span>    Long diff = 0l;<a name="line.1336"></a>
 <span class="sourceLineNo">1337</span>    if (timingp) {<a name="line.1337"></a>
-<span class="sourceLineNo">1338</span>      timingLogger.log(Level.SEVERE, padding + "Start getGarbageCollectionDefinition(" + id + ", "<a name="line.1338"></a>
+<span class="sourceLineNo">1338</span>      timingLogger.log(Level.SEVERE, padding + "Start getMeasurementPruningDefinition(" + id + ", "<a name="line.1338"></a>
 <span class="sourceLineNo">1339</span>          + orgId + ")");<a name="line.1339"></a>
 <span class="sourceLineNo">1340</span>      padding += "  ";<a name="line.1340"></a>
 <span class="sourceLineNo">1341</span>      startTime = System.nanoTime();<a name="line.1341"></a>
@@ -1351,16 +1351,16 @@
 <span class="sourceLineNo">1343</span>    if (check) {<a name="line.1343"></a>
 <span class="sourceLineNo">1344</span>      getOrganization(orgId, check);<a name="line.1344"></a>
 <span class="sourceLineNo">1345</span>    }<a name="line.1345"></a>
-<span class="sourceLineNo">1346</span>    GarbageCollectionDefinition gcd = getGarbageCollectionDefinitionNoCheck(id, orgId);<a name="line.1346"></a>
+<span class="sourceLineNo">1346</span>    MeasurementPruningDefinition gcd = getMeasurementPruningDefinitionNoCheck(id, orgId);<a name="line.1346"></a>
 <span class="sourceLineNo">1347</span>    if (timingp) {<a name="line.1347"></a>
 <span class="sourceLineNo">1348</span>      endTime = System.nanoTime();<a name="line.1348"></a>
 <span class="sourceLineNo">1349</span>      diff = endTime - startTime;<a name="line.1349"></a>
 <span class="sourceLineNo">1350</span>      padding = padding.substring(0, padding.length() - 2);<a name="line.1350"></a>
-<span class="sourceLineNo">1351</span>      timingLogger.log(Level.SEVERE, padding + "getGarbageCollectionDefinition(" + id + ", "<a name="line.1351"></a>
+<span class="sourceLineNo">1351</span>      timingLogger.log(Level.SEVERE, padding + "getMeasurementPruningDefinition(" + id + ", "<a name="line.1351"></a>
 <span class="sourceLineNo">1352</span>          + orgId + ") took " + (diff / 1E9) + " secs.");<a name="line.1352"></a>
 <span class="sourceLineNo">1353</span>    }<a name="line.1353"></a>
 <span class="sourceLineNo">1354</span>    if (gcd == null) {<a name="line.1354"></a>
-<span class="sourceLineNo">1355</span>      throw new IdNotFoundException(id + " is not a defined GarbageCollectionDefinition id.");<a name="line.1355"></a>
+<span class="sourceLineNo">1355</span>      throw new IdNotFoundException(id + " is not a defined MeasurementPruningDefinition id.");<a name="line.1355"></a>
 <span class="sourceLineNo">1356</span>    }<a name="line.1356"></a>
 <span class="sourceLineNo">1357</span>    return gcd;<a name="line.1357"></a>
 <span class="sourceLineNo">1358</span>  }<a name="line.1358"></a>
@@ -1369,33 +1369,33 @@
 <span class="sourceLineNo">1361</span>   * (non-Javadoc)<a name="line.1361"></a>
 <span class="sourceLineNo">1362</span>   * <a name="line.1362"></a>
 <span class="sourceLineNo">1363</span>   * @see<a name="line.1363"></a>
-<span class="sourceLineNo">1364</span>   * org.wattdepot.server.WattDepotPersistence#getGarbageCollectionDefinitionIds<a name="line.1364"></a>
+<span class="sourceLineNo">1364</span>   * org.wattdepot.server.WattDepotPersistence#getMeasurementPruningDefinitionIds<a name="line.1364"></a>
 <span class="sourceLineNo">1365</span>   * (java.lang.String, boolean)<a name="line.1365"></a>
 <span class="sourceLineNo">1366</span>   */<a name="line.1366"></a>
 <span class="sourceLineNo">1367</span>  @Override<a name="line.1367"></a>
-<span class="sourceLineNo">1368</span>  public List&lt;String&gt; getGarbageCollectionDefinitionIds(String orgId, boolean check)<a name="line.1368"></a>
+<span class="sourceLineNo">1368</span>  public List&lt;String&gt; getMeasurementPruningDefinitionIds(String orgId, boolean check)<a name="line.1368"></a>
 <span class="sourceLineNo">1369</span>      throws IdNotFoundException {<a name="line.1369"></a>
 <span class="sourceLineNo">1370</span>    ArrayList&lt;String&gt; ret = new ArrayList&lt;String&gt;();<a name="line.1370"></a>
-<span class="sourceLineNo">1371</span>    for (GarbageCollectionDefinition gcd : getGarbageCollectionDefinitions(orgId, check)) {<a name="line.1371"></a>
+<span class="sourceLineNo">1371</span>    for (MeasurementPruningDefinition gcd : getMeasurementPruningDefinitions(orgId, check)) {<a name="line.1371"></a>
 <span class="sourceLineNo">1372</span>      ret.add(gcd.getId());<a name="line.1372"></a>
 <span class="sourceLineNo">1373</span>    }<a name="line.1373"></a>
 <span class="sourceLineNo">1374</span>    return ret;<a name="line.1374"></a>
 <span class="sourceLineNo">1375</span>  }<a name="line.1375"></a>
 <span class="sourceLineNo">1376</span><a name="line.1376"></a>
 <span class="sourceLineNo">1377</span>  /**<a name="line.1377"></a>
-<span class="sourceLineNo">1378</span>   * @param id The GarbageCollectionDefinition's id.<a name="line.1378"></a>
+<span class="sourceLineNo">1378</span>   * @param id The MeasurementPruningDefinition's id.<a name="line.1378"></a>
 <span class="sourceLineNo">1379</span>   * @param orgId The Organization's id.<a name="line.1379"></a>
-<span class="sourceLineNo">1380</span>   * @return The GarbageCollectionDefinition with the given id and orgId, or<a name="line.1380"></a>
+<span class="sourceLineNo">1380</span>   * @return The MeasurementPruningDefinition with the given id and orgId, or<a name="line.1380"></a>
 <span class="sourceLineNo">1381</span>   *         null if not defined.<a name="line.1381"></a>
 <span class="sourceLineNo">1382</span>   */<a name="line.1382"></a>
-<span class="sourceLineNo">1383</span>  private GarbageCollectionDefinition getGarbageCollectionDefinitionNoCheck(String id, String orgId) {<a name="line.1383"></a>
-<span class="sourceLineNo">1384</span>    GarbageCollectionDefinition ret = null;<a name="line.1384"></a>
+<span class="sourceLineNo">1383</span>  private MeasurementPruningDefinition getMeasurementPruningDefinitionNoCheck(String id, String orgId) {<a name="line.1383"></a>
+<span class="sourceLineNo">1384</span>    MeasurementPruningDefinition ret = null;<a name="line.1384"></a>
 <span class="sourceLineNo">1385</span>    Session session = Manager.getFactory(getServerProperties()).openSession();<a name="line.1385"></a>
 <span class="sourceLineNo">1386</span>    sessionOpen++;<a name="line.1386"></a>
 <span class="sourceLineNo">1387</span>    session.beginTransaction();<a name="line.1387"></a>
-<span class="sourceLineNo">1388</span>    GarbageCollectionDefinitionImpl gcd = retrieveGarbageCollectionDefinition(session, id, orgId);<a name="line.1388"></a>
+<span class="sourceLineNo">1388</span>    MeasurementPruningDefinitionImpl gcd = retrieveMeasurementPruningDefinition(session, id, orgId);<a name="line.1388"></a>
 <span class="sourceLineNo">1389</span>    if (gcd != null) {<a name="line.1389"></a>
-<span class="sourceLineNo">1390</span>      ret = gcd.toGCD();<a name="line.1390"></a>
+<span class="sourceLineNo">1390</span>      ret = gcd.toMPD();<a name="line.1390"></a>
 <span class="sourceLineNo">1391</span>    }<a name="line.1391"></a>
 <span class="sourceLineNo">1392</span>    session.getTransaction().commit();<a name="line.1392"></a>
 <span class="sourceLineNo">1393</span>    session.close();<a name="line.1393"></a>
@@ -1407,30 +1407,30 @@
 <span class="sourceLineNo">1399</span>   * (non-Javadoc)<a name="line.1399"></a>
 <span class="sourceLineNo">1400</span>   * <a name="line.1400"></a>
 <span class="sourceLineNo">1401</span>   * @see<a name="line.1401"></a>
-<span class="sourceLineNo">1402</span>   * org.wattdepot.server.WattDepotPersistence#getGarbageCollectionDefinitions<a name="line.1402"></a>
+<span class="sourceLineNo">1402</span>   * org.wattdepot.server.WattDepotPersistence#getMeasurementPruningDefinitions<a name="line.1402"></a>
 <span class="sourceLineNo">1403</span>   * (java.lang.String, boolean)<a name="line.1403"></a>
 <span class="sourceLineNo">1404</span>   */<a name="line.1404"></a>
 <span class="sourceLineNo">1405</span>  @Override<a name="line.1405"></a>
-<span class="sourceLineNo">1406</span>  public List&lt;GarbageCollectionDefinition&gt; getGarbageCollectionDefinitions(String orgId,<a name="line.1406"></a>
+<span class="sourceLineNo">1406</span>  public List&lt;MeasurementPruningDefinition&gt; getMeasurementPruningDefinitions(String orgId,<a name="line.1406"></a>
 <span class="sourceLineNo">1407</span>      boolean check) throws IdNotFoundException {<a name="line.1407"></a>
 <span class="sourceLineNo">1408</span>    if (check) {<a name="line.1408"></a>
 <span class="sourceLineNo">1409</span>      getOrganization(orgId, check);<a name="line.1409"></a>
 <span class="sourceLineNo">1410</span>    }<a name="line.1410"></a>
-<span class="sourceLineNo">1411</span>    return getGarbageCollectionDefinitionsNoCheck(orgId);<a name="line.1411"></a>
+<span class="sourceLineNo">1411</span>    return getMeasurementPruningDefinitionsNoCheck(orgId);<a name="line.1411"></a>
 <span class="sourceLineNo">1412</span>  }<a name="line.1412"></a>
 <span class="sourceLineNo">1413</span><a name="line.1413"></a>
 <span class="sourceLineNo">1414</span>  /**<a name="line.1414"></a>
 <span class="sourceLineNo">1415</span>   * @param orgId The Organization's id.<a name="line.1415"></a>
-<span class="sourceLineNo">1416</span>   * @return A list of defined GarbageCollectionDefinitions.<a name="line.1416"></a>
+<span class="sourceLineNo">1416</span>   * @return A list of defined MeasurementPruningDefinitions.<a name="line.1416"></a>
 <span class="sourceLineNo">1417</span>   */<a name="line.1417"></a>
-<span class="sourceLineNo">1418</span>  private List&lt;GarbageCollectionDefinition&gt; getGarbageCollectionDefinitionsNoCheck(String orgId) {<a name="line.1418"></a>
+<span class="sourceLineNo">1418</span>  private List&lt;MeasurementPruningDefinition&gt; getMeasurementPruningDefinitionsNoCheck(String orgId) {<a name="line.1418"></a>
 <span class="sourceLineNo">1419</span>    Session session = Manager.getFactory(getServerProperties()).openSession();<a name="line.1419"></a>
 <span class="sourceLineNo">1420</span>    sessionOpen++;<a name="line.1420"></a>
 <span class="sourceLineNo">1421</span>    session.beginTransaction();<a name="line.1421"></a>
-<span class="sourceLineNo">1422</span>    List&lt;GarbageCollectionDefinitionImpl&gt; r = retrieveGarbageCollectionDefinitions(session, orgId);<a name="line.1422"></a>
-<span class="sourceLineNo">1423</span>    List&lt;GarbageCollectionDefinition&gt; ret = new ArrayList&lt;GarbageCollectionDefinition&gt;();<a name="line.1423"></a>
-<span class="sourceLineNo">1424</span>    for (GarbageCollectionDefinitionImpl gcd : r) {<a name="line.1424"></a>
-<span class="sourceLineNo">1425</span>      ret.add(gcd.toGCD());<a name="line.1425"></a>
+<span class="sourceLineNo">1422</span>    List&lt;MeasurementPruningDefinitionImpl&gt; r = retrieveMeasurementPruningDefinitions(session, orgId);<a name="line.1422"></a>
+<span class="sourceLineNo">1423</span>    List&lt;MeasurementPruningDefinition&gt; ret = new ArrayList&lt;MeasurementPruningDefinition&gt;();<a name="line.1423"></a>
+<span class="sourceLineNo">1424</span>    for (MeasurementPruningDefinitionImpl gcd : r) {<a name="line.1424"></a>
+<span class="sourceLineNo">1425</span>      ret.add(gcd.toMPD());<a name="line.1425"></a>
 <span class="sourceLineNo">1426</span>    }<a name="line.1426"></a>
 <span class="sourceLineNo">1427</span>    session.getTransaction().commit();<a name="line.1427"></a>
 <span class="sourceLineNo">1428</span>    session.close();<a name="line.1428"></a>
@@ -3284,16 +3284,16 @@
 <span class="sourceLineNo">3276</span><a name="line.3276"></a>
 <span class="sourceLineNo">3277</span>  /**<a name="line.3277"></a>
 <span class="sourceLineNo">3278</span>   * @param session The session with an open transaction.<a name="line.3278"></a>
-<span class="sourceLineNo">3279</span>   * @param id the GarbageCollectionDefinition's id.<a name="line.3279"></a>
+<span class="sourceLineNo">3279</span>   * @param id the MeasurementPruningDefinition's id.<a name="line.3279"></a>
 <span class="sourceLineNo">3280</span>   * @param orgId The Organization's id.<a name="line.3280"></a>
-<span class="sourceLineNo">3281</span>   * @return The GarbageCollectionDefinitionImpl or null if not defined.<a name="line.3281"></a>
+<span class="sourceLineNo">3281</span>   * @return The MeasurementPruningDefinitionImpl or null if not defined.<a name="line.3281"></a>
 <span class="sourceLineNo">3282</span>   */<a name="line.3282"></a>
-<span class="sourceLineNo">3283</span>  private GarbageCollectionDefinitionImpl retrieveGarbageCollectionDefinition(Session session,<a name="line.3283"></a>
+<span class="sourceLineNo">3283</span>  private MeasurementPruningDefinitionImpl retrieveMeasurementPruningDefinition(Session session,<a name="line.3283"></a>
 <span class="sourceLineNo">3284</span>      String id, String orgId) {<a name="line.3284"></a>
 <span class="sourceLineNo">3285</span>    OrganizationImpl org = retrieveOrganization(session, orgId);<a name="line.3285"></a>
 <span class="sourceLineNo">3286</span>    @SuppressWarnings("unchecked")<a name="line.3286"></a>
-<span class="sourceLineNo">3287</span>    List&lt;GarbageCollectionDefinitionImpl&gt; result = (List&lt;GarbageCollectionDefinitionImpl&gt;) session<a name="line.3287"></a>
-<span class="sourceLineNo">3288</span>        .createQuery("FROM GarbageCollectionDefinitionImpl WHERE id = :id AND org = :org")<a name="line.3288"></a>
+<span class="sourceLineNo">3287</span>    List&lt;MeasurementPruningDefinitionImpl&gt; result = (List&lt;MeasurementPruningDefinitionImpl&gt;) session<a name="line.3287"></a>
+<span class="sourceLineNo">3288</span>        .createQuery("FROM MeasurementPruningDefinitionImpl WHERE id = :id AND org = :org")<a name="line.3288"></a>
 <span class="sourceLineNo">3289</span>        .setParameter("id", id).setParameter("org", org).list();<a name="line.3289"></a>
 <span class="sourceLineNo">3290</span>    if (result.size() == 1) {<a name="line.3290"></a>
 <span class="sourceLineNo">3291</span>      return result.get(0);<a name="line.3291"></a>
@@ -3304,14 +3304,14 @@
 <span class="sourceLineNo">3296</span>  /**<a name="line.3296"></a>
 <span class="sourceLineNo">3297</span>   * @param session The Session with an open transaction.<a name="line.3297"></a>
 <span class="sourceLineNo">3298</span>   * @param orgId The Organization's id.<a name="line.3298"></a>
-<span class="sourceLineNo">3299</span>   * @return A list of the defined GarbageCollectionDefinitionImpls.<a name="line.3299"></a>
+<span class="sourceLineNo">3299</span>   * @return A list of the defined MeasurementPruningDefinitionImpls.<a name="line.3299"></a>
 <span class="sourceLineNo">3300</span>   */<a name="line.3300"></a>
-<span class="sourceLineNo">3301</span>  private List&lt;GarbageCollectionDefinitionImpl&gt; retrieveGarbageCollectionDefinitions(<a name="line.3301"></a>
+<span class="sourceLineNo">3301</span>  private List&lt;MeasurementPruningDefinitionImpl&gt; retrieveMeasurementPruningDefinitions(<a name="line.3301"></a>
 <span class="sourceLineNo">3302</span>      Session session, String orgId) {<a name="line.3302"></a>
 <span class="sourceLineNo">3303</span>    OrganizationImpl org = retrieveOrganization(session, orgId);<a name="line.3303"></a>
 <span class="sourceLineNo">3304</span>    @SuppressWarnings("unchecked")<a name="line.3304"></a>
-<span class="sourceLineNo">3305</span>    List&lt;GarbageCollectionDefinitionImpl&gt; result = (List&lt;GarbageCollectionDefinitionImpl&gt;) session<a name="line.3305"></a>
-<span class="sourceLineNo">3306</span>        .createQuery("FROM GarbageCollectionDefinitionImpl WHERE org = :org")<a name="line.3306"></a>
+<span class="sourceLineNo">3305</span>    List&lt;MeasurementPruningDefinitionImpl&gt; result = (List&lt;MeasurementPruningDefinitionImpl&gt;) session<a name="line.3305"></a>
+<span class="sourceLineNo">3306</span>        .createQuery("FROM MeasurementPruningDefinitionImpl WHERE org = :org")<a name="line.3306"></a>
 <span class="sourceLineNo">3307</span>        .setParameter("org", org).list();<a name="line.3307"></a>
 <span class="sourceLineNo">3308</span>    return result;<a name="line.3308"></a>
 <span class="sourceLineNo">3309</span>  }<a name="line.3309"></a>
@@ -3615,264 +3615,269 @@
 <span class="sourceLineNo">3607</span>        process.getOrganizationId()));<a name="line.3607"></a>
 <span class="sourceLineNo">3608</span>    impl.setSensor(retrieveSensor(session, process.getSensorId(), process.getOrganizationId()));<a name="line.3608"></a>
 <span class="sourceLineNo">3609</span>    impl.setOrg(retrieveOrganization(session, process.getOrganizationId()));<a name="line.3609"></a>
-<span class="sourceLineNo">3610</span>    storeCollectorProcessDefinition(session, impl);<a name="line.3610"></a>
-<span class="sourceLineNo">3611</span>    ret = impl.toCPD();<a name="line.3611"></a>
-<span class="sourceLineNo">3612</span>    session.getTransaction().commit();<a name="line.3612"></a>
-<span class="sourceLineNo">3613</span>    session.close();<a name="line.3613"></a>
-<span class="sourceLineNo">3614</span>    sessionClose++;<a name="line.3614"></a>
-<span class="sourceLineNo">3615</span>    return ret;<a name="line.3615"></a>
-<span class="sourceLineNo">3616</span>  }<a name="line.3616"></a>
-<span class="sourceLineNo">3617</span><a name="line.3617"></a>
-<span class="sourceLineNo">3618</span>  /*<a name="line.3618"></a>
-<span class="sourceLineNo">3619</span>   * (non-Javadoc)<a name="line.3619"></a>
-<span class="sourceLineNo">3620</span>   * <a name="line.3620"></a>
-<span class="sourceLineNo">3621</span>   * @see<a name="line.3621"></a>
-<span class="sourceLineNo">3622</span>   * org.wattdepot.server.WattDepotPersistence#updateGarbageCollectionDefinition<a name="line.3622"></a>
-<span class="sourceLineNo">3623</span>   * (org.wattdepot.common.domainmodel.GarbageCollectionDefinition)<a name="line.3623"></a>
-<span class="sourceLineNo">3624</span>   */<a name="line.3624"></a>
-<span class="sourceLineNo">3625</span>  @Override<a name="line.3625"></a>
-<span class="sourceLineNo">3626</span>  public GarbageCollectionDefinition updateGarbageCollectionDefinition(<a name="line.3626"></a>
-<span class="sourceLineNo">3627</span>      GarbageCollectionDefinition gcd) throws IdNotFoundException {<a name="line.3627"></a>
-<span class="sourceLineNo">3628</span>    Session session = Manager.getFactory(getServerProperties()).openSession();<a name="line.3628"></a>
-<span class="sourceLineNo">3629</span>    sessionOpen++;<a name="line.3629"></a>
-<span class="sourceLineNo">3630</span>    session.beginTransaction();<a name="line.3630"></a>
-<span class="sourceLineNo">3631</span>    GarbageCollectionDefinitionImpl impl = retrieveGarbageCollectionDefinition(session,<a name="line.3631"></a>
-<span class="sourceLineNo">3632</span>        gcd.getId(), gcd.getOrganizationId());<a name="line.3632"></a>
-<span class="sourceLineNo">3633</span>    impl.setName(gcd.getName());<a name="line.3633"></a>
-<span class="sourceLineNo">3634</span>    impl.setDepository(retrieveDepository(session, gcd.getDepositoryId(), gcd.getOrganizationId()));<a name="line.3634"></a>
-<span class="sourceLineNo">3635</span>    impl.setSensor(gcd.getSensorId());<a name="line.3635"></a>
-<span class="sourceLineNo">3636</span>    impl.setIgnoreWindowDays(gcd.getIgnoreWindowDays());<a name="line.3636"></a>
-<span class="sourceLineNo">3637</span>    impl.setCollectWindowDays(gcd.getCollectWindowDays());<a name="line.3637"></a>
-<span class="sourceLineNo">3638</span>    impl.setMinGapSeconds(gcd.getMinGapSeconds());<a name="line.3638"></a>
-<span class="sourceLineNo">3639</span>    impl.setLastStarted(gcd.getLastStarted());<a name="line.3639"></a>
-<span class="sourceLineNo">3640</span>    impl.setLastCompleted(gcd.getLastCompleted());<a name="line.3640"></a>
-<span class="sourceLineNo">3641</span>    impl.setNumMeasurementsCollected(gcd.getNumMeasurementsCollected());<a name="line.3641"></a>
-<span class="sourceLineNo">3642</span>    session.saveOrUpdate(impl);<a name="line.3642"></a>
-<span class="sourceLineNo">3643</span>    session.getTransaction().commit();<a name="line.3643"></a>
-<span class="sourceLineNo">3644</span>    session.close();<a name="line.3644"></a>
-<span class="sourceLineNo">3645</span>    sessionClose++;<a name="line.3645"></a>
-<span class="sourceLineNo">3646</span>    return null;<a name="line.3646"></a>
-<span class="sourceLineNo">3647</span>  }<a name="line.3647"></a>
-<span class="sourceLineNo">3648</span><a name="line.3648"></a>
-<span class="sourceLineNo">3649</span>  /*<a name="line.3649"></a>
-<span class="sourceLineNo">3650</span>   * (non-Javadoc)<a name="line.3650"></a>
-<span class="sourceLineNo">3651</span>   * <a name="line.3651"></a>
-<span class="sourceLineNo">3652</span>   * @see<a name="line.3652"></a>
-<span class="sourceLineNo">3653</span>   * org.wattdepot.server.WattDepot#updateMeasurementType(org.wattdepot.datamodel<a name="line.3653"></a>
-<span class="sourceLineNo">3654</span>   * .MeasurementType)<a name="line.3654"></a>
-<span class="sourceLineNo">3655</span>   */<a name="line.3655"></a>
-<span class="sourceLineNo">3656</span>  @Override<a name="line.3656"></a>
-<span class="sourceLineNo">3657</span>  public MeasurementType updateMeasurementType(MeasurementType type) {<a name="line.3657"></a>
-<span class="sourceLineNo">3658</span>    Session session = Manager.getFactory(getServerProperties()).openSession();<a name="line.3658"></a>
-<span class="sourceLineNo">3659</span>    sessionOpen++;<a name="line.3659"></a>
-<span class="sourceLineNo">3660</span>    session.beginTransaction();<a name="line.3660"></a>
-<span class="sourceLineNo">3661</span>    MeasurementTypeImpl impl = retrieveMeasurementType(session, type.getId());<a name="line.3661"></a>
-<span class="sourceLineNo">3662</span>    impl.setName(type.getName());<a name="line.3662"></a>
-<span class="sourceLineNo">3663</span>    impl.setUnits(type.getUnits());<a name="line.3663"></a>
-<span class="sourceLineNo">3664</span>    session.saveOrUpdate(impl);<a name="line.3664"></a>
-<span class="sourceLineNo">3665</span>    session.getTransaction().commit();<a name="line.3665"></a>
-<span class="sourceLineNo">3666</span>    session.close();<a name="line.3666"></a>
-<span class="sourceLineNo">3667</span>    sessionClose++;<a name="line.3667"></a>
-<span class="sourceLineNo">3668</span><a name="line.3668"></a>
-<span class="sourceLineNo">3669</span>    return type;<a name="line.3669"></a>
-<span class="sourceLineNo">3670</span>  }<a name="line.3670"></a>
-<span class="sourceLineNo">3671</span><a name="line.3671"></a>
-<span class="sourceLineNo">3672</span>  /*<a name="line.3672"></a>
-<span class="sourceLineNo">3673</span>   * (non-Javadoc)<a name="line.3673"></a>
-<span class="sourceLineNo">3674</span>   * <a name="line.3674"></a>
-<span class="sourceLineNo">3675</span>   * @see<a name="line.3675"></a>
-<span class="sourceLineNo">3676</span>   * org.wattdepot.server.WattDepot#updateOrganization(org.wattdepot.datamodel<a name="line.3676"></a>
-<span class="sourceLineNo">3677</span>   * .Organization)<a name="line.3677"></a>
-<span class="sourceLineNo">3678</span>   */<a name="line.3678"></a>
-<span class="sourceLineNo">3679</span>  @Override<a name="line.3679"></a>
-<span class="sourceLineNo">3680</span>  public Organization updateOrganization(Organization org) throws IdNotFoundException {<a name="line.3680"></a>
-<span class="sourceLineNo">3681</span>    getOrganization(org.getId(), true);<a name="line.3681"></a>
-<span class="sourceLineNo">3682</span>    for (String s : org.getUsers()) {<a name="line.3682"></a>
-<span class="sourceLineNo">3683</span>      getUser(s, org.getId(), true);<a name="line.3683"></a>
-<span class="sourceLineNo">3684</span>    }<a name="line.3684"></a>
-<span class="sourceLineNo">3685</span>    Organization ret = null;<a name="line.3685"></a>
-<span class="sourceLineNo">3686</span>    Session session = Manager.getFactory(getServerProperties()).openSession();<a name="line.3686"></a>
-<span class="sourceLineNo">3687</span>    sessionOpen++;<a name="line.3687"></a>
-<span class="sourceLineNo">3688</span>    session.beginTransaction();<a name="line.3688"></a>
-<span class="sourceLineNo">3689</span>    OrganizationImpl impl = retrieveOrganization(session, org.getId());<a name="line.3689"></a>
-<span class="sourceLineNo">3690</span>    impl.setId(org.getId());<a name="line.3690"></a>
-<span class="sourceLineNo">3691</span>    impl.setName(org.getName());<a name="line.3691"></a>
-<span class="sourceLineNo">3692</span>    for (String s : org.getUsers()) {<a name="line.3692"></a>
-<span class="sourceLineNo">3693</span>      UserInfoImpl u = retrieveUser(session, s, org.getId());<a name="line.3693"></a>
-<span class="sourceLineNo">3694</span>      if (u != null) {<a name="line.3694"></a>
-<span class="sourceLineNo">3695</span>        impl.getUsers().add(u);<a name="line.3695"></a>
-<span class="sourceLineNo">3696</span>      }<a name="line.3696"></a>
-<span class="sourceLineNo">3697</span>    }<a name="line.3697"></a>
-<span class="sourceLineNo">3698</span>    session.saveOrUpdate(impl);<a name="line.3698"></a>
-<span class="sourceLineNo">3699</span>    ret = impl.toOrganization();<a name="line.3699"></a>
-<span class="sourceLineNo">3700</span>    session.getTransaction().commit();<a name="line.3700"></a>
-<span class="sourceLineNo">3701</span>    session.close();<a name="line.3701"></a>
-<span class="sourceLineNo">3702</span>    sessionClose++;<a name="line.3702"></a>
-<span class="sourceLineNo">3703</span>    return ret;<a name="line.3703"></a>
-<span class="sourceLineNo">3704</span>  }<a name="line.3704"></a>
-<span class="sourceLineNo">3705</span><a name="line.3705"></a>
-<span class="sourceLineNo">3706</span>  /*<a name="line.3706"></a>
-<span class="sourceLineNo">3707</span>   * (non-Javadoc)<a name="line.3707"></a>
-<span class="sourceLineNo">3708</span>   * <a name="line.3708"></a>
-<span class="sourceLineNo">3709</span>   * @see<a name="line.3709"></a>
-<span class="sourceLineNo">3710</span>   * org.wattdepot.server.WattDepot#updateSensor(org.wattdepot.datamodel.Sensor<a name="line.3710"></a>
-<span class="sourceLineNo">3711</span>   * )<a name="line.3711"></a>
-<span class="sourceLineNo">3712</span>   */<a name="line.3712"></a>
-<span class="sourceLineNo">3713</span>  @Override<a name="line.3713"></a>
-<span class="sourceLineNo">3714</span>  public Sensor updateSensor(Sensor sensor) throws IdNotFoundException {<a name="line.3714"></a>
-<span class="sourceLineNo">3715</span>    getOrganization(sensor.getOrganizationId(), true);<a name="line.3715"></a>
-<span class="sourceLineNo">3716</span>    getSensorModel(sensor.getModelId(), true);<a name="line.3716"></a>
-<span class="sourceLineNo">3717</span>    Sensor ret = null;<a name="line.3717"></a>
-<span class="sourceLineNo">3718</span>    Session session = Manager.getFactory(getServerProperties()).openSession();<a name="line.3718"></a>
-<span class="sourceLineNo">3719</span>    sessionOpen++;<a name="line.3719"></a>
-<span class="sourceLineNo">3720</span>    session.beginTransaction();<a name="line.3720"></a>
-<span class="sourceLineNo">3721</span>    SensorImpl impl = retrieveSensor(session, sensor.getId(), sensor.getOrganizationId());<a name="line.3721"></a>
-<span class="sourceLineNo">3722</span>    impl.setId(sensor.getId());<a name="line.3722"></a>
-<span class="sourceLineNo">3723</span>    impl.setName(sensor.getName());<a name="line.3723"></a>
-<span class="sourceLineNo">3724</span>    impl.setOrg(retrieveOrganization(session, sensor.getOrganizationId()));<a name="line.3724"></a>
-<span class="sourceLineNo">3725</span>    impl.setModel(retrieveSensorModel(session, sensor.getModelId()));<a name="line.3725"></a>
-<span class="sourceLineNo">3726</span>    Set&lt;PropertyImpl&gt; props = new HashSet&lt;PropertyImpl&gt;();<a name="line.3726"></a>
-<span class="sourceLineNo">3727</span>    for (Property p : sensor.getProperties()) {<a name="line.3727"></a>
-<span class="sourceLineNo">3728</span>      props.add(new PropertyImpl(p));<a name="line.3728"></a>
-<span class="sourceLineNo">3729</span>    }<a name="line.3729"></a>
-<span class="sourceLineNo">3730</span>    impl.setProperties(props);<a name="line.3730"></a>
-<span class="sourceLineNo">3731</span>    storeSensor(session, impl);<a name="line.3731"></a>
-<span class="sourceLineNo">3732</span>    ret = impl.toSensor();<a name="line.3732"></a>
-<span class="sourceLineNo">3733</span>    session.getTransaction().commit();<a name="line.3733"></a>
-<span class="sourceLineNo">3734</span>    session.close();<a name="line.3734"></a>
-<span class="sourceLineNo">3735</span>    sessionClose++;<a name="line.3735"></a>
-<span class="sourceLineNo">3736</span>    return ret;<a name="line.3736"></a>
-<span class="sourceLineNo">3737</span>  }<a name="line.3737"></a>
-<span class="sourceLineNo">3738</span><a name="line.3738"></a>
-<span class="sourceLineNo">3739</span>  /*<a name="line.3739"></a>
-<span class="sourceLineNo">3740</span>   * (non-Javadoc)<a name="line.3740"></a>
-<span class="sourceLineNo">3741</span>   * <a name="line.3741"></a>
-<span class="sourceLineNo">3742</span>   * @see<a name="line.3742"></a>
-<span class="sourceLineNo">3743</span>   * org.wattdepot.server.WattDepot#updateSensorGroup(org.wattdepot.datamodel<a name="line.3743"></a>
-<span class="sourceLineNo">3744</span>   * .SensorGroup)<a name="line.3744"></a>
-<span class="sourceLineNo">3745</span>   */<a name="line.3745"></a>
-<span class="sourceLineNo">3746</span>  @Override<a name="line.3746"></a>
-<span class="sourceLineNo">3747</span>  public SensorGroup updateSensorGroup(SensorGroup group) throws IdNotFoundException {<a name="line.3747"></a>
-<span class="sourceLineNo">3748</span>    getOrganization(group.getOrganizationId(), true);<a name="line.3748"></a>
-<span class="sourceLineNo">3749</span>    getSensorGroup(group.getId(), group.getOrganizationId(), true);<a name="line.3749"></a>
-<span class="sourceLineNo">3750</span>    // validate the list of sensor ids.<a name="line.3750"></a>
-<span class="sourceLineNo">3751</span>    for (String id : group.getSensors()) {<a name="line.3751"></a>
-<span class="sourceLineNo">3752</span>      getSensor(id, group.getOrganizationId(), true);<a name="line.3752"></a>
-<span class="sourceLineNo">3753</span>    }<a name="line.3753"></a>
-<span class="sourceLineNo">3754</span>    SensorGroup ret = null;<a name="line.3754"></a>
-<span class="sourceLineNo">3755</span>    Session session = Manager.getFactory(getServerProperties()).openSession();<a name="line.3755"></a>
-<span class="sourceLineNo">3756</span>    sessionOpen++;<a name="line.3756"></a>
-<span class="sourceLineNo">3757</span>    session.beginTransaction();<a name="line.3757"></a>
-<span class="sourceLineNo">3758</span>    OrganizationImpl org = retrieveOrganization(session, group.getOrganizationId());<a name="line.3758"></a>
-<span class="sourceLineNo">3759</span>    SensorGroupImpl impl = retrieveSensorGroup(session, group.getId(), group.getOrganizationId());<a name="line.3759"></a>
-<span class="sourceLineNo">3760</span>    impl.setId(group.getId());<a name="line.3760"></a>
-<span class="sourceLineNo">3761</span>    impl.setName(group.getName());<a name="line.3761"></a>
-<span class="sourceLineNo">3762</span>    impl.setOrg(org);<a name="line.3762"></a>
-<span class="sourceLineNo">3763</span>    Set&lt;SensorImpl&gt; sensors = new HashSet&lt;SensorImpl&gt;();<a name="line.3763"></a>
-<span class="sourceLineNo">3764</span>    for (String s : group.getSensors()) {<a name="line.3764"></a>
-<span class="sourceLineNo">3765</span>      sensors.add(retrieveSensor(session, s, group.getOrganizationId()));<a name="line.3765"></a>
-<span class="sourceLineNo">3766</span>    }<a name="line.3766"></a>
-<span class="sourceLineNo">3767</span>    impl.setSensors(sensors);<a name="line.3767"></a>
-<span class="sourceLineNo">3768</span>    session.saveOrUpdate(impl);<a name="line.3768"></a>
-<span class="sourceLineNo">3769</span>    ret = impl.toSensorGroup();<a name="line.3769"></a>
-<span class="sourceLineNo">3770</span>    session.getTransaction().commit();<a name="line.3770"></a>
-<span class="sourceLineNo">3771</span>    session.close();<a name="line.3771"></a>
-<span class="sourceLineNo">3772</span>    sessionClose++;<a name="line.3772"></a>
-<span class="sourceLineNo">3773</span>    return ret;<a name="line.3773"></a>
-<span class="sourceLineNo">3774</span>  }<a name="line.3774"></a>
-<span class="sourceLineNo">3775</span><a name="line.3775"></a>
-<span class="sourceLineNo">3776</span>  /*<a name="line.3776"></a>
-<span class="sourceLineNo">3777</span>   * (non-Javadoc)<a name="line.3777"></a>
-<span class="sourceLineNo">3778</span>   * <a name="line.3778"></a>
-<span class="sourceLineNo">3779</span>   * @see<a name="line.3779"></a>
-<span class="sourceLineNo">3780</span>   * org.wattdepot.server.WattDepot#updateSensorModel(org.wattdepot.datamodel<a name="line.3780"></a>
-<span class="sourceLineNo">3781</span>   * .SensorModel)<a name="line.3781"></a>
-<span class="sourceLineNo">3782</span>   */<a name="line.3782"></a>
-<span class="sourceLineNo">3783</span>  @Override<a name="line.3783"></a>
-<span class="sourceLineNo">3784</span>  public SensorModel updateSensorModel(SensorModel model) throws IdNotFoundException {<a name="line.3784"></a>
-<span class="sourceLineNo">3785</span>    getSensorModel(model.getId(), true);<a name="line.3785"></a>
-<span class="sourceLineNo">3786</span>    SensorModel ret = null;<a name="line.3786"></a>
-<span class="sourceLineNo">3787</span>    Session session = Manager.getFactory(getServerProperties()).openSession();<a name="line.3787"></a>
-<span class="sourceLineNo">3788</span>    sessionOpen++;<a name="line.3788"></a>
-<span class="sourceLineNo">3789</span>    session.beginTransaction();<a name="line.3789"></a>
-<span class="sourceLineNo">3790</span>    SensorModelImpl impl = retrieveSensorModel(session, model.getId());<a name="line.3790"></a>
-<span class="sourceLineNo">3791</span>    impl.setName(model.getName());<a name="line.3791"></a>
-<span class="sourceLineNo">3792</span>    impl.setProtocol(model.getProtocol());<a name="line.3792"></a>
-<span class="sourceLineNo">3793</span>    impl.setId(model.getId());<a name="line.3793"></a>
-<span class="sourceLineNo">3794</span>    impl.setType(model.getType());<a name="line.3794"></a>
-<span class="sourceLineNo">3795</span>    impl.setVersion(model.getVersion());<a name="line.3795"></a>
-<span class="sourceLineNo">3796</span>    session.saveOrUpdate(impl);<a name="line.3796"></a>
-<span class="sourceLineNo">3797</span>    ret = impl.toSensorModel();<a name="line.3797"></a>
-<span class="sourceLineNo">3798</span>    session.getTransaction().commit();<a name="line.3798"></a>
-<span class="sourceLineNo">3799</span>    session.close();<a name="line.3799"></a>
-<span class="sourceLineNo">3800</span>    sessionClose++;<a name="line.3800"></a>
-<span class="sourceLineNo">3801</span>    return ret;<a name="line.3801"></a>
-<span class="sourceLineNo">3802</span>  }<a name="line.3802"></a>
-<span class="sourceLineNo">3803</span><a name="line.3803"></a>
-<span class="sourceLineNo">3804</span>  /*<a name="line.3804"></a>
-<span class="sourceLineNo">3805</span>   * (non-Javadoc)<a name="line.3805"></a>
-<span class="sourceLineNo">3806</span>   * <a name="line.3806"></a>
-<span class="sourceLineNo">3807</span>   * @see org.wattdepot.server.WattDepot#updateUserInfo(org.wattdepot.datamodel<a name="line.3807"></a>
-<span class="sourceLineNo">3808</span>   * .UserInfo)<a name="line.3808"></a>
-<span class="sourceLineNo">3809</span>   */<a name="line.3809"></a>
-<span class="sourceLineNo">3810</span>  @Override<a name="line.3810"></a>
-<span class="sourceLineNo">3811</span>  public UserInfo updateUserInfo(UserInfo user) throws IdNotFoundException {<a name="line.3811"></a>
-<span class="sourceLineNo">3812</span>    getUser(user.getUid(), user.getOrganizationId(), true);<a name="line.3812"></a>
-<span class="sourceLineNo">3813</span>    UserInfo ret = null;<a name="line.3813"></a>
-<span class="sourceLineNo">3814</span>    Session session = Manager.getFactory(getServerProperties()).openSession();<a name="line.3814"></a>
-<span class="sourceLineNo">3815</span>    sessionOpen++;<a name="line.3815"></a>
-<span class="sourceLineNo">3816</span>    session.beginTransaction();<a name="line.3816"></a>
-<span class="sourceLineNo">3817</span>    OrganizationImpl orgImpl = retrieveOrganization(session, user.getOrganizationId());<a name="line.3817"></a>
-<span class="sourceLineNo">3818</span>    UserInfoImpl impl = retrieveUser(session, user.getUid(), user.getOrganizationId());<a name="line.3818"></a>
-<span class="sourceLineNo">3819</span>    impl.setUid(user.getUid());<a name="line.3819"></a>
-<span class="sourceLineNo">3820</span>    impl.setFirstName(user.getFirstName());<a name="line.3820"></a>
-<span class="sourceLineNo">3821</span>    impl.setLastName(user.getLastName());<a name="line.3821"></a>
-<span class="sourceLineNo">3822</span>    impl.setEmail(user.getEmail());<a name="line.3822"></a>
-<span class="sourceLineNo">3823</span>    Set&lt;PropertyImpl&gt; props = new HashSet&lt;PropertyImpl&gt;();<a name="line.3823"></a>
-<span class="sourceLineNo">3824</span>    for (Property p : user.getProperties()) {<a name="line.3824"></a>
-<span class="sourceLineNo">3825</span>      PropertyImpl pi = new PropertyImpl(p);<a name="line.3825"></a>
-<span class="sourceLineNo">3826</span>      props.add(pi);<a name="line.3826"></a>
-<span class="sourceLineNo">3827</span>      session.saveOrUpdate(pi);<a name="line.3827"></a>
-<span class="sourceLineNo">3828</span>    }<a name="line.3828"></a>
-<span class="sourceLineNo">3829</span>    impl.setProperties(props);<a name="line.3829"></a>
-<span class="sourceLineNo">3830</span>    impl.setOrg(orgImpl);<a name="line.3830"></a>
-<span class="sourceLineNo">3831</span>    session.saveOrUpdate(orgImpl);<a name="line.3831"></a>
-<span class="sourceLineNo">3832</span>    session.saveOrUpdate(impl);<a name="line.3832"></a>
-<span class="sourceLineNo">3833</span>    ret = impl.toUserInfo();<a name="line.3833"></a>
-<span class="sourceLineNo">3834</span>    session.getTransaction().commit();<a name="line.3834"></a>
-<span class="sourceLineNo">3835</span>    session.close();<a name="line.3835"></a>
-<span class="sourceLineNo">3836</span>    sessionClose++;<a name="line.3836"></a>
-<span class="sourceLineNo">3837</span>    return ret;<a name="line.3837"></a>
-<span class="sourceLineNo">3838</span>  }<a name="line.3838"></a>
-<span class="sourceLineNo">3839</span><a name="line.3839"></a>
-<span class="sourceLineNo">3840</span>  /*<a name="line.3840"></a>
-<span class="sourceLineNo">3841</span>   * (non-Javadoc)<a name="line.3841"></a>
-<span class="sourceLineNo">3842</span>   * <a name="line.3842"></a>
-<span class="sourceLineNo">3843</span>   * @see<a name="line.3843"></a>
-<span class="sourceLineNo">3844</span>   * org.wattdepot.server.WattDepot#updateUserPassword(org.wattdepot.datamodel<a name="line.3844"></a>
-<span class="sourceLineNo">3845</span>   * .UserPassword)<a name="line.3845"></a>
-<span class="sourceLineNo">3846</span>   */<a name="line.3846"></a>
-<span class="sourceLineNo">3847</span>  @Override<a name="line.3847"></a>
-<span class="sourceLineNo">3848</span>  public UserPassword updateUserPassword(UserPassword password) throws IdNotFoundException {<a name="line.3848"></a>
-<span class="sourceLineNo">3849</span>    UserPassword ret = null;<a name="line.3849"></a>
-<span class="sourceLineNo">3850</span>    getUserPassword(password.getUid(), password.getOrganizationId(), true);<a name="line.3850"></a>
-<span class="sourceLineNo">3851</span>    Session session = Manager.getFactory(getServerProperties()).openSession();<a name="line.3851"></a>
-<span class="sourceLineNo">3852</span>    sessionOpen++;<a name="line.3852"></a>
-<span class="sourceLineNo">3853</span>    session.beginTransaction();<a name="line.3853"></a>
-<span class="sourceLineNo">3854</span>    UserPasswordImpl impl = retrieveUserPassword(session, password.getUid(),<a name="line.3854"></a>
-<span class="sourceLineNo">3855</span>        password.getOrganizationId());<a name="line.3855"></a>
-<span class="sourceLineNo">3856</span>    impl.setEncryptedPassword(password.getEncryptedPassword());<a name="line.3856"></a>
-<span class="sourceLineNo">3857</span>    impl.setOrg(retrieveOrganization(session, password.getOrganizationId()));<a name="line.3857"></a>
-<span class="sourceLineNo">3858</span>    impl.setUser(retrieveUser(session, password.getUid(), password.getOrganizationId()));<a name="line.3858"></a>
-<span class="sourceLineNo">3859</span>    session.saveOrUpdate(impl);<a name="line.3859"></a>
-<span class="sourceLineNo">3860</span>    ret = impl.toUserPassword();<a name="line.3860"></a>
-<span class="sourceLineNo">3861</span>    session.getTransaction().commit();<a name="line.3861"></a>
-<span class="sourceLineNo">3862</span>    session.close();<a name="line.3862"></a>
-<span class="sourceLineNo">3863</span>    sessionClose++;<a name="line.3863"></a>
-<span class="sourceLineNo">3864</span>    return ret;<a name="line.3864"></a>
-<span class="sourceLineNo">3865</span>  }<a name="line.3865"></a>
-<span class="sourceLineNo">3866</span><a name="line.3866"></a>
-<span class="sourceLineNo">3867</span>}<a name="line.3867"></a>
+<span class="sourceLineNo">3610</span>    Set&lt;PropertyImpl&gt; props = new HashSet&lt;PropertyImpl&gt;();<a name="line.3610"></a>
+<span class="sourceLineNo">3611</span>    for (Property p : process.getProperties()) {<a name="line.3611"></a>
+<span class="sourceLineNo">3612</span>      props.add(new PropertyImpl(p));<a name="line.3612"></a>
+<span class="sourceLineNo">3613</span>    }<a name="line.3613"></a>
+<span class="sourceLineNo">3614</span>    impl.setProperties(props);<a name="line.3614"></a>
+<span class="sourceLineNo">3615</span>    storeCollectorProcessDefinition(session, impl);<a name="line.3615"></a>
+<span class="sourceLineNo">3616</span>    ret = impl.toCPD();<a name="line.3616"></a>
+<span class="sourceLineNo">3617</span>    session.getTransaction().commit();<a name="line.3617"></a>
+<span class="sourceLineNo">3618</span>    session.close();<a name="line.3618"></a>
+<span class="sourceLineNo">3619</span>    sessionClose++;<a name="line.3619"></a>
+<span class="sourceLineNo">3620</span>    return ret;<a name="line.3620"></a>
+<span class="sourceLineNo">3621</span>  }<a name="line.3621"></a>
+<span class="sourceLineNo">3622</span><a name="line.3622"></a>
+<span class="sourceLineNo">3623</span>  /*<a name="line.3623"></a>
+<span class="sourceLineNo">3624</span>   * (non-Javadoc)<a name="line.3624"></a>
+<span class="sourceLineNo">3625</span>   * <a name="line.3625"></a>
+<span class="sourceLineNo">3626</span>   * @see<a name="line.3626"></a>
+<span class="sourceLineNo">3627</span>   * org.wattdepot.server.WattDepotPersistence#updateMeasurementPruningDefinition<a name="line.3627"></a>
+<span class="sourceLineNo">3628</span>   * (org.wattdepot.common.domainmodel.MeasurementPruningDefinition)<a name="line.3628"></a>
+<span class="sourceLineNo">3629</span>   */<a name="line.3629"></a>
+<span class="sourceLineNo">3630</span>  @Override<a name="line.3630"></a>
+<span class="sourceLineNo">3631</span>  public MeasurementPruningDefinition updateMeasurementPruningDefinition(<a name="line.3631"></a>
+<span class="sourceLineNo">3632</span>      MeasurementPruningDefinition gcd) throws IdNotFoundException {<a name="line.3632"></a>
+<span class="sourceLineNo">3633</span>    Session session = Manager.getFactory(getServerProperties()).openSession();<a name="line.3633"></a>
+<span class="sourceLineNo">3634</span>    sessionOpen++;<a name="line.3634"></a>
+<span class="sourceLineNo">3635</span>    session.beginTransaction();<a name="line.3635"></a>
+<span class="sourceLineNo">3636</span>    MeasurementPruningDefinitionImpl impl = retrieveMeasurementPruningDefinition(session,<a name="line.3636"></a>
+<span class="sourceLineNo">3637</span>        gcd.getId(), gcd.getOrganizationId());<a name="line.3637"></a>
+<span class="sourceLineNo">3638</span>    impl.setName(gcd.getName());<a name="line.3638"></a>
+<span class="sourceLineNo">3639</span>    impl.setDepository(retrieveDepository(session, gcd.getDepositoryId(), gcd.getOrganizationId()));<a name="line.3639"></a>
+<span class="sourceLineNo">3640</span>    impl.setSensor(gcd.getSensorId());<a name="line.3640"></a>
+<span class="sourceLineNo">3641</span>    impl.setIgnoreWindowDays(gcd.getIgnoreWindowDays());<a name="line.3641"></a>
+<span class="sourceLineNo">3642</span>    impl.setCollectWindowDays(gcd.getCollectWindowDays());<a name="line.3642"></a>
+<span class="sourceLineNo">3643</span>    impl.setMinGapSeconds(gcd.getMinGapSeconds());<a name="line.3643"></a>
+<span class="sourceLineNo">3644</span>    impl.setLastStarted(gcd.getLastStarted());<a name="line.3644"></a>
+<span class="sourceLineNo">3645</span>    impl.setLastCompleted(gcd.getLastCompleted());<a name="line.3645"></a>
+<span class="sourceLineNo">3646</span>    impl.setNumMeasurementsCollected(gcd.getNumMeasurementsCollected());<a name="line.3646"></a>
+<span class="sourceLineNo">3647</span>    session.saveOrUpdate(impl);<a name="line.3647"></a>
+<span class="sourceLineNo">3648</span>    session.getTransaction().commit();<a name="line.3648"></a>
+<span class="sourceLineNo">3649</span>    session.close();<a name="line.3649"></a>
+<span class="sourceLineNo">3650</span>    sessionClose++;<a name="line.3650"></a>
+<span class="sourceLineNo">3651</span>    return null;<a name="line.3651"></a>
+<span class="sourceLineNo">3652</span>  }<a name="line.3652"></a>
+<span class="sourceLineNo">3653</span><a name="line.3653"></a>
+<span class="sourceLineNo">3654</span>  /*<a name="line.3654"></a>
+<span class="sourceLineNo">3655</span>   * (non-Javadoc)<a name="line.3655"></a>
+<span class="sourceLineNo">3656</span>   * <a name="line.3656"></a>
+<span class="sourceLineNo">3657</span>   * @see<a name="line.3657"></a>
+<span class="sourceLineNo">3658</span>   * org.wattdepot.server.WattDepot#updateMeasurementType(org.wattdepot.datamodel<a name="line.3658"></a>
+<span class="sourceLineNo">3659</span>   * .MeasurementType)<a name="line.3659"></a>
+<span class="sourceLineNo">3660</span>   */<a name="line.3660"></a>
+<span class="sourceLineNo">3661</span>  @Override<a name="line.3661"></a>
+<span class="sourceLineNo">3662</span>  public MeasurementType updateMeasurementType(MeasurementType type) {<a name="line.3662"></a>
+<span class="sourceLineNo">3663</span>    Session session = Manager.getFactory(getServerProperties()).openSession();<a name="line.3663"></a>
+<span class="sourceLineNo">3664</span>    sessionOpen++;<a name="line.3664"></a>
+<span class="sourceLineNo">3665</span>    session.beginTransaction();<a name="line.3665"></a>
+<span class="sourceLineNo">3666</span>    MeasurementTypeImpl impl = retrieveMeasurementType(session, type.getId());<a name="line.3666"></a>
+<span class="sourceLineNo">3667</span>    impl.setName(type.getName());<a name="line.3667"></a>
+<span class="sourceLineNo">3668</span>    impl.setUnits(type.getUnits());<a name="line.3668"></a>
+<span class="sourceLineNo">3669</span>    session.saveOrUpdate(impl);<a name="line.3669"></a>
+<span class="sourceLineNo">3670</span>    session.getTransaction().commit();<a name="line.3670"></a>
+<span class="sourceLineNo">3671</span>    session.close();<a name="line.3671"></a>
+<span class="sourceLineNo">3672</span>    sessionClose++;<a name="line.3672"></a>
+<span class="sourceLineNo">3673</span><a name="line.3673"></a>
+<span class="sourceLineNo">3674</span>    return type;<a name="line.3674"></a>
+<span class="sourceLineNo">3675</span>  }<a name="line.3675"></a>
+<span class="sourceLineNo">3676</span><a name="line.3676"></a>
+<span class="sourceLineNo">3677</span>  /*<a name="line.3677"></a>
+<span class="sourceLineNo">3678</span>   * (non-Javadoc)<a name="line.3678"></a>
+<span class="sourceLineNo">3679</span>   * <a name="line.3679"></a>
+<span class="sourceLineNo">3680</span>   * @see<a name="line.3680"></a>
+<span class="sourceLineNo">3681</span>   * org.wattdepot.server.WattDepot#updateOrganization(org.wattdepot.datamodel<a name="line.3681"></a>
+<span class="sourceLineNo">3682</span>   * .Organization)<a name="line.3682"></a>
+<span class="sourceLineNo">3683</span>   */<a name="line.3683"></a>
+<span class="sourceLineNo">3684</span>  @Override<a name="line.3684"></a>
+<span class="sourceLineNo">3685</span>  public Organization updateOrganization(Organization org) throws IdNotFoundException {<a name="line.3685"></a>
+<span class="sourceLineNo">3686</span>    getOrganization(org.getId(), true);<a name="line.3686"></a>
+<span class="sourceLineNo">3687</span>    for (String s : org.getUsers()) {<a name="line.3687"></a>
+<span class="sourceLineNo">3688</span>      getUser(s, org.getId(), true);<a name="line.3688"></a>
+<span class="sourceLineNo">3689</span>    }<a name="line.3689"></a>
+<span class="sourceLineNo">3690</span>    Organization ret = null;<a name="line.3690"></a>
+<span class="sourceLineNo">3691</span>    Session session = Manager.getFactory(getServerProperties()).openSession();<a name="line.3691"></a>
+<span class="sourceLineNo">3692</span>    sessionOpen++;<a name="line.3692"></a>
+<span class="sourceLineNo">3693</span>    session.beginTransaction();<a name="line.3693"></a>
+<span class="sourceLineNo">3694</span>    OrganizationImpl impl = retrieveOrganization(session, org.getId());<a name="line.3694"></a>
+<span class="sourceLineNo">3695</span>    impl.setId(org.getId());<a name="line.3695"></a>
+<span class="sourceLineNo">3696</span>    impl.setName(org.getName());<a name="line.3696"></a>
+<span class="sourceLineNo">3697</span>    for (String s : org.getUsers()) {<a name="line.3697"></a>
+<span class="sourceLineNo">3698</span>      UserInfoImpl u = retrieveUser(session, s, org.getId());<a name="line.3698"></a>
+<span class="sourceLineNo">3699</span>      if (u != null) {<a name="line.3699"></a>
+<span class="sourceLineNo">3700</span>        impl.getUsers().add(u);<a name="line.3700"></a>
+<span class="sourceLineNo">3701</span>      }<a name="line.3701"></a>
+<span class="sourceLineNo">3702</span>    }<a name="line.3702"></a>
+<span class="sourceLineNo">3703</span>    session.saveOrUpdate(impl);<a name="line.3703"></a>
+<span class="sourceLineNo">3704</span>    ret = impl.toOrganization();<a name="line.3704"></a>
+<span class="sourceLineNo">3705</span>    session.getTransaction().commit();<a name="line.3705"></a>
+<span class="sourceLineNo">3706</span>    session.close();<a name="line.3706"></a>
+<span class="sourceLineNo">3707</span>    sessionClose++;<a name="line.3707"></a>
+<span class="sourceLineNo">3708</span>    return ret;<a name="line.3708"></a>
+<span class="sourceLineNo">3709</span>  }<a name="line.3709"></a>
+<span class="sourceLineNo">3710</span><a name="line.3710"></a>
+<span class="sourceLineNo">3711</span>  /*<a name="line.3711"></a>
+<span class="sourceLineNo">3712</span>   * (non-Javadoc)<a name="line.3712"></a>
+<span class="sourceLineNo">3713</span>   * <a name="line.3713"></a>
+<span class="sourceLineNo">3714</span>   * @see<a name="line.3714"></a>
+<span class="sourceLineNo">3715</span>   * org.wattdepot.server.WattDepot#updateSensor(org.wattdepot.datamodel.Sensor<a name="line.3715"></a>
+<span class="sourceLineNo">3716</span>   * )<a name="line.3716"></a>
+<span class="sourceLineNo">3717</span>   */<a name="line.3717"></a>
+<span class="sourceLineNo">3718</span>  @Override<a name="line.3718"></a>
+<span class="sourceLineNo">3719</span>  public Sensor updateSensor(Sensor sensor) throws IdNotFoundException {<a name="line.3719"></a>
+<span class="sourceLineNo">3720</span>    getOrganization(sensor.getOrganizationId(), true);<a name="line.3720"></a>
+<span class="sourceLineNo">3721</span>    getSensorModel(sensor.getModelId(), true);<a name="line.3721"></a>
+<span class="sourceLineNo">3722</span>    Sensor ret = null;<a name="line.3722"></a>
+<span class="sourceLineNo">3723</span>    Session session = Manager.getFactory(getServerProperties()).openSession();<a name="line.3723"></a>
+<span class="sourceLineNo">3724</span>    sessionOpen++;<a name="line.3724"></a>
+<span class="sourceLineNo">3725</span>    session.beginTransaction();<a name="line.3725"></a>
+<span class="sourceLineNo">3726</span>    SensorImpl impl = retrieveSensor(session, sensor.getId(), sensor.getOrganizationId());<a name="line.3726"></a>
+<span class="sourceLineNo">3727</span>    impl.setId(sensor.getId());<a name="line.3727"></a>
+<span class="sourceLineNo">3728</span>    impl.setName(sensor.getName());<a name="line.3728"></a>
+<span class="sourceLineNo">3729</span>    impl.setOrg(retrieveOrganization(session, sensor.getOrganizationId()));<a name="line.3729"></a>
+<span class="sourceLineNo">3730</span>    impl.setModel(retrieveSensorModel(session, sensor.getModelId()));<a name="line.3730"></a>
+<span class="sourceLineNo">3731</span>    Set&lt;PropertyImpl&gt; props = new HashSet&lt;PropertyImpl&gt;();<a name="line.3731"></a>
+<span class="sourceLineNo">3732</span>    for (Property p : sensor.getProperties()) {<a name="line.3732"></a>
+<span class="sourceLineNo">3733</span>      props.add(new PropertyImpl(p));<a name="line.3733"></a>
+<span class="sourceLineNo">3734</span>    }<a name="line.3734"></a>
+<span class="sourceLineNo">3735</span>    impl.setProperties(props);<a name="line.3735"></a>
+<span class="sourceLineNo">3736</span>    storeSensor(session, impl);<a name="line.3736"></a>
+<span class="sourceLineNo">3737</span>    ret = impl.toSensor();<a name="line.3737"></a>
+<span class="sourceLineNo">3738</span>    session.getTransaction().commit();<a name="line.3738"></a>
+<span class="sourceLineNo">3739</span>    session.close();<a name="line.3739"></a>
+<span class="sourceLineNo">3740</span>    sessionClose++;<a name="line.3740"></a>
+<span class="sourceLineNo">3741</span>    return ret;<a name="line.3741"></a>
+<span class="sourceLineNo">3742</span>  }<a name="line.3742"></a>
+<span class="sourceLineNo">3743</span><a name="line.3743"></a>
+<span class="sourceLineNo">3744</span>  /*<a name="line.3744"></a>
+<span class="sourceLineNo">3745</span>   * (non-Javadoc)<a name="line.3745"></a>
+<span class="sourceLineNo">3746</span>   * <a name="line.3746"></a>
+<span class="sourceLineNo">3747</span>   * @see<a name="line.3747"></a>
+<span class="sourceLineNo">3748</span>   * org.wattdepot.server.WattDepot#updateSensorGroup(org.wattdepot.datamodel<a name="line.3748"></a>
+<span class="sourceLineNo">3749</span>   * .SensorGroup)<a name="line.3749"></a>
+<span class="sourceLineNo">3750</span>   */<a name="line.3750"></a>
+<span class="sourceLineNo">3751</span>  @Override<a name="line.3751"></a>
+<span class="sourceLineNo">3752</span>  public SensorGroup updateSensorGroup(SensorGroup group) throws IdNotFoundException {<a name="line.3752"></a>
+<span class="sourceLineNo">3753</span>    getOrganization(group.getOrganizationId(), true);<a name="line.3753"></a>
+<span class="sourceLineNo">3754</span>    getSensorGroup(group.getId(), group.getOrganizationId(), true);<a name="line.3754"></a>
+<span class="sourceLineNo">3755</span>    // validate the list of sensor ids.<a name="line.3755"></a>
+<span class="sourceLineNo">3756</span>    for (String id : group.getSensors()) {<a name="line.3756"></a>
+<span class="sourceLineNo">3757</span>      getSensor(id, group.getOrganizationId(), true);<a name="line.3757"></a>
+<span class="sourceLineNo">3758</span>    }<a name="line.3758"></a>
+<span class="sourceLineNo">3759</span>    SensorGroup ret = null;<a name="line.3759"></a>
+<span class="sourceLineNo">3760</span>    Session session = Manager.getFactory(getServerProperties()).openSession();<a name="line.3760"></a>
+<span class="sourceLineNo">3761</span>    sessionOpen++;<a name="line.3761"></a>
+<span class="sourceLineNo">3762</span>    session.beginTransaction();<a name="line.3762"></a>
+<span class="sourceLineNo">3763</span>    OrganizationImpl org = retrieveOrganization(session, group.getOrganizationId());<a name="line.3763"></a>
+<span class="sourceLineNo">3764</span>    SensorGroupImpl impl = retrieveSensorGroup(session, group.getId(), group.getOrganizationId());<a name="line.3764"></a>
+<span class="sourceLineNo">3765</span>    impl.setId(group.getId());<a name="line.3765"></a>
+<span class="sourceLineNo">3766</span>    impl.setName(group.getName());<a name="line.3766"></a>
+<span class="sourceLineNo">3767</span>    impl.setOrg(org);<a name="line.3767"></a>
+<span class="sourceLineNo">3768</span>    Set&lt;SensorImpl&gt; sensors = new HashSet&lt;SensorImpl&gt;();<a name="line.3768"></a>
+<span class="sourceLineNo">3769</span>    for (String s : group.getSensors()) {<a name="line.3769"></a>
+<span class="sourceLineNo">3770</span>      sensors.add(retrieveSensor(session, s, group.getOrganizationId()));<a name="line.3770"></a>
+<span class="sourceLineNo">3771</span>    }<a name="line.3771"></a>
+<span class="sourceLineNo">3772</span>    impl.setSensors(sensors);<a name="line.3772"></a>
+<span class="sourceLineNo">3773</span>    session.saveOrUpdate(impl);<a name="line.3773"></a>
+<span class="sourceLineNo">3774</span>    ret = impl.toSensorGroup();<a name="line.3774"></a>
+<span class="sourceLineNo">3775</span>    session.getTransaction().commit();<a name="line.3775"></a>
+<span class="sourceLineNo">3776</span>    session.close();<a name="line.3776"></a>
+<span class="sourceLineNo">3777</span>    sessionClose++;<a name="line.3777"></a>
+<span class="sourceLineNo">3778</span>    return ret;<a name="line.3778"></a>
+<span class="sourceLineNo">3779</span>  }<a name="line.3779"></a>
+<span class="sourceLineNo">3780</span><a name="line.3780"></a>
+<span class="sourceLineNo">3781</span>  /*<a name="line.3781"></a>
+<span class="sourceLineNo">3782</span>   * (non-Javadoc)<a name="line.3782"></a>
+<span class="sourceLineNo">3783</span>   * <a name="line.3783"></a>
+<span class="sourceLineNo">3784</span>   * @see<a name="line.3784"></a>
+<span class="sourceLineNo">3785</span>   * org.wattdepot.server.WattDepot#updateSensorModel(org.wattdepot.datamodel<a name="line.3785"></a>
+<span class="sourceLineNo">3786</span>   * .SensorModel)<a name="line.3786"></a>
+<span class="sourceLineNo">3787</span>   */<a name="line.3787"></a>
+<span class="sourceLineNo">3788</span>  @Override<a name="line.3788"></a>
+<span class="sourceLineNo">3789</span>  public SensorModel updateSensorModel(SensorModel model) throws IdNotFoundException {<a name="line.3789"></a>
+<span class="sourceLineNo">3790</span>    getSensorModel(model.getId(), true);<a name="line.3790"></a>
+<span class="sourceLineNo">3791</span>    SensorModel ret = null;<a name="line.3791"></a>
+<span class="sourceLineNo">3792</span>    Session session = Manager.getFactory(getServerProperties()).openSession();<a name="line.3792"></a>
+<span class="sourceLineNo">3793</span>    sessionOpen++;<a name="line.3793"></a>
+<span class="sourceLineNo">3794</span>    session.beginTransaction();<a name="line.3794"></a>
+<span class="sourceLineNo">3795</span>    SensorModelImpl impl = retrieveSensorModel(session, model.getId());<a name="line.3795"></a>
+<span class="sourceLineNo">3796</span>    impl.setName(model.getName());<a name="line.3796"></a>
+<span class="sourceLineNo">3797</span>    impl.setProtocol(model.getProtocol());<a name="line.3797"></a>
+<span class="sourceLineNo">3798</span>    impl.setId(model.getId());<a name="line.3798"></a>
+<span class="sourceLineNo">3799</span>    impl.setType(model.getType());<a name="line.3799"></a>
+<span class="sourceLineNo">3800</span>    impl.setVersion(model.getVersion());<a name="line.3800"></a>
+<span class="sourceLineNo">3801</span>    session.saveOrUpdate(impl);<a name="line.3801"></a>
+<span class="sourceLineNo">3802</span>    ret = impl.toSensorModel();<a name="line.3802"></a>
+<span class="sourceLineNo">3803</span>    session.getTransaction().commit();<a name="line.3803"></a>
+<span class="sourceLineNo">3804</span>    session.close();<a name="line.3804"></a>
+<span class="sourceLineNo">3805</span>    sessionClose++;<a name="line.3805"></a>
+<span class="sourceLineNo">3806</span>    return ret;<a name="line.3806"></a>
+<span class="sourceLineNo">3807</span>  }<a name="line.3807"></a>
+<span class="sourceLineNo">3808</span><a name="line.3808"></a>
+<span class="sourceLineNo">3809</span>  /*<a name="line.3809"></a>
+<span class="sourceLineNo">3810</span>   * (non-Javadoc)<a name="line.3810"></a>
+<span class="sourceLineNo">3811</span>   * <a name="line.3811"></a>
+<span class="sourceLineNo">3812</span>   * @see org.wattdepot.server.WattDepot#updateUserInfo(org.wattdepot.datamodel<a name="line.3812"></a>
+<span class="sourceLineNo">3813</span>   * .UserInfo)<a name="line.3813"></a>
+<span class="sourceLineNo">3814</span>   */<a name="line.3814"></a>
+<span class="sourceLineNo">3815</span>  @Override<a name="line.3815"></a>
+<span class="sourceLineNo">3816</span>  public UserInfo updateUserInfo(UserInfo user) throws IdNotFoundException {<a name="line.3816"></a>
+<span class="sourceLineNo">3817</span>    getUser(user.getUid(), user.getOrganizationId(), true);<a name="line.3817"></a>
+<span class="sourceLineNo">3818</span>    UserInfo ret = null;<a name="line.3818"></a>
+<span class="sourceLineNo">3819</span>    Session session = Manager.getFactory(getServerProperties()).openSession();<a name="line.3819"></a>
+<span class="sourceLineNo">3820</span>    sessionOpen++;<a name="line.3820"></a>
+<span class="sourceLineNo">3821</span>    session.beginTransaction();<a name="line.3821"></a>
+<span class="sourceLineNo">3822</span>    OrganizationImpl orgImpl = retrieveOrganization(session, user.getOrganizationId());<a name="line.3822"></a>
+<span class="sourceLineNo">3823</span>    UserInfoImpl impl = retrieveUser(session, user.getUid(), user.getOrganizationId());<a name="line.3823"></a>
+<span class="sourceLineNo">3824</span>    impl.setUid(user.getUid());<a name="line.3824"></a>
+<span class="sourceLineNo">3825</span>    impl.setFirstName(user.getFirstName());<a name="line.3825"></a>
+<span class="sourceLineNo">3826</span>    impl.setLastName(user.getLastName());<a name="line.3826"></a>
+<span class="sourceLineNo">3827</span>    impl.setEmail(user.getEmail());<a name="line.3827"></a>
+<span class="sourceLineNo">3828</span>    Set&lt;PropertyImpl&gt; props = new HashSet&lt;PropertyImpl&gt;();<a name="line.3828"></a>
+<span class="sourceLineNo">3829</span>    for (Property p : user.getProperties()) {<a name="line.3829"></a>
+<span class="sourceLineNo">3830</span>      PropertyImpl pi = new PropertyImpl(p);<a name="line.3830"></a>
+<span class="sourceLineNo">3831</span>      props.add(pi);<a name="line.3831"></a>
+<span class="sourceLineNo">3832</span>      session.saveOrUpdate(pi);<a name="line.3832"></a>
+<span class="sourceLineNo">3833</span>    }<a name="line.3833"></a>
+<span class="sourceLineNo">3834</span>    impl.setProperties(props);<a name="line.3834"></a>
+<span class="sourceLineNo">3835</span>    impl.setOrg(orgImpl);<a name="line.3835"></a>
+<span class="sourceLineNo">3836</span>    session.saveOrUpdate(orgImpl);<a name="line.3836"></a>
+<span class="sourceLineNo">3837</span>    session.saveOrUpdate(impl);<a name="line.3837"></a>
+<span class="sourceLineNo">3838</span>    ret = impl.toUserInfo();<a name="line.3838"></a>
+<span class="sourceLineNo">3839</span>    session.getTransaction().commit();<a name="line.3839"></a>
+<span class="sourceLineNo">3840</span>    session.close();<a name="line.3840"></a>
+<span class="sourceLineNo">3841</span>    sessionClose++;<a name="line.3841"></a>
+<span class="sourceLineNo">3842</span>    return ret;<a name="line.3842"></a>
+<span class="sourceLineNo">3843</span>  }<a name="line.3843"></a>
+<span class="sourceLineNo">3844</span><a name="line.3844"></a>
+<span class="sourceLineNo">3845</span>  /*<a name="line.3845"></a>
+<span class="sourceLineNo">3846</span>   * (non-Javadoc)<a name="line.3846"></a>
+<span class="sourceLineNo">3847</span>   * <a name="line.3847"></a>
+<span class="sourceLineNo">3848</span>   * @see<a name="line.3848"></a>
+<span class="sourceLineNo">3849</span>   * org.wattdepot.server.WattDepot#updateUserPassword(org.wattdepot.datamodel<a name="line.3849"></a>
+<span class="sourceLineNo">3850</span>   * .UserPassword)<a name="line.3850"></a>
+<span class="sourceLineNo">3851</span>   */<a name="line.3851"></a>
+<span class="sourceLineNo">3852</span>  @Override<a name="line.3852"></a>
+<span class="sourceLineNo">3853</span>  public UserPassword updateUserPassword(UserPassword password) throws IdNotFoundException {<a name="line.3853"></a>
+<span class="sourceLineNo">3854</span>    UserPassword ret = null;<a name="line.3854"></a>
+<span class="sourceLineNo">3855</span>    getUserPassword(password.getUid(), password.getOrganizationId(), true);<a name="line.3855"></a>
+<span class="sourceLineNo">3856</span>    Session session = Manager.getFactory(getServerProperties()).openSession();<a name="line.3856"></a>
+<span class="sourceLineNo">3857</span>    sessionOpen++;<a name="line.3857"></a>
+<span class="sourceLineNo">3858</span>    session.beginTransaction();<a name="line.3858"></a>
+<span class="sourceLineNo">3859</span>    UserPasswordImpl impl = retrieveUserPassword(session, password.getUid(),<a name="line.3859"></a>
+<span class="sourceLineNo">3860</span>        password.getOrganizationId());<a name="line.3860"></a>
+<span class="sourceLineNo">3861</span>    impl.setEncryptedPassword(password.getEncryptedPassword());<a name="line.3861"></a>
+<span class="sourceLineNo">3862</span>    impl.setOrg(retrieveOrganization(session, password.getOrganizationId()));<a name="line.3862"></a>
+<span class="sourceLineNo">3863</span>    impl.setUser(retrieveUser(session, password.getUid(), password.getOrganizationId()));<a name="line.3863"></a>
+<span class="sourceLineNo">3864</span>    session.saveOrUpdate(impl);<a name="line.3864"></a>
+<span class="sourceLineNo">3865</span>    ret = impl.toUserPassword();<a name="line.3865"></a>
+<span class="sourceLineNo">3866</span>    session.getTransaction().commit();<a name="line.3866"></a>
+<span class="sourceLineNo">3867</span>    session.close();<a name="line.3867"></a>
+<span class="sourceLineNo">3868</span>    sessionClose++;<a name="line.3868"></a>
+<span class="sourceLineNo">3869</span>    return ret;<a name="line.3869"></a>
+<span class="sourceLineNo">3870</span>  }<a name="line.3870"></a>
+<span class="sourceLineNo">3871</span><a name="line.3871"></a>
+<span class="sourceLineNo">3872</span>}<a name="line.3872"></a>
 
 
 

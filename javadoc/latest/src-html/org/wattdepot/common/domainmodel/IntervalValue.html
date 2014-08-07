@@ -231,19 +231,21 @@
 <span class="sourceLineNo">223</span>  @Override<a name="line.223"></a>
 <span class="sourceLineNo">224</span>  public String toString() {<a name="line.224"></a>
 <span class="sourceLineNo">225</span>    try {<a name="line.225"></a>
-<span class="sourceLineNo">226</span>      return "IntervalValue [sensorId=" + sensorId + ", value=" + value + ", measurementType="<a name="line.226"></a>
-<span class="sourceLineNo">227</span>          + measurementType + ", start=" + DateConvert.convertDate(start) + ", end="<a name="line.227"></a>
-<span class="sourceLineNo">228</span>          + DateConvert.convertDate(end) + "]";<a name="line.228"></a>
-<span class="sourceLineNo">229</span>    }<a name="line.229"></a>
-<span class="sourceLineNo">230</span>    catch (DatatypeConfigurationException e) {<a name="line.230"></a>
-<span class="sourceLineNo">231</span>      // shouldn't happen<a name="line.231"></a>
-<span class="sourceLineNo">232</span>      e.printStackTrace();<a name="line.232"></a>
-<span class="sourceLineNo">233</span>    }<a name="line.233"></a>
-<span class="sourceLineNo">234</span>    return "IntervalValue [sensorId=" + sensorId + ", value=" + value + ", measurementType="<a name="line.234"></a>
-<span class="sourceLineNo">235</span>        + measurementType + ", start=" + start + ", end=" + end + "]";<a name="line.235"></a>
-<span class="sourceLineNo">236</span>  }<a name="line.236"></a>
-<span class="sourceLineNo">237</span><a name="line.237"></a>
-<span class="sourceLineNo">238</span>}<a name="line.238"></a>
+<span class="sourceLineNo">226</span>      if (start != null &amp;&amp; end != null) {<a name="line.226"></a>
+<span class="sourceLineNo">227</span>        return "IntervalValue [sensorId=" + sensorId + ", value=" + value + ", measurementType="<a name="line.227"></a>
+<span class="sourceLineNo">228</span>            + measurementType + ", start=" + DateConvert.convertDate(start) + ", end="<a name="line.228"></a>
+<span class="sourceLineNo">229</span>            + DateConvert.convertDate(end) + "]";<a name="line.229"></a>
+<span class="sourceLineNo">230</span>      }<a name="line.230"></a>
+<span class="sourceLineNo">231</span>    }<a name="line.231"></a>
+<span class="sourceLineNo">232</span>    catch (DatatypeConfigurationException e) {<a name="line.232"></a>
+<span class="sourceLineNo">233</span>      // shouldn't happen<a name="line.233"></a>
+<span class="sourceLineNo">234</span>      e.printStackTrace();<a name="line.234"></a>
+<span class="sourceLineNo">235</span>    }<a name="line.235"></a>
+<span class="sourceLineNo">236</span>    return "IntervalValue [sensorId=" + sensorId + ", value=" + value + ", measurementType="<a name="line.236"></a>
+<span class="sourceLineNo">237</span>        + measurementType + ", start=" + start + ", end=" + end + "]";<a name="line.237"></a>
+<span class="sourceLineNo">238</span>  }<a name="line.238"></a>
+<span class="sourceLineNo">239</span><a name="line.239"></a>
+<span class="sourceLineNo">240</span>}<a name="line.240"></a>
 
 
 

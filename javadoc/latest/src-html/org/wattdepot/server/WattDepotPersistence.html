@@ -32,7 +32,7 @@
 <span class="sourceLineNo">024</span><a name="line.24"></a>
 <span class="sourceLineNo">025</span>import org.wattdepot.common.domainmodel.CollectorProcessDefinition;<a name="line.25"></a>
 <span class="sourceLineNo">026</span>import org.wattdepot.common.domainmodel.Depository;<a name="line.26"></a>
-<span class="sourceLineNo">027</span>import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;<a name="line.27"></a>
+<span class="sourceLineNo">027</span>import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;<a name="line.27"></a>
 <span class="sourceLineNo">028</span>import org.wattdepot.common.domainmodel.InterpolatedValue;<a name="line.28"></a>
 <span class="sourceLineNo">029</span>import org.wattdepot.common.domainmodel.Measurement;<a name="line.29"></a>
 <span class="sourceLineNo">030</span>import org.wattdepot.common.domainmodel.MeasurementRateSummary;<a name="line.30"></a>
@@ -116,7 +116,7 @@
 <span class="sourceLineNo">108</span>      BadSlugException;<a name="line.108"></a>
 <span class="sourceLineNo">109</span><a name="line.109"></a>
 <span class="sourceLineNo">110</span>  /**<a name="line.110"></a>
-<span class="sourceLineNo">111</span>   * Defines a new GarbageCollectionDefinition.<a name="line.111"></a>
+<span class="sourceLineNo">111</span>   * Defines a new MeasurementPruningDefinition.<a name="line.111"></a>
 <span class="sourceLineNo">112</span>   * <a name="line.112"></a>
 <span class="sourceLineNo">113</span>   * @param id The id of the garbage collection definition.<a name="line.113"></a>
 <span class="sourceLineNo">114</span>   * @param name The name of the garbage collection definition.<a name="line.114"></a>
@@ -126,13 +126,13 @@
 <span class="sourceLineNo">118</span>   * @param ignore The number of days to ignore starting from now.<a name="line.118"></a>
 <span class="sourceLineNo">119</span>   * @param collect The number of days to garbage collect in.<a name="line.119"></a>
 <span class="sourceLineNo">120</span>   * @param gap The minimum gap between measurements in seconds.<a name="line.120"></a>
-<span class="sourceLineNo">121</span>   * @return the defined GarbageCollectionDefinition.<a name="line.121"></a>
+<span class="sourceLineNo">121</span>   * @return the defined MeasurementPruningDefinition.<a name="line.121"></a>
 <span class="sourceLineNo">122</span>   * @throws UniqueIdException if the id derived from name is already defined.<a name="line.122"></a>
 <span class="sourceLineNo">123</span>   * @throws BadSlugException if the id isn't valid.<a name="line.123"></a>
 <span class="sourceLineNo">124</span>   * @throws IdNotFoundException If the depository, sensor or organization are<a name="line.124"></a>
 <span class="sourceLineNo">125</span>   *         not defined.<a name="line.125"></a>
 <span class="sourceLineNo">126</span>   */<a name="line.126"></a>
-<span class="sourceLineNo">127</span>  public abstract GarbageCollectionDefinition defineGarbageCollectionDefinition(String id,<a name="line.127"></a>
+<span class="sourceLineNo">127</span>  public abstract MeasurementPruningDefinition defineMeasurementPruningDefinition(String id,<a name="line.127"></a>
 <span class="sourceLineNo">128</span>      String name, String depositoryId, String sensorId, String orgId, Integer ignore,<a name="line.128"></a>
 <span class="sourceLineNo">129</span>      Integer collect, Integer gap) throws UniqueIdException, BadSlugException, IdNotFoundException;<a name="line.129"></a>
 <span class="sourceLineNo">130</span><a name="line.130"></a>
@@ -257,13 +257,13 @@
 <span class="sourceLineNo">249</span>      MisMatchedOwnerException;<a name="line.249"></a>
 <span class="sourceLineNo">250</span><a name="line.250"></a>
 <span class="sourceLineNo">251</span>  /**<a name="line.251"></a>
-<span class="sourceLineNo">252</span>   * Deletes the given GarbageCollectionDefinition.<a name="line.252"></a>
+<span class="sourceLineNo">252</span>   * Deletes the given MeasurementPruningDefinition.<a name="line.252"></a>
 <span class="sourceLineNo">253</span>   * <a name="line.253"></a>
-<span class="sourceLineNo">254</span>   * @param id The id of the GarbageCollectionDefinition to delete.<a name="line.254"></a>
+<span class="sourceLineNo">254</span>   * @param id The id of the MeasurementPruningDefinition to delete.<a name="line.254"></a>
 <span class="sourceLineNo">255</span>   * @param orgId The Organization's id.<a name="line.255"></a>
 <span class="sourceLineNo">256</span>   * @throws IdNotFoundException if the id is not defined.<a name="line.256"></a>
 <span class="sourceLineNo">257</span>   */<a name="line.257"></a>
-<span class="sourceLineNo">258</span>  public abstract void deleteGarbageCollectionDefinition(String id, String orgId)<a name="line.258"></a>
+<span class="sourceLineNo">258</span>  public abstract void deleteMeasurementPruningDefinition(String id, String orgId)<a name="line.258"></a>
 <span class="sourceLineNo">259</span>      throws IdNotFoundException;<a name="line.259"></a>
 <span class="sourceLineNo">260</span><a name="line.260"></a>
 <span class="sourceLineNo">261</span>  /**<a name="line.261"></a>
@@ -406,31 +406,31 @@
 <span class="sourceLineNo">398</span>      String sensorId, boolean check) throws NoMeasurementException, IdNotFoundException;<a name="line.398"></a>
 <span class="sourceLineNo">399</span><a name="line.399"></a>
 <span class="sourceLineNo">400</span>  /**<a name="line.400"></a>
-<span class="sourceLineNo">401</span>   * @param id The id of the GarbageCollectionDefinition.<a name="line.401"></a>
+<span class="sourceLineNo">401</span>   * @param id The id of the MeasurementPruningDefinition.<a name="line.401"></a>
 <span class="sourceLineNo">402</span>   * @param orgId The Organization's id.<a name="line.402"></a>
 <span class="sourceLineNo">403</span>   * @param check true if want to check the ids.<a name="line.403"></a>
-<span class="sourceLineNo">404</span>   * @return The defined GarbageCollectionDefinition.<a name="line.404"></a>
+<span class="sourceLineNo">404</span>   * @return The defined MeasurementPruningDefinition.<a name="line.404"></a>
 <span class="sourceLineNo">405</span>   * @throws IdNotFoundException if the id is not defined.<a name="line.405"></a>
 <span class="sourceLineNo">406</span>   */<a name="line.406"></a>
-<span class="sourceLineNo">407</span>  public abstract GarbageCollectionDefinition getGarbageCollectionDefinition(String id,<a name="line.407"></a>
+<span class="sourceLineNo">407</span>  public abstract MeasurementPruningDefinition getMeasurementPruningDefinition(String id,<a name="line.407"></a>
 <span class="sourceLineNo">408</span>      String orgId, boolean check) throws IdNotFoundException;<a name="line.408"></a>
 <span class="sourceLineNo">409</span><a name="line.409"></a>
 <span class="sourceLineNo">410</span>  /**<a name="line.410"></a>
 <span class="sourceLineNo">411</span>   * @param orgId The Organization's id.<a name="line.411"></a>
 <span class="sourceLineNo">412</span>   * @param check true if want to check the ids.<a name="line.412"></a>
-<span class="sourceLineNo">413</span>   * @return A list of the defined GarbageCollectionDefinition ids.<a name="line.413"></a>
+<span class="sourceLineNo">413</span>   * @return A list of the defined MeasurementPruningDefinition ids.<a name="line.413"></a>
 <span class="sourceLineNo">414</span>   * @throws IdNotFoundException if there is a problem with the ids.<a name="line.414"></a>
 <span class="sourceLineNo">415</span>   */<a name="line.415"></a>
-<span class="sourceLineNo">416</span>  public abstract List&lt;String&gt; getGarbageCollectionDefinitionIds(String orgId, boolean check)<a name="line.416"></a>
+<span class="sourceLineNo">416</span>  public abstract List&lt;String&gt; getMeasurementPruningDefinitionIds(String orgId, boolean check)<a name="line.416"></a>
 <span class="sourceLineNo">417</span>      throws IdNotFoundException;<a name="line.417"></a>
 <span class="sourceLineNo">418</span><a name="line.418"></a>
 <span class="sourceLineNo">419</span>  /**<a name="line.419"></a>
 <span class="sourceLineNo">420</span>   * @param orgId The Organization's id.<a name="line.420"></a>
 <span class="sourceLineNo">421</span>   * @param check true if want to check the ids.<a name="line.421"></a>
-<span class="sourceLineNo">422</span>   * @return A list of the defined GarbageCollectionDefinitions.<a name="line.422"></a>
+<span class="sourceLineNo">422</span>   * @return A list of the defined MeasurementPruningDefinitions.<a name="line.422"></a>
 <span class="sourceLineNo">423</span>   * @throws IdNotFoundException If there is a problem with the ids.<a name="line.423"></a>
 <span class="sourceLineNo">424</span>   */<a name="line.424"></a>
-<span class="sourceLineNo">425</span>  public abstract List&lt;GarbageCollectionDefinition&gt; getGarbageCollectionDefinitions(String orgId,<a name="line.425"></a>
+<span class="sourceLineNo">425</span>  public abstract List&lt;MeasurementPruningDefinition&gt; getMeasurementPruningDefinitions(String orgId,<a name="line.425"></a>
 <span class="sourceLineNo">426</span>      boolean check) throws IdNotFoundException;<a name="line.426"></a>
 <span class="sourceLineNo">427</span><a name="line.427"></a>
 <span class="sourceLineNo">428</span>  /**<a name="line.428"></a>
@@ -872,14 +872,14 @@
 <span class="sourceLineNo">864</span>      CollectorProcessDefinition process) throws IdNotFoundException;<a name="line.864"></a>
 <span class="sourceLineNo">865</span><a name="line.865"></a>
 <span class="sourceLineNo">866</span>  /**<a name="line.866"></a>
-<span class="sourceLineNo">867</span>   * Updates the given GarbageCollectionDefinition in the persistent store.<a name="line.867"></a>
+<span class="sourceLineNo">867</span>   * Updates the given MeasurementPruningDefinition in the persistent store.<a name="line.867"></a>
 <span class="sourceLineNo">868</span>   * <a name="line.868"></a>
-<span class="sourceLineNo">869</span>   * @param gcd The updated GarbageCollectionDefinition.<a name="line.869"></a>
-<span class="sourceLineNo">870</span>   * @return The updated GarbageCollectionDefinition from persistence.<a name="line.870"></a>
+<span class="sourceLineNo">869</span>   * @param gcd The updated MeasurementPruningDefinition.<a name="line.869"></a>
+<span class="sourceLineNo">870</span>   * @return The updated MeasurementPruningDefinition from persistence.<a name="line.870"></a>
 <span class="sourceLineNo">871</span>   * @throws IdNotFoundException If there is a problem with the ids.<a name="line.871"></a>
 <span class="sourceLineNo">872</span>   */<a name="line.872"></a>
-<span class="sourceLineNo">873</span>  public abstract GarbageCollectionDefinition updateGarbageCollectionDefinition(<a name="line.873"></a>
-<span class="sourceLineNo">874</span>      GarbageCollectionDefinition gcd) throws IdNotFoundException;<a name="line.874"></a>
+<span class="sourceLineNo">873</span>  public abstract MeasurementPruningDefinition updateMeasurementPruningDefinition(<a name="line.873"></a>
+<span class="sourceLineNo">874</span>      MeasurementPruningDefinition gcd) throws IdNotFoundException;<a name="line.874"></a>
 <span class="sourceLineNo">875</span><a name="line.875"></a>
 <span class="sourceLineNo">876</span>  /**<a name="line.876"></a>
 <span class="sourceLineNo">877</span>   * Updates the given measurement type in the persistent store.<a name="line.877"></a>

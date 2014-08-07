@@ -32,8 +32,8 @@
 <span class="sourceLineNo">024</span>import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;<a name="line.24"></a>
 <span class="sourceLineNo">025</span>import org.wattdepot.common.domainmodel.Depository;<a name="line.25"></a>
 <span class="sourceLineNo">026</span>import org.wattdepot.common.domainmodel.DepositoryList;<a name="line.26"></a>
-<span class="sourceLineNo">027</span>import org.wattdepot.common.domainmodel.GarbageCollectionDefinition;<a name="line.27"></a>
-<span class="sourceLineNo">028</span>import org.wattdepot.common.domainmodel.GarbageCollectionDefinitionList;<a name="line.28"></a>
+<span class="sourceLineNo">027</span>import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import org.wattdepot.common.domainmodel.MeasurementPruningDefinitionList;<a name="line.28"></a>
 <span class="sourceLineNo">029</span>import org.wattdepot.common.domainmodel.InterpolatedValue;<a name="line.29"></a>
 <span class="sourceLineNo">030</span>import org.wattdepot.common.domainmodel.Measurement;<a name="line.30"></a>
 <span class="sourceLineNo">031</span>import org.wattdepot.common.domainmodel.MeasurementList;<a name="line.31"></a>
@@ -78,499 +78,501 @@
 <span class="sourceLineNo">070</span>  public void deleteDepository(Depository depository) throws IdNotFoundException;<a name="line.70"></a>
 <span class="sourceLineNo">071</span><a name="line.71"></a>
 <span class="sourceLineNo">072</span>  /**<a name="line.72"></a>
-<span class="sourceLineNo">073</span>   * Deletes the given GarbageCollectionDefinition from the WattDepotServer.<a name="line.73"></a>
+<span class="sourceLineNo">073</span>   * Deletes the given measurement from the given depository.<a name="line.73"></a>
 <span class="sourceLineNo">074</span>   * <a name="line.74"></a>
-<span class="sourceLineNo">075</span>   * @param gcd The GarbageCollectionDefinition to delete.<a name="line.75"></a>
-<span class="sourceLineNo">076</span>   */<a name="line.76"></a>
-<span class="sourceLineNo">077</span>  void deleteGarbageCollectionDefinition(GarbageCollectionDefinition gcd);<a name="line.77"></a>
-<span class="sourceLineNo">078</span><a name="line.78"></a>
-<span class="sourceLineNo">079</span>  /**<a name="line.79"></a>
-<span class="sourceLineNo">080</span>   * Deletes the given measurement from the given depository.<a name="line.80"></a>
-<span class="sourceLineNo">081</span>   * <a name="line.81"></a>
-<span class="sourceLineNo">082</span>   * @param depository the Depository that stores the measurement.<a name="line.82"></a>
-<span class="sourceLineNo">083</span>   * @param measurement the Measurement to delete.<a name="line.83"></a>
-<span class="sourceLineNo">084</span>   * @throws IdNotFoundException if the Measurement is not found in the<a name="line.84"></a>
-<span class="sourceLineNo">085</span>   *         Depository.<a name="line.85"></a>
-<span class="sourceLineNo">086</span>   */<a name="line.86"></a>
-<span class="sourceLineNo">087</span>  public void deleteMeasurement(Depository depository, Measurement measurement)<a name="line.87"></a>
-<span class="sourceLineNo">088</span>      throws IdNotFoundException;<a name="line.88"></a>
-<span class="sourceLineNo">089</span><a name="line.89"></a>
-<span class="sourceLineNo">090</span>  /**<a name="line.90"></a>
-<span class="sourceLineNo">091</span>   * Deletes the given MeasurementType.<a name="line.91"></a>
-<span class="sourceLineNo">092</span>   * <a name="line.92"></a>
-<span class="sourceLineNo">093</span>   * @param type the measurement type to delete.<a name="line.93"></a>
-<span class="sourceLineNo">094</span>   * @throws IdNotFoundException if the MeasurementType is not found in the<a name="line.94"></a>
-<span class="sourceLineNo">095</span>   *         Depository.<a name="line.95"></a>
-<span class="sourceLineNo">096</span>   */<a name="line.96"></a>
-<span class="sourceLineNo">097</span>  public void deleteMeasurementType(MeasurementType type) throws IdNotFoundException;<a name="line.97"></a>
-<span class="sourceLineNo">098</span><a name="line.98"></a>
-<span class="sourceLineNo">099</span>  /**<a name="line.99"></a>
-<span class="sourceLineNo">100</span>   * Deletes the given Sensor.<a name="line.100"></a>
-<span class="sourceLineNo">101</span>   * <a name="line.101"></a>
-<span class="sourceLineNo">102</span>   * @param sensor the Sensor to delete.<a name="line.102"></a>
-<span class="sourceLineNo">103</span>   * @throws IdNotFoundException if the Sensor is not found in the server.<a name="line.103"></a>
-<span class="sourceLineNo">104</span>   */<a name="line.104"></a>
-<span class="sourceLineNo">105</span>  public void deleteSensor(Sensor sensor) throws IdNotFoundException;<a name="line.105"></a>
-<span class="sourceLineNo">106</span><a name="line.106"></a>
-<span class="sourceLineNo">107</span>  /**<a name="line.107"></a>
-<span class="sourceLineNo">108</span>   * Deletes the given SensorGroup.<a name="line.108"></a>
-<span class="sourceLineNo">109</span>   * <a name="line.109"></a>
-<span class="sourceLineNo">110</span>   * @param group the SensorGroup to delete.<a name="line.110"></a>
-<span class="sourceLineNo">111</span>   * @throws IdNotFoundException if the SensorGroup is not found in the server.<a name="line.111"></a>
-<span class="sourceLineNo">112</span>   */<a name="line.112"></a>
-<span class="sourceLineNo">113</span>  public void deleteSensorGroup(SensorGroup group) throws IdNotFoundException;<a name="line.113"></a>
-<span class="sourceLineNo">114</span><a name="line.114"></a>
-<span class="sourceLineNo">115</span>  /**<a name="line.115"></a>
-<span class="sourceLineNo">116</span>   * Deletes the given SensorModel.<a name="line.116"></a>
-<span class="sourceLineNo">117</span>   * <a name="line.117"></a>
-<span class="sourceLineNo">118</span>   * @param model the SensorModel to delete.<a name="line.118"></a>
-<span class="sourceLineNo">119</span>   * @throws IdNotFoundException if the SensorModel is not found in the server.<a name="line.119"></a>
-<span class="sourceLineNo">120</span>   */<a name="line.120"></a>
-<span class="sourceLineNo">121</span>  public void deleteSensorModel(SensorModel model) throws IdNotFoundException;<a name="line.121"></a>
-<span class="sourceLineNo">122</span><a name="line.122"></a>
-<span class="sourceLineNo">123</span>  /**<a name="line.123"></a>
-<span class="sourceLineNo">124</span>   * Retrieves the CollectorProcessDefinitionData with the given id from the<a name="line.124"></a>
-<span class="sourceLineNo">125</span>   * WattDepot Server.<a name="line.125"></a>
-<span class="sourceLineNo">126</span>   * <a name="line.126"></a>
-<span class="sourceLineNo">127</span>   * @param id The CollectorProcessDefinitionData's id.<a name="line.127"></a>
-<span class="sourceLineNo">128</span>   * @return the CollectorProcessDefinitionData with the given id or null.<a name="line.128"></a>
-<span class="sourceLineNo">129</span>   * @exception IdNotFoundException if the given id is not a<a name="line.129"></a>
-<span class="sourceLineNo">130</span>   *            CollectorProcessDefinitionData's id.<a name="line.130"></a>
-<span class="sourceLineNo">131</span>   */<a name="line.131"></a>
-<span class="sourceLineNo">132</span>  public CollectorProcessDefinition getCollectorProcessDefinition(String id)<a name="line.132"></a>
-<span class="sourceLineNo">133</span>      throws IdNotFoundException;<a name="line.133"></a>
-<span class="sourceLineNo">134</span><a name="line.134"></a>
-<span class="sourceLineNo">135</span>  /**<a name="line.135"></a>
-<span class="sourceLineNo">136</span>   * @return The defined CollectorProcessDefinitions.<a name="line.136"></a>
-<span class="sourceLineNo">137</span>   */<a name="line.137"></a>
-<span class="sourceLineNo">138</span>  public CollectorProcessDefinitionList getCollectorProcessDefinitions();<a name="line.138"></a>
-<span class="sourceLineNo">139</span><a name="line.139"></a>
-<span class="sourceLineNo">140</span>  /**<a name="line.140"></a>
-<span class="sourceLineNo">141</span>   * @return The defined Depositories.<a name="line.141"></a>
-<span class="sourceLineNo">142</span>   */<a name="line.142"></a>
-<span class="sourceLineNo">143</span>  public DepositoryList getDepositories();<a name="line.143"></a>
-<span class="sourceLineNo">144</span><a name="line.144"></a>
-<span class="sourceLineNo">145</span>  /**<a name="line.145"></a>
-<span class="sourceLineNo">146</span>   * Retrieves the Depository with the given id from the WattDepot Server.<a name="line.146"></a>
-<span class="sourceLineNo">147</span>   * <a name="line.147"></a>
-<span class="sourceLineNo">148</span>   * @param id The Depository's id.<a name="line.148"></a>
-<span class="sourceLineNo">149</span>   * @return the Depository with the given id or null.<a name="line.149"></a>
-<span class="sourceLineNo">150</span>   * @exception IdNotFoundException if the given id is not a Depository's id.<a name="line.150"></a>
-<span class="sourceLineNo">151</span>   */<a name="line.151"></a>
-<span class="sourceLineNo">152</span>  public Depository getDepository(String id) throws IdNotFoundException;<a name="line.152"></a>
-<span class="sourceLineNo">153</span><a name="line.153"></a>
-<span class="sourceLineNo">154</span>  /**<a name="line.154"></a>
-<span class="sourceLineNo">155</span>   * @param id The depository id.<a name="line.155"></a>
-<span class="sourceLineNo">156</span>   * @return a SensorList of the sensors contributing measurements to the<a name="line.156"></a>
-<span class="sourceLineNo">157</span>   *         depository.<a name="line.157"></a>
-<span class="sourceLineNo">158</span>   * @throws IdNotFoundException if the id is not defined.<a name="line.158"></a>
-<span class="sourceLineNo">159</span>   */<a name="line.159"></a>
-<span class="sourceLineNo">160</span>  SensorList getDepositorySensors(String id) throws IdNotFoundException;<a name="line.160"></a>
-<span class="sourceLineNo">161</span><a name="line.161"></a>
-<span class="sourceLineNo">162</span>  /**<a name="line.162"></a>
-<span class="sourceLineNo">163</span>   * @param depository The Depository storing the Measurements.<a name="line.163"></a>
-<span class="sourceLineNo">164</span>   * @param sensor The Sensor making the Measurements.<a name="line.164"></a>
-<span class="sourceLineNo">165</span>   * @return The earliest Value.<a name="line.165"></a>
-<span class="sourceLineNo">166</span>   */<a name="line.166"></a>
-<span class="sourceLineNo">167</span>  public InterpolatedValue getEarliestValue(Depository depository, Sensor sensor);<a name="line.167"></a>
-<span class="sourceLineNo">168</span><a name="line.168"></a>
-<span class="sourceLineNo">169</span>  /**<a name="line.169"></a>
-<span class="sourceLineNo">170</span>   * @param depository The Depository storing the Measurements.<a name="line.170"></a>
-<span class="sourceLineNo">171</span>   * @param group The SensorGroup whose sensors are making the Measurements.<a name="line.171"></a>
-<span class="sourceLineNo">172</span>   * @return The earliest Value.<a name="line.172"></a>
-<span class="sourceLineNo">173</span>   */<a name="line.173"></a>
-<span class="sourceLineNo">174</span>  public InterpolatedValue getEarliestValue(Depository depository, SensorGroup group);<a name="line.174"></a>
-<span class="sourceLineNo">175</span><a name="line.175"></a>
-<span class="sourceLineNo">176</span>  /**<a name="line.176"></a>
-<span class="sourceLineNo">177</span>   * @param id The GarbageCollectionDefinition id.<a name="line.177"></a>
-<span class="sourceLineNo">178</span>   * @return The defined GarbageCollectionDefinition.<a name="line.178"></a>
-<span class="sourceLineNo">179</span>   * @throws IdNotFoundException if id is not defined.<a name="line.179"></a>
-<span class="sourceLineNo">180</span>   */<a name="line.180"></a>
-<span class="sourceLineNo">181</span>  public GarbageCollectionDefinition getGarbageCollectionDefinition(String id)<a name="line.181"></a>
-<span class="sourceLineNo">182</span>      throws IdNotFoundException;<a name="line.182"></a>
-<span class="sourceLineNo">183</span><a name="line.183"></a>
-<span class="sourceLineNo">184</span>  /**<a name="line.184"></a>
-<span class="sourceLineNo">185</span>   * @return All the defined GarbageCollectionDefinitions.<a name="line.185"></a>
-<span class="sourceLineNo">186</span>   */<a name="line.186"></a>
-<span class="sourceLineNo">187</span>  public GarbageCollectionDefinitionList getGarbageCollectionDefinitions();<a name="line.187"></a>
-<span class="sourceLineNo">188</span><a name="line.188"></a>
-<span class="sourceLineNo">189</span>  /**<a name="line.189"></a>
-<span class="sourceLineNo">190</span>   * @param depository The Depository storing the Measurements.<a name="line.190"></a>
-<span class="sourceLineNo">191</span>   * @param sensor The Sensor making the Measurements.<a name="line.191"></a>
-<span class="sourceLineNo">192</span>   * @return The latest Measurement.<a name="line.192"></a>
-<span class="sourceLineNo">193</span>   */<a name="line.193"></a>
-<span class="sourceLineNo">194</span>  public InterpolatedValue getLatestValue(Depository depository, Sensor sensor);<a name="line.194"></a>
-<span class="sourceLineNo">195</span><a name="line.195"></a>
-<span class="sourceLineNo">196</span>  /**<a name="line.196"></a>
-<span class="sourceLineNo">197</span>   * @param depository The Depository storing the Measurements.<a name="line.197"></a>
-<span class="sourceLineNo">198</span>   * @param group The SensorGroup whose sensors are making the Measurements.<a name="line.198"></a>
-<span class="sourceLineNo">199</span>   * @return The latest Value.<a name="line.199"></a>
-<span class="sourceLineNo">200</span>   */<a name="line.200"></a>
-<span class="sourceLineNo">201</span>  public InterpolatedValue getLatestValue(Depository depository, SensorGroup group);<a name="line.201"></a>
-<span class="sourceLineNo">202</span><a name="line.202"></a>
-<span class="sourceLineNo">203</span>  /**<a name="line.203"></a>
-<span class="sourceLineNo">204</span>   * @param depository The Depository storing the Measurements.<a name="line.204"></a>
-<span class="sourceLineNo">205</span>   * @param sensor The Sensor that made the measurements.<a name="line.205"></a>
-<span class="sourceLineNo">206</span>   * @param start The start time.<a name="line.206"></a>
-<span class="sourceLineNo">207</span>   * @param end The end time.<a name="line.207"></a>
-<span class="sourceLineNo">208</span>   * @return The Measurements stored in the depository made by the sensor<a name="line.208"></a>
-<span class="sourceLineNo">209</span>   *         between start and end.<a name="line.209"></a>
-<span class="sourceLineNo">210</span>   */<a name="line.210"></a>
-<span class="sourceLineNo">211</span>  public MeasurementList getMeasurements(Depository depository, Sensor sensor, Date start, Date end);<a name="line.211"></a>
-<span class="sourceLineNo">212</span><a name="line.212"></a>
-<span class="sourceLineNo">213</span>  /**<a name="line.213"></a>
-<span class="sourceLineNo">214</span>   * @param depository The Depository storing the Measurements.<a name="line.214"></a>
-<span class="sourceLineNo">215</span>   * @param group The SensorGroup whose sensors made the measurements.<a name="line.215"></a>
-<span class="sourceLineNo">216</span>   * @param start The start time.<a name="line.216"></a>
-<span class="sourceLineNo">217</span>   * @param end The end time.<a name="line.217"></a>
-<span class="sourceLineNo">218</span>   * @return The Measurements stored in the depository made by the sensor<a name="line.218"></a>
-<span class="sourceLineNo">219</span>   *         between start and end.<a name="line.219"></a>
-<span class="sourceLineNo">220</span>   */<a name="line.220"></a>
-<span class="sourceLineNo">221</span>  public MeasurementList getMeasurements(Depository depository, SensorGroup group, Date start,<a name="line.221"></a>
-<span class="sourceLineNo">222</span>      Date end);<a name="line.222"></a>
-<span class="sourceLineNo">223</span><a name="line.223"></a>
-<span class="sourceLineNo">224</span>  /**<a name="line.224"></a>
-<span class="sourceLineNo">225</span>   * @param id the unique id for the MeasurementType.<a name="line.225"></a>
-<span class="sourceLineNo">226</span>   * @return The MeasurementType.<a name="line.226"></a>
-<span class="sourceLineNo">227</span>   * @exception IdNotFoundException if the given id is not a MeasurementType's<a name="line.227"></a>
-<span class="sourceLineNo">228</span>   *            id.<a name="line.228"></a>
-<span class="sourceLineNo">229</span>   */<a name="line.229"></a>
-<span class="sourceLineNo">230</span>  public MeasurementType getMeasurementType(String id) throws IdNotFoundException;<a name="line.230"></a>
-<span class="sourceLineNo">231</span><a name="line.231"></a>
-<span class="sourceLineNo">232</span>  /**<a name="line.232"></a>
-<span class="sourceLineNo">233</span>   * @return The defined MeasurementTypes.<a name="line.233"></a>
-<span class="sourceLineNo">234</span>   */<a name="line.234"></a>
-<span class="sourceLineNo">235</span>  public MeasurementTypeList getMeasurementTypes();<a name="line.235"></a>
-<span class="sourceLineNo">236</span><a name="line.236"></a>
-<span class="sourceLineNo">237</span>  /**<a name="line.237"></a>
-<span class="sourceLineNo">238</span>   * Retrieves the Sensor with the given id from the WattDepot Server.<a name="line.238"></a>
-<span class="sourceLineNo">239</span>   * <a name="line.239"></a>
-<span class="sourceLineNo">240</span>   * @param id The Sensor's id.<a name="line.240"></a>
-<span class="sourceLineNo">241</span>   * @return the Sensor with the given id or null.<a name="line.241"></a>
-<span class="sourceLineNo">242</span>   * @exception IdNotFoundException if the given id is not a Sensor's id.<a name="line.242"></a>
-<span class="sourceLineNo">243</span>   */<a name="line.243"></a>
-<span class="sourceLineNo">244</span>  public Sensor getSensor(String id) throws IdNotFoundException;<a name="line.244"></a>
-<span class="sourceLineNo">245</span><a name="line.245"></a>
-<span class="sourceLineNo">246</span>  /**<a name="line.246"></a>
-<span class="sourceLineNo">247</span>   * Retrieves the SensorGroup with the given id from the WattDepot Server.<a name="line.247"></a>
-<span class="sourceLineNo">248</span>   * <a name="line.248"></a>
-<span class="sourceLineNo">249</span>   * @param id The SensorGroup's id.<a name="line.249"></a>
-<span class="sourceLineNo">250</span>   * @return the SensorGroup with the given id or null.<a name="line.250"></a>
-<span class="sourceLineNo">251</span>   * @exception IdNotFoundException if the given id is not a SensorGroup's id.<a name="line.251"></a>
-<span class="sourceLineNo">252</span>   */<a name="line.252"></a>
-<span class="sourceLineNo">253</span>  public SensorGroup getSensorGroup(String id) throws IdNotFoundException;<a name="line.253"></a>
-<span class="sourceLineNo">254</span><a name="line.254"></a>
-<span class="sourceLineNo">255</span>  /**<a name="line.255"></a>
-<span class="sourceLineNo">256</span>   * @return The defined SensorGroups.<a name="line.256"></a>
-<span class="sourceLineNo">257</span>   */<a name="line.257"></a>
-<span class="sourceLineNo">258</span>  public SensorGroupList getSensorGroups();<a name="line.258"></a>
-<span class="sourceLineNo">259</span><a name="line.259"></a>
-<span class="sourceLineNo">260</span>  /**<a name="line.260"></a>
-<span class="sourceLineNo">261</span>   * Retrieves the SensorModel with the given id from the WattDepot Server.<a name="line.261"></a>
-<span class="sourceLineNo">262</span>   * <a name="line.262"></a>
-<span class="sourceLineNo">263</span>   * @param id The SensorModel's id.<a name="line.263"></a>
-<span class="sourceLineNo">264</span>   * @return the SensorModel with the given id or null.<a name="line.264"></a>
-<span class="sourceLineNo">265</span>   * @exception IdNotFoundException if the given id is not a SensorModel's id.<a name="line.265"></a>
-<span class="sourceLineNo">266</span>   */<a name="line.266"></a>
-<span class="sourceLineNo">267</span>  public SensorModel getSensorModel(String id) throws IdNotFoundException;<a name="line.267"></a>
-<span class="sourceLineNo">268</span><a name="line.268"></a>
-<span class="sourceLineNo">269</span>  /**<a name="line.269"></a>
-<span class="sourceLineNo">270</span>   * @return The defined SensorModels.<a name="line.270"></a>
-<span class="sourceLineNo">271</span>   */<a name="line.271"></a>
-<span class="sourceLineNo">272</span>  public SensorModelList getSensorModels();<a name="line.272"></a>
-<span class="sourceLineNo">273</span><a name="line.273"></a>
-<span class="sourceLineNo">274</span>  /**<a name="line.274"></a>
-<span class="sourceLineNo">275</span>   * @return The defined Sensors.<a name="line.275"></a>
-<span class="sourceLineNo">276</span>   */<a name="line.276"></a>
-<span class="sourceLineNo">277</span>  public SensorList getSensors();<a name="line.277"></a>
-<span class="sourceLineNo">278</span><a name="line.278"></a>
-<span class="sourceLineNo">279</span>  /**<a name="line.279"></a>
-<span class="sourceLineNo">280</span>   * @param depository The Depository storing the measurements.<a name="line.280"></a>
-<span class="sourceLineNo">281</span>   * @param sensor The sensor making the measurements.<a name="line.281"></a>
-<span class="sourceLineNo">282</span>   * @param timestamp The time for the measured value.<a name="line.282"></a>
-<span class="sourceLineNo">283</span>   * @return The Value 'measured' at the given time, most likely an interpolated<a name="line.283"></a>
-<span class="sourceLineNo">284</span>   *         value.<a name="line.284"></a>
-<span class="sourceLineNo">285</span>   * @throws NoMeasurementException if there aren't any measurements around the<a name="line.285"></a>
-<span class="sourceLineNo">286</span>   *         timestamp.<a name="line.286"></a>
-<span class="sourceLineNo">287</span>   */<a name="line.287"></a>
-<span class="sourceLineNo">288</span>  public Double getValue(Depository depository, Sensor sensor, Date timestamp)<a name="line.288"></a>
-<span class="sourceLineNo">289</span>      throws NoMeasurementException;<a name="line.289"></a>
-<span class="sourceLineNo">290</span><a name="line.290"></a>
-<span class="sourceLineNo">291</span>  /**<a name="line.291"></a>
-<span class="sourceLineNo">292</span>   * @param depository The Depository storing the measurements.<a name="line.292"></a>
-<span class="sourceLineNo">293</span>   * @param sensor The sensor making the measurements.<a name="line.293"></a>
-<span class="sourceLineNo">294</span>   * @param start The start of the period.<a name="line.294"></a>
-<span class="sourceLineNo">295</span>   * @param end The end of the period.<a name="line.295"></a>
-<span class="sourceLineNo">296</span>   * @return The value measured the difference between the end value and the<a name="line.296"></a>
-<span class="sourceLineNo">297</span>   *         start value.<a name="line.297"></a>
-<span class="sourceLineNo">298</span>   * @throws NoMeasurementException if there are no measurements around the<a name="line.298"></a>
-<span class="sourceLineNo">299</span>   *         start or end time.<a name="line.299"></a>
-<span class="sourceLineNo">300</span>   */<a name="line.300"></a>
-<span class="sourceLineNo">301</span>  public Double getValue(Depository depository, Sensor sensor, Date start, Date end)<a name="line.301"></a>
-<span class="sourceLineNo">302</span>      throws NoMeasurementException;<a name="line.302"></a>
-<span class="sourceLineNo">303</span><a name="line.303"></a>
-<span class="sourceLineNo">304</span>  /**<a name="line.304"></a>
-<span class="sourceLineNo">305</span>   * @param depository The Depository storing the measurements.<a name="line.305"></a>
-<span class="sourceLineNo">306</span>   * @param sensor The Sensor making the measurements.<a name="line.306"></a>
-<span class="sourceLineNo">307</span>   * @param start The start of the interval.<a name="line.307"></a>
-<span class="sourceLineNo">308</span>   * @param end The end of the interval<a name="line.308"></a>
-<span class="sourceLineNo">309</span>   * @param gapSeconds The maximum number of seconds that measurements need to<a name="line.309"></a>
-<span class="sourceLineNo">310</span>   *        be within the start and end.<a name="line.310"></a>
-<span class="sourceLineNo">311</span>   * @return The value measured the difference between the end value and the<a name="line.311"></a>
-<span class="sourceLineNo">312</span>   *         start value.<a name="line.312"></a>
-<span class="sourceLineNo">313</span>   * @throws NoMeasurementException if there are no measurements around the<a name="line.313"></a>
-<span class="sourceLineNo">314</span>   *         start or end time.<a name="line.314"></a>
-<span class="sourceLineNo">315</span>   * @throws MeasurementGapException if the measurements around start or end are<a name="line.315"></a>
-<span class="sourceLineNo">316</span>   *         too far apart.<a name="line.316"></a>
-<span class="sourceLineNo">317</span>   */<a name="line.317"></a>
-<span class="sourceLineNo">318</span>  public Double getValue(Depository depository, Sensor sensor, Date start, Date end, Long gapSeconds)<a name="line.318"></a>
-<span class="sourceLineNo">319</span>      throws NoMeasurementException, MeasurementGapException;<a name="line.319"></a>
-<span class="sourceLineNo">320</span><a name="line.320"></a>
-<span class="sourceLineNo">321</span>  /**<a name="line.321"></a>
-<span class="sourceLineNo">322</span>   * @param depository The Depository storing the measurements.<a name="line.322"></a>
-<span class="sourceLineNo">323</span>   * @param sensor The Sensor making the measurements.<a name="line.323"></a>
-<span class="sourceLineNo">324</span>   * @param timestamp The time of the value.<a name="line.324"></a>
-<span class="sourceLineNo">325</span>   * @param gapSeconds The maximum number of seconds that measurements need to<a name="line.325"></a>
-<span class="sourceLineNo">326</span>   *        be within the start and end.<a name="line.326"></a>
-<span class="sourceLineNo">327</span>   * @return The Value 'measured' at the given time, most likely an interpolated<a name="line.327"></a>
-<span class="sourceLineNo">328</span>   *         value.<a name="line.328"></a>
-<span class="sourceLineNo">329</span>   * @throws NoMeasurementException If there aren't any measurements around the<a name="line.329"></a>
-<span class="sourceLineNo">330</span>   *         time.<a name="line.330"></a>
-<span class="sourceLineNo">331</span>   * @throws MeasurementGapException if the measurements around timestamp are<a name="line.331"></a>
-<span class="sourceLineNo">332</span>   *         too far apart.<a name="line.332"></a>
-<span class="sourceLineNo">333</span>   */<a name="line.333"></a>
-<span class="sourceLineNo">334</span>  public Double getValue(Depository depository, Sensor sensor, Date timestamp, Long gapSeconds)<a name="line.334"></a>
-<span class="sourceLineNo">335</span>      throws NoMeasurementException, MeasurementGapException;<a name="line.335"></a>
-<span class="sourceLineNo">336</span><a name="line.336"></a>
-<span class="sourceLineNo">337</span>  /**<a name="line.337"></a>
-<span class="sourceLineNo">338</span>   * @param depository The Depository storing the measurements.<a name="line.338"></a>
-<span class="sourceLineNo">339</span>   * @param group The SensorGroup whose sensors are making the measurements.<a name="line.339"></a>
-<span class="sourceLineNo">340</span>   * @param timestamp The time for the measured value.<a name="line.340"></a>
-<span class="sourceLineNo">341</span>   * @return The Value 'measured' at the given time, most likely an interpolated<a name="line.341"></a>
-<span class="sourceLineNo">342</span>   *         value.<a name="line.342"></a>
-<span class="sourceLineNo">343</span>   * @throws NoMeasurementException if there aren't any measurements around the<a name="line.343"></a>
-<span class="sourceLineNo">344</span>   *         timestamp.<a name="line.344"></a>
-<span class="sourceLineNo">345</span>   */<a name="line.345"></a>
-<span class="sourceLineNo">346</span>  public Double getValue(Depository depository, SensorGroup group, Date timestamp)<a name="line.346"></a>
-<span class="sourceLineNo">347</span>      throws NoMeasurementException;<a name="line.347"></a>
-<span class="sourceLineNo">348</span><a name="line.348"></a>
-<span class="sourceLineNo">349</span>  /**<a name="line.349"></a>
-<span class="sourceLineNo">350</span>   * @param depository The Depository storing the measurements.<a name="line.350"></a>
-<span class="sourceLineNo">351</span>   * @param group The SensorGroup whose Sensors are making the measurements.<a name="line.351"></a>
-<span class="sourceLineNo">352</span>   * @param start The start of the period.<a name="line.352"></a>
-<span class="sourceLineNo">353</span>   * @param end The end of the period.<a name="line.353"></a>
-<span class="sourceLineNo">354</span>   * @return The value measured the difference between the end value and the<a name="line.354"></a>
-<span class="sourceLineNo">355</span>   *         start value.<a name="line.355"></a>
-<span class="sourceLineNo">356</span>   * @throws NoMeasurementException if there are no measurements around the<a name="line.356"></a>
-<span class="sourceLineNo">357</span>   *         start or end time.<a name="line.357"></a>
-<span class="sourceLineNo">358</span>   */<a name="line.358"></a>
-<span class="sourceLineNo">359</span>  public Double getValue(Depository depository, SensorGroup group, Date start, Date end)<a name="line.359"></a>
-<span class="sourceLineNo">360</span>      throws NoMeasurementException;<a name="line.360"></a>
-<span class="sourceLineNo">361</span><a name="line.361"></a>
-<span class="sourceLineNo">362</span>  /**<a name="line.362"></a>
-<span class="sourceLineNo">363</span>   * @param depository The Depository storing the measurements.<a name="line.363"></a>
-<span class="sourceLineNo">364</span>   * @param group The SensorGroup whose Sensors are making the measurements.<a name="line.364"></a>
-<span class="sourceLineNo">365</span>   * @param start The start of the interval.<a name="line.365"></a>
-<span class="sourceLineNo">366</span>   * @param end The end of the interval<a name="line.366"></a>
-<span class="sourceLineNo">367</span>   * @param gapSeconds The maximum number of seconds that measurements need to<a name="line.367"></a>
-<span class="sourceLineNo">368</span>   *        be within the start and end.<a name="line.368"></a>
-<span class="sourceLineNo">369</span>   * @return The value measured the difference between the end value and the<a name="line.369"></a>
-<span class="sourceLineNo">370</span>   *         start value.<a name="line.370"></a>
-<span class="sourceLineNo">371</span>   * @throws NoMeasurementException if there are no measurements around the<a name="line.371"></a>
-<span class="sourceLineNo">372</span>   *         start or end time.<a name="line.372"></a>
-<span class="sourceLineNo">373</span>   * @throws MeasurementGapException if the measurements around start or end are<a name="line.373"></a>
-<span class="sourceLineNo">374</span>   *         too far apart.<a name="line.374"></a>
-<span class="sourceLineNo">375</span>   */<a name="line.375"></a>
-<span class="sourceLineNo">376</span>  public Double getValue(Depository depository, SensorGroup group, Date start, Date end,<a name="line.376"></a>
-<span class="sourceLineNo">377</span>      Long gapSeconds) throws NoMeasurementException, MeasurementGapException;<a name="line.377"></a>
-<span class="sourceLineNo">378</span><a name="line.378"></a>
-<span class="sourceLineNo">379</span>  /**<a name="line.379"></a>
-<span class="sourceLineNo">380</span>   * @param depository The Depository storing the measurements.<a name="line.380"></a>
-<span class="sourceLineNo">381</span>   * @param group The SensorGroup whose Sensors are making the measurements.<a name="line.381"></a>
-<span class="sourceLineNo">382</span>   * @param timestamp The time of the value.<a name="line.382"></a>
-<span class="sourceLineNo">383</span>   * @param gapSeconds The maximum number of seconds that measurements need to<a name="line.383"></a>
-<span class="sourceLineNo">384</span>   *        be within the start and end.<a name="line.384"></a>
-<span class="sourceLineNo">385</span>   * @return The Value 'measured' at the given time, most likely an interpolated<a name="line.385"></a>
-<span class="sourceLineNo">386</span>   *         value.<a name="line.386"></a>
-<span class="sourceLineNo">387</span>   * @throws NoMeasurementException If there aren't any measurements around the<a name="line.387"></a>
-<span class="sourceLineNo">388</span>   *         time.<a name="line.388"></a>
-<span class="sourceLineNo">389</span>   * @throws MeasurementGapException if the measurements around timestamp are<a name="line.389"></a>
-<span class="sourceLineNo">390</span>   *         too far apart.<a name="line.390"></a>
-<span class="sourceLineNo">391</span>   */<a name="line.391"></a>
-<span class="sourceLineNo">392</span>  public Double getValue(Depository depository, SensorGroup group, Date timestamp, Long gapSeconds)<a name="line.392"></a>
-<span class="sourceLineNo">393</span>      throws NoMeasurementException, MeasurementGapException;<a name="line.393"></a>
-<span class="sourceLineNo">394</span><a name="line.394"></a>
-<span class="sourceLineNo">395</span>  /**<a name="line.395"></a>
-<span class="sourceLineNo">396</span>   * Checks to see if the given id is a defined CollectorProcessDefinition id.<a name="line.396"></a>
-<span class="sourceLineNo">397</span>   * <a name="line.397"></a>
-<span class="sourceLineNo">398</span>   * @param id the id to check.<a name="line.398"></a>
-<span class="sourceLineNo">399</span>   * @return true if the id is a defined CollectorProcessDefinition's id.<a name="line.399"></a>
-<span class="sourceLineNo">400</span>   */<a name="line.400"></a>
-<span class="sourceLineNo">401</span>  public boolean isDefinedCollectorProcessDefinition(String id);<a name="line.401"></a>
-<span class="sourceLineNo">402</span><a name="line.402"></a>
-<span class="sourceLineNo">403</span>  /**<a name="line.403"></a>
-<span class="sourceLineNo">404</span>   * Checks to see if the given id is a defined Depository id.<a name="line.404"></a>
-<span class="sourceLineNo">405</span>   * <a name="line.405"></a>
-<span class="sourceLineNo">406</span>   * @param id the id to check.<a name="line.406"></a>
-<span class="sourceLineNo">407</span>   * @return true if the id is a defined Depository's id.<a name="line.407"></a>
-<span class="sourceLineNo">408</span>   */<a name="line.408"></a>
-<span class="sourceLineNo">409</span>  public boolean isDefinedDepository(String id);<a name="line.409"></a>
-<span class="sourceLineNo">410</span><a name="line.410"></a>
-<span class="sourceLineNo">411</span>  /**<a name="line.411"></a>
-<span class="sourceLineNo">412</span>   * Checks to see if the given id is a defined GarbageCollectionDefinition id.<a name="line.412"></a>
-<span class="sourceLineNo">413</span>   * <a name="line.413"></a>
-<span class="sourceLineNo">414</span>   * @param id the id to check.<a name="line.414"></a>
-<span class="sourceLineNo">415</span>   * @return true if the id is a defined GarbageCollectionDefinition's id.<a name="line.415"></a>
-<span class="sourceLineNo">416</span>   */<a name="line.416"></a>
-<span class="sourceLineNo">417</span>  public boolean isDefinedGarbageCollectionDefinition(String id);<a name="line.417"></a>
-<span class="sourceLineNo">418</span><a name="line.418"></a>
-<span class="sourceLineNo">419</span>  /**<a name="line.419"></a>
-<span class="sourceLineNo">420</span>   * Checks to see if the given id is a defined MeasurementType id.<a name="line.420"></a>
-<span class="sourceLineNo">421</span>   * <a name="line.421"></a>
-<span class="sourceLineNo">422</span>   * @param id the id to check.<a name="line.422"></a>
-<span class="sourceLineNo">423</span>   * @return true if the id is a defined MeasurementType's id.<a name="line.423"></a>
-<span class="sourceLineNo">424</span>   */<a name="line.424"></a>
-<span class="sourceLineNo">425</span>  public boolean isDefinedMeasurementType(String id);<a name="line.425"></a>
-<span class="sourceLineNo">426</span><a name="line.426"></a>
-<span class="sourceLineNo">427</span>  /**<a name="line.427"></a>
-<span class="sourceLineNo">428</span>   * Checks to see if the given id is a defined Sensor id.<a name="line.428"></a>
-<span class="sourceLineNo">429</span>   * <a name="line.429"></a>
-<span class="sourceLineNo">430</span>   * @param id the id to check.<a name="line.430"></a>
-<span class="sourceLineNo">431</span>   * @return true if the id is a defined Sensor's id.<a name="line.431"></a>
-<span class="sourceLineNo">432</span>   */<a name="line.432"></a>
-<span class="sourceLineNo">433</span>  public boolean isDefinedSensor(String id);<a name="line.433"></a>
-<span class="sourceLineNo">434</span><a name="line.434"></a>
-<span class="sourceLineNo">435</span>  /**<a name="line.435"></a>
-<span class="sourceLineNo">436</span>   * Checks to see if the given id is a defined SensorGroup id.<a name="line.436"></a>
-<span class="sourceLineNo">437</span>   * <a name="line.437"></a>
-<span class="sourceLineNo">438</span>   * @param id the id to check.<a name="line.438"></a>
-<span class="sourceLineNo">439</span>   * @return true if the id is a defined SensorGroup's id.<a name="line.439"></a>
-<span class="sourceLineNo">440</span>   */<a name="line.440"></a>
-<span class="sourceLineNo">441</span>  public boolean isDefinedSensorGroup(String id);<a name="line.441"></a>
-<span class="sourceLineNo">442</span><a name="line.442"></a>
-<span class="sourceLineNo">443</span>  /**<a name="line.443"></a>
-<span class="sourceLineNo">444</span>   * Checks to see if the given id is a defined SensorModel id.<a name="line.444"></a>
-<span class="sourceLineNo">445</span>   * <a name="line.445"></a>
-<span class="sourceLineNo">446</span>   * @param id the id to check.<a name="line.446"></a>
-<span class="sourceLineNo">447</span>   * @return true if the id is a defined SensorModel's id.<a name="line.447"></a>
-<span class="sourceLineNo">448</span>   */<a name="line.448"></a>
-<span class="sourceLineNo">449</span>  public boolean isDefinedSensorModel(String id);<a name="line.449"></a>
-<span class="sourceLineNo">450</span><a name="line.450"></a>
-<span class="sourceLineNo">451</span>  /**<a name="line.451"></a>
-<span class="sourceLineNo">452</span>   * Determines the health of the WattDepot server the client is communicating<a name="line.452"></a>
-<span class="sourceLineNo">453</span>   * with.<a name="line.453"></a>
-<span class="sourceLineNo">454</span>   * <a name="line.454"></a>
-<span class="sourceLineNo">455</span>   * @return true if the server is healthy, false if cannot connect.<a name="line.455"></a>
-<span class="sourceLineNo">456</span>   */<a name="line.456"></a>
-<span class="sourceLineNo">457</span>  public boolean isHealthy();<a name="line.457"></a>
-<span class="sourceLineNo">458</span><a name="line.458"></a>
-<span class="sourceLineNo">459</span>  /**<a name="line.459"></a>
-<span class="sourceLineNo">460</span>   * Stores the given CollectorProcessDefinitionData in the WattDepot Server.<a name="line.460"></a>
-<span class="sourceLineNo">461</span>   * <a name="line.461"></a>
-<span class="sourceLineNo">462</span>   * @param process the CollectorProcessDefinitionData.<a name="line.462"></a>
-<span class="sourceLineNo">463</span>   */<a name="line.463"></a>
-<span class="sourceLineNo">464</span>  public void putCollectorProcessDefinition(CollectorProcessDefinition process);<a name="line.464"></a>
-<span class="sourceLineNo">465</span><a name="line.465"></a>
-<span class="sourceLineNo">466</span>  /**<a name="line.466"></a>
-<span class="sourceLineNo">467</span>   * Stores the given Depository in the WattDepot Server.<a name="line.467"></a>
-<span class="sourceLineNo">468</span>   * <a name="line.468"></a>
-<span class="sourceLineNo">469</span>   * @param depository the Depository.<a name="line.469"></a>
-<span class="sourceLineNo">470</span>   */<a name="line.470"></a>
-<span class="sourceLineNo">471</span>  public void putDepository(Depository depository);<a name="line.471"></a>
-<span class="sourceLineNo">472</span><a name="line.472"></a>
-<span class="sourceLineNo">473</span>  /**<a name="line.473"></a>
-<span class="sourceLineNo">474</span>   * Stores the given GarbageCollectionDefinition in the WattDepot Server.<a name="line.474"></a>
-<span class="sourceLineNo">475</span>   * <a name="line.475"></a>
-<span class="sourceLineNo">476</span>   * @param gcd the GarbageCollectionDefinition.<a name="line.476"></a>
-<span class="sourceLineNo">477</span>   */<a name="line.477"></a>
-<span class="sourceLineNo">478</span>  public void putGarbageCollectionDefinition(GarbageCollectionDefinition gcd);<a name="line.478"></a>
-<span class="sourceLineNo">479</span><a name="line.479"></a>
-<span class="sourceLineNo">480</span>  /**<a name="line.480"></a>
-<span class="sourceLineNo">481</span>   * @param depository The Depository to store the Measurement.<a name="line.481"></a>
-<span class="sourceLineNo">482</span>   * @param measurement The Measurement to store.<a name="line.482"></a>
-<span class="sourceLineNo">483</span>   * @throws MeasurementTypeException if the type of the measurement doesn't<a name="line.483"></a>
-<span class="sourceLineNo">484</span>   *         match the type of the depository.<a name="line.484"></a>
-<span class="sourceLineNo">485</span>   */<a name="line.485"></a>
-<span class="sourceLineNo">486</span>  public void putMeasurement(Depository depository, Measurement measurement)<a name="line.486"></a>
-<span class="sourceLineNo">487</span>      throws MeasurementTypeException;<a name="line.487"></a>
-<span class="sourceLineNo">488</span><a name="line.488"></a>
-<span class="sourceLineNo">489</span>  /**<a name="line.489"></a>
-<span class="sourceLineNo">490</span>   * Stores the given MeasurementType in the WattDepot Server.<a name="line.490"></a>
-<span class="sourceLineNo">491</span>   * <a name="line.491"></a>
-<span class="sourceLineNo">492</span>   * @param type the MeasurementType.<a name="line.492"></a>
-<span class="sourceLineNo">493</span>   */<a name="line.493"></a>
-<span class="sourceLineNo">494</span>  public void putMeasurementType(MeasurementType type);<a name="line.494"></a>
-<span class="sourceLineNo">495</span><a name="line.495"></a>
-<span class="sourceLineNo">496</span>  /**<a name="line.496"></a>
-<span class="sourceLineNo">497</span>   * Stores the given Sensor in the WattDepot Server.<a name="line.497"></a>
-<span class="sourceLineNo">498</span>   * <a name="line.498"></a>
-<span class="sourceLineNo">499</span>   * @param sensor the Sensor.<a name="line.499"></a>
-<span class="sourceLineNo">500</span>   */<a name="line.500"></a>
-<span class="sourceLineNo">501</span>  public void putSensor(Sensor sensor);<a name="line.501"></a>
-<span class="sourceLineNo">502</span><a name="line.502"></a>
-<span class="sourceLineNo">503</span>  /**<a name="line.503"></a>
-<span class="sourceLineNo">504</span>   * Stores the given SensorGroup in the WattDepot Server.<a name="line.504"></a>
-<span class="sourceLineNo">505</span>   * <a name="line.505"></a>
-<span class="sourceLineNo">506</span>   * @param group the SensorGroup.<a name="line.506"></a>
-<span class="sourceLineNo">507</span>   */<a name="line.507"></a>
-<span class="sourceLineNo">508</span>  public void putSensorGroup(SensorGroup group);<a name="line.508"></a>
-<span class="sourceLineNo">509</span><a name="line.509"></a>
-<span class="sourceLineNo">510</span>  /**<a name="line.510"></a>
-<span class="sourceLineNo">511</span>   * Stores the given SensorModel in the WattDepot Server.<a name="line.511"></a>
-<span class="sourceLineNo">512</span>   * <a name="line.512"></a>
-<span class="sourceLineNo">513</span>   * @param model the SensorModel.<a name="line.513"></a>
-<span class="sourceLineNo">514</span>   */<a name="line.514"></a>
-<span class="sourceLineNo">515</span>  public void putSensorModel(SensorModel model);<a name="line.515"></a>
-<span class="sourceLineNo">516</span><a name="line.516"></a>
-<span class="sourceLineNo">517</span>  /**<a name="line.517"></a>
-<span class="sourceLineNo">518</span>   * Updates the given CollectorProcessDefinitionData in the WattDepot Server.<a name="line.518"></a>
-<span class="sourceLineNo">519</span>   * <a name="line.519"></a>
-<span class="sourceLineNo">520</span>   * @param process The CollectorProcessDefinitionData to update.<a name="line.520"></a>
-<span class="sourceLineNo">521</span>   */<a name="line.521"></a>
-<span class="sourceLineNo">522</span>  public void updateCollectorProcessDefinition(CollectorProcessDefinition process);<a name="line.522"></a>
-<span class="sourceLineNo">523</span><a name="line.523"></a>
-<span class="sourceLineNo">524</span>  /**<a name="line.524"></a>
-<span class="sourceLineNo">525</span>   * Updates the given Depository in the WattDepot Server.<a name="line.525"></a>
-<span class="sourceLineNo">526</span>   * <a name="line.526"></a>
-<span class="sourceLineNo">527</span>   * @param depository The Depository to update.<a name="line.527"></a>
-<span class="sourceLineNo">528</span>   */<a name="line.528"></a>
-<span class="sourceLineNo">529</span>  public void updateDepository(Depository depository);<a name="line.529"></a>
-<span class="sourceLineNo">530</span><a name="line.530"></a>
-<span class="sourceLineNo">531</span>  /**<a name="line.531"></a>
-<span class="sourceLineNo">532</span>   * Updates the given GarbageCollectionDefinition in the WattDepot Server.<a name="line.532"></a>
-<span class="sourceLineNo">533</span>   * <a name="line.533"></a>
-<span class="sourceLineNo">534</span>   * @param gcd The GarbageCollectionDefinition to update.<a name="line.534"></a>
-<span class="sourceLineNo">535</span>   */<a name="line.535"></a>
-<span class="sourceLineNo">536</span>  public void updateGarbageCollectionDefinition(GarbageCollectionDefinition gcd);<a name="line.536"></a>
-<span class="sourceLineNo">537</span><a name="line.537"></a>
-<span class="sourceLineNo">538</span>  /**<a name="line.538"></a>
-<span class="sourceLineNo">539</span>   * Updates the given MeasurementType in the WattDepot Server.<a name="line.539"></a>
-<span class="sourceLineNo">540</span>   * <a name="line.540"></a>
-<span class="sourceLineNo">541</span>   * @param type the MeasurementType to update.<a name="line.541"></a>
-<span class="sourceLineNo">542</span>   */<a name="line.542"></a>
-<span class="sourceLineNo">543</span>  public void updateMeasurementType(MeasurementType type);<a name="line.543"></a>
-<span class="sourceLineNo">544</span><a name="line.544"></a>
-<span class="sourceLineNo">545</span>  /**<a name="line.545"></a>
-<span class="sourceLineNo">546</span>   * Updates the given Sensor in the WattDepot Server.<a name="line.546"></a>
-<span class="sourceLineNo">547</span>   * <a name="line.547"></a>
-<span class="sourceLineNo">548</span>   * @param sensor The Sensor to update.<a name="line.548"></a>
-<span class="sourceLineNo">549</span>   */<a name="line.549"></a>
-<span class="sourceLineNo">550</span>  public void updateSensor(Sensor sensor);<a name="line.550"></a>
-<span class="sourceLineNo">551</span><a name="line.551"></a>
-<span class="sourceLineNo">552</span>  /**<a name="line.552"></a>
-<span class="sourceLineNo">553</span>   * Updates the given SensorGroup in the WattDepot Server.<a name="line.553"></a>
-<span class="sourceLineNo">554</span>   * <a name="line.554"></a>
-<span class="sourceLineNo">555</span>   * @param group The SensorGroup to update.<a name="line.555"></a>
-<span class="sourceLineNo">556</span>   */<a name="line.556"></a>
-<span class="sourceLineNo">557</span>  public void updateSensorGroup(SensorGroup group);<a name="line.557"></a>
-<span class="sourceLineNo">558</span><a name="line.558"></a>
-<span class="sourceLineNo">559</span>  /**<a name="line.559"></a>
-<span class="sourceLineNo">560</span>   * Updates the given SensorModel in the WattDepot Server.<a name="line.560"></a>
-<span class="sourceLineNo">561</span>   * <a name="line.561"></a>
-<span class="sourceLineNo">562</span>   * @param model the SensorModel to update.<a name="line.562"></a>
-<span class="sourceLineNo">563</span>   */<a name="line.563"></a>
-<span class="sourceLineNo">564</span>  public void updateSensorModel(SensorModel model);<a name="line.564"></a>
-<span class="sourceLineNo">565</span>}<a name="line.565"></a>
+<span class="sourceLineNo">075</span>   * @param depository the Depository that stores the measurement.<a name="line.75"></a>
+<span class="sourceLineNo">076</span>   * @param measurement the Measurement to delete.<a name="line.76"></a>
+<span class="sourceLineNo">077</span>   * @throws IdNotFoundException if the Measurement is not found in the<a name="line.77"></a>
+<span class="sourceLineNo">078</span>   *         Depository.<a name="line.78"></a>
+<span class="sourceLineNo">079</span>   */<a name="line.79"></a>
+<span class="sourceLineNo">080</span>  public void deleteMeasurement(Depository depository, Measurement measurement)<a name="line.80"></a>
+<span class="sourceLineNo">081</span>      throws IdNotFoundException;<a name="line.81"></a>
+<span class="sourceLineNo">082</span><a name="line.82"></a>
+<span class="sourceLineNo">083</span>  /**<a name="line.83"></a>
+<span class="sourceLineNo">084</span>   * Deletes the given MeasurementPruningDefinition from the WattDepotServer.<a name="line.84"></a>
+<span class="sourceLineNo">085</span>   * <a name="line.85"></a>
+<span class="sourceLineNo">086</span>   * @param gcd The MeasurementPruningDefinition to delete.<a name="line.86"></a>
+<span class="sourceLineNo">087</span>   * @throws org.wattdepot.common.exception.IdNotFoundException if the MPD is not<a name="line.87"></a>
+<span class="sourceLineNo">088</span>   * found.<a name="line.88"></a>
+<span class="sourceLineNo">089</span>   */<a name="line.89"></a>
+<span class="sourceLineNo">090</span>  public void deleteMeasurementPruningDefinition(MeasurementPruningDefinition gcd) throws IdNotFoundException;<a name="line.90"></a>
+<span class="sourceLineNo">091</span><a name="line.91"></a>
+<span class="sourceLineNo">092</span>  /**<a name="line.92"></a>
+<span class="sourceLineNo">093</span>   * Deletes the given MeasurementType.<a name="line.93"></a>
+<span class="sourceLineNo">094</span>   * <a name="line.94"></a>
+<span class="sourceLineNo">095</span>   * @param type the measurement type to delete.<a name="line.95"></a>
+<span class="sourceLineNo">096</span>   * @throws IdNotFoundException if the MeasurementType is not found in the<a name="line.96"></a>
+<span class="sourceLineNo">097</span>   *         Depository.<a name="line.97"></a>
+<span class="sourceLineNo">098</span>   */<a name="line.98"></a>
+<span class="sourceLineNo">099</span>  public void deleteMeasurementType(MeasurementType type) throws IdNotFoundException;<a name="line.99"></a>
+<span class="sourceLineNo">100</span><a name="line.100"></a>
+<span class="sourceLineNo">101</span>  /**<a name="line.101"></a>
+<span class="sourceLineNo">102</span>   * Deletes the given Sensor.<a name="line.102"></a>
+<span class="sourceLineNo">103</span>   * <a name="line.103"></a>
+<span class="sourceLineNo">104</span>   * @param sensor the Sensor to delete.<a name="line.104"></a>
+<span class="sourceLineNo">105</span>   * @throws IdNotFoundException if the Sensor is not found in the server.<a name="line.105"></a>
+<span class="sourceLineNo">106</span>   */<a name="line.106"></a>
+<span class="sourceLineNo">107</span>  public void deleteSensor(Sensor sensor) throws IdNotFoundException;<a name="line.107"></a>
+<span class="sourceLineNo">108</span><a name="line.108"></a>
+<span class="sourceLineNo">109</span>  /**<a name="line.109"></a>
+<span class="sourceLineNo">110</span>   * Deletes the given SensorGroup.<a name="line.110"></a>
+<span class="sourceLineNo">111</span>   * <a name="line.111"></a>
+<span class="sourceLineNo">112</span>   * @param group the SensorGroup to delete.<a name="line.112"></a>
+<span class="sourceLineNo">113</span>   * @throws IdNotFoundException if the SensorGroup is not found in the server.<a name="line.113"></a>
+<span class="sourceLineNo">114</span>   */<a name="line.114"></a>
+<span class="sourceLineNo">115</span>  public void deleteSensorGroup(SensorGroup group) throws IdNotFoundException;<a name="line.115"></a>
+<span class="sourceLineNo">116</span><a name="line.116"></a>
+<span class="sourceLineNo">117</span>  /**<a name="line.117"></a>
+<span class="sourceLineNo">118</span>   * Deletes the given SensorModel.<a name="line.118"></a>
+<span class="sourceLineNo">119</span>   * <a name="line.119"></a>
+<span class="sourceLineNo">120</span>   * @param model the SensorModel to delete.<a name="line.120"></a>
+<span class="sourceLineNo">121</span>   * @throws IdNotFoundException if the SensorModel is not found in the server.<a name="line.121"></a>
+<span class="sourceLineNo">122</span>   */<a name="line.122"></a>
+<span class="sourceLineNo">123</span>  public void deleteSensorModel(SensorModel model) throws IdNotFoundException;<a name="line.123"></a>
+<span class="sourceLineNo">124</span><a name="line.124"></a>
+<span class="sourceLineNo">125</span>  /**<a name="line.125"></a>
+<span class="sourceLineNo">126</span>   * Retrieves the CollectorProcessDefinitionData with the given id from the<a name="line.126"></a>
+<span class="sourceLineNo">127</span>   * WattDepot Server.<a name="line.127"></a>
+<span class="sourceLineNo">128</span>   * <a name="line.128"></a>
+<span class="sourceLineNo">129</span>   * @param id The CollectorProcessDefinitionData's id.<a name="line.129"></a>
+<span class="sourceLineNo">130</span>   * @return the CollectorProcessDefinitionData with the given id or null.<a name="line.130"></a>
+<span class="sourceLineNo">131</span>   * @exception IdNotFoundException if the given id is not a<a name="line.131"></a>
+<span class="sourceLineNo">132</span>   *            CollectorProcessDefinitionData's id.<a name="line.132"></a>
+<span class="sourceLineNo">133</span>   */<a name="line.133"></a>
+<span class="sourceLineNo">134</span>  public CollectorProcessDefinition getCollectorProcessDefinition(String id)<a name="line.134"></a>
+<span class="sourceLineNo">135</span>      throws IdNotFoundException;<a name="line.135"></a>
+<span class="sourceLineNo">136</span><a name="line.136"></a>
+<span class="sourceLineNo">137</span>  /**<a name="line.137"></a>
+<span class="sourceLineNo">138</span>   * @return The defined CollectorProcessDefinitions.<a name="line.138"></a>
+<span class="sourceLineNo">139</span>   */<a name="line.139"></a>
+<span class="sourceLineNo">140</span>  public CollectorProcessDefinitionList getCollectorProcessDefinitions();<a name="line.140"></a>
+<span class="sourceLineNo">141</span><a name="line.141"></a>
+<span class="sourceLineNo">142</span>  /**<a name="line.142"></a>
+<span class="sourceLineNo">143</span>   * @return The defined Depositories.<a name="line.143"></a>
+<span class="sourceLineNo">144</span>   */<a name="line.144"></a>
+<span class="sourceLineNo">145</span>  public DepositoryList getDepositories();<a name="line.145"></a>
+<span class="sourceLineNo">146</span><a name="line.146"></a>
+<span class="sourceLineNo">147</span>  /**<a name="line.147"></a>
+<span class="sourceLineNo">148</span>   * Retrieves the Depository with the given id from the WattDepot Server.<a name="line.148"></a>
+<span class="sourceLineNo">149</span>   * <a name="line.149"></a>
+<span class="sourceLineNo">150</span>   * @param id The Depository's id.<a name="line.150"></a>
+<span class="sourceLineNo">151</span>   * @return the Depository with the given id or null.<a name="line.151"></a>
+<span class="sourceLineNo">152</span>   * @exception IdNotFoundException if the given id is not a Depository's id.<a name="line.152"></a>
+<span class="sourceLineNo">153</span>   */<a name="line.153"></a>
+<span class="sourceLineNo">154</span>  public Depository getDepository(String id) throws IdNotFoundException;<a name="line.154"></a>
+<span class="sourceLineNo">155</span><a name="line.155"></a>
+<span class="sourceLineNo">156</span>  /**<a name="line.156"></a>
+<span class="sourceLineNo">157</span>   * @param id The depository id.<a name="line.157"></a>
+<span class="sourceLineNo">158</span>   * @return a SensorList of the sensors contributing measurements to the<a name="line.158"></a>
+<span class="sourceLineNo">159</span>   *         depository.<a name="line.159"></a>
+<span class="sourceLineNo">160</span>   * @throws IdNotFoundException if the id is not defined.<a name="line.160"></a>
+<span class="sourceLineNo">161</span>   */<a name="line.161"></a>
+<span class="sourceLineNo">162</span>  SensorList getDepositorySensors(String id) throws IdNotFoundException;<a name="line.162"></a>
+<span class="sourceLineNo">163</span><a name="line.163"></a>
+<span class="sourceLineNo">164</span>  /**<a name="line.164"></a>
+<span class="sourceLineNo">165</span>   * @param depository The Depository storing the Measurements.<a name="line.165"></a>
+<span class="sourceLineNo">166</span>   * @param sensor The Sensor making the Measurements.<a name="line.166"></a>
+<span class="sourceLineNo">167</span>   * @return The earliest Value.<a name="line.167"></a>
+<span class="sourceLineNo">168</span>   */<a name="line.168"></a>
+<span class="sourceLineNo">169</span>  public InterpolatedValue getEarliestValue(Depository depository, Sensor sensor);<a name="line.169"></a>
+<span class="sourceLineNo">170</span><a name="line.170"></a>
+<span class="sourceLineNo">171</span>  /**<a name="line.171"></a>
+<span class="sourceLineNo">172</span>   * @param depository The Depository storing the Measurements.<a name="line.172"></a>
+<span class="sourceLineNo">173</span>   * @param group The SensorGroup whose sensors are making the Measurements.<a name="line.173"></a>
+<span class="sourceLineNo">174</span>   * @return The earliest Value.<a name="line.174"></a>
+<span class="sourceLineNo">175</span>   */<a name="line.175"></a>
+<span class="sourceLineNo">176</span>  public InterpolatedValue getEarliestValue(Depository depository, SensorGroup group);<a name="line.176"></a>
+<span class="sourceLineNo">177</span><a name="line.177"></a>
+<span class="sourceLineNo">178</span>  /**<a name="line.178"></a>
+<span class="sourceLineNo">179</span>   * @param depository The Depository storing the Measurements.<a name="line.179"></a>
+<span class="sourceLineNo">180</span>   * @param sensor The Sensor making the Measurements.<a name="line.180"></a>
+<span class="sourceLineNo">181</span>   * @return The latest Measurement.<a name="line.181"></a>
+<span class="sourceLineNo">182</span>   */<a name="line.182"></a>
+<span class="sourceLineNo">183</span>  public InterpolatedValue getLatestValue(Depository depository, Sensor sensor);<a name="line.183"></a>
+<span class="sourceLineNo">184</span><a name="line.184"></a>
+<span class="sourceLineNo">185</span>  /**<a name="line.185"></a>
+<span class="sourceLineNo">186</span>   * @param depository The Depository storing the Measurements.<a name="line.186"></a>
+<span class="sourceLineNo">187</span>   * @param group The SensorGroup whose sensors are making the Measurements.<a name="line.187"></a>
+<span class="sourceLineNo">188</span>   * @return The latest Value.<a name="line.188"></a>
+<span class="sourceLineNo">189</span>   */<a name="line.189"></a>
+<span class="sourceLineNo">190</span>  public InterpolatedValue getLatestValue(Depository depository, SensorGroup group);<a name="line.190"></a>
+<span class="sourceLineNo">191</span><a name="line.191"></a>
+<span class="sourceLineNo">192</span>  /**<a name="line.192"></a>
+<span class="sourceLineNo">193</span>   * @param id The MeasurementPruningDefinition id.<a name="line.193"></a>
+<span class="sourceLineNo">194</span>   * @return The defined MeasurementPruningDefinition.<a name="line.194"></a>
+<span class="sourceLineNo">195</span>   * @throws IdNotFoundException if id is not defined.<a name="line.195"></a>
+<span class="sourceLineNo">196</span>   */<a name="line.196"></a>
+<span class="sourceLineNo">197</span>  public MeasurementPruningDefinition getMeasurementPruningDefinition(String id)<a name="line.197"></a>
+<span class="sourceLineNo">198</span>      throws IdNotFoundException;<a name="line.198"></a>
+<span class="sourceLineNo">199</span><a name="line.199"></a>
+<span class="sourceLineNo">200</span>  /**<a name="line.200"></a>
+<span class="sourceLineNo">201</span>   * @return All the defined MeasurementPruningDefinitions.<a name="line.201"></a>
+<span class="sourceLineNo">202</span>   */<a name="line.202"></a>
+<span class="sourceLineNo">203</span>  public MeasurementPruningDefinitionList getMeasurementPruningDefinitions();<a name="line.203"></a>
+<span class="sourceLineNo">204</span><a name="line.204"></a>
+<span class="sourceLineNo">205</span>  /**<a name="line.205"></a>
+<span class="sourceLineNo">206</span>   * @param depository The Depository storing the Measurements.<a name="line.206"></a>
+<span class="sourceLineNo">207</span>   * @param sensor The Sensor that made the measurements.<a name="line.207"></a>
+<span class="sourceLineNo">208</span>   * @param start The start time.<a name="line.208"></a>
+<span class="sourceLineNo">209</span>   * @param end The end time.<a name="line.209"></a>
+<span class="sourceLineNo">210</span>   * @return The Measurements stored in the depository made by the sensor<a name="line.210"></a>
+<span class="sourceLineNo">211</span>   *         between start and end.<a name="line.211"></a>
+<span class="sourceLineNo">212</span>   */<a name="line.212"></a>
+<span class="sourceLineNo">213</span>  public MeasurementList getMeasurements(Depository depository, Sensor sensor, Date start, Date end);<a name="line.213"></a>
+<span class="sourceLineNo">214</span><a name="line.214"></a>
+<span class="sourceLineNo">215</span>  /**<a name="line.215"></a>
+<span class="sourceLineNo">216</span>   * @param depository The Depository storing the Measurements.<a name="line.216"></a>
+<span class="sourceLineNo">217</span>   * @param group The SensorGroup whose sensors made the measurements.<a name="line.217"></a>
+<span class="sourceLineNo">218</span>   * @param start The start time.<a name="line.218"></a>
+<span class="sourceLineNo">219</span>   * @param end The end time.<a name="line.219"></a>
+<span class="sourceLineNo">220</span>   * @return The Measurements stored in the depository made by the sensor<a name="line.220"></a>
+<span class="sourceLineNo">221</span>   *         between start and end.<a name="line.221"></a>
+<span class="sourceLineNo">222</span>   */<a name="line.222"></a>
+<span class="sourceLineNo">223</span>  public MeasurementList getMeasurements(Depository depository, SensorGroup group, Date start,<a name="line.223"></a>
+<span class="sourceLineNo">224</span>      Date end);<a name="line.224"></a>
+<span class="sourceLineNo">225</span><a name="line.225"></a>
+<span class="sourceLineNo">226</span>  /**<a name="line.226"></a>
+<span class="sourceLineNo">227</span>   * @param id the unique id for the MeasurementType.<a name="line.227"></a>
+<span class="sourceLineNo">228</span>   * @return The MeasurementType.<a name="line.228"></a>
+<span class="sourceLineNo">229</span>   * @exception IdNotFoundException if the given id is not a MeasurementType's<a name="line.229"></a>
+<span class="sourceLineNo">230</span>   *            id.<a name="line.230"></a>
+<span class="sourceLineNo">231</span>   */<a name="line.231"></a>
+<span class="sourceLineNo">232</span>  public MeasurementType getMeasurementType(String id) throws IdNotFoundException;<a name="line.232"></a>
+<span class="sourceLineNo">233</span><a name="line.233"></a>
+<span class="sourceLineNo">234</span>  /**<a name="line.234"></a>
+<span class="sourceLineNo">235</span>   * @return The defined MeasurementTypes.<a name="line.235"></a>
+<span class="sourceLineNo">236</span>   */<a name="line.236"></a>
+<span class="sourceLineNo">237</span>  public MeasurementTypeList getMeasurementTypes();<a name="line.237"></a>
+<span class="sourceLineNo">238</span><a name="line.238"></a>
+<span class="sourceLineNo">239</span>  /**<a name="line.239"></a>
+<span class="sourceLineNo">240</span>   * Retrieves the Sensor with the given id from the WattDepot Server.<a name="line.240"></a>
+<span class="sourceLineNo">241</span>   * <a name="line.241"></a>
+<span class="sourceLineNo">242</span>   * @param id The Sensor's id.<a name="line.242"></a>
+<span class="sourceLineNo">243</span>   * @return the Sensor with the given id or null.<a name="line.243"></a>
+<span class="sourceLineNo">244</span>   * @exception IdNotFoundException if the given id is not a Sensor's id.<a name="line.244"></a>
+<span class="sourceLineNo">245</span>   */<a name="line.245"></a>
+<span class="sourceLineNo">246</span>  public Sensor getSensor(String id) throws IdNotFoundException;<a name="line.246"></a>
+<span class="sourceLineNo">247</span><a name="line.247"></a>
+<span class="sourceLineNo">248</span>  /**<a name="line.248"></a>
+<span class="sourceLineNo">249</span>   * Retrieves the SensorGroup with the given id from the WattDepot Server.<a name="line.249"></a>
+<span class="sourceLineNo">250</span>   * <a name="line.250"></a>
+<span class="sourceLineNo">251</span>   * @param id The SensorGroup's id.<a name="line.251"></a>
+<span class="sourceLineNo">252</span>   * @return the SensorGroup with the given id or null.<a name="line.252"></a>
+<span class="sourceLineNo">253</span>   * @exception IdNotFoundException if the given id is not a SensorGroup's id.<a name="line.253"></a>
+<span class="sourceLineNo">254</span>   */<a name="line.254"></a>
+<span class="sourceLineNo">255</span>  public SensorGroup getSensorGroup(String id) throws IdNotFoundException;<a name="line.255"></a>
+<span class="sourceLineNo">256</span><a name="line.256"></a>
+<span class="sourceLineNo">257</span>  /**<a name="line.257"></a>
+<span class="sourceLineNo">258</span>   * @return The defined SensorGroups.<a name="line.258"></a>
+<span class="sourceLineNo">259</span>   */<a name="line.259"></a>
+<span class="sourceLineNo">260</span>  public SensorGroupList getSensorGroups();<a name="line.260"></a>
+<span class="sourceLineNo">261</span><a name="line.261"></a>
+<span class="sourceLineNo">262</span>  /**<a name="line.262"></a>
+<span class="sourceLineNo">263</span>   * Retrieves the SensorModel with the given id from the WattDepot Server.<a name="line.263"></a>
+<span class="sourceLineNo">264</span>   * <a name="line.264"></a>
+<span class="sourceLineNo">265</span>   * @param id The SensorModel's id.<a name="line.265"></a>
+<span class="sourceLineNo">266</span>   * @return the SensorModel with the given id or null.<a name="line.266"></a>
+<span class="sourceLineNo">267</span>   * @exception IdNotFoundException if the given id is not a SensorModel's id.<a name="line.267"></a>
+<span class="sourceLineNo">268</span>   */<a name="line.268"></a>
+<span class="sourceLineNo">269</span>  public SensorModel getSensorModel(String id) throws IdNotFoundException;<a name="line.269"></a>
+<span class="sourceLineNo">270</span><a name="line.270"></a>
+<span class="sourceLineNo">271</span>  /**<a name="line.271"></a>
+<span class="sourceLineNo">272</span>   * @return The defined SensorModels.<a name="line.272"></a>
+<span class="sourceLineNo">273</span>   */<a name="line.273"></a>
+<span class="sourceLineNo">274</span>  public SensorModelList getSensorModels();<a name="line.274"></a>
+<span class="sourceLineNo">275</span><a name="line.275"></a>
+<span class="sourceLineNo">276</span>  /**<a name="line.276"></a>
+<span class="sourceLineNo">277</span>   * @return The defined Sensors.<a name="line.277"></a>
+<span class="sourceLineNo">278</span>   */<a name="line.278"></a>
+<span class="sourceLineNo">279</span>  public SensorList getSensors();<a name="line.279"></a>
+<span class="sourceLineNo">280</span><a name="line.280"></a>
+<span class="sourceLineNo">281</span>  /**<a name="line.281"></a>
+<span class="sourceLineNo">282</span>   * @param depository The Depository storing the measurements.<a name="line.282"></a>
+<span class="sourceLineNo">283</span>   * @param sensor The sensor making the measurements.<a name="line.283"></a>
+<span class="sourceLineNo">284</span>   * @param timestamp The time for the measured value.<a name="line.284"></a>
+<span class="sourceLineNo">285</span>   * @return The Value 'measured' at the given time, most likely an interpolated<a name="line.285"></a>
+<span class="sourceLineNo">286</span>   *         value.<a name="line.286"></a>
+<span class="sourceLineNo">287</span>   * @throws NoMeasurementException if there aren't any measurements around the<a name="line.287"></a>
+<span class="sourceLineNo">288</span>   *         timestamp.<a name="line.288"></a>
+<span class="sourceLineNo">289</span>   */<a name="line.289"></a>
+<span class="sourceLineNo">290</span>  public Double getValue(Depository depository, Sensor sensor, Date timestamp)<a name="line.290"></a>
+<span class="sourceLineNo">291</span>      throws NoMeasurementException;<a name="line.291"></a>
+<span class="sourceLineNo">292</span><a name="line.292"></a>
+<span class="sourceLineNo">293</span>  /**<a name="line.293"></a>
+<span class="sourceLineNo">294</span>   * @param depository The Depository storing the measurements.<a name="line.294"></a>
+<span class="sourceLineNo">295</span>   * @param sensor The sensor making the measurements.<a name="line.295"></a>
+<span class="sourceLineNo">296</span>   * @param start The start of the period.<a name="line.296"></a>
+<span class="sourceLineNo">297</span>   * @param end The end of the period.<a name="line.297"></a>
+<span class="sourceLineNo">298</span>   * @return The value measured the difference between the end value and the<a name="line.298"></a>
+<span class="sourceLineNo">299</span>   *         start value.<a name="line.299"></a>
+<span class="sourceLineNo">300</span>   * @throws NoMeasurementException if there are no measurements around the<a name="line.300"></a>
+<span class="sourceLineNo">301</span>   *         start or end time.<a name="line.301"></a>
+<span class="sourceLineNo">302</span>   */<a name="line.302"></a>
+<span class="sourceLineNo">303</span>  public Double getValue(Depository depository, Sensor sensor, Date start, Date end)<a name="line.303"></a>
+<span class="sourceLineNo">304</span>      throws NoMeasurementException;<a name="line.304"></a>
+<span class="sourceLineNo">305</span><a name="line.305"></a>
+<span class="sourceLineNo">306</span>  /**<a name="line.306"></a>
+<span class="sourceLineNo">307</span>   * @param depository The Depository storing the measurements.<a name="line.307"></a>
+<span class="sourceLineNo">308</span>   * @param sensor The Sensor making the measurements.<a name="line.308"></a>
+<span class="sourceLineNo">309</span>   * @param start The start of the interval.<a name="line.309"></a>
+<span class="sourceLineNo">310</span>   * @param end The end of the interval<a name="line.310"></a>
+<span class="sourceLineNo">311</span>   * @param gapSeconds The maximum number of seconds that measurements need to<a name="line.311"></a>
+<span class="sourceLineNo">312</span>   *        be within the start and end.<a name="line.312"></a>
+<span class="sourceLineNo">313</span>   * @return The value measured the difference between the end value and the<a name="line.313"></a>
+<span class="sourceLineNo">314</span>   *         start value.<a name="line.314"></a>
+<span class="sourceLineNo">315</span>   * @throws NoMeasurementException if there are no measurements around the<a name="line.315"></a>
+<span class="sourceLineNo">316</span>   *         start or end time.<a name="line.316"></a>
+<span class="sourceLineNo">317</span>   * @throws MeasurementGapException if the measurements around start or end are<a name="line.317"></a>
+<span class="sourceLineNo">318</span>   *         too far apart.<a name="line.318"></a>
+<span class="sourceLineNo">319</span>   */<a name="line.319"></a>
+<span class="sourceLineNo">320</span>  public Double getValue(Depository depository, Sensor sensor, Date start, Date end, Long gapSeconds)<a name="line.320"></a>
+<span class="sourceLineNo">321</span>      throws NoMeasurementException, MeasurementGapException;<a name="line.321"></a>
+<span class="sourceLineNo">322</span><a name="line.322"></a>
+<span class="sourceLineNo">323</span>  /**<a name="line.323"></a>
+<span class="sourceLineNo">324</span>   * @param depository The Depository storing the measurements.<a name="line.324"></a>
+<span class="sourceLineNo">325</span>   * @param sensor The Sensor making the measurements.<a name="line.325"></a>
+<span class="sourceLineNo">326</span>   * @param timestamp The time of the value.<a name="line.326"></a>
+<span class="sourceLineNo">327</span>   * @param gapSeconds The maximum number of seconds that measurements need to<a name="line.327"></a>
+<span class="sourceLineNo">328</span>   *        be within the start and end.<a name="line.328"></a>
+<span class="sourceLineNo">329</span>   * @return The Value 'measured' at the given time, most likely an interpolated<a name="line.329"></a>
+<span class="sourceLineNo">330</span>   *         value.<a name="line.330"></a>
+<span class="sourceLineNo">331</span>   * @throws NoMeasurementException If there aren't any measurements around the<a name="line.331"></a>
+<span class="sourceLineNo">332</span>   *         time.<a name="line.332"></a>
+<span class="sourceLineNo">333</span>   * @throws MeasurementGapException if the measurements around timestamp are<a name="line.333"></a>
+<span class="sourceLineNo">334</span>   *         too far apart.<a name="line.334"></a>
+<span class="sourceLineNo">335</span>   */<a name="line.335"></a>
+<span class="sourceLineNo">336</span>  public Double getValue(Depository depository, Sensor sensor, Date timestamp, Long gapSeconds)<a name="line.336"></a>
+<span class="sourceLineNo">337</span>      throws NoMeasurementException, MeasurementGapException;<a name="line.337"></a>
+<span class="sourceLineNo">338</span><a name="line.338"></a>
+<span class="sourceLineNo">339</span>  /**<a name="line.339"></a>
+<span class="sourceLineNo">340</span>   * @param depository The Depository storing the measurements.<a name="line.340"></a>
+<span class="sourceLineNo">341</span>   * @param group The SensorGroup whose sensors are making the measurements.<a name="line.341"></a>
+<span class="sourceLineNo">342</span>   * @param timestamp The time for the measured value.<a name="line.342"></a>
+<span class="sourceLineNo">343</span>   * @return The Value 'measured' at the given time, most likely an interpolated<a name="line.343"></a>
+<span class="sourceLineNo">344</span>   *         value.<a name="line.344"></a>
+<span class="sourceLineNo">345</span>   * @throws NoMeasurementException if there aren't any measurements around the<a name="line.345"></a>
+<span class="sourceLineNo">346</span>   *         timestamp.<a name="line.346"></a>
+<span class="sourceLineNo">347</span>   */<a name="line.347"></a>
+<span class="sourceLineNo">348</span>  public Double getValue(Depository depository, SensorGroup group, Date timestamp)<a name="line.348"></a>
+<span class="sourceLineNo">349</span>      throws NoMeasurementException;<a name="line.349"></a>
+<span class="sourceLineNo">350</span><a name="line.350"></a>
+<span class="sourceLineNo">351</span>  /**<a name="line.351"></a>
+<span class="sourceLineNo">352</span>   * @param depository The Depository storing the measurements.<a name="line.352"></a>
+<span class="sourceLineNo">353</span>   * @param group The SensorGroup whose Sensors are making the measurements.<a name="line.353"></a>
+<span class="sourceLineNo">354</span>   * @param start The start of the period.<a name="line.354"></a>
+<span class="sourceLineNo">355</span>   * @param end The end of the period.<a name="line.355"></a>
+<span class="sourceLineNo">356</span>   * @return The value measured the difference between the end value and the<a name="line.356"></a>
+<span class="sourceLineNo">357</span>   *         start value.<a name="line.357"></a>
+<span class="sourceLineNo">358</span>   * @throws NoMeasurementException if there are no measurements around the<a name="line.358"></a>
+<span class="sourceLineNo">359</span>   *         start or end time.<a name="line.359"></a>
+<span class="sourceLineNo">360</span>   */<a name="line.360"></a>
+<span class="sourceLineNo">361</span>  public Double getValue(Depository depository, SensorGroup group, Date start, Date end)<a name="line.361"></a>
+<span class="sourceLineNo">362</span>      throws NoMeasurementException;<a name="line.362"></a>
+<span class="sourceLineNo">363</span><a name="line.363"></a>
+<span class="sourceLineNo">364</span>  /**<a name="line.364"></a>
+<span class="sourceLineNo">365</span>   * @param depository The Depository storing the measurements.<a name="line.365"></a>
+<span class="sourceLineNo">366</span>   * @param group The SensorGroup whose Sensors are making the measurements.<a name="line.366"></a>
+<span class="sourceLineNo">367</span>   * @param start The start of the interval.<a name="line.367"></a>
+<span class="sourceLineNo">368</span>   * @param end The end of the interval<a name="line.368"></a>
+<span class="sourceLineNo">369</span>   * @param gapSeconds The maximum number of seconds that measurements need to<a name="line.369"></a>
+<span class="sourceLineNo">370</span>   *        be within the start and end.<a name="line.370"></a>
+<span class="sourceLineNo">371</span>   * @return The value measured the difference between the end value and the<a name="line.371"></a>
+<span class="sourceLineNo">372</span>   *         start value.<a name="line.372"></a>
+<span class="sourceLineNo">373</span>   * @throws NoMeasurementException if there are no measurements around the<a name="line.373"></a>
+<span class="sourceLineNo">374</span>   *         start or end time.<a name="line.374"></a>
+<span class="sourceLineNo">375</span>   * @throws MeasurementGapException if the measurements around start or end are<a name="line.375"></a>
+<span class="sourceLineNo">376</span>   *         too far apart.<a name="line.376"></a>
+<span class="sourceLineNo">377</span>   */<a name="line.377"></a>
+<span class="sourceLineNo">378</span>  public Double getValue(Depository depository, SensorGroup group, Date start, Date end,<a name="line.378"></a>
+<span class="sourceLineNo">379</span>      Long gapSeconds) throws NoMeasurementException, MeasurementGapException;<a name="line.379"></a>
+<span class="sourceLineNo">380</span><a name="line.380"></a>
+<span class="sourceLineNo">381</span>  /**<a name="line.381"></a>
+<span class="sourceLineNo">382</span>   * @param depository The Depository storing the measurements.<a name="line.382"></a>
+<span class="sourceLineNo">383</span>   * @param group The SensorGroup whose Sensors are making the measurements.<a name="line.383"></a>
+<span class="sourceLineNo">384</span>   * @param timestamp The time of the value.<a name="line.384"></a>
+<span class="sourceLineNo">385</span>   * @param gapSeconds The maximum number of seconds that measurements need to<a name="line.385"></a>
+<span class="sourceLineNo">386</span>   *        be within the start and end.<a name="line.386"></a>
+<span class="sourceLineNo">387</span>   * @return The Value 'measured' at the given time, most likely an interpolated<a name="line.387"></a>
+<span class="sourceLineNo">388</span>   *         value.<a name="line.388"></a>
+<span class="sourceLineNo">389</span>   * @throws NoMeasurementException If there aren't any measurements around the<a name="line.389"></a>
+<span class="sourceLineNo">390</span>   *         time.<a name="line.390"></a>
+<span class="sourceLineNo">391</span>   * @throws MeasurementGapException if the measurements around timestamp are<a name="line.391"></a>
+<span class="sourceLineNo">392</span>   *         too far apart.<a name="line.392"></a>
+<span class="sourceLineNo">393</span>   */<a name="line.393"></a>
+<span class="sourceLineNo">394</span>  public Double getValue(Depository depository, SensorGroup group, Date timestamp, Long gapSeconds)<a name="line.394"></a>
+<span class="sourceLineNo">395</span>      throws NoMeasurementException, MeasurementGapException;<a name="line.395"></a>
+<span class="sourceLineNo">396</span><a name="line.396"></a>
+<span class="sourceLineNo">397</span>  /**<a name="line.397"></a>
+<span class="sourceLineNo">398</span>   * Checks to see if the given id is a defined CollectorProcessDefinition id.<a name="line.398"></a>
+<span class="sourceLineNo">399</span>   * <a name="line.399"></a>
+<span class="sourceLineNo">400</span>   * @param id the id to check.<a name="line.400"></a>
+<span class="sourceLineNo">401</span>   * @return true if the id is a defined CollectorProcessDefinition's id.<a name="line.401"></a>
+<span class="sourceLineNo">402</span>   */<a name="line.402"></a>
+<span class="sourceLineNo">403</span>  public boolean isDefinedCollectorProcessDefinition(String id);<a name="line.403"></a>
+<span class="sourceLineNo">404</span><a name="line.404"></a>
+<span class="sourceLineNo">405</span>  /**<a name="line.405"></a>
+<span class="sourceLineNo">406</span>   * Checks to see if the given id is a defined Depository id.<a name="line.406"></a>
+<span class="sourceLineNo">407</span>   * <a name="line.407"></a>
+<span class="sourceLineNo">408</span>   * @param id the id to check.<a name="line.408"></a>
+<span class="sourceLineNo">409</span>   * @return true if the id is a defined Depository's id.<a name="line.409"></a>
+<span class="sourceLineNo">410</span>   */<a name="line.410"></a>
+<span class="sourceLineNo">411</span>  public boolean isDefinedDepository(String id);<a name="line.411"></a>
+<span class="sourceLineNo">412</span><a name="line.412"></a>
+<span class="sourceLineNo">413</span>  /**<a name="line.413"></a>
+<span class="sourceLineNo">414</span>   * Checks to see if the given id is a defined MeasurementPruningDefinition id.<a name="line.414"></a>
+<span class="sourceLineNo">415</span>   * <a name="line.415"></a>
+<span class="sourceLineNo">416</span>   * @param id the id to check.<a name="line.416"></a>
+<span class="sourceLineNo">417</span>   * @return true if the id is a defined MeasurementPruningDefinition's id.<a name="line.417"></a>
+<span class="sourceLineNo">418</span>   */<a name="line.418"></a>
+<span class="sourceLineNo">419</span>  public boolean isDefinedMeasurementPruningDefinition(String id);<a name="line.419"></a>
+<span class="sourceLineNo">420</span><a name="line.420"></a>
+<span class="sourceLineNo">421</span>  /**<a name="line.421"></a>
+<span class="sourceLineNo">422</span>   * Checks to see if the given id is a defined MeasurementType id.<a name="line.422"></a>
+<span class="sourceLineNo">423</span>   * <a name="line.423"></a>
+<span class="sourceLineNo">424</span>   * @param id the id to check.<a name="line.424"></a>
+<span class="sourceLineNo">425</span>   * @return true if the id is a defined MeasurementType's id.<a name="line.425"></a>
+<span class="sourceLineNo">426</span>   */<a name="line.426"></a>
+<span class="sourceLineNo">427</span>  public boolean isDefinedMeasurementType(String id);<a name="line.427"></a>
+<span class="sourceLineNo">428</span><a name="line.428"></a>
+<span class="sourceLineNo">429</span>  /**<a name="line.429"></a>
+<span class="sourceLineNo">430</span>   * Checks to see if the given id is a defined Sensor id.<a name="line.430"></a>
+<span class="sourceLineNo">431</span>   * <a name="line.431"></a>
+<span class="sourceLineNo">432</span>   * @param id the id to check.<a name="line.432"></a>
+<span class="sourceLineNo">433</span>   * @return true if the id is a defined Sensor's id.<a name="line.433"></a>
+<span class="sourceLineNo">434</span>   */<a name="line.434"></a>
+<span class="sourceLineNo">435</span>  public boolean isDefinedSensor(String id);<a name="line.435"></a>
+<span class="sourceLineNo">436</span><a name="line.436"></a>
+<span class="sourceLineNo">437</span>  /**<a name="line.437"></a>
+<span class="sourceLineNo">438</span>   * Checks to see if the given id is a defined SensorGroup id.<a name="line.438"></a>
+<span class="sourceLineNo">439</span>   * <a name="line.439"></a>
+<span class="sourceLineNo">440</span>   * @param id the id to check.<a name="line.440"></a>
+<span class="sourceLineNo">441</span>   * @return true if the id is a defined SensorGroup's id.<a name="line.441"></a>
+<span class="sourceLineNo">442</span>   */<a name="line.442"></a>
+<span class="sourceLineNo">443</span>  public boolean isDefinedSensorGroup(String id);<a name="line.443"></a>
+<span class="sourceLineNo">444</span><a name="line.444"></a>
+<span class="sourceLineNo">445</span>  /**<a name="line.445"></a>
+<span class="sourceLineNo">446</span>   * Checks to see if the given id is a defined SensorModel id.<a name="line.446"></a>
+<span class="sourceLineNo">447</span>   * <a name="line.447"></a>
+<span class="sourceLineNo">448</span>   * @param id the id to check.<a name="line.448"></a>
+<span class="sourceLineNo">449</span>   * @return true if the id is a defined SensorModel's id.<a name="line.449"></a>
+<span class="sourceLineNo">450</span>   */<a name="line.450"></a>
+<span class="sourceLineNo">451</span>  public boolean isDefinedSensorModel(String id);<a name="line.451"></a>
+<span class="sourceLineNo">452</span><a name="line.452"></a>
+<span class="sourceLineNo">453</span>  /**<a name="line.453"></a>
+<span class="sourceLineNo">454</span>   * Determines the health of the WattDepot server the client is communicating<a name="line.454"></a>
+<span class="sourceLineNo">455</span>   * with.<a name="line.455"></a>
+<span class="sourceLineNo">456</span>   * <a name="line.456"></a>
+<span class="sourceLineNo">457</span>   * @return true if the server is healthy, false if cannot connect.<a name="line.457"></a>
+<span class="sourceLineNo">458</span>   */<a name="line.458"></a>
+<span class="sourceLineNo">459</span>  public boolean isHealthy();<a name="line.459"></a>
+<span class="sourceLineNo">460</span><a name="line.460"></a>
+<span class="sourceLineNo">461</span>  /**<a name="line.461"></a>
+<span class="sourceLineNo">462</span>   * Stores the given CollectorProcessDefinitionData in the WattDepot Server.<a name="line.462"></a>
+<span class="sourceLineNo">463</span>   * <a name="line.463"></a>
+<span class="sourceLineNo">464</span>   * @param process the CollectorProcessDefinitionData.<a name="line.464"></a>
+<span class="sourceLineNo">465</span>   */<a name="line.465"></a>
+<span class="sourceLineNo">466</span>  public void putCollectorProcessDefinition(CollectorProcessDefinition process);<a name="line.466"></a>
+<span class="sourceLineNo">467</span><a name="line.467"></a>
+<span class="sourceLineNo">468</span>  /**<a name="line.468"></a>
+<span class="sourceLineNo">469</span>   * Stores the given Depository in the WattDepot Server.<a name="line.469"></a>
+<span class="sourceLineNo">470</span>   * <a name="line.470"></a>
+<span class="sourceLineNo">471</span>   * @param depository the Depository.<a name="line.471"></a>
+<span class="sourceLineNo">472</span>   */<a name="line.472"></a>
+<span class="sourceLineNo">473</span>  public void putDepository(Depository depository);<a name="line.473"></a>
+<span class="sourceLineNo">474</span><a name="line.474"></a>
+<span class="sourceLineNo">475</span>  /**<a name="line.475"></a>
+<span class="sourceLineNo">476</span>   * @param depository The Depository to store the Measurement.<a name="line.476"></a>
+<span class="sourceLineNo">477</span>   * @param measurement The Measurement to store.<a name="line.477"></a>
+<span class="sourceLineNo">478</span>   * @throws MeasurementTypeException if the type of the measurement doesn't<a name="line.478"></a>
+<span class="sourceLineNo">479</span>   *         match the type of the depository.<a name="line.479"></a>
+<span class="sourceLineNo">480</span>   */<a name="line.480"></a>
+<span class="sourceLineNo">481</span>  public void putMeasurement(Depository depository, Measurement measurement)<a name="line.481"></a>
+<span class="sourceLineNo">482</span>      throws MeasurementTypeException;<a name="line.482"></a>
+<span class="sourceLineNo">483</span><a name="line.483"></a>
+<span class="sourceLineNo">484</span>  /**<a name="line.484"></a>
+<span class="sourceLineNo">485</span>   * Stores the given MeasurementPruningDefinition in the WattDepot Server.<a name="line.485"></a>
+<span class="sourceLineNo">486</span>   * <a name="line.486"></a>
+<span class="sourceLineNo">487</span>   * @param gcd the MeasurementPruningDefinition.<a name="line.487"></a>
+<span class="sourceLineNo">488</span>   */<a name="line.488"></a>
+<span class="sourceLineNo">489</span>  public void putMeasurementPruningDefinition(MeasurementPruningDefinition gcd);<a name="line.489"></a>
+<span class="sourceLineNo">490</span><a name="line.490"></a>
+<span class="sourceLineNo">491</span>  /**<a name="line.491"></a>
+<span class="sourceLineNo">492</span>   * Stores the given MeasurementType in the WattDepot Server.<a name="line.492"></a>
+<span class="sourceLineNo">493</span>   * <a name="line.493"></a>
+<span class="sourceLineNo">494</span>   * @param type the MeasurementType.<a name="line.494"></a>
+<span class="sourceLineNo">495</span>   */<a name="line.495"></a>
+<span class="sourceLineNo">496</span>  public void putMeasurementType(MeasurementType type);<a name="line.496"></a>
+<span class="sourceLineNo">497</span><a name="line.497"></a>
+<span class="sourceLineNo">498</span>  /**<a name="line.498"></a>
+<span class="sourceLineNo">499</span>   * Stores the given Sensor in the WattDepot Server.<a name="line.499"></a>
+<span class="sourceLineNo">500</span>   * <a name="line.500"></a>
+<span class="sourceLineNo">501</span>   * @param sensor the Sensor.<a name="line.501"></a>
+<span class="sourceLineNo">502</span>   */<a name="line.502"></a>
+<span class="sourceLineNo">503</span>  public void putSensor(Sensor sensor);<a name="line.503"></a>
+<span class="sourceLineNo">504</span><a name="line.504"></a>
+<span class="sourceLineNo">505</span>  /**<a name="line.505"></a>
+<span class="sourceLineNo">506</span>   * Stores the given SensorGroup in the WattDepot Server.<a name="line.506"></a>
+<span class="sourceLineNo">507</span>   * <a name="line.507"></a>
+<span class="sourceLineNo">508</span>   * @param group the SensorGroup.<a name="line.508"></a>
+<span class="sourceLineNo">509</span>   */<a name="line.509"></a>
+<span class="sourceLineNo">510</span>  public void putSensorGroup(SensorGroup group);<a name="line.510"></a>
+<span class="sourceLineNo">511</span><a name="line.511"></a>
+<span class="sourceLineNo">512</span>  /**<a name="line.512"></a>
+<span class="sourceLineNo">513</span>   * Stores the given SensorModel in the WattDepot Server.<a name="line.513"></a>
+<span class="sourceLineNo">514</span>   * <a name="line.514"></a>
+<span class="sourceLineNo">515</span>   * @param model the SensorModel.<a name="line.515"></a>
+<span class="sourceLineNo">516</span>   */<a name="line.516"></a>
+<span class="sourceLineNo">517</span>  public void putSensorModel(SensorModel model);<a name="line.517"></a>
+<span class="sourceLineNo">518</span><a name="line.518"></a>
+<span class="sourceLineNo">519</span>  /**<a name="line.519"></a>
+<span class="sourceLineNo">520</span>   * Updates the given CollectorProcessDefinitionData in the WattDepot Server.<a name="line.520"></a>
+<span class="sourceLineNo">521</span>   * <a name="line.521"></a>
+<span class="sourceLineNo">522</span>   * @param process The CollectorProcessDefinitionData to update.<a name="line.522"></a>
+<span class="sourceLineNo">523</span>   */<a name="line.523"></a>
+<span class="sourceLineNo">524</span>  public void updateCollectorProcessDefinition(CollectorProcessDefinition process);<a name="line.524"></a>
+<span class="sourceLineNo">525</span><a name="line.525"></a>
+<span class="sourceLineNo">526</span>  /**<a name="line.526"></a>
+<span class="sourceLineNo">527</span>   * Updates the given Depository in the WattDepot Server.<a name="line.527"></a>
+<span class="sourceLineNo">528</span>   * <a name="line.528"></a>
+<span class="sourceLineNo">529</span>   * @param depository The Depository to update.<a name="line.529"></a>
+<span class="sourceLineNo">530</span>   */<a name="line.530"></a>
+<span class="sourceLineNo">531</span>  public void updateDepository(Depository depository);<a name="line.531"></a>
+<span class="sourceLineNo">532</span><a name="line.532"></a>
+<span class="sourceLineNo">533</span>  /**<a name="line.533"></a>
+<span class="sourceLineNo">534</span>   * Updates the given MeasurementPruningDefinition in the WattDepot Server.<a name="line.534"></a>
+<span class="sourceLineNo">535</span>   * <a name="line.535"></a>
+<span class="sourceLineNo">536</span>   * @param gcd The MeasurementPruningDefinition to update.<a name="line.536"></a>
+<span class="sourceLineNo">537</span>   */<a name="line.537"></a>
+<span class="sourceLineNo">538</span>  public void updateMeasurementPruningDefinition(MeasurementPruningDefinition gcd);<a name="line.538"></a>
+<span class="sourceLineNo">539</span><a name="line.539"></a>
+<span class="sourceLineNo">540</span>  /**<a name="line.540"></a>
+<span class="sourceLineNo">541</span>   * Updates the given MeasurementType in the WattDepot Server.<a name="line.541"></a>
+<span class="sourceLineNo">542</span>   * <a name="line.542"></a>
+<span class="sourceLineNo">543</span>   * @param type the MeasurementType to update.<a name="line.543"></a>
+<span class="sourceLineNo">544</span>   */<a name="line.544"></a>
+<span class="sourceLineNo">545</span>  public void updateMeasurementType(MeasurementType type);<a name="line.545"></a>
+<span class="sourceLineNo">546</span><a name="line.546"></a>
+<span class="sourceLineNo">547</span>  /**<a name="line.547"></a>
+<span class="sourceLineNo">548</span>   * Updates the given Sensor in the WattDepot Server.<a name="line.548"></a>
+<span class="sourceLineNo">549</span>   * <a name="line.549"></a>
+<span class="sourceLineNo">550</span>   * @param sensor The Sensor to update.<a name="line.550"></a>
+<span class="sourceLineNo">551</span>   */<a name="line.551"></a>
+<span class="sourceLineNo">552</span>  public void updateSensor(Sensor sensor);<a name="line.552"></a>
+<span class="sourceLineNo">553</span><a name="line.553"></a>
+<span class="sourceLineNo">554</span>  /**<a name="line.554"></a>
+<span class="sourceLineNo">555</span>   * Updates the given SensorGroup in the WattDepot Server.<a name="line.555"></a>
+<span class="sourceLineNo">556</span>   * <a name="line.556"></a>
+<span class="sourceLineNo">557</span>   * @param group The SensorGroup to update.<a name="line.557"></a>
+<span class="sourceLineNo">558</span>   */<a name="line.558"></a>
+<span class="sourceLineNo">559</span>  public void updateSensorGroup(SensorGroup group);<a name="line.559"></a>
+<span class="sourceLineNo">560</span><a name="line.560"></a>
+<span class="sourceLineNo">561</span>  /**<a name="line.561"></a>
+<span class="sourceLineNo">562</span>   * Updates the given SensorModel in the WattDepot Server.<a name="line.562"></a>
+<span class="sourceLineNo">563</span>   * <a name="line.563"></a>
+<span class="sourceLineNo">564</span>   * @param model the SensorModel to update.<a name="line.564"></a>
+<span class="sourceLineNo">565</span>   */<a name="line.565"></a>
+<span class="sourceLineNo">566</span>  public void updateSensorModel(SensorModel model);<a name="line.566"></a>
+<span class="sourceLineNo">567</span>}<a name="line.567"></a>
 
 
 
