@@ -56,13 +56,13 @@ public class AllOrganizationCollectors {
     String password = null;
     boolean debug = false;
 
-    options.addOption("h", false, "Usage: GetDateValueRate -s <server uri> -u <username>"
-        + " -p <password> -o <orgId> -gps <getsPerSecond> [-d]");
+    options.addOption("h", false, "Usage: AllOrganizationCollectors -s <server uri> -u <username>"
+        + " -p <password> -o <orgId> [-d]");
     options.addOption("s", "server", true, "WattDepot Server URI. (http://server.wattdepot.org)");
     options.addOption("u", "username", true, "Username");
     options.addOption("o", "organizationId", true, "User's Organization id.");
     options.addOption("p", "password", true, "Password");
-    options.addOption("d", "debug", false, "Displays statistics as the Measurements are stored.");
+    options.addOption("d", "debug", false, "Displays debugging information.");
     CommandLineParser parser = new PosixParser();
     HelpFormatter formatter = new HelpFormatter();
     try {
@@ -73,7 +73,7 @@ public class AllOrganizationCollectors {
       System.exit(1);
     }
     if (cmd.hasOption("h")) {
-      formatter.printHelp("GetDateValueRate", options);
+      formatter.printHelp("AllOrganizationCollectors", options);
       System.exit(0);
     }
     if (cmd.hasOption("s")) {
@@ -102,7 +102,7 @@ public class AllOrganizationCollectors {
     }
     debug = cmd.hasOption("d");
     if (debug) {
-      System.out.println("Get Value(date) Rate:");
+      System.out.println("All Organization Collectors:");
       System.out.println("    WattDepotServer: " + serverUri);
       System.out.println("    Username: " + username);
       System.out.println("    OrganizationId: " + organizationId);

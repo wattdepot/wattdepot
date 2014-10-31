@@ -57,23 +57,28 @@ public class MeasurementPruningDefinitionPutServerResource extends WattDepotServ
     if (isInRole(orgId)) {
       try {
         depot.getOrganization(orgId, true);
+      }
+      catch (IdNotFoundException e1) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
+      }
+      try {
         depot.defineMeasurementPruningDefinition(definition.getId(), definition.getName(),
             definition.getDepositoryId(), definition.getSensorId(), definition.getOrganizationId(),
             definition.getIgnoreWindowDays(), definition.getCollectWindowDays(),
             definition.getMinGapSeconds());
       }
-      catch (IdNotFoundException e1) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");
-      }
       catch (UniqueIdException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
+      catch (IdNotFoundException e1) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization.");
       }
       catch (BadSlugException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials");
+      setStatus(Status.CLIENT_ERROR_UNAUTHORIZED, "Bad credentials");
     }
   }
 

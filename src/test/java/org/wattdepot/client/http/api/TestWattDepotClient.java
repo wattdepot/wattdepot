@@ -633,6 +633,9 @@ public class TestWattDepotClient {
     }
   }
 
+  /**
+   * Tests putting a MeasurementPruningDefinition.
+   */
   @Test
   public void testMeasurementPruningDefinition() {
     MeasurementPruningDefinition data = testMPD;
@@ -659,13 +662,13 @@ public class TestWattDepotClient {
       MeasurementPruningDefinition ret = test.getMeasurementPruningDefinition(data.getId());
       assertNotNull(ret);
       assertTrue(data.equals(ret));
-//      ret.setDepositoryId("new depotistory_id");
+      ret.setDepositoryId("bogus_depotistory_id");
 //      try {
 //        test.updateMeasurementPruningDefinition(ret);
 //        fail("Should not be able to update to bogus depository id.");
 //      }
 //      catch (Exception e) { // NOPMD
-//        // we expect this
+        // we expect this
 //      }
       // delete instance (DELETE)
       test.deleteMeasurementPruningDefinition(data);
