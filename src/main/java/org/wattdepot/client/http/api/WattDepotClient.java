@@ -1198,8 +1198,10 @@ public class WattDepotClient implements WattDepotInterface {
    */
   @Override
   public void putMeasurementPruningDefinition(MeasurementPruningDefinition gcd) {
-    ClientResource client = makeClient(this.organizationId + "/"
-        + Labels.MEASUREMENT_PRUNING_DEFINITION + "/");
+    String url = this.organizationId + "/"
+        + Labels.MEASUREMENT_PRUNING_DEFINITION + "/";
+    System.out.println(url);
+    ClientResource client = makeClient(url);
     MeasurementPruningDefinitionPutResource resource = client
         .wrap(MeasurementPruningDefinitionPutResource.class);
     try {
