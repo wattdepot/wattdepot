@@ -65,7 +65,6 @@ public class TestCSVObjectFactory {
     CollectorProcessDefinition cpd = new CollectorProcessDefinition(Slug.slugify(name), name,
         sensorId, polling, depositoryId, properties, orgId);
     String csv = CSVObjectFactory.toCSV(cpd);
-    System.out.println(csv);
     assertNotNull(csv);
     try {
       CollectorProcessDefinition result = CSVObjectFactory.buildCPD(csv);
@@ -88,7 +87,6 @@ public class TestCSVObjectFactory {
     String orgId = "orgId";
     Depository depo = new Depository(name, type, orgId);
     String csv = CSVObjectFactory.toCSV(depo);
-    System.out.println(csv);
     assertNotNull(csv);
     try {
       Depository result = CSVObjectFactory.buildDepository(csv);
@@ -115,7 +113,6 @@ public class TestCSVObjectFactory {
     String orgId = "orgId";
     Sensor sensor = new Sensor(Slug.slugify(name), name, uri, modelId, properties, orgId);
     String csv = CSVObjectFactory.toCSV(sensor);
-    System.out.println(csv);
     assertNotNull(csv);
     try {
       Sensor result = CSVObjectFactory.buildSensor(csv);
@@ -140,7 +137,6 @@ public class TestCSVObjectFactory {
     sensors.add("sensor2");
     SensorGroup group = new SensorGroup(Slug.slugify(name), name, sensors, orgId);
     String csv = CSVObjectFactory.toCSV(group);
-    System.out.println(csv);
     assertNotNull(csv);
     try {
       SensorGroup result = CSVObjectFactory.buildSensorGroup(csv);
