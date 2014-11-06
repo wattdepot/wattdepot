@@ -1200,7 +1200,6 @@ public class WattDepotClient implements WattDepotInterface {
   public void putMeasurementPruningDefinition(MeasurementPruningDefinition gcd) {
     String url = this.organizationId + "/"
         + Labels.MEASUREMENT_PRUNING_DEFINITION + "/";
-    System.out.println(url);
     ClientResource client = makeClient(url);
     MeasurementPruningDefinitionPutResource resource = client
         .wrap(MeasurementPruningDefinitionPutResource.class);
