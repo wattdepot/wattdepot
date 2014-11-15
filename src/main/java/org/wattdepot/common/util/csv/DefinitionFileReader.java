@@ -45,6 +45,7 @@ public class DefinitionFileReader {
   private Set<Sensor> sensors;
   private Set<CollectorProcessDefinition> cpds;
   private Set<MeasurementPruningDefinition> gcds;
+  private Set<String> orgIds;
 
   /**
    * Creates a new DefinitionFileReader.
@@ -60,10 +61,11 @@ public class DefinitionFileReader {
     this.sensors = new HashSet<Sensor>();
     this.cpds = new HashSet<CollectorProcessDefinition>();
     this.gcds = new HashSet<MeasurementPruningDefinition>();
+    this.orgIds = new HashSet<String>();
     processFile();
   }
 
-  
+
   /**
    * @return the CollectorProcessDefinitions.
    */
@@ -71,7 +73,7 @@ public class DefinitionFileReader {
     return cpds;
   }
 
-
+  
   /**
    * @return the Depositories
    */
@@ -85,6 +87,14 @@ public class DefinitionFileReader {
    */
   public Set<MeasurementPruningDefinition> getMeasurementPruningDefinitions() {
     return gcds;
+  }
+
+
+  /**
+   * @return the orgIds.
+   */
+  public Set<String> getOrgIds() {
+    return orgIds;
   }
 
 
@@ -114,19 +124,29 @@ public class DefinitionFileReader {
       if (!line.startsWith("#") || line.length() > 0) {
         // decide what we have
         if (line.startsWith("Depository")) {
-          depositories.add(CSVObjectFactory.buildDepository(line));
+          Depository d = CSVObjectFactory.buildDepository(line);
+          orgIds.add(d.getOrganizationId());
+          depositories.add(d);
         }
         else if (line.startsWith("SensorGroup")) {
-          groups.add(CSVObjectFactory.buildSensorGroup(line));
+          SensorGroup sg = CSVObjectFactory.buildSensorGroup(line);
+          orgIds.add(sg.getOrganizationId());
+          groups.add(sg);
         }
         else if (line.startsWith("Sensor")) {
-          sensors.add(CSVObjectFactory.buildSensor(line));
+          Sensor s = CSVObjectFactory.buildSensor(line);
+          orgIds.add(s.getOrganizationId());
+          sensors.add(s);
         }
         else if (line.startsWith("CollectorProcessDefinition")) {
-          cpds.add(CSVObjectFactory.buildCPD(line));
+          CollectorProcessDefinition cpd = CSVObjectFactory.buildCPD(line);
+          orgIds.add(cpd.getOrganizationId());
+          cpds.add(cpd);
         }
         else if (line.startsWith("MeasurementPruningDefinition")) {
-          gcds.add(CSVObjectFactory.buildMeasurementPruningDefinition(line));
+          MeasurementPruningDefinition mpd = CSVObjectFactory.buildMeasurementPruningDefinition(line);
+          orgIds.add(mpd.getOrganizationId());
+          gcds.add(mpd);
         }
       }
       line = reader.readLine();

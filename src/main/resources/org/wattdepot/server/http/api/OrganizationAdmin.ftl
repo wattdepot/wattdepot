@@ -29,7 +29,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
-    <a class="navbar-brand" href="#"><img src="/webroot/dist/wattdepot-logo.png"> WattDepot</a>
+    <a class="navbar-brand" href="#"><img src="/webroot/dist/wattdepot-logo.png"></a>
   </div>
 
   <!-- Collect the nav links, forms, and other content for toggling -->
@@ -1134,17 +1134,17 @@
             <form>
               <input type="hidden" name="meta_id" value="">
             <div class="form-group">
-              <label class="col-md-3 control-label">Measurement Pruning Definition Id</label>
+              <label class="col-md-3 control-label">Id</label>
                 <div class="col-md-9">
                   <input type="text" name="gcd_id" class="form-control">
                   <p class="help-block">The id must be unique and be a slug. Slugs consist of lowercase letter, numbers and '-', no other characters are allowed.</p>
                 </div>
               </div>
               <div class="form-group">
-                 <label class="col-sm-3 control-label">Measurement Pruning Definition Name</label>
+                 <label class="col-sm-3 control-label">Name</label>
                  <div class="col-sm-9">
                    <input class="form-control" type="text" name="gcd_name" class="form-control">
-                   <p class="help-block">Unique name for the definition.</p>
+                   <p class="help-block">Unique name for the measurement pruning definition.</p>
                  </div>
               </div>
               <div class="form-group">
@@ -1155,7 +1155,7 @@
                     <option value="${d.id}">${d.name}</option>
                   </#list>
                   </select>
-                  <p class="help-block">Select the depository storing the measurements.</p>
+                  <p class="help-block">Select the depository storing the measurements to be pruned.</p>
                 </div>
               </div>
               <div class="form-group">
@@ -1166,28 +1166,28 @@
                     <option value="${s.id}">${s.name}</option>
                   </#list>
                   </select>
-                  <p class="help-block">Select the sensor that made the measurements.</p>
+                  <p class="help-block">Select the sensor that made the measurements to be pruned.</p>
                 </div>
               </div>
               <div class="form-group">
                 <label class="col-sm-3 control-label">Ignore Window</label>
                 <div class="col-sm-9">
                   <input class="form-control" type="number" name="gcd_ignore" class="form-control">
-                  <p class="help-block">Number of days of high resolution measurement data.</p>
+                  <p class="help-block">Number of days of high resolution measurement data. This data is not considered for pruning.</p>
                 </div>
               </div>
               <div class="form-group">
                 <label class="col-sm-3 control-label">Collection Window</label>
                 <div class="col-sm-9">
                   <input class="form-control" type="number" name="gcd_collect" class="form-control">
-                  <p class="help-block">Number of days for the collection window.</p>
+                  <p class="help-block">Number of days for the collection window. This data is considered for pruning.</p>
                 </div>
               </div>
               <div class="form-group">
                 <label class="col-sm-3 control-label">Minimum Gap</label>
                 <div class="col-sm-9">
                   <input class="form-control" type="number" name="gcd_gap" class="form-control">
-                  <p class="help-block">Minimum number of seconds between measurements.</p>
+                  <p class="help-block">Minimum number of seconds between measurements. During the pruning window.</p>
                 </div>
               </div>
               <div class="clearfix"></div>
@@ -1215,14 +1215,14 @@
             <form>
               <input type="hidden" name="gcd_id" value="">
             <div class="form-group">
-              <label class="col-md-3 control-label">Measurement Pruning Definition Id</label>
+              <label class="col-md-3 control-label">Id</label>
                 <div class="col-md-9">
                   <input type="text" name="edit_gcd_id" class="form-control" disabled>
                   <p class="help-block">The id cannot be changed once created.</p>
                 </div>
               </div>
               <div class="form-group">
-                 <label class="col-sm-3 control-label">Measurement Pruning Definition Name</label>
+                 <label class="col-sm-3 control-label">Name</label>
                  <div class="col-sm-9">
                    <input class="form-control" type="text" name="edit_gcd_name" class="form-control">
                    <p class="help-block">Unique name for the definition.</p>

@@ -94,6 +94,7 @@ public class MeasurementPruningDefinitionImpl {
     this.ignoreWindowDays = ignore;
     this.collectWindowDays = collect;
     this.minGapSeconds = gap;
+    this.numMeasurementsCollected = 0;
   }
 
   /*

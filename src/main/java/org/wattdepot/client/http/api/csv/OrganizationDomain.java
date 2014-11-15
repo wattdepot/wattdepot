@@ -19,6 +19,7 @@
 package org.wattdepot.client.http.api.csv;
 
 import java.io.IOException;
+import java.util.Set;
 
 import org.wattdepot.client.http.api.WattDepotClient;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
@@ -59,9 +60,8 @@ public class OrganizationDomain {
    * @throws IdNotFoundException if the processId is not defined.
    * @throws BadSensorUriException if the Sensor's URI isn't valid.
    */
-  public OrganizationDomain(String serverUri, String username, String orgId,
-      String password, String fileName) throws BadCredentialException,
-      IdNotFoundException, BadSensorUriException {
+  public OrganizationDomain(String serverUri, String username, String orgId, String password,
+      String fileName) throws BadCredentialException, IdNotFoundException, BadSensorUriException {
     this.client = new WattDepotClient(serverUri, username, orgId, password);
     this.fileName = fileName;
   }
@@ -85,29 +85,41 @@ public class OrganizationDomain {
    */
   public void initializeFromFile(String name) throws IOException {
     DefinitionFileReader reader = new DefinitionFileReader(name);
+    Set<String> orgIds = reader.getOrgIds();
+    if (orgIds.size() != 1) {
+      throw new IOException("Bad WattDepot definition file has more than one organization id.");
+    }
+    if (!orgIds.contains(client.getOrganizationId())) {
+      throw new IOException(client.getOrganizationId()
+          + " does not match the Organization ID in the file.");
+    }
     for (Depository d : reader.getDepositories()) {
-      if (!client.isDefinedDepository(d.getId())) {
+      if (client.getOrganizationId().equals(d.getOrganizationId())
+          && !client.isDefinedDepository(d.getId())) {
         client.putDepository(d);
       }
     }
     for (Sensor s : reader.getSensors()) {
-      if (!client.isDefinedSensor(s.getId())) {
+      if (client.getOrganizationId().equals(s.getOrganizationId())
+          && !client.isDefinedSensor(s.getId())) {
         client.putSensor(s);
       }
     }
     for (SensorGroup g : reader.getSensorGroups()) {
-      if (!client.isDefinedSensorGroup(g.getId())) {
+      if (client.getOrganizationId().equals(g.getOrganizationId())
+          && !client.isDefinedSensorGroup(g.getId())) {
         client.putSensorGroup(g);
       }
     }
-    for (CollectorProcessDefinition cpd : reader
-        .getCollectorProcessDefinitions()) {
-      if (!client.isDefinedCollectorProcessDefinition(cpd.getId())) {
+    for (CollectorProcessDefinition cpd : reader.getCollectorProcessDefinitions()) {
+      if (client.getOrganizationId().equals(cpd.getOrganizationId())
+          && !client.isDefinedCollectorProcessDefinition(cpd.getId())) {
         client.putCollectorProcessDefinition(cpd);
       }
     }
     for (MeasurementPruningDefinition gcd : reader.getMeasurementPruningDefinitions()) {
-      if (!client.isDefinedMeasurementPruningDefinition(gcd.getId())) {
+      if (client.getOrganizationId().equals(gcd.getOrganizationId())
+          && !client.isDefinedMeasurementPruningDefinition(gcd.getId())) {
         client.putMeasurementPruningDefinition(gcd);
       }
     }
@@ -141,8 +153,7 @@ public class OrganizationDomain {
     for (SensorGroup g : client.getSensorGroups().getGroups()) {
       writer.add(g);
     }
-    for (CollectorProcessDefinition cpd : client
-        .getCollectorProcessDefinitions().getDefinitions()) {
+    for (CollectorProcessDefinition cpd : client.getCollectorProcessDefinitions().getDefinitions()) {
       writer.add(cpd);
     }
     writer.writeFile();

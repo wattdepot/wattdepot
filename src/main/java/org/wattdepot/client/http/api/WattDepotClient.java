@@ -202,8 +202,19 @@ public class WattDepotClient implements WattDepotInterface {
   }
 
   @Override
-  public void deleteMeasurementPruningDefinition(MeasurementPruningDefinition gcd) {
-
+  public void deleteMeasurementPruningDefinition(MeasurementPruningDefinition gcd) throws IdNotFoundException {
+    ClientResource client = makeClient(this.organizationId + "/" + Labels.MEASUREMENT_PRUNING_DEFINITION + "/"
+        + gcd.getId());
+    MeasurementPruningDefinitionResource resource = client.wrap(MeasurementPruningDefinitionResource.class);
+    try {
+      resource.remove();
+    }
+    catch (ResourceException e) {
+      throw new IdNotFoundException(gcd + "is not stored in WattDepot");
+    }
+    finally {
+      client.release();
+    }
   }
 
   /*
@@ -1187,8 +1198,9 @@ public class WattDepotClient implements WattDepotInterface {
    */
   @Override
   public void putMeasurementPruningDefinition(MeasurementPruningDefinition gcd) {
-    ClientResource client = makeClient(this.organizationId + "/"
-        + Labels.MEASUREMENT_PRUNING_DEFINITION + "/");
+    String url = this.organizationId + "/"
+        + Labels.MEASUREMENT_PRUNING_DEFINITION + "/";
+    ClientResource client = makeClient(url);
     MeasurementPruningDefinitionPutResource resource = client
         .wrap(MeasurementPruningDefinitionPutResource.class);
     try {
