@@ -42,7 +42,7 @@ public class UserPassword {
   private String orgId;
 
   static {
-    String password = System.getenv().get(ServerProperties.ADMIN_USER_PASSWORD);
+    String password = System.getenv().get(ServerProperties.ADMIN_USER_PASSWORD_ENV);
     if (password != null) {
       ROOT.setPassword(password);
     }

@@ -47,7 +47,7 @@ public class ServerProperties {
   /** Name of property used to store the admin password. */
   public static final String ADMIN_USER_PASSWORD = "wattdepot-server.admin.password";
   /** The environment variable for storing the admin's password. */
-  public static final String ADMIN_USER_PASSWORD_ENV = "WATTDEPOT_ADMIN_PASSOWORD";
+  public static final String ADMIN_USER_PASSWORD_ENV = "WATTDEPOT_ADMIN_PASSWORD";
   /**
    * The environment variable name that holds the salt used for encrypting
    * passwords in WattDepot.
