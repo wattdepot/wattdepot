@@ -47,7 +47,7 @@ public class Sensor implements IDomainModel {
    * Default constructor.
    */
   public Sensor() {
-    this.properties = new HashSet<Property>();
+    this("name", "uri", "modelId", "ownerId");
   }
 
   /**

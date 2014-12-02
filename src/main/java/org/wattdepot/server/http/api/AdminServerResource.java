@@ -76,6 +76,12 @@ public class AdminServerResource extends WattDepotServerResource {
     else {
       Map<String, Object> dataModel = new HashMap<String, Object>();
       dataModel.put("orgId", orgId);
+      String address = getServerInfo().getAddress();
+      if (address.startsWith("0")) {
+        address = "localhost";
+      }
+      dataModel.put("serverAddress", address);
+      dataModel.put("serverPort", getServerInfo().getPort());
       Representation rep = null;
       TemplateRepresentation template = null;
       // decide what to show based upon the orgId.
