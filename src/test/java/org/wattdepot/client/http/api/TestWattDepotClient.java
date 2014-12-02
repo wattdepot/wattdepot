@@ -398,13 +398,6 @@ public class TestWattDepotClient {
 
   }
 
-  @Test
-  public void testBogusSensor() {
-    Sensor sensor = new Sensor();
-    test.putSensor(sensor);
-  }
-
-
   /**
    * Test method for Sensors.
    */
