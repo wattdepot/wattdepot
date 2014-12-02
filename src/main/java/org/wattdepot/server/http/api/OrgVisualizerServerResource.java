@@ -124,13 +124,15 @@ public class OrgVisualizerServerResource extends WattDepotServerResource {
                 Date temp = sensorDates.get(0);
                 if (earliestDate == null) {
                   earliestDate = temp;
-                } else if (temp.before(earliestDate)) {
+                }
+                else if (temp.before(earliestDate)) {
                   earliestDate = temp;
                 }
                 temp = sensorDates.get(1);
                 if (latestDate == null) {
                   latestDate = temp;
-                } else if (temp.after(latestDate)) {
+                }
+                else if (temp.after(latestDate)) {
                   latestDate = temp;
                 }
               }
