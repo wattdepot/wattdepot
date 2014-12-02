@@ -107,7 +107,7 @@ public class OrgVisualizerServerResource extends WattDepotServerResource {
           }
           long endTime = System.nanoTime();
           long diff = endTime - startTime;
-          getLogger().log(Level.SEVERE, "Getting Sensor info took " + (diff / 1E9) + " seconds for " + sensorList.size() + " sensors.");
+          getLogger().log(Level.SEVERE, "Depository " + d.getName() + ": Getting Sensor info took " + (diff / 1E9) + " seconds for " + sensorList.size() + " sensors.");
           startTime = System.nanoTime();
           int groupCount = 0;
           for (String groupId : depot.getSensorGroupIds(orgId, false)) {
@@ -195,7 +195,7 @@ public class OrgVisualizerServerResource extends WattDepotServerResource {
           }
           endTime = System.nanoTime();
           diff = endTime - startTime;
-          getLogger().log(Level.SEVERE, "Getting SensorGroup info took " + (diff / 1E9) + " seconds for " + groupCount + " groups.");
+          getLogger().log(Level.SEVERE, "Depository " + d.getName() + ": Getting SensorGroup info took " + (diff / 1E9) + " seconds for " + groupCount + " groups.");
         }
         dataModel.put("depositories", depos);
         dataModel.put("sensors", sensors);
