@@ -1237,6 +1237,18 @@ public class WattDepotClient implements WattDepotInterface {
 
   /*
    * (non-Javadoc)
+   *
+   * @see org.wattdepot.client.WattDepotInterface#putMeasurements(org.wattdepot.
+   * datamodel.Depository, org.wattdepot.datamodel.MeasurementList)
+   */
+  @Override
+  public void putMeasurements(Depository depository, MeasurementList measurementList)
+      throws MeasurementTypeException {
+    //TODO This method will go through the measurementList and add each measurement to the depository.
+  }
+
+  /*
+   * (non-Javadoc)
    * 
    * @see
    * org.wattdepot.client.WattDepotInterface#putMeasurementType(org.wattdepot

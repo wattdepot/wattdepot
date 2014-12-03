@@ -482,6 +482,15 @@ public interface WattDepotInterface {
       throws MeasurementTypeException;
 
   /**
+   * @param depository The Depository to store the Measurement.
+   * @param measurementList The MeasurementList to be stored.
+   * @throws MeasurementTypeException if the type of a measurement doesn't
+   *         match the type of the depository.
+   */
+  public void putMeasurements(Depository depository, MeasurementList measurementList)
+      throws MeasurementTypeException;
+
+  /**
    * Stores the given MeasurementPruningDefinition in the WattDepot Server.
    * 
    * @param gcd the MeasurementPruningDefinition.
