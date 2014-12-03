@@ -1,5 +1,5 @@
 /**
-xs * WattDepotImpl.java This file is part of WattDepot.
+ * WattDepotImpl.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -74,7 +74,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   private boolean timingp;
   private Logger timingLogger;
   private String padding = "";
-
+  private MeasurementCache depotSensorInfo;
   /**
    * Creates a new WattDepotImpl instance with the given ServerProperties.
    * 
@@ -82,6 +82,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    */
   public WattDepotPersistenceImpl(ServerProperties properties) {
     super();
+    this.depotSensorInfo = new MeasurementCache();
+
     // try {
     // Session validate = Manager.getValidateFactory(properties).openSession();
     // validate.close();
@@ -247,6 +249,42 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     }
     if (checkSession && getSessionClose() != getSessionOpen()) {
       throw new RuntimeException("opens and closed mismatched.");
+    }
+
+    updateDepotSensorInfo();
+  }
+
+  /**
+   * Loads the earliest and latest dates from the database.
+   */
+  private void updateDepotSensorInfo() {
+    Long start = System.nanoTime();
+    for (Organization org : getOrganizations()) {
+      String orgId = org.getId();
+      try {
+        for (Depository depot : getDepositories(org.getId(), false)) {
+          String depotId = depot.getId();
+          for (Sensor sensor : getSensors(org.getId(), false)) {
+            String sensorId = sensor.getId();
+            InterpolatedValue iv = getEarliestMeasuredValueNoCheck(depotId, sensorId, orgId);
+            if (iv != null) {
+              depotSensorInfo.update(orgId, depotId, sensorId, iv);
+            }
+            iv = getLatestMeasuredValueNoCheck(depotId, sensorId, orgId);
+            if (iv != null) {
+              depotSensorInfo.update(orgId, depotId, sensorId, iv);
+            }
+          }
+        }
+      }
+      catch (IdNotFoundException e) {
+        e.printStackTrace();
+      }
+    }
+    if (timingp) {
+      long end = System.nanoTime();
+      long diff = end - start;
+      timingLogger.log(Level.SEVERE, "Updating cache took " + (diff / 1E9) + " seconds.");
     }
   }
 
@@ -1255,7 +1293,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       getDepository(depotId, orgId, check);
       getSensor(sensorId, orgId, check);
     }
-    InterpolatedValue value = getEarliestMeasuredValueNoCheck(depotId, orgId, sensorId);
+//    InterpolatedValue value = getEarliestMeasuredValueNoCheck(depotId, orgId, sensorId);
+    InterpolatedValue value = depotSensorInfo.getEarliest(orgId, depotId, sensorId);
     if (check && value == null) {
       throw new NoMeasurementException("No " + depotId + " measurements for " + sensorId);
     }
@@ -1454,7 +1493,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       getDepository(depotId, orgId, check);
       getSensor(sensorId, orgId, check);
     }
-    InterpolatedValue value = getLatestMeasuredValueNoCheck(depotId, orgId, sensorId);
+//    InterpolatedValue value = getLatestMeasuredValueNoCheck(depotId, orgId, sensorId);
+    InterpolatedValue value = depotSensorInfo.getLatest(orgId, depotId, sensorId);
     if (check && value == null) {
       throw new NoMeasurementException("No " + depotId + " measurements for " + sensorId);
     }
@@ -3142,6 +3182,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     impl.setTimestamp(meas.getDate());
     impl.setValue(meas.getValue());
     impl.setUnits(meas.getMeasurementType().toString());
+    InterpolatedValue iv = new InterpolatedValue(sensor.getId(), meas.getValue(), d.getMeasurementType(), meas.getDate());
+    depotSensorInfo.update(orgId, depotId, meas.getSensorId(), iv);
     session.saveOrUpdate(impl);
     session.getTransaction().commit();
     session.close();
