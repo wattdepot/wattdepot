@@ -1295,7 +1295,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     }
 //    InterpolatedValue value = getEarliestMeasuredValueNoCheck(depotId, orgId, sensorId);
     InterpolatedValue value = depotSensorInfo.getEarliest(orgId, depotId, sensorId);
-    if (check && value == null) {
+    if (value == null) {
       throw new NoMeasurementException("No " + depotId + " measurements for " + sensorId);
     }
     if (timingp) {
@@ -1495,7 +1495,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     }
 //    InterpolatedValue value = getLatestMeasuredValueNoCheck(depotId, orgId, sensorId);
     InterpolatedValue value = depotSensorInfo.getLatest(orgId, depotId, sensorId);
-    if (check && value == null) {
+    if (value == null) {
       throw new NoMeasurementException("No " + depotId + " measurements for " + sensorId);
     }
     if (timingp) {
