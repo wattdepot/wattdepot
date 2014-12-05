@@ -177,6 +177,7 @@ public final class LoggerUtil {
       Logger logger = logManager.getLogger(logName);
       Logger parent = logger.getParent();
       System.out.print("logger name = '" + logName + "'");
+      System.out.print(" level = '" + logger.getLevel() + "'");
       if (parent != null) {
         System.out.print(" parent = '" + parent.getName() + "'");
       }
