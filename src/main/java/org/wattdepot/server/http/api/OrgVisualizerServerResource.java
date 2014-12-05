@@ -83,14 +83,14 @@ public class OrgVisualizerServerResource extends WattDepotServerResource {
           depoSensors.put(d.getId(), sensorList);
           long startTime = System.nanoTime();
           for (String sensorId : depot.listSensors(d.getId(), orgId, false)) {
-            long startTime2 = System.nanoTime();
+//            long startTime2 = System.nanoTime();
             Sensor s = depot.getSensor(sensorId, orgId, false);
-            long endTime2 = System.nanoTime();
-            long diff2 = endTime2 - startTime2;
+//            long endTime2 = System.nanoTime();
+//            long diff2 = endTime2 - startTime2;
 //            getLogger().log(Level.SEVERE, "getSensor(" + sensorId + ") took " + (diff2 / 1E9) + " seconds");
             sensorList.add(s);
             try {
-              startTime2 = System.nanoTime();
+//              startTime2 = System.nanoTime();
               InterpolatedValue earliest = depot.getEarliestMeasuredValue(
                   d.getId(), orgId, sensorId, false);
               InterpolatedValue latest = depot.getLatestMeasuredValue(
@@ -99,8 +99,8 @@ public class OrgVisualizerServerResource extends WattDepotServerResource {
               info.add(earliest.getDate());
               info.add(latest.getDate());
               sensorInfo.put(sensorId, info);
-              endTime2 = System.nanoTime();
-              diff2 = endTime2 - startTime2;
+//              endTime2 = System.nanoTime();
+//              diff2 = endTime2 - startTime2;
 //              getLogger().log(Level.SEVERE, "Sensor earliest and latest for " + sensorId + " took " + (diff2 / 1E9) + " seconds");
             }
             catch (NoMeasurementException e) {
