@@ -87,7 +87,7 @@ public class OrgVisualizerServerResource extends WattDepotServerResource {
             Sensor s = depot.getSensor(sensorId, orgId, false);
             long endTime2 = System.nanoTime();
             long diff2 = endTime2 - startTime2;
-            getLogger().log(Level.SEVERE, "getSensor(" + sensorId + ") took " + (diff2 / 1E9) + " seconds");
+//            getLogger().log(Level.SEVERE, "getSensor(" + sensorId + ") took " + (diff2 / 1E9) + " seconds");
             sensorList.add(s);
             try {
               startTime2 = System.nanoTime();
@@ -101,7 +101,7 @@ public class OrgVisualizerServerResource extends WattDepotServerResource {
               sensorInfo.put(sensorId, info);
               endTime2 = System.nanoTime();
               diff2 = endTime2 - startTime2;
-              getLogger().log(Level.SEVERE, "Sensor earliest and latest for " + sensorId + " took " + (diff2 / 1E9) + " seconds");
+//              getLogger().log(Level.SEVERE, "Sensor earliest and latest for " + sensorId + " took " + (diff2 / 1E9) + " seconds");
             }
             catch (NoMeasurementException e) {
               // TODO Auto-generated catch block
