@@ -48,7 +48,6 @@ public class MeasurementImpl {
   @GeneratedValue
   private Long pk;
   /** The unique id. Can be used in URIs. */
-  @Index(name = "IDX_MEASUREMENT")
   private String id;
   /** The sensor that made the measurement. */
   @ManyToOne
