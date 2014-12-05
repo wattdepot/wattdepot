@@ -163,6 +163,7 @@ public class WattDepotApplication extends Application {
     router.attach(API.MEASUREMENT_PRUNING_DEFINITION_URI, MeasurementPruningDefinitionServerResource.class);
     router.attach(API.MEASUREMENT_PRUNING_DEFINITIONS_URI, MeasurementPruningDefinitionsServerResource.class);
     router.attach(API.MEASUREMENT_PUT_URI, DepositoryMeasurementPutServerResource.class);
+    router.attach(API.MEASUREMENTS_PUT_URI, DepositoryMeasurementsPutServerResource.class);
     router.attach(API.MEASUREMENT_URI, DepositoryMeasurementServerResource.class);
     router.attach(API.MEASUREMENTS_URI, DepositoryMeasurementsServerResource.class);
     router.attach(API.MEASUREMENTS_GVIZ_URI, GvizDepositoryMeasurementsServerResource.class);

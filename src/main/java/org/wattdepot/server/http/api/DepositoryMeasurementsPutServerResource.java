@@ -22,7 +22,7 @@ package org.wattdepot.server.http.api;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.*;
 
-import org.wattdepot.common.http.api.DepositoryMeasurementPutResources;
+import org.wattdepot.common.http.api.DepositoryMeasurementsPutResource;
 
 /**
  * DepositoryMeasurementsServerResource - Handles the Measurements HTTP API
@@ -32,7 +32,7 @@ import org.wattdepot.common.http.api.DepositoryMeasurementPutResources;
  *
  */
 public class DepositoryMeasurementsPutServerResource extends WattDepotServerResource implements
-        DepositoryMeasurementPutResources {
+        DepositoryMeasurementsPutResource {
     private String depositoryId;
 
     /*

@@ -19,6 +19,7 @@
 package org.wattdepot.client.http.api;
 
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -59,6 +60,7 @@ import org.wattdepot.common.http.api.CollectorProcessDefinitionsResource;
 import org.wattdepot.common.http.api.DepositoriesResource;
 import org.wattdepot.common.http.api.DepositoryMeasurementPutResource;
 import org.wattdepot.common.http.api.DepositoryMeasurementResource;
+import org.wattdepot.common.http.api.DepositoryMeasurementsPutResource;
 import org.wattdepot.common.http.api.DepositoryMeasurementsResource;
 import org.wattdepot.common.http.api.DepositoryPutResource;
 import org.wattdepot.common.http.api.DepositoryResource;
@@ -1244,7 +1246,24 @@ public class WattDepotClient implements WattDepotInterface {
   @Override
   public void putMeasurements(Depository depository, MeasurementList measurementList)
       throws MeasurementTypeException {
-    //TODO This method will go through the measurementList and add each measurement to the depository.
+    List<Measurement> measurements = measurementList.getMeasurements();
+
+    //Running through all the measurements to insure that they fit
+    //with measurementType of the depository.
+    for (Measurement measurement : measurements) {
+      if (!depository.getMeasurementType().getUnits().equals(measurement.getMeasurementType())) {
+        throw new MeasurementTypeException("Depository " + depository.getName() + " stores "
+                + depository.getMeasurementType() + " not " + measurement.getMeasurementType());
+      }
+    }
+    ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
+            + depository.getId() + "/" + Labels.MEASUREMENTS + "/");
+    DepositoryMeasurementsPutResource resource = client.wrap(DepositoryMeasurementsPutResource.class);
+    try {
+      resource.store(measurementList);
+    } finally {
+      client.release();
+    }
   }
 
   /*

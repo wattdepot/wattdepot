@@ -22,13 +22,13 @@ import org.restlet.resource.Put;
 import org.wattdepot.common.domainmodel.MeasurementList;
 
 /**
- * DepositoryMeasurementPutResources - HTTP Interface for storing, deleting, getting
+ * DepositoryMeasurementsPutResource - HTTP Interface for storing, deleting, getting
  * a MeasurementList.
  *
  *
  * @author John Smedegaard
  */
-public interface DepositoryMeasurementPutResources {
+public interface DepositoryMeasurementsPutResource {
 
 
     /**
