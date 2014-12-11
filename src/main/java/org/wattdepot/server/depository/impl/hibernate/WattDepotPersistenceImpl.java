@@ -2949,7 +2949,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       Long t3 = timestamp.getTime();
       Long toDate = t3 - t1;
       Double slope = deltaV / deltaT;
-      ret = val1 + (slope * toDate);
+      ret = val1 + slope * toDate;
     }
     session.getTransaction().commit();
     session.close();
@@ -3081,7 +3081,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       Long t3 = timestamp.getTime();
       Long toDate = t3 - t1;
       Double slope = deltaV / deltaT;
-      ret = val1 + (slope * toDate);
+      ret = val1 + slope * toDate;
     }
     session.getTransaction().commit();
     session.close();

@@ -27,6 +27,7 @@ import org.restlet.resource.Get;
  * @author Yongwen Xu
  * 
  */
+@SuppressWarnings("PMD.UnusedModifier")
 public interface GvizDepositoryValuesResource {
 
   /**

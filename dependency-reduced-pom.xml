@@ -4,7 +4,7 @@
   <groupId>org.wattdepot</groupId>
   <artifactId>wattdepot</artifactId>
   <name>WattDepot</name>
-  <version>3.0.0-RC1</version>
+  <version>3.0.1</version>
   <description>WattDepot is an open source, RESTful web service that collects electricity data (such as current power utilization or cumulative power utilization) from meters and stores it in a database.</description>
   <url>https://github.com/wattdepot/wattdepot/</url>
   <prerequisites>
@@ -12,8 +12,13 @@
   </prerequisites>
   <issueManagement>
     <system>GitHub Issues</system>
-    <url>https://github.com/csdl/wattdepot/issues</url>
+    <url>https://github.com/wattdepot/wattdepot/issues</url>
   </issueManagement>
+  <scm>
+    <connection>scm:git:git@github.com:wattdepot/wattdepot.git</connection>
+    <developerConnection>scm:git:git@github.com:wattdepot/wattdepot.git</developerConnection>
+    <url>git@github.com:wattdepot/wattdepot.git</url>
+  </scm>
   <organization>
     <name>Collaborative Software Development Laboratory</name>
     <url>http://csdl.ics.hawaii.edu</url>
@@ -100,7 +105,6 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${surefire.plugin.version}</version>
         <configuration>
-          <argLine>${surefireArgLine}</argLine>
           <excludes>
             <exclude>**/TestDb*.java</exclude>
             <exclude>**/TestMeasurementGarbageCollector.java</exclude>
@@ -121,6 +125,7 @@
         </executions>
         <configuration>
           <excludeFilterFile>${findbugs.filter.file}</excludeFilterFile>
+          <skip>${skip.findbugs}</skip>
         </configuration>
       </plugin>
       <plugin>
@@ -136,6 +141,7 @@
         </executions>
         <configuration>
           <configLocation>${checkstyle.filter.file}</configLocation>
+          <skip>${skip.checkstyle}</skip>
         </configuration>
       </plugin>
       <plugin>
@@ -154,6 +160,7 @@
           <linkXref>false</linkXref>
           <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
           <minimumTokens>100</minimumTokens>
+          <skip>${skip.pmd}</skip>
         </configuration>
       </plugin>
       <plugin>
@@ -217,6 +224,15 @@
               <artifactId>maven-javadoc-plugin</artifactId>
               <version>${javadoc.plugin.version}</version>
             </plugin>
+            <plugin>
+              <groupId>org.jacoco</groupId>
+              <artifactId>jacoco-maven-plugin</artifactId>
+              <version>0.6.3.201306030806</version>
+              <configuration>
+                <dataFile>${jacoco.ut.execution.data.file}</dataFile>
+                <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+              </configuration>
+            </plugin>
           </reportPlugins>
         </configuration>
       </plugin>
@@ -273,6 +289,22 @@
         </configuration>
       </plugin>
       <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <descriptor>src/assembly/assemble.xml</descriptor>
+          <finalName>WattDepot-${project.version}</finalName>
+          <skipAssembly>${skip.assembly}</skipAssembly>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>appassembler-maven-plugin</artifactId>
         <version>${appassembler.plugin.version}</version>
@@ -296,6 +328,35 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>developer</id>
+      <properties>
+        <skip.pmd>false</skip.pmd>
+        <skip.findbugs>false</skip.findbugs>
+        <skip.checkstyle>false</skip.checkstyle>
+        <skip.assembly>true</skip.assembly>
+      </properties>
+    </profile>
+    <profile>
+      <id>release</id>
+      <properties>
+        <skip.pmd>false</skip.pmd>
+        <skip.findbugs>false</skip.findbugs>
+        <skip.checkstyle>false</skip.checkstyle>
+        <skip.assembly>false</skip.assembly>
+      </properties>
+    </profile>
+    <profile>
+      <id>heroku</id>
+      <properties>
+        <skip.pmd>true</skip.pmd>
+        <skip.findbugs>true</skip.findbugs>
+        <skip.checkstyle>true</skip.checkstyle>
+        <skip.assembly>true</skip.assembly>
+      </properties>
+    </profile>
+  </profiles>
   <repositories>
     <repository>
       <snapshots>
@@ -336,7 +397,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>4.12</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -349,15 +410,19 @@
   <reporting>
     <plugins>
       <plugin>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>${surefire.report.plugin.version}</version>
+      </plugin>
+      <plugin>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.3</version>
+        <version>${jxr.version}</version>
       </plugin>
     </plugins>
   </reporting>
   <properties>
-    <commons-math.version>3.2</commons-math.version>
+    <commons-math.version>3.3</commons-math.version>
     <appassembler.plugin.version>1.3.1</appassembler.plugin.version>
-    <junit.version>4.11</junit.version>
+    <junit.version>4.12</junit.version>
     <targetJdk>1.7</targetJdk>
     <dependency.plugin.version>2.8</dependency.plugin.version>
     <checkstyle.plugin.version>2.10</checkstyle.plugin.version>
@@ -365,42 +430,44 @@
     <findbugs.plugin.version>2.5.3</findbugs.plugin.version>
     <javadoc.plugin.version>2.9.1</javadoc.plugin.version>
     <checkstyle.filter.file>${config.dir}/checkstyle.xml</checkstyle.filter.file>
+    <jxr.version>2.5</jxr.version>
     <jackson.version>1.9.11</jackson.version>
     <commons-cli.version>1.2</commons-cli.version>
-    <jasypt.version>1.9.1</jasypt.version>
+    <jasypt.version>1.9.2</jasypt.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jcs.version>1.3</jcs.version>
-    <h2.version>1.4.178</h2.version>
+    <surefire.report.plugin.version>2.18</surefire.report.plugin.version>
+    <h2.version>1.4.182</h2.version>
     <pool.version>1.6</pool.version>
     <postgres.version>9.1-901-1.jdbc4</postgres.version>
     <surefire.plugin.version>2.15</surefire.plugin.version>
     <jacoco.version>0.6.3.201306030806</jacoco.version>
     <dbcp.version>1.4</dbcp.version>
-    <icu4j.version>53.1</icu4j.version>
+    <icu4j.version>54.1.1</icu4j.version>
     <hibernate-annotations.version>3.3.1.GA</hibernate-annotations.version>
     <opencsv.version>2.3</opencsv.version>
     <jscience.version>4.3.1</jscience.version>
     <restlet.version>2.1.2</restlet.version>
     <config.dir>${basedir}</config.dir>
     <site.plugin.version>3.3</site.plugin.version>
-    <rabbitmq.version>3.3.1</rabbitmq.version>
+    <rabbitmq.version>3.4.2</rabbitmq.version>
     <tomcat.jdbc.version>7.0.42</tomcat.jdbc.version>
     <google-visualization-java.version>1.1.1</google-visualization-java.version>
     <commons-validator.version>1.4.0</commons-validator.version>
     <hibernate.version>3.2.6.ga</hibernate.version>
     <antrun.plugin.version>1.7</antrun.plugin.version>
     <concurrent.version>1.0</concurrent.version>
-    <google-guava.version>17.0</google-guava.version>
-    <json.version>20140107</json.version>
-    <commons-logging.version>1.1.3</commons-logging.version>
-    <pmd.plugin.version>2.6</pmd.plugin.version>
+    <google-guava.version>18.0</google-guava.version>
+    <json.version>20141113</json.version>
+    <commons-logging.version>1.2</commons-logging.version>
+    <pmd.plugin.version>3.0.1</pmd.plugin.version>
     <httpunit.version>1.7</httpunit.version>
     <commons-lang.version>2.6</commons-lang.version>
     <findbugs.filter.file>${config.dir}/findbugs.exclude.xml</findbugs.filter.file>
     <jacoco.ut.execution.data.file>${project.build.directory}/coverage-reports/jacoco-ut.exec</jacoco.ut.execution.data.file>
     <modbus-jamod.version>1.2</modbus-jamod.version>
     <oro.version>2.0.8</oro.version>
-    <hibernate-core.version>4.2.0.Final</hibernate-core.version>
+    <hibernate-core.version>4.3.7.Final</hibernate-core.version>
   </properties>
 </project>
 

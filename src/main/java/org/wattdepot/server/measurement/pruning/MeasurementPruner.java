@@ -298,7 +298,7 @@ public class MeasurementPruner extends TimerTask {
       return 0l;
     }
     else {
-      long delay = definition.getNextRun().getTime() - (new Date().getTime());
+      long delay = definition.getNextRun().getTime() - new Date().getTime();
       if (debug) {
         System.out.println(delay);
       }

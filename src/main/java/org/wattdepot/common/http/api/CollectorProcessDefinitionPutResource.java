@@ -28,6 +28,7 @@ import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
  * @author Cam Moore
  * 
  */
+@SuppressWarnings("PMD.UnusedModifier")
 public interface CollectorProcessDefinitionPutResource {
 
   /**

@@ -419,7 +419,7 @@ public class SharkCollector extends MultiThreadedCollector {
    *         multiplied by, or 0 if there was some problem decoding the value.
    */
   private double decodeEnergyMultiplier(ReadMultipleRegistersResponse response) {
-    if ((response != null) && (response.getWordCount() == 1)) {
+    if (response != null && response.getWordCount() == 1) {
       // From Shark manual, bitmap looks like this ("-" is unused bit
       // apparently):
       // ppppiinn feee-ddd
@@ -468,7 +468,7 @@ public class SharkCollector extends MultiThreadedCollector {
    *         reading that should be considered as decimals.
    */
   private int decodeEnergyDecimals(ReadMultipleRegistersResponse response) {
-    if ((response != null) && (response.getWordCount() == 1)) {
+    if (response != null && response.getWordCount() == 1) {
       // From Shark manual, bitmap looks like this ("-" is unused bit
       // apparently):
       // ppppiinn feee-ddd

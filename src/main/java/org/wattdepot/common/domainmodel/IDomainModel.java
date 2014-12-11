@@ -26,6 +26,7 @@ import org.wattdepot.common.exception.BadSlugException;
  * @author Cam Moore
  * 
  */
+@SuppressWarnings("PMD.UnusedModifier")
 public interface IDomainModel {
 
   /**

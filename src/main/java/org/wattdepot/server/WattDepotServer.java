@@ -228,7 +228,7 @@ public class WattDepotServer {
       directoryName = cmd.getOptionValue("d");
     }
     LoggerUtil.disableLogging();
-    if ((directoryName == null) || (directoryName.length() == 0)) {
+    if (directoryName == null || directoryName.length() == 0) {
       WattDepotServer.newInstance();
     }
     else {

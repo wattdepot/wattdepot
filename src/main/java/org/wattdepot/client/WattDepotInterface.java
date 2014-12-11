@@ -58,6 +58,7 @@ public interface WattDepotInterface {
    * @throws IdNotFoundException if the CollectorProcessDefinitionData is not
    *         found in the server.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void deleteCollectorProcessDefinition(CollectorProcessDefinition process)
       throws IdNotFoundException;
 
@@ -67,6 +68,7 @@ public interface WattDepotInterface {
    * @param depository the Depository to delete.
    * @throws IdNotFoundException if the Depository is not found in the server.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void deleteDepository(Depository depository) throws IdNotFoundException;
 
   /**
@@ -77,6 +79,7 @@ public interface WattDepotInterface {
    * @throws IdNotFoundException if the Measurement is not found in the
    *         Depository.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void deleteMeasurement(Depository depository, Measurement measurement)
       throws IdNotFoundException;
 
@@ -87,6 +90,7 @@ public interface WattDepotInterface {
    * @throws org.wattdepot.common.exception.IdNotFoundException if the MPD is not
    * found.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void deleteMeasurementPruningDefinition(MeasurementPruningDefinition gcd) throws IdNotFoundException;
 
   /**
@@ -96,6 +100,7 @@ public interface WattDepotInterface {
    * @throws IdNotFoundException if the MeasurementType is not found in the
    *         Depository.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void deleteMeasurementType(MeasurementType type) throws IdNotFoundException;
 
   /**
@@ -104,6 +109,7 @@ public interface WattDepotInterface {
    * @param sensor the Sensor to delete.
    * @throws IdNotFoundException if the Sensor is not found in the server.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void deleteSensor(Sensor sensor) throws IdNotFoundException;
 
   /**
@@ -112,6 +118,7 @@ public interface WattDepotInterface {
    * @param group the SensorGroup to delete.
    * @throws IdNotFoundException if the SensorGroup is not found in the server.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void deleteSensorGroup(SensorGroup group) throws IdNotFoundException;
 
   /**
@@ -120,6 +127,7 @@ public interface WattDepotInterface {
    * @param model the SensorModel to delete.
    * @throws IdNotFoundException if the SensorModel is not found in the server.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void deleteSensorModel(SensorModel model) throws IdNotFoundException;
 
   /**
@@ -131,17 +139,20 @@ public interface WattDepotInterface {
    * @exception IdNotFoundException if the given id is not a
    *            CollectorProcessDefinitionData's id.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public CollectorProcessDefinition getCollectorProcessDefinition(String id)
       throws IdNotFoundException;
 
   /**
    * @return The defined CollectorProcessDefinitions.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public CollectorProcessDefinitionList getCollectorProcessDefinitions();
 
   /**
    * @return The defined Depositories.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public DepositoryList getDepositories();
 
   /**
@@ -151,6 +162,7 @@ public interface WattDepotInterface {
    * @return the Depository with the given id or null.
    * @exception IdNotFoundException if the given id is not a Depository's id.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public Depository getDepository(String id) throws IdNotFoundException;
 
   /**
@@ -159,13 +171,15 @@ public interface WattDepotInterface {
    *         depository.
    * @throws IdNotFoundException if the id is not defined.
    */
-  SensorList getDepositorySensors(String id) throws IdNotFoundException;
+  @SuppressWarnings("PMD.UnusedModifier")
+  public SensorList getDepositorySensors(String id) throws IdNotFoundException;
 
   /**
    * @param depository The Depository storing the Measurements.
    * @param sensor The Sensor making the Measurements.
    * @return The earliest Value.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public InterpolatedValue getEarliestValue(Depository depository, Sensor sensor);
 
   /**
@@ -173,6 +187,7 @@ public interface WattDepotInterface {
    * @param group The SensorGroup whose sensors are making the Measurements.
    * @return The earliest Value.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public InterpolatedValue getEarliestValue(Depository depository, SensorGroup group);
 
   /**
@@ -180,6 +195,7 @@ public interface WattDepotInterface {
    * @param sensor The Sensor making the Measurements.
    * @return The latest Measurement.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public InterpolatedValue getLatestValue(Depository depository, Sensor sensor);
 
   /**
@@ -187,6 +203,7 @@ public interface WattDepotInterface {
    * @param group The SensorGroup whose sensors are making the Measurements.
    * @return The latest Value.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public InterpolatedValue getLatestValue(Depository depository, SensorGroup group);
 
   /**
@@ -194,12 +211,14 @@ public interface WattDepotInterface {
    * @return The defined MeasurementPruningDefinition.
    * @throws IdNotFoundException if id is not defined.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public MeasurementPruningDefinition getMeasurementPruningDefinition(String id)
       throws IdNotFoundException;
 
   /**
    * @return All the defined MeasurementPruningDefinitions.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public MeasurementPruningDefinitionList getMeasurementPruningDefinitions();
 
   /**
@@ -210,6 +229,7 @@ public interface WattDepotInterface {
    * @return The Measurements stored in the depository made by the sensor
    *         between start and end.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public MeasurementList getMeasurements(Depository depository, Sensor sensor, Date start, Date end);
 
   /**
@@ -220,6 +240,7 @@ public interface WattDepotInterface {
    * @return The Measurements stored in the depository made by the sensor
    *         between start and end.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public MeasurementList getMeasurements(Depository depository, SensorGroup group, Date start,
       Date end);
 
@@ -229,11 +250,13 @@ public interface WattDepotInterface {
    * @exception IdNotFoundException if the given id is not a MeasurementType's
    *            id.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public MeasurementType getMeasurementType(String id) throws IdNotFoundException;
 
   /**
    * @return The defined MeasurementTypes.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public MeasurementTypeList getMeasurementTypes();
 
   /**
@@ -243,6 +266,7 @@ public interface WattDepotInterface {
    * @return the Sensor with the given id or null.
    * @exception IdNotFoundException if the given id is not a Sensor's id.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public Sensor getSensor(String id) throws IdNotFoundException;
 
   /**
@@ -252,11 +276,13 @@ public interface WattDepotInterface {
    * @return the SensorGroup with the given id or null.
    * @exception IdNotFoundException if the given id is not a SensorGroup's id.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public SensorGroup getSensorGroup(String id) throws IdNotFoundException;
 
   /**
    * @return The defined SensorGroups.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public SensorGroupList getSensorGroups();
 
   /**
@@ -266,16 +292,19 @@ public interface WattDepotInterface {
    * @return the SensorModel with the given id or null.
    * @exception IdNotFoundException if the given id is not a SensorModel's id.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public SensorModel getSensorModel(String id) throws IdNotFoundException;
 
   /**
    * @return The defined SensorModels.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public SensorModelList getSensorModels();
 
   /**
    * @return The defined Sensors.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public SensorList getSensors();
 
   /**
@@ -287,6 +316,7 @@ public interface WattDepotInterface {
    * @throws NoMeasurementException if there aren't any measurements around the
    *         timestamp.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public Double getValue(Depository depository, Sensor sensor, Date timestamp)
       throws NoMeasurementException;
 
@@ -300,6 +330,7 @@ public interface WattDepotInterface {
    * @throws NoMeasurementException if there are no measurements around the
    *         start or end time.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public Double getValue(Depository depository, Sensor sensor, Date start, Date end)
       throws NoMeasurementException;
 
@@ -317,6 +348,7 @@ public interface WattDepotInterface {
    * @throws MeasurementGapException if the measurements around start or end are
    *         too far apart.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public Double getValue(Depository depository, Sensor sensor, Date start, Date end, Long gapSeconds)
       throws NoMeasurementException, MeasurementGapException;
 
@@ -333,6 +365,7 @@ public interface WattDepotInterface {
    * @throws MeasurementGapException if the measurements around timestamp are
    *         too far apart.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public Double getValue(Depository depository, Sensor sensor, Date timestamp, Long gapSeconds)
       throws NoMeasurementException, MeasurementGapException;
 
@@ -345,6 +378,7 @@ public interface WattDepotInterface {
    * @throws NoMeasurementException if there aren't any measurements around the
    *         timestamp.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public Double getValue(Depository depository, SensorGroup group, Date timestamp)
       throws NoMeasurementException;
 
@@ -358,6 +392,7 @@ public interface WattDepotInterface {
    * @throws NoMeasurementException if there are no measurements around the
    *         start or end time.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public Double getValue(Depository depository, SensorGroup group, Date start, Date end)
       throws NoMeasurementException;
 
@@ -375,6 +410,7 @@ public interface WattDepotInterface {
    * @throws MeasurementGapException if the measurements around start or end are
    *         too far apart.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public Double getValue(Depository depository, SensorGroup group, Date start, Date end,
       Long gapSeconds) throws NoMeasurementException, MeasurementGapException;
 
@@ -391,6 +427,7 @@ public interface WattDepotInterface {
    * @throws MeasurementGapException if the measurements around timestamp are
    *         too far apart.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public Double getValue(Depository depository, SensorGroup group, Date timestamp, Long gapSeconds)
       throws NoMeasurementException, MeasurementGapException;
 
@@ -400,6 +437,7 @@ public interface WattDepotInterface {
    * @param id the id to check.
    * @return true if the id is a defined CollectorProcessDefinition's id.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public boolean isDefinedCollectorProcessDefinition(String id);
 
   /**
@@ -408,6 +446,7 @@ public interface WattDepotInterface {
    * @param id the id to check.
    * @return true if the id is a defined Depository's id.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public boolean isDefinedDepository(String id);
 
   /**
@@ -416,6 +455,7 @@ public interface WattDepotInterface {
    * @param id the id to check.
    * @return true if the id is a defined MeasurementPruningDefinition's id.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public boolean isDefinedMeasurementPruningDefinition(String id);
 
   /**
@@ -424,6 +464,7 @@ public interface WattDepotInterface {
    * @param id the id to check.
    * @return true if the id is a defined MeasurementType's id.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public boolean isDefinedMeasurementType(String id);
 
   /**
@@ -432,6 +473,7 @@ public interface WattDepotInterface {
    * @param id the id to check.
    * @return true if the id is a defined Sensor's id.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public boolean isDefinedSensor(String id);
 
   /**
@@ -440,6 +482,7 @@ public interface WattDepotInterface {
    * @param id the id to check.
    * @return true if the id is a defined SensorGroup's id.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public boolean isDefinedSensorGroup(String id);
 
   /**
@@ -448,6 +491,7 @@ public interface WattDepotInterface {
    * @param id the id to check.
    * @return true if the id is a defined SensorModel's id.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public boolean isDefinedSensorModel(String id);
 
   /**
@@ -456,6 +500,7 @@ public interface WattDepotInterface {
    * 
    * @return true if the server is healthy, false if cannot connect.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public boolean isHealthy();
 
   /**
@@ -463,6 +508,7 @@ public interface WattDepotInterface {
    * 
    * @param process the CollectorProcessDefinitionData.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void putCollectorProcessDefinition(CollectorProcessDefinition process);
 
   /**
@@ -470,6 +516,7 @@ public interface WattDepotInterface {
    * 
    * @param depository the Depository.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void putDepository(Depository depository);
 
   /**
@@ -478,6 +525,7 @@ public interface WattDepotInterface {
    * @throws MeasurementTypeException if the type of the measurement doesn't
    *         match the type of the depository.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void putMeasurement(Depository depository, Measurement measurement)
       throws MeasurementTypeException;
 
@@ -486,6 +534,7 @@ public interface WattDepotInterface {
    * 
    * @param gcd the MeasurementPruningDefinition.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void putMeasurementPruningDefinition(MeasurementPruningDefinition gcd);
 
   /**
@@ -493,6 +542,7 @@ public interface WattDepotInterface {
    * 
    * @param type the MeasurementType.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void putMeasurementType(MeasurementType type);
 
   /**
@@ -500,6 +550,7 @@ public interface WattDepotInterface {
    * 
    * @param sensor the Sensor.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void putSensor(Sensor sensor);
 
   /**
@@ -507,6 +558,7 @@ public interface WattDepotInterface {
    * 
    * @param group the SensorGroup.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void putSensorGroup(SensorGroup group);
 
   /**
@@ -514,6 +566,7 @@ public interface WattDepotInterface {
    * 
    * @param model the SensorModel.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void putSensorModel(SensorModel model);
 
   /**
@@ -521,6 +574,7 @@ public interface WattDepotInterface {
    * 
    * @param process The CollectorProcessDefinitionData to update.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void updateCollectorProcessDefinition(CollectorProcessDefinition process);
 
   /**
@@ -528,6 +582,7 @@ public interface WattDepotInterface {
    * 
    * @param depository The Depository to update.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void updateDepository(Depository depository);
 
   /**
@@ -535,6 +590,7 @@ public interface WattDepotInterface {
    * 
    * @param gcd The MeasurementPruningDefinition to update.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void updateMeasurementPruningDefinition(MeasurementPruningDefinition gcd);
 
   /**
@@ -542,6 +598,7 @@ public interface WattDepotInterface {
    * 
    * @param type the MeasurementType to update.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void updateMeasurementType(MeasurementType type);
 
   /**
@@ -549,6 +606,7 @@ public interface WattDepotInterface {
    * 
    * @param sensor The Sensor to update.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void updateSensor(Sensor sensor);
 
   /**
@@ -556,6 +614,7 @@ public interface WattDepotInterface {
    * 
    * @param group The SensorGroup to update.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void updateSensorGroup(SensorGroup group);
 
   /**
@@ -563,5 +622,6 @@ public interface WattDepotInterface {
    * 
    * @param model the SensorModel to update.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void updateSensorModel(SensorModel model);
 }

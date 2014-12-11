@@ -103,7 +103,7 @@ public class GvizHelper {
       return getGvizDataErrorResponse(e);
     }
 
-    return getGvizResponseFromDataTable(table, tqxString, tqString);
+    return getGvizResponseFromDataTable(table, tqxString/*, tqString*/);
   }
   
   /**
@@ -232,11 +232,9 @@ public class GvizHelper {
    *          gviz data table
    * @param tqxString
    *          gviz query string
-   * @param tqString
-   *          gviz query string
    * @return the gviz json response
    */
-  private static String getGvizResponseFromDataTable(DataTable table, String tqxString, String tqString) {  
+  private static String getGvizResponseFromDataTable(DataTable table, String tqxString/*, String tqString*/) {
     String response = "google.visualization.Query.setResponse";
     
     String reqId = null;
@@ -299,7 +297,7 @@ public class GvizHelper {
 
     // Add the timeZoneOffset to the epoch time after converting to milliseconds
     gvizCal.setTimeInMillis(standardCal.getTimeInMillis()
-        + (timeZoneOffset * MILLISECONDS_PER_MINUTE));
+        + timeZoneOffset * MILLISECONDS_PER_MINUTE);
 
     return gvizCal;
   }
