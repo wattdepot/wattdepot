@@ -14,6 +14,27 @@
     <system>GitHub Issues</system>
     <url>https://github.com/wattdepot/wattdepot/issues</url>
   </issueManagement>
+  <developers>
+    <developer>
+      <name>Carleton Moore</name>
+      <organization>CSDL</organization>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>GPL v3.</name>
+      <comments>This program is free software: you can redistribute it and/or modify
+                it under the terms of the GNU General Public License as published by
+                the Free Software Foundation, either version 3 of the License, or
+                (at your option) any later version.
+                This program is distributed in the hope that it will be useful,
+                but WITHOUT ANY WARRANTY; without even the implied warranty of
+                MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+                GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License
+                along with this program.  If not, see http://www.gnu.org/licenses/.</comments>
+    </license>
+  </licenses>
   <scm>
     <connection>scm:git:git@github.com:wattdepot/wattdepot.git</connection>
     <developerConnection>scm:git:git@github.com:wattdepot/wattdepot.git</developerConnection>
@@ -105,6 +126,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${surefire.plugin.version}</version>
         <configuration>
+          <argLine>${surefireArgLine}</argLine>
           <excludes>
             <exclude>**/TestDb*.java</exclude>
             <exclude>**/TestMeasurementGarbageCollector.java</exclude>
@@ -229,9 +251,25 @@
               <artifactId>jacoco-maven-plugin</artifactId>
               <version>0.6.3.201306030806</version>
               <configuration>
+                <propertyName>surefireArgLine</propertyName>
                 <dataFile>${jacoco.ut.execution.data.file}</dataFile>
                 <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
               </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-project-info-reports-plugin</artifactId>
+              <version>2.7</version>
+              <reportSets>
+                <reportSet>
+                  <reports>
+                    <report>project-team</report>
+                    <report>issue-tracking</report>
+                    <report>license</report>
+                    <report>scm</report>
+                  </reports>
+                </reportSet>
+              </reportSets>
             </plugin>
           </reportPlugins>
         </configuration>
@@ -330,7 +368,7 @@
   </build>
   <profiles>
     <profile>
-      <id>developer</id>
+      <id>dev</id>
       <properties>
         <skip.pmd>false</skip.pmd>
         <skip.findbugs>false</skip.findbugs>
@@ -339,7 +377,7 @@
       </properties>
     </profile>
     <profile>
-      <id>release</id>
+      <id>rel</id>
       <properties>
         <skip.pmd>false</skip.pmd>
         <skip.findbugs>false</skip.findbugs>
@@ -410,6 +448,10 @@
   <reporting>
     <plugins>
       <plugin>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.7</version>
+      </plugin>
+      <plugin>
         <artifactId>maven-surefire-report-plugin</artifactId>
         <version>${surefire.report.plugin.version}</version>
       </plugin>
@@ -464,7 +506,7 @@
     <httpunit.version>1.7</httpunit.version>
     <commons-lang.version>2.6</commons-lang.version>
     <findbugs.filter.file>${config.dir}/findbugs.exclude.xml</findbugs.filter.file>
-    <jacoco.ut.execution.data.file>${project.build.directory}/coverage-reports/jacoco-ut.exec</jacoco.ut.execution.data.file>
+    <jacoco.ut.execution.data.file>${project.build.directory}/jacoco-ut.exec</jacoco.ut.execution.data.file>
     <modbus-jamod.version>1.2</modbus-jamod.version>
     <oro.version>2.0.8</oro.version>
     <hibernate-core.version>4.3.7.Final</hibernate-core.version>
