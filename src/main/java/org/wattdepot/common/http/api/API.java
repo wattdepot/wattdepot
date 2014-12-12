@@ -134,6 +134,8 @@ public class API {
    * <b>/wattdepot/{org-id}/depository/{depository-id}/measurements/</b> URI for
    * putting measurements into the depository. Use PUT requests.
    */
+
+  //TODO
   public static final String MEASUREMENTS_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
           + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.MEASUREMENTS + "/";
 

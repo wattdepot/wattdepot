@@ -24,7 +24,8 @@ import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.*;
 
 import org.wattdepot.common.exception.*;
-import org.wattdepot.common.http.api.DepositoryMeasurementPutResources;
+import org.wattdepot.common.http.api.DepositoryMeasurementsPutResource;
+
 
 import java.util.logging.*;
 
@@ -36,7 +37,7 @@ import java.util.logging.*;
  *
  */
 public class DepositoryMeasurementsPutServerResource extends WattDepotServerResource implements
-        DepositoryMeasurementPutResources {
+        DepositoryMeasurementsPutResource {
     private String depositoryId;
 
     /*
