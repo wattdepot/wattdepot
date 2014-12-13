@@ -34,8 +34,17 @@ function getKnownOrganization(id) {
     return ORGANIZATIONS[id];
 }
 
+function isValidSlug(slug) {
+    var patt = /[A-Z\s]+/
+    var result = patt.test(slug);
+    return !result;
+}
+
 // ****************** Users **************************
 function putNewUser() {
+    if (false === $('#add-user').parsley().validate()) {
+        return;
+    }
     var id = $("input[name='user_id']").val();
     var first = $("input[name='user_firstname']").val();
     var last = $("input[name='user_lastname']").val();
@@ -81,6 +90,9 @@ function edit_user_dialog(event, id) {
 };
 
 function updateUser() {
+    if (false === $('#edit-user').parsley().validate()) {
+        return;
+    }
     var id = $("input[name='edit_user_id']").val();
     var first = $("input[name='edit_user_firstname']").val();
     var last = $("input[name='edit_user_lastname']").val();
@@ -138,6 +150,9 @@ function deleteUser() {
 
 // ****************** Organizations **************************
 function putNewOrganization() {
+    if (false === $('#add-org').parsley().validate()) {
+        return;
+    }
     var id = $("input[name='organization_id']").val();
     var name = $("input[name='organization_name']").val();
     var selected_ids = $("select[name='organization_users']").val() || [];
@@ -186,6 +201,9 @@ function edit_organization_dialog(event, id) {
 };
 
 function updateOrganization() {
+    if (false === $('#edit-org').parsley().validate()) {
+        return;
+    }
     var id = $("input[name='edit_organization_id']").val();
     var name = $("input[name='edit_organization_name']").val();
     var selected_ids = $("select[name='edit_organization_users']").val() || [];

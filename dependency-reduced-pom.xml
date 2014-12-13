@@ -14,12 +14,6 @@
     <system>GitHub Issues</system>
     <url>https://github.com/wattdepot/wattdepot/issues</url>
   </issueManagement>
-  <developers>
-    <developer>
-      <name>Carleton Moore</name>
-      <organization>CSDL</organization>
-    </developer>
-  </developers>
   <licenses>
     <license>
       <name>GPL v3.</name>
@@ -127,6 +121,7 @@
         <version>${surefire.plugin.version}</version>
         <configuration>
           <argLine>${surefireArgLine}</argLine>
+          <skipTests>${skipTests}</skipTests>
           <excludes>
             <exclude>**/TestDb*.java</exclude>
             <exclude>**/TestMeasurementGarbageCollector.java</exclude>
@@ -263,7 +258,6 @@
               <reportSets>
                 <reportSet>
                   <reports>
-                    <report>project-team</report>
                     <report>issue-tracking</report>
                     <report>license</report>
                     <report>scm</report>
@@ -370,6 +364,7 @@
     <profile>
       <id>dev</id>
       <properties>
+        <skipTests>false</skipTests>
         <skip.pmd>false</skip.pmd>
         <skip.findbugs>false</skip.findbugs>
         <skip.checkstyle>false</skip.checkstyle>
@@ -379,6 +374,7 @@
     <profile>
       <id>rel</id>
       <properties>
+        <skipTests>false</skipTests>
         <skip.pmd>false</skip.pmd>
         <skip.findbugs>false</skip.findbugs>
         <skip.checkstyle>false</skip.checkstyle>
@@ -386,8 +382,19 @@
       </properties>
     </profile>
     <profile>
+      <id>js</id>
+      <properties>
+        <skipTests>true</skipTests>
+        <skip.pmd>true</skip.pmd>
+        <skip.findbugs>true</skip.findbugs>
+        <skip.checkstyle>true</skip.checkstyle>
+        <skip.assembly>true</skip.assembly>
+      </properties>
+    </profile>
+    <profile>
       <id>heroku</id>
       <properties>
+        <skipTests>true</skipTests>
         <skip.pmd>true</skip.pmd>
         <skip.findbugs>true</skip.findbugs>
         <skip.checkstyle>true</skip.checkstyle>
