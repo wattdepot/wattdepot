@@ -50,12 +50,21 @@ function getKnownCPD(id) {
   return CPDS[id];
 }
 
-function getKnownGCD(id) {
-  return GCDS[id];
+function getKnownMPD(id) {
+  return MPDS[id];
+}
+
+function isValidSlug(slug) {
+  var patt = /[A-Z\s]+/
+  var result = patt.test(slug);
+  return !result;
 }
 
 // ****************** Depositories **************************
 function putNewDepository() {
+  if (false === $('#add-depository').parsley().validate()) {
+    return;
+  }
   var id = $("input[name='depository_id']").val();
   var name = $("input[name='depository_name']").val();
   var selected_type = $("select[name='depository_type']").val();
@@ -123,6 +132,9 @@ function addSensorProp() {
 };
 
 function putNewSensor() {
+  if (false === $('#add-sensor').parsley().validate()) {
+    return;
+  }
   var id = $("input[name='sensor_id']").val();
   var name = $("input[name='sensor_name']").val();
   var uri = $("input[name='sensor_uri']").val();
@@ -217,10 +229,13 @@ function edit_sensor_dialog(event, id) {
 };
 
 function updateSensor() {
+  if(false === $('#edit-sensor').parsley().validate()) {
+    return;
+  }
   var id = $("input[name='edit_sensor_id']").val();
   var name = $("input[name='edit_sensor_name']").val();
   var uri = $("input[name='edit_sensor_uri']").val();
-  var selected_model = $("select[name='sensor_model']").val();
+  var selected_model = $("select[name='edit_sensor_model']").val();
   var properties = [];
   for (var i = 0; i < numEditSensorProps; i++) {
     var property = {};
@@ -250,6 +265,11 @@ function updateSensor() {
     success : function() {
       location.reload();
     },
+    error : function( jqXHR, textStatus, errorThrown) {
+      console.log(textStatus + ": " + errorThrown);
+      alert("There was a problem with the request " + textStatus + ": " + errorThrown);
+      return false;
+    }
   });
 };
 
@@ -280,6 +300,9 @@ function deleteSensor() {
 
 // ****************** Sensor Groups **************************
 function putNewSensorGroup() {
+  if(false === $('#add-sensor-group').parsley().validate()) {
+    return;
+  }
   var id = $("input[name='sensorgroup_id']").val();
   var name = $("input[name='sensorgroup_name']").val();
   var selected_ids = $("select[name='groupsensors']").val() || [];
@@ -326,6 +349,9 @@ function edit_sensorgroup_dialog(event, id) {
 };
 
 function updateSensorGroup() {
+  if(false === $('#edit-sensor-group').parsley().validate()) {
+    return;
+  }
   var id = $("input[name='edit_sensorgroup_id']").val();
   var name = $("input[name='edit_sensorgroup_name']").val();
   var selected_ids = $("select[name='edit_groupsensors']").val() || [];
@@ -379,6 +405,9 @@ function deleteSensorGroup() {
 
 // ****************** Sensor Models **************************
 function putNewModel() {
+  if (false === $('#add-sensor-model').parsley().validate()) {
+    return;
+  }
   var id = $("input[name='model_id']").val();
   var name = $("input[name='model_name']").val();
   var protocol = $("input[name='model_protocol']").val();
@@ -444,6 +473,9 @@ function edit_model_dialog(event, id) {
 };
 
 function updateModel() {
+  if (false === $('#edit-sensor-model').parsley().validate()) {
+    return;
+  }
   var id = $("input[name='edit_model_id']").val();
   var name = $("input[name='edit_model_name']").val();
   var protocol = $("input[name='edit_model_protocol']").val();
@@ -514,6 +546,9 @@ function addCPDProp() {
 
 
 function putNewCPD() {
+  if(false === $('#add-cpd').parsley().validate()) {
+    return;
+  }
   var id = $("input[name='cpd_id']").val();
   var name = $("input[name='cpd_name']").val();
   var selected_sensor = $("select[name='cpd_sensor']").val();
@@ -611,6 +646,9 @@ function edit_cpd_dialog(event, id) {
 };
 
 function updateCPD() {
+  if(false === $('#edit-cpd').parsley().validate()) {
+    return;
+  }
   var id = $("input[name='edit_cpd_id']").val();
   var name = $("input[name='edit_cpd_name']").val();
   var selected_sensor = $("select[name='edit_cpd_sensor']").val();
@@ -674,15 +712,18 @@ function deleteCPD() {
 };
 
 // ****************** Garbage Collection Definitions **************************
-function putNewGCD() {
-  var id = $("input[name='gcd_id']").val();
-  var name = $("input[name='gcd_name']").val();
+function putNewMPD() {
+  if (false === $('#add-mpd').parsley().validate()) {
+    return;
+  }
+  var id = $("input[name='MPD_id']").val();
+  var name = $("input[name='MPD_name']").val();
   var selected_depository = $("select[name='cpd_depository']").val();
-  var selected_sensor = $("select[name='gcd_sensor']").val();
-  var ignore = $("input[name=gcd_ignore").val();
-  var collect = $("input[name='gcd_collect']").val();
-  var gap = $("input[name='gcd_gap']").val();
-  var gcd = {
+  var selected_sensor = $("select[name='MPD_sensor']").val();
+  var ignore = $("input[name=MPD_ignore").val();
+  var collect = $("input[name='MPD_collect']").val();
+  var gap = $("input[name='MPD_gap']").val();
+  var MPD = {
     "id" : id,
     "name" : name,
     "depositoryId" : selected_depository,
@@ -697,45 +738,48 @@ function putNewGCD() {
     url : '/wattdepot/' + ORGID + '/measurement-pruning-definition/',
     type : 'PUT',
     contentType : 'application/json',
-    data : JSON.stringify(gcd),
+    data : JSON.stringify(MPD),
     success : function() {
       location.reload();
     },
   });
 };
 
-function edit_gcd_dialog(event, id) {
+function edit_MPD_dialog(event, id) {
   setSelectedTab('measurementpruning');
-  var modalElement = $('#editGCDModal');
+  var modalElement = $('#editMPDModal');
   modalElement.modal({
     backdrop : true,
     keyboard : true,
     show : false
   });
-  var gcd = getKnownGCD(id);
-  $("input[name='edit_gcd_id']").val(id);
-  $("input[name='edit_gcd_name']").val(gcd['id']);
-  var mid = gcd.depositoryId;
+  var MPD = getKnownMPD(id);
+  $("input[name='edit_MPD_id']").val(id);
+  $("input[name='edit_MPD_name']").val(MPD['id']);
+  var mid = MPD.depositoryId;
   $('select[name="edit_cpd_depository"] option[value="' + mid + '"]').prop(
       "selected", "selected");
-  var lid = gcd.sensorId;
-  $('select[name="edit_gcd_sensor"] option[value="' + lid + '"]').prop(
+  var lid = MPD.sensorId;
+  $('select[name="edit_MPD_sensor"] option[value="' + lid + '"]').prop(
       "selected", "selected");
-  $("input[name='edit_gcd_ignore']").val(gcd['ignoreWindowDays']);
-  $("input[name='edit_gcd_collect']").val(gcd['collectWindowDays']);
-  $("input[name='edit_gcd_gap']").val(gcd['minGapSeconds']);
+  $("input[name='edit_MPD_ignore']").val(MPD['ignoreWindowDays']);
+  $("input[name='edit_MPD_collect']").val(MPD['collectWindowDays']);
+  $("input[name='edit_MPD_gap']").val(MPD['minGapSeconds']);
   modalElement.modal('show');
 };
 
-function updateGCD() {
-  var id = $("input[name='edit_gcd_id']").val();
-  var name = $("input[name='edit_gcd_name']").val();
-  var selected_depository = $("select[name='edit_gcd_depository']").val();
-  var selected_sensor = $("select[name='edit_gcd_sensor']").val();
-  var ignore = $("input[name='edit_gcd_ignore']").val();
-  var collect = $("input[name='edit_gcd_collect']").val();
-  var gap = $("input[name='edit_gcd_gap']").val();
-  var gcd = {
+function updateMPD() {
+  if (false === $('#edit-mpd').parsley().validate()) {
+    return;
+  }
+  var id = $("input[name='edit_MPD_id']").val();
+  var name = $("input[name='edit_MPD_name']").val();
+  var selected_depository = $("select[name='edit_MPD_depository']").val();
+  var selected_sensor = $("select[name='edit_MPD_sensor']").val();
+  var ignore = $("input[name='edit_MPD_ignore']").val();
+  var collect = $("input[name='edit_MPD_collect']").val();
+  var gap = $("input[name='edit_MPD_gap']").val();
+  var MPD = {
     "id" : id,
     "name" : name,
     "depositoryId" : selected_depository,
@@ -750,27 +794,27 @@ function updateGCD() {
     url : '/wattdepot/' + ORGID + '/measurement-pruning-definition/' + id,
     type : 'POST',
     contentType : 'application/json',
-    data : JSON.stringify(gcd),
+    data : JSON.stringify(MPD),
     success : function() {
       location.reload();
     },
   });
 };
 
-function delete_gcd_dialog(event, id) {
-  var modalElement = $('#deleteGCDModal');
+function delete_MPD_dialog(event, id) {
+  var modalElement = $('#deleteMPDModal');
 
   modalElement.modal({
     backdrop : true,
     keyboard : true,
     show : false
   });
-  modalElement.find('#del_gcd_id').html(id);
+  modalElement.find('#del_MPD_id').html(id);
   modalElement.modal('show');
 };
 
-function deleteGCD() {
-  var id = $('#del_gcd_id').html();
+function deleteMPD() {
+  var id = $('#del_MPD_id').html();
   setSelectedTab('measurementpruning');
   $.ajax({
     url : '/wattdepot/' + ORGID + '/measurement-pruning-definition/' + id,
