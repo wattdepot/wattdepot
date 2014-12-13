@@ -171,7 +171,7 @@ public class NOAAWeatherCollector extends MultiThreadedCollector {
         ret = false;
       }
     }
-    if ((this.registerName == null) || (this.registerName.length() == 0)) {
+    if (this.registerName == null || this.registerName.length() == 0) {
       return false;
     }
     // validate that measType is .

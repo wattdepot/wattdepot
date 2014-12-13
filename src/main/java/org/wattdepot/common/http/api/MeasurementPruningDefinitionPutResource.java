@@ -28,6 +28,7 @@ import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
  * @author Cam Moore
  * 
  */
+@SuppressWarnings("PMD.UnusedModifier")
 public interface MeasurementPruningDefinitionPutResource {
 
   /**

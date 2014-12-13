@@ -28,6 +28,7 @@ import org.restlet.resource.Get;
  * @author Cam Moore
  * 
  */
+@SuppressWarnings("PMD.UnusedModifier")
 public interface GvizDepositoryAverageValuesResource {
 
   /**

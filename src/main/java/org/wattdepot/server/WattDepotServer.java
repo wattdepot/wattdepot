@@ -98,7 +98,7 @@ public class WattDepotServer {
     int port = Integer.parseInt(properties.get(ServerProperties.PORT_KEY));
     WattDepotServer server = new WattDepotServer();
     // System.out.println("WattDepotServer.");
-    // RestletLoggerUtil.showLoggers();
+//    LoggerUtil.showLoggers();
     boolean enableLogging = Boolean.parseBoolean(properties
         .get(ServerProperties.ENABLE_LOGGING_KEY));
     server.serverProperties = properties;
@@ -145,6 +145,7 @@ public class WattDepotServer {
 
     server.logger.info("WattDepot server now running.");
 
+//    LoggerUtil.showLoggers();
     return server;
   }
 
@@ -227,7 +228,7 @@ public class WattDepotServer {
       directoryName = cmd.getOptionValue("d");
     }
     LoggerUtil.disableLogging();
-    if ((directoryName == null) || (directoryName.length() == 0)) {
+    if (directoryName == null || directoryName.length() == 0) {
       WattDepotServer.newInstance();
     }
     else {

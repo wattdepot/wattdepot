@@ -202,9 +202,9 @@ public class GetEarliestValueThroughput extends TimerTask {
       this.timer.cancel();
       this.numChecks++;
       Double aveTime = sampleTask.getAverageTime();
-      this.averageGetTime.addValue((aveTime / 1E9));
-      this.averageMinGetTime.addValue((sampleTask.getMinTime() / 1E9));
-      this.averageMaxGetTime.addValue((sampleTask.getMaxTime() / 1E9));
+      this.averageGetTime.addValue(aveTime / 1E9);
+      this.averageMinGetTime.addValue(sampleTask.getMinTime() / 1E9);
+      this.averageMaxGetTime.addValue(sampleTask.getMaxTime() / 1E9);
       this.calculatedGetsPerSec = calculateGetRate(averageGetTime);
       this.getsPerSec = calculatedGetsPerSec;
       // System.out.println("Min put time = " + (sampleTask.getMinGetTime() /

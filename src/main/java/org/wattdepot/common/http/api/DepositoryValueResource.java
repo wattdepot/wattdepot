@@ -29,6 +29,7 @@ import org.wattdepot.common.domainmodel.InterpolatedValue;
  *         Yongwen Xu
  * 
  */
+@SuppressWarnings("PMD.UnusedModifier")
 public interface DepositoryValueResource {
 
   /**

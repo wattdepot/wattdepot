@@ -118,6 +118,7 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
       depot.getOrganization(orgId, true);
     }
     catch (IdNotFoundException e) {
+      getLogger().log(Level.INFO, e.getMessage());
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " does not exist.");
     }
     if (sensorId.equals(sensor.getId())) {
@@ -127,18 +128,22 @@ public class SensorServerResource extends WattDepotServerResource implements Sen
             depot.updateSensor(sensor);
           }
           catch (IdNotFoundException e) {
+            getLogger().log(Level.INFO, e.getMessage());
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
           }
         }
         else {
+          getLogger().log(Level.INFO, sensor.getName() + " is not defined.");
           setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensor.getName() + " is not defined.");
         }
       }
       catch (IdNotFoundException e) {
+        getLogger().log(Level.INFO, e.getMessage());
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + " is not a defined Organization id.");
       }
     }
     else {
+      getLogger().log(Level.INFO, "Ids do not match.");
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Ids do not match.");
     }
   }

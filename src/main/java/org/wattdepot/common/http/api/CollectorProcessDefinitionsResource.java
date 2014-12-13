@@ -27,6 +27,7 @@ import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
  * @author Cam Moore
  * 
  */
+@SuppressWarnings("PMD.UnusedModifier")
 public interface CollectorProcessDefinitionsResource {
   /**
    * Defines the GET /wattdepot/{org-id}/collector-process-definitions/ API call.

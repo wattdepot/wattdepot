@@ -27,6 +27,7 @@ import org.wattdepot.common.domainmodel.SensorModelList;
  * @author Cam Moore
  *
  */
+@SuppressWarnings("PMD.UnusedModifier")
 public interface SensorModelsResource {
   /**
    * Defines the GET /wattdepot/sensormodels/ API call.

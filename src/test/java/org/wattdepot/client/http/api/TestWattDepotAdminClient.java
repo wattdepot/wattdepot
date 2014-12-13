@@ -54,9 +54,9 @@ public class TestWattDepotAdminClient {
   private static WattDepotAdminClient admin;
 
   /** The logger. */
-  private Logger logger = null;
+  private static Logger logger = null;
   /** The serverUrl. */
-  private String serverURL = null;
+  private static String serverURL = null;
 
   /**
    * Starts up a WattDepotServer to start the testing.
@@ -67,6 +67,31 @@ public class TestWattDepotAdminClient {
   public static void setupServer() throws Exception {
     LoggerUtil.disableLogging();    
     server = WattDepotServer.newTestInstance();
+    try {
+      ClientProperties props = new ClientProperties();
+      props.setTestProperties();
+      logger = Logger.getLogger("org.wattdepot.client");
+      LoggerUtil.setLoggingLevel(logger, props.get(ClientProperties.LOGGING_LEVEL_KEY));
+      LoggerUtil.useConsoleHandler();
+      logger.finest("setUp()");
+      serverURL = "http://" + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
+          + props.get(ClientProperties.PORT_KEY) + "/";
+      logger.finest("Using " + serverURL);
+      if (admin == null) {
+        try {
+          admin = new WattDepotAdminClient(serverURL, props.get(ClientProperties.USER_NAME),
+              "admin", props.get(ClientProperties.USER_PASSWORD));
+        }
+        catch (Exception e) {
+          System.out.println("Failed with " + props.get(ClientProperties.USER_NAME) + " and "
+              + props.get(ClientProperties.USER_PASSWORD));
+          e.printStackTrace();
+        }
+      }
+    }
+    catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   /**
@@ -99,46 +124,46 @@ public class TestWattDepotAdminClient {
     server.stop();
   }
 
-  /**
-   * Setup the logging and create the WattDepotAdminClient admin.
-   */
-  @Before
-  public void setUp() {
-    try {
-      ClientProperties props = new ClientProperties();
-      props.setTestProperties();
-      this.logger = Logger.getLogger("org.wattdepot.client");
-      LoggerUtil.setLoggingLevel(this.logger, props.get(ClientProperties.LOGGING_LEVEL_KEY));
-      LoggerUtil.useConsoleHandler();
-      logger.finest("setUp()");
-      this.serverURL = "http://" + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
-          + props.get(ClientProperties.PORT_KEY) + "/";
-      logger.finest("Using " + serverURL);
-      if (admin == null) {
-        try {
-          admin = new WattDepotAdminClient(serverURL, props.get(ClientProperties.USER_NAME),
-              "admin", props.get(ClientProperties.USER_PASSWORD));
-        }
-        catch (Exception e) {
-          System.out.println("Failed with " + props.get(ClientProperties.USER_NAME) + " and "
-              + props.get(ClientProperties.USER_PASSWORD));
-          e.printStackTrace();
-        }
-      }
-    }
-    catch (Exception e) {
-      e.printStackTrace();
-    }
+//  /**
+//   * Setup the logging and create the WattDepotAdminClient admin.
+//   */
+//  @Before
+//  public void setUp() {
+//    try {
+//      ClientProperties props = new ClientProperties();
+//      props.setTestProperties();
+//      this.logger = Logger.getLogger("org.wattdepot.client");
+//      LoggerUtil.setLoggingLevel(this.logger, props.get(ClientProperties.LOGGING_LEVEL_KEY));
+//      LoggerUtil.useConsoleHandler();
+//      logger.finest("setUp()");
+//      this.serverURL = "http://" + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
+//          + props.get(ClientProperties.PORT_KEY) + "/";
+//      logger.finest("Using " + serverURL);
+//      if (admin == null) {
+//        try {
+//          admin = new WattDepotAdminClient(serverURL, props.get(ClientProperties.USER_NAME),
+//              "admin", props.get(ClientProperties.USER_PASSWORD));
+//        }
+//        catch (Exception e) {
+//          System.out.println("Failed with " + props.get(ClientProperties.USER_NAME) + " and "
+//              + props.get(ClientProperties.USER_PASSWORD));
+//          e.printStackTrace();
+//        }
+//      }
+//    }
+//    catch (Exception e) {
+//      e.printStackTrace();
+//    }
+//
+//  }
 
-  }
-
-  /**
-   * 
-   */
-  @After
-  public void tearDown() {
-    logger.finest("tearDown()");
-  }
+//  /**
+//   *
+//   */
+//  @After
+//  public void tearDown() {
+//    logger.finest("tearDown()");
+//  }
 
   /**
    * Test method for Organizations.

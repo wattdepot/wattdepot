@@ -208,17 +208,16 @@ public class DepositoryValueServer extends WattDepotServerResource {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
       catch (NoMeasurementException e1) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e1.getMessage());
+        setStatus(Status.SERVER_ERROR_INTERNAL, e1.getMessage());
       }
       catch (NumberFormatException e) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
       }
       catch (MeasurementGapException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
       catch (ParseException e) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-        e.printStackTrace();
+        setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
       }
       catch (DatatypeConfigurationException e) {
         setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
@@ -229,7 +228,7 @@ public class DepositoryValueServer extends WattDepotServerResource {
       return null;
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+      setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Bad credentials.");
       return null;
     }
   }

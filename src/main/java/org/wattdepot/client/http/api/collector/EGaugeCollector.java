@@ -198,7 +198,7 @@ public class EGaugeCollector extends MultiThreadedCollector {
         ret = false;
       }
     }
-    if ((this.registerName == null) || (this.registerName.length() == 0)) {
+    if (this.registerName == null || this.registerName.length() == 0) {
       return false;
     }
     // validate that measType is power or energy.
