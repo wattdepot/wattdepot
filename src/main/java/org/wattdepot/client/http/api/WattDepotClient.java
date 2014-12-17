@@ -1257,11 +1257,12 @@ public class WattDepotClient implements WattDepotInterface {
       }
     }
     ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
-            + depository.getId() + "/" + Labels.MEASUREMENTS + "/");
+            + depository.getId() + "/" + Labels.MEASUREMENTS + "/" + Labels.BULK + "/");
     DepositoryMeasurementsPutResource resource = client.wrap(DepositoryMeasurementsPutResource.class);
     try {
       resource.store(measurementList);
-    } finally {
+    }
+    finally {
       client.release();
     }
   }
