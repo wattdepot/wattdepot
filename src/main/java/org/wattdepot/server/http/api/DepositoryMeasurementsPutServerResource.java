@@ -18,83 +18,101 @@
  */
 package org.wattdepot.server.http.api;
 
-
-import org.restlet.data.*;
+import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import org.wattdepot.common.domainmodel.*;
-
-import org.wattdepot.common.exception.*;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.MeasurementList;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MeasurementTypeException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.DepositoryMeasurementsPutResource;
 
-
-import java.util.logging.*;
+import java.util.ArrayList;
+import java.util.logging.Level;
 
 /**
- * DepositoryMeasurementsServerResource - Handles the Measurements HTTP API
+ * DepositoryMeasurementsPutServerResource - Handles the Measurements HTTP API
  * ("/wattdepot/{org-id}/depository/{depository_id}/measurements/").
  *
  * @author John Smedegaard
- *
  */
 public class DepositoryMeasurementsPutServerResource extends WattDepotServerResource implements
-        DepositoryMeasurementsPutResource {
-    private String depositoryId;
+    DepositoryMeasurementsPutResource {
+  private String depositoryId;
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.restlet.resource.Resource#doInit()
-     */
-    @Override
-    protected void doInit() throws ResourceException {
-        super.doInit();
-        this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);
-    }
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.restlet.resource.Resource#doInit()
+   */
+  @Override
+  protected void doInit() throws ResourceException {
+    super.doInit();
+    this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);
+  }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.wattdepot.restlet.DepositoryMeasurementResource#store(org.wattdepot3
-     * .datamodel.Measurement)
-     */
-    @Override
-    public void store(MeasurementList measurementList) {
-        getLogger().log(
-                Level.INFO,
-                "PUT /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/measurement/ with "
-                        + measurementList);
-        if (isInRole(orgId)) {
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.restlet.DepositoryMeasurementsPutResource#store(org.wattdepot3
+   * .datamodel.Measurements)
+   */
+  @Override
+  public void store(MeasurementList measurementList) {
+    getLogger().log(
+        Level.INFO,
+        "PUT /wattdepot/{" + orgId + "}/depository/{" + depositoryId + "}/measurements/bulk/ with "
+            + measurementList);
+    if (isInRole(orgId)) {
+      try {
+        Depository depository = depot.getDepository(depositoryId, orgId, true);
+        if (depository != null) {
+          // Checking that all measurements have valid sensors.
+          ArrayList<Integer> invalidSensorIds = new ArrayList<>(measurementList.getMeasurements().size());
+          for (int i = 0; i < measurementList.getMeasurements().size(); i++) {
+            Measurement measurement = measurementList.getMeasurements().get(i);
             try {
-                Depository depository = depot.getDepository(depositoryId, orgId, true);
-                if (depository != null) {
-                    for (Measurement measurement : measurementList.getMeasurements()) {
-                        Sensor sensor = depot.getSensor(measurement.getSensorId(), orgId, true);
-                        if (sensor != null) {
-                            depot.putMeasurement(depositoryId, orgId, measurement);
-                        }
-                        else {
-                            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Sensor " + measurement.getSensorId()
-                                    + " does not exist");
-                        }
-                    }
-                }
-                else {
-                    setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " does not exist.");
-                }
-            }
-            catch (MisMatchedOwnerException e) {
-                setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-            }
-            catch (MeasurementTypeException e) {
-                setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+              depot.getSensor(measurement.getSensorId(), orgId, true);
             }
             catch (IdNotFoundException e) {
-                setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+              invalidSensorIds.add(i);
             }
+            catch (MisMatchedOwnerException e) {
+              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+            }
+          }
+          // All sensor id's were valid.
+          if (invalidSensorIds.isEmpty()) {
+            for (Measurement measurement : measurementList.getMeasurements()) {
+              try {
+                depot.putMeasurement(depositoryId, orgId, measurement);
+              }
+              catch (MeasurementTypeException e) {
+                e.printStackTrace();
+              }
+              catch (IdNotFoundException e) {
+                e.printStackTrace();
+              }
+            }
+          }
+          else {
+            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Sensors: " + invalidSensorIds
+                + " does not exist. No measurements were put into WattDepot");
+          }
         }
         else {
-            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " does not exist.");
         }
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
     }
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+    }
+  }
 }
