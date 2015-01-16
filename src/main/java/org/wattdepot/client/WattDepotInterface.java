@@ -39,21 +39,22 @@ import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.domainmodel.SensorModelList;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementGapException;
+import org.wattdepot.common.exception.MeasurementListSizeExceededException;
 import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.NoMeasurementException;
 
 /**
  * WattDepotInterface - The CRUD interface to the WattDepot server for regular
  * users.
- * 
+ *
  * @author Cam Moore
- * 
+ *
  */
 public interface WattDepotInterface {
 
   /**
    * Deletes the given CollectorProcessDefinitionData.
-   * 
+   *
    * @param process the CollectorProcessDefinitionData to delete.
    * @throws IdNotFoundException if the CollectorProcessDefinitionData is not
    *         found in the server.
@@ -63,7 +64,7 @@ public interface WattDepotInterface {
 
   /**
    * Deletes the given Depository.
-   * 
+   *
    * @param depository the Depository to delete.
    * @throws IdNotFoundException if the Depository is not found in the server.
    */
@@ -71,7 +72,7 @@ public interface WattDepotInterface {
 
   /**
    * Deletes the given measurement from the given depository.
-   * 
+   *
    * @param depository the Depository that stores the measurement.
    * @param measurement the Measurement to delete.
    * @throws IdNotFoundException if the Measurement is not found in the
@@ -82,7 +83,7 @@ public interface WattDepotInterface {
 
   /**
    * Deletes the given MeasurementPruningDefinition from the WattDepotServer.
-   * 
+   *
    * @param gcd The MeasurementPruningDefinition to delete.
    * @throws org.wattdepot.common.exception.IdNotFoundException if the MPD is not
    * found.
@@ -91,7 +92,7 @@ public interface WattDepotInterface {
 
   /**
    * Deletes the given MeasurementType.
-   * 
+   *
    * @param type the measurement type to delete.
    * @throws IdNotFoundException if the MeasurementType is not found in the
    *         Depository.
@@ -100,7 +101,7 @@ public interface WattDepotInterface {
 
   /**
    * Deletes the given Sensor.
-   * 
+   *
    * @param sensor the Sensor to delete.
    * @throws IdNotFoundException if the Sensor is not found in the server.
    */
@@ -108,7 +109,7 @@ public interface WattDepotInterface {
 
   /**
    * Deletes the given SensorGroup.
-   * 
+   *
    * @param group the SensorGroup to delete.
    * @throws IdNotFoundException if the SensorGroup is not found in the server.
    */
@@ -116,7 +117,7 @@ public interface WattDepotInterface {
 
   /**
    * Deletes the given SensorModel.
-   * 
+   *
    * @param model the SensorModel to delete.
    * @throws IdNotFoundException if the SensorModel is not found in the server.
    */
@@ -125,7 +126,7 @@ public interface WattDepotInterface {
   /**
    * Retrieves the CollectorProcessDefinitionData with the given id from the
    * WattDepot Server.
-   * 
+   *
    * @param id The CollectorProcessDefinitionData's id.
    * @return the CollectorProcessDefinitionData with the given id or null.
    * @exception IdNotFoundException if the given id is not a
@@ -146,7 +147,7 @@ public interface WattDepotInterface {
 
   /**
    * Retrieves the Depository with the given id from the WattDepot Server.
-   * 
+   *
    * @param id The Depository's id.
    * @return the Depository with the given id or null.
    * @exception IdNotFoundException if the given id is not a Depository's id.
@@ -238,7 +239,7 @@ public interface WattDepotInterface {
 
   /**
    * Retrieves the Sensor with the given id from the WattDepot Server.
-   * 
+   *
    * @param id The Sensor's id.
    * @return the Sensor with the given id or null.
    * @exception IdNotFoundException if the given id is not a Sensor's id.
@@ -247,7 +248,7 @@ public interface WattDepotInterface {
 
   /**
    * Retrieves the SensorGroup with the given id from the WattDepot Server.
-   * 
+   *
    * @param id The SensorGroup's id.
    * @return the SensorGroup with the given id or null.
    * @exception IdNotFoundException if the given id is not a SensorGroup's id.
@@ -261,7 +262,7 @@ public interface WattDepotInterface {
 
   /**
    * Retrieves the SensorModel with the given id from the WattDepot Server.
-   * 
+   *
    * @param id The SensorModel's id.
    * @return the SensorModel with the given id or null.
    * @exception IdNotFoundException if the given id is not a SensorModel's id.
@@ -396,7 +397,7 @@ public interface WattDepotInterface {
 
   /**
    * Checks to see if the given id is a defined CollectorProcessDefinition id.
-   * 
+   *
    * @param id the id to check.
    * @return true if the id is a defined CollectorProcessDefinition's id.
    */
@@ -404,7 +405,7 @@ public interface WattDepotInterface {
 
   /**
    * Checks to see if the given id is a defined Depository id.
-   * 
+   *
    * @param id the id to check.
    * @return true if the id is a defined Depository's id.
    */
@@ -412,7 +413,7 @@ public interface WattDepotInterface {
 
   /**
    * Checks to see if the given id is a defined MeasurementPruningDefinition id.
-   * 
+   *
    * @param id the id to check.
    * @return true if the id is a defined MeasurementPruningDefinition's id.
    */
@@ -420,7 +421,7 @@ public interface WattDepotInterface {
 
   /**
    * Checks to see if the given id is a defined MeasurementType id.
-   * 
+   *
    * @param id the id to check.
    * @return true if the id is a defined MeasurementType's id.
    */
@@ -428,7 +429,7 @@ public interface WattDepotInterface {
 
   /**
    * Checks to see if the given id is a defined Sensor id.
-   * 
+   *
    * @param id the id to check.
    * @return true if the id is a defined Sensor's id.
    */
@@ -436,7 +437,7 @@ public interface WattDepotInterface {
 
   /**
    * Checks to see if the given id is a defined SensorGroup id.
-   * 
+   *
    * @param id the id to check.
    * @return true if the id is a defined SensorGroup's id.
    */
@@ -444,7 +445,7 @@ public interface WattDepotInterface {
 
   /**
    * Checks to see if the given id is a defined SensorModel id.
-   * 
+   *
    * @param id the id to check.
    * @return true if the id is a defined SensorModel's id.
    */
@@ -453,21 +454,21 @@ public interface WattDepotInterface {
   /**
    * Determines the health of the WattDepot server the client is communicating
    * with.
-   * 
+   *
    * @return true if the server is healthy, false if cannot connect.
    */
   public boolean isHealthy();
 
   /**
    * Stores the given CollectorProcessDefinitionData in the WattDepot Server.
-   * 
+   *
    * @param process the CollectorProcessDefinitionData.
    */
   public void putCollectorProcessDefinition(CollectorProcessDefinition process);
 
   /**
    * Stores the given Depository in the WattDepot Server.
-   * 
+   *
    * @param depository the Depository.
    */
   public void putDepository(Depository depository);
@@ -486,90 +487,92 @@ public interface WattDepotInterface {
    * @param measurementList The MeasurementList to be stored.
    * @throws MeasurementTypeException if the type of a measurement doesn't
    *         match the type of the depository.
+   * @throws MeasurementListSizeExceededException if list size requirement is
+   * exceeded.
    */
   public void putMeasurements(Depository depository, MeasurementList measurementList)
-      throws MeasurementTypeException;
+      throws MeasurementTypeException, MeasurementListSizeExceededException;
 
   /**
    * Stores the given MeasurementPruningDefinition in the WattDepot Server.
-   * 
+   *
    * @param gcd the MeasurementPruningDefinition.
    */
   public void putMeasurementPruningDefinition(MeasurementPruningDefinition gcd);
 
   /**
    * Stores the given MeasurementType in the WattDepot Server.
-   * 
+   *
    * @param type the MeasurementType.
    */
   public void putMeasurementType(MeasurementType type);
 
   /**
    * Stores the given Sensor in the WattDepot Server.
-   * 
+   *
    * @param sensor the Sensor.
    */
   public void putSensor(Sensor sensor);
 
   /**
    * Stores the given SensorGroup in the WattDepot Server.
-   * 
+   *
    * @param group the SensorGroup.
    */
   public void putSensorGroup(SensorGroup group);
 
   /**
    * Stores the given SensorModel in the WattDepot Server.
-   * 
+   *
    * @param model the SensorModel.
    */
   public void putSensorModel(SensorModel model);
 
   /**
    * Updates the given CollectorProcessDefinitionData in the WattDepot Server.
-   * 
+   *
    * @param process The CollectorProcessDefinitionData to update.
    */
   public void updateCollectorProcessDefinition(CollectorProcessDefinition process);
 
   /**
    * Updates the given Depository in the WattDepot Server.
-   * 
+   *
    * @param depository The Depository to update.
    */
   public void updateDepository(Depository depository);
 
   /**
    * Updates the given MeasurementPruningDefinition in the WattDepot Server.
-   * 
+   *
    * @param gcd The MeasurementPruningDefinition to update.
    */
   public void updateMeasurementPruningDefinition(MeasurementPruningDefinition gcd);
 
   /**
    * Updates the given MeasurementType in the WattDepot Server.
-   * 
+   *
    * @param type the MeasurementType to update.
    */
   public void updateMeasurementType(MeasurementType type);
 
   /**
    * Updates the given Sensor in the WattDepot Server.
-   * 
+   *
    * @param sensor The Sensor to update.
    */
   public void updateSensor(Sensor sensor);
 
   /**
    * Updates the given SensorGroup in the WattDepot Server.
-   * 
+   *
    * @param group The SensorGroup to update.
    */
   public void updateSensorGroup(SensorGroup group);
 
   /**
    * Updates the given SensorModel in the WattDepot Server.
-   * 
+   *
    * @param model the SensorModel to update.
    */
   public void updateSensorModel(SensorModel model);

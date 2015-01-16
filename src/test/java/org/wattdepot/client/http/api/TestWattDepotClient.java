@@ -46,6 +46,7 @@ import org.wattdepot.common.domainmodel.*;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementGapException;
+import org.wattdepot.common.exception.MeasurementListSizeExceededException;
 import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.DateConvert;
@@ -773,6 +774,9 @@ public class TestWattDepotClient {
           test.putMeasurements(depo, m456);
         }
       }
+      catch (MeasurementListSizeExceededException e) {
+        fail(e.getMessage());
+      }
       list = test.getMeasurements(depo, s1, m4.getDate(), m6.getDate());
       assertNotNull(list);
 
@@ -793,6 +797,9 @@ public class TestWattDepotClient {
     }
     catch (MeasurementGapException e1) {
       fail(e1.getMessage());
+    }
+    catch (MeasurementListSizeExceededException e) {
+      fail(e.getMessage());
     }
 
     // error conditions
