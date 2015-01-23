@@ -49,7 +49,9 @@ public class Manager {
               org.wattdepot.server.depository.impl.hibernate.CollectorProcessDefinitionImpl.class)
           .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.DepositoryImpl.class)
           .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.DepositorySensorContribution.class)
-          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.MeasurementPruningDefinitionImpl.class)
+          .addAnnotatedClass(
+              org.wattdepot.server.depository.impl.hibernate
+                  .MeasurementPruningDefinitionImpl.class)
           .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.MeasurementImpl.class)
           .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.MeasurementTypeImpl.class)
           .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.PropertyImpl.class)
@@ -67,12 +69,16 @@ public class Manager {
               properties.get(ServerProperties.DB_USER_NAME))
           .setProperty("hibernate.connection.password",
               properties.get(ServerProperties.DB_PASSWORD))
-          .setProperty("hibernate.c3p0.min_size", "5").setProperty("hibernate.c3p0.max_size", "20")
+          .setProperty("hibernate.c3p0.min_size", "5").setProperty(
+              "hibernate.c3p0.max_size", "20")
           .setProperty("hibernate.c3p0.timeout", "1800")
           .setProperty("hibernate.c3p0.max_statements", "50")
-          .setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect")
+          .setProperty("hibernate.jdbc.batch_size", "50")
+          .setProperty("hibernate.dialect",
+              "org.hibernate.dialect.PostgreSQLDialect")
           .setProperty("hibernate.show_sql", properties.get(ServerProperties.DB_SHOW_SQL))
           .setProperty("hibernate.hbm2ddl.auto", properties.get(ServerProperties.DB_TABLE_UPDATE));
+
       serviceRegistry = new ServiceRegistryBuilder().applySettings(cfg.getProperties())
           .buildServiceRegistry();
       // A SessionFactory is set up once for an application
@@ -119,6 +125,7 @@ public class Manager {
           .setProperty("hibernate.c3p0.min_size", "5").setProperty("hibernate.c3p0.max_size", "20")
           .setProperty("hibernate.c3p0.timeout", "1800")
           .setProperty("hibernate.c3p0.max_statements", "50")
+          .setProperty("hibernate.jdbc.batch_size", "50")
           .setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect")
           .setProperty("hibernate.show_sql", properties.get(ServerProperties.DB_SHOW_SQL))
           .setProperty("hibernate.hbm2ddl.auto", "validate");
