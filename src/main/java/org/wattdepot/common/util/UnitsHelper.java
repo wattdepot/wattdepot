@@ -45,15 +45,19 @@ public class UnitsHelper {
     format.label(SI.MICRO(Unit.ONE), "ppm");    
     quantities.put(buildName("Power", SI.WATT), SI.WATT);
     quantities.put(buildName("Energy", SI.WATT.times(NonSI.HOUR)), SI.WATT.times(NonSI.HOUR));
+    quantities.put(buildName("Energy", SI.KILO(SI.WATT.times(NonSI.HOUR))), SI.KILO(SI.WATT.times(NonSI.HOUR)));
     quantities.put(buildName("Frequency", SI.HERTZ), SI.HERTZ);
     quantities.put(buildName("Temperature", NonSI.FAHRENHEIT), NonSI.FAHRENHEIT);
     quantities.put(buildName("Temperature", SI.CELSIUS), SI.CELSIUS);
     quantities.put(buildName("Volume", NonSI.GALLON_LIQUID_US), NonSI.GALLON_LIQUID_US);
     quantities.put(buildName("Volume", NonSI.LITER), NonSI.LITER);
+    quantities.put(buildName("Volume", SI.CUBIC_METRE), SI.CUBIC_METRE);
     quantities.put(buildName("Flow Rate", NonSI.GALLON_LIQUID_US.divide(SI.SECOND)),
         NonSI.GALLON_LIQUID_US.divide(SI.SECOND));
     quantities.put(buildName("Flow Rate", NonSI.LITER.divide(SI.SECOND)),
         NonSI.LITER.divide(SI.SECOND));
+    quantities.put(buildName("Flow Rate", NonSI.LITER.divide(NonSI.MINUTE)),
+            NonSI.LITER.divide(NonSI.MINUTE));
     quantities.put(buildName("Mass", SI.KILOGRAM), SI.KILOGRAM);
     quantities.put(buildName("Mass", NonSI.POUND), NonSI.POUND);
     quantities.put(buildName("Humidity", NonSI.PERCENT), NonSI.PERCENT);
