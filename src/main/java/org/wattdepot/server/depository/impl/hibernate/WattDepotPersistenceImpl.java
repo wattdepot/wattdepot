@@ -20,8 +20,10 @@ package org.wattdepot.server.depository.impl.hibernate;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,8 +31,10 @@ import java.util.logging.Logger;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.MeasurementList;
 import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Measurement;
@@ -3147,6 +3151,75 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.close();
   }
 
+  /*
+ * (non-Javadoc)
+ *
+ * @see
+ * org.wattdepot.server.WattDepotPersistence#putMeasurement(java.lang.String,
+ * org.wattdepot.common.domainmodel.MeasurementList)
+ */
+  @Override
+  public void putMeasurementList(String depotId, String orgId, MeasurementList measurementList)
+      throws MeasurementTypeException, IdNotFoundException {
+    getOrganization(orgId, true);
+    //We just checked the organisation, no reason to do it again.
+
+    Depository d = getDepository(depotId, orgId, false);
+
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    Transaction transaction = session.beginTransaction();
+    OrganizationImpl organization = retrieveOrganization(session, orgId);
+    DepositoryImpl depository = retrieveDepository(session, depotId, organization);
+
+    //Cache all sensors for organization in a map
+    List<SensorImpl> sensors = retrieveSensors(session, organization);
+    Map<String, SensorImpl> sensorMap = new HashMap<>();
+    for (SensorImpl sensor : sensors) {
+      sensorMap.put(sensor.getId(), sensor);
+    }
+
+    //Cache all depository sensor contributions for this depository
+    List<DepositorySensorContribution> depositorySensorContributions = retrieveContributions(
+        session, depository);
+    Map<String, DepositorySensorContribution> depositorySensorContributionsMap = new HashMap<>();
+    for (DepositorySensorContribution depositorySensorContribution : depositorySensorContributions) {
+      depositorySensorContributionsMap.put(depositorySensorContribution.getSensor().getId(), depositorySensorContribution);
+    }
+
+    for (int i = 0; i <  measurementList.getMeasurements().size(); i++) {
+    //for (Measurement measurement : measurementList.getMeasurements()) {
+      Measurement measurement = measurementList.getMeasurements().get(i);
+      if (!measurement.getMeasurementType().equals(d.getMeasurementType().getUnits())) {
+        throw new MeasurementTypeException("Measurement's type " + measurement.getMeasurementType()
+            + " does not match " + d.getMeasurementType());
+      }
+      SensorImpl sensor = sensorMap.get(measurement.getSensorId());
+      DepositorySensorContribution contrib = depositorySensorContributionsMap.get(sensor.getId());
+      if (contrib == null) {
+        contrib = new DepositorySensorContribution();
+        contrib.setDepository(depository);
+        contrib.setSensor(sensor);
+        session.saveOrUpdate(contrib);
+        depositorySensorContributionsMap.put(sensor.getId(), contrib);
+      }
+      MeasurementImpl impl = new MeasurementImpl();
+      impl.setDepository(depository);
+      impl.setSensor(sensor);
+      impl.setId(measurement.getId());
+      impl.setTimestamp(measurement.getDate());
+      impl.setValue(measurement.getValue());
+      impl.setUnits(measurement.getMeasurementType().toString());
+      session.saveOrUpdate(impl);
+      if ( i % 50 == 0 ) { //50, same as the JDBC batch size
+        //flush a batch of inserts and release memory:
+        session.flush();
+        session.clear();
+      }
+    }
+    transaction.commit();
+    session.close();
+  }
+
   /**
    * @param session The session with an open transaction.
    * @param id The CollectorProcessDefinition's id.
@@ -3265,6 +3338,17 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @SuppressWarnings("unchecked")
   private DepositoryImpl retrieveDepository(Session session, String id, String orgId) {
     OrganizationImpl org = retrieveOrganization(session, orgId);
+    return retrieveDepository(session, id, org);
+  }
+
+  /**
+   * @param session The session with an open transaction.
+   * @param id the Depository's id.
+   * @param org The owner's Organization id.
+   * @return A List of the Depositories owned by orgId.
+   */
+  @SuppressWarnings("unchecked")
+  private DepositoryImpl retrieveDepository(Session session, String id, OrganizationImpl org) {
     List<DepositoryImpl> ret = (List<DepositoryImpl>) session
         .createQuery("from DepositoryImpl WHERE id = :id AND org = :org").setParameter("id", id)
         .setParameter("org", org).list();
@@ -3390,6 +3474,17 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @SuppressWarnings("unchecked")
   private SensorImpl retrieveSensor(Session session, String id, String orgId) {
     OrganizationImpl org = retrieveOrganization(session, orgId);
+    return retrieveSensor(session, id, org);
+  }
+
+  /**
+   * @param session The session with an open transaction.
+   * @param id the Sensor's id.
+   * @param org The owner's OrganizationImpl.
+   * @return The Sensor with the given id and owned by orgId.
+   */
+  @SuppressWarnings("unchecked")
+  private SensorImpl retrieveSensor(Session session, String id, OrganizationImpl org) {
     List<SensorImpl> ret = (List<SensorImpl>) session
         .createQuery("FROM SensorImpl WHERE id = :id AND org = :org").setParameter("id", id)
         .setParameter("org", org).list();
@@ -3397,6 +3492,19 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       return ret.get(0);
     }
     return null;
+  }
+
+  /**
+   * @param session The session with an open transaction.
+   * @param org The owner's OrganizationImpl.
+   * @return The Sensor with the given id and owned by orgId.
+   */
+  @SuppressWarnings("unchecked")
+  private List<SensorImpl> retrieveSensors(Session session, OrganizationImpl org) {
+    List<SensorImpl> ret = (List<SensorImpl>) session
+        .createQuery("FROM SensorImpl WHERE org = :org").setParameter("org",
+            org).list();
+    return ret;
   }
 
   /**

@@ -24,12 +24,15 @@ import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementList;
+import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementTypeException;
-import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.DepositoryMeasurementsPutResource;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 
 /**
@@ -68,35 +71,28 @@ public class DepositoryMeasurementsPutServerResource extends WattDepotServerReso
             + measurementList);
     if (isInRole(orgId)) {
       try {
+
         Depository depository = depot.getDepository(depositoryId, orgId, true);
         if (depository != null) {
           // Checking that all measurements have valid sensors.
-          ArrayList<Integer> invalidSensorIds = new ArrayList<>(measurementList.getMeasurements().size());
+          Map<String, Sensor> sensorMap = new HashMap<>();
+          List<Sensor> sensors = depot.getSensors(orgId, false);
+          for (Sensor sensor : sensors) {
+            sensorMap.put(sensor.getId(), sensor);
+          }
+
+          ArrayList<String> invalidSensorIds = new ArrayList<>(measurementList.getMeasurements().size());
+
           for (int i = 0; i < measurementList.getMeasurements().size(); i++) {
             Measurement measurement = measurementList.getMeasurements().get(i);
-            try {
-              depot.getSensor(measurement.getSensorId(), orgId, true);
-            }
-            catch (IdNotFoundException e) {
-              invalidSensorIds.add(i);
-            }
-            catch (MisMatchedOwnerException e) {
-              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+
+            if ( !sensorMap.containsKey(measurement.getSensorId())) {
+              invalidSensorIds.add(measurement.getSensorId());
             }
           }
           // All sensor id's were valid.
           if (invalidSensorIds.isEmpty()) {
-            for (Measurement measurement : measurementList.getMeasurements()) {
-              try {
-                depot.putMeasurement(depositoryId, orgId, measurement);
-              }
-              catch (MeasurementTypeException e) {
-                e.printStackTrace();
-              }
-              catch (IdNotFoundException e) {
-                e.printStackTrace();
-              }
-            }
+            depot.putMeasurementList(depositoryId, orgId, measurementList);
           }
           else {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Sensors: " + invalidSensorIds
@@ -109,6 +105,9 @@ public class DepositoryMeasurementsPutServerResource extends WattDepotServerReso
       }
       catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      }
+      catch (MeasurementTypeException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Measurement type does not match depository..");
       }
     }
     else {
