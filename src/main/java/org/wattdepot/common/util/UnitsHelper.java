@@ -42,10 +42,12 @@ public class UnitsHelper {
   static {
     UnitFormat format = UnitFormat.getInstance();
     format.alias(SI.MICRO(Unit.ONE), "ppm");
-    format.label(SI.MICRO(Unit.ONE), "ppm");    
+    format.label(SI.MICRO(Unit.ONE), "ppm");
+
     quantities.put(buildName("Power", SI.WATT), SI.WATT);
+    quantities.put(buildName("Energy", SI.WATT), SI.WATT);
     quantities.put(buildName("Energy", SI.WATT.times(NonSI.HOUR)), SI.WATT.times(NonSI.HOUR));
-    quantities.put(buildName("Energy", SI.KILO(SI.WATT.times(NonSI.HOUR))), SI.KILO(SI.WATT.times(NonSI.HOUR)));
+    quantities.put(buildName("Energy", SI.KILO(SI.WATT).times(NonSI.HOUR)), SI.KILO(SI.WATT).times(NonSI.HOUR));
     quantities.put(buildName("Frequency", SI.HERTZ), SI.HERTZ);
     quantities.put(buildName("Temperature", NonSI.FAHRENHEIT), NonSI.FAHRENHEIT);
     quantities.put(buildName("Temperature", SI.CELSIUS), SI.CELSIUS);
