@@ -42,6 +42,7 @@
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li><a href="#">${orgId}</a></li>
+      <!-- <li><a href="#" onclick="logout()">logout</a></li> -->
     </ul>
   </div><!-- /.navbar-collapse -->
 </nav>
@@ -89,7 +90,50 @@ $(document).ready(function()
     { 
         $("#summaryTable").tablesorter(); 
     } 
-); 
+);
+
+
+function logout() {
+  try{
+    var agt=navigator.userAgent.toLowerCase();
+    if (agt.indexOf("msie") != -1) {
+// IE clear HTTP Authentication
+      document.execCommand("ClearAuthenticationCache");
+    }
+    else {
+      var xmlhttp = createXMLObject();
+      var rString = randomString(5, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+      xmlhttp.open("GET","PAGE FROM REALM TO LOGOUT",true,rString,rString);
+      xmlhttp.send("");
+      xmlhttp.abort();
+    }
+  } catch(e) {
+// There was an error
+    alert("there was an error");
+  }
+//  window.location = server;
+  function createXMLObject() {
+    try {
+      if (window.XMLHttpRequest) {
+        xmlhttp = new XMLHttpRequest();
+      }
+// code for IE
+      else if (window.ActiveXObject) {
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+      }
+    } catch (e) {
+      xmlhttp=false
+    }
+    return xmlhttp;
+  }
+  function randomString(length, chars) {
+    var result = '';
+    for (var i = length; i > 0; --i) result += chars[Math.round(Math.random() * (chars.length - 1))];
+    return result;
+  }
+//  var rString = randomString(32, '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+
+}
 </script>
 </body>
 </html>

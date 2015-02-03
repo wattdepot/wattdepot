@@ -83,7 +83,7 @@ public class PutTask extends PerformanceTimedTask {
     Date now = new Date();
     Unit<?> unit = Unit.valueOf(this.depository.getMeasurementType().getUnits());
     Measurement ret = new Measurement(this.definition.getSensorId(), now,
-        (25.0 - 50 * Math.random()) + 1000.0, unit);
+        25.0 - 50 * Math.random() + 1000.0, unit);
     return ret;
   }
 

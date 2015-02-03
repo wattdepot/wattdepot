@@ -29,6 +29,7 @@ import org.wattdepot.common.domainmodel.MeasuredValueList;
  * @author Cam Moore
  * 
  */
+@SuppressWarnings("PMD.UnusedModifier")
 public interface DepositoryMaximumValuesResource {
 
   /**

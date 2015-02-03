@@ -63,6 +63,13 @@ public class InstanceFactory {
   }
 
   /**
+   * @return A Depository instance for testing.
+   */
+  public static Depository getDepository2() {
+    return new Depository("Test Depository2", getMeasurementType(), getOrganization().getId());
+  }
+
+  /**
    * @return A MeasurementPruningDefinition for testing.
    */
   public static MeasurementPruningDefinition getMeasurementPruningDefinition() {
@@ -172,6 +179,15 @@ public class InstanceFactory {
     Set<String> users = new HashSet<String>();
     users.add(getUserInfo2().getUid());
     return new Organization("Test User Group2", users);
+  }
+
+  /**
+   * @return A third Organization instance for testing.
+   */
+  public static Organization getOrganization3() {
+    Set<String> users = new HashSet<String>();
+    users.add(getUserInfo3().getUid());
+    return new Organization("Test User Group3", users);
   }
 
   /**
@@ -288,6 +304,16 @@ public class InstanceFactory {
     properties.add(getProperty());
     return new UserInfo("test_user_id2", "test_first_name2", "test_last_name2",
         "test_email2@test.com", "test-user-group2", properties, "secret2");
+  }
+
+  /**
+   * @return A UserInfo instance for testing.
+   */
+  public static UserInfo getUserInfo3() {
+    Set<Property> properties = new HashSet<Property>();
+    properties.add(getProperty());
+    return new UserInfo("test_user_id3", "test_first_name3", "test_last_name3",
+        "test_email3@test.com", "test-user-group3", properties, "secret3");
   }
 
   /**

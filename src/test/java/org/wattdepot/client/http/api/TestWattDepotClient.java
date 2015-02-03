@@ -67,26 +67,26 @@ public class TestWattDepotClient {
   /** The handle on the client. */
   private static WattDepotAdminClient admin;
   private static WattDepotClient test;
-  private UserInfo testUser = null;
-  private Organization testOrg = null;
-  private SensorModel testModel = null;
-  private Sensor testSensor = null;
-  private MeasurementType testMeasurementType = null;
-  private Depository testDepository = null;
-  private CollectorProcessDefinition testCPD = null;
-  private MeasurementPruningDefinition testMPD = null;
-  private Measurement testMeasurement1 = null;
-  private Measurement testMeasurement2 = null;
-  private Measurement testMeasurement3 = null;
-  private Measurement testMeasurement4 = null;
-  private Measurement testMeasurement5 = null;
-  private Measurement testMeasurement6 = null;
-  private MeasurementList testMeasurements456 = null;
+  private static UserInfo testUser = null;
+  private static Organization testOrg = null;
+  private static SensorModel testModel = null;
+  private static Sensor testSensor = null;
+  private static MeasurementType testMeasurementType = null;
+  private static Depository testDepository = null;
+  private static CollectorProcessDefinition testCPD = null;
+  private static MeasurementPruningDefinition testMPD = null;
+  private static Measurement testMeasurement1 = null;
+  private static Measurement testMeasurement2 = null;
+  private static Measurement testMeasurement3 = null;
+  private static Measurement testMeasurement4 = null;
+  private static Measurement testMeasurement5 = null;
+  private static Measurement testMeasurement6 = null;
+  private static MeasurementList testMeasurements456 = null;
 
   /** The logger. */
-  private Logger logger = null;
+  private static Logger logger = null;
   /** The serverUrl. */
-  private String serverURL = null;
+  private static String serverURL = null;
 
   /**
    * Starts up a WattDepotServer to start the testing.
@@ -97,23 +97,6 @@ public class TestWattDepotClient {
   public static void setupServer() throws Exception {
 //    LoggerUtil.disableLogging();
     server = WattDepotServer.newTestInstance();
-  }
-
-  /**
-   * Shuts down the WattDepotServer.
-   * 
-   * @throws Exception if there is a problem.
-   */
-  @AfterClass
-  public static void stopServer() throws Exception {
-    server.stop();
-  }
-
-  /**
-   *
-   */
-  @Before
-  public void setUp() {
     // Set up the test instances.
     Set<Property> properties = new HashSet<Property>();
     properties.add(new Property("isAdmin", "no they are not"));
@@ -127,10 +110,10 @@ public class TestWattDepotClient {
         "test_model_type", "test_model_version");
     testSensor = new Sensor("TestWattDepotClient Sensor", "test_sensor_uri", testModel.getId(),
         testOrg.getId());
-    testMeasurementType = new MeasurementType("Test MeasurementType Name",
+    testMeasurementType = new MeasurementType("Client Test MeasurementType Name",
         UnitsHelper.quantities.get("Flow Rate (gal/s)"));
-    testDepository = new Depository("Test Depository", testMeasurementType, testOrg.getId());
-    testCPD = new CollectorProcessDefinition("TestWattDepotClient Collector Process Defintion",
+    testDepository = new Depository("Client Test Depository", testMeasurementType, testOrg.getId());
+    testCPD = new CollectorProcessDefinition("TestWattDepotClient Collector Process Definition",
         testSensor.getId(), 10L, testDepository.getId(), testOrg.getId());
     testMPD = new MeasurementPruningDefinition("TestWattDepotClient MPD", testDepository.getId(), testSensor.getId(),
         testOrg.getId(), 7, 10, 30);
@@ -170,11 +153,10 @@ public class TestWattDepotClient {
     try {
       ClientProperties props = new ClientProperties();
       props.setTestProperties();
-      this.logger = Logger.getLogger("org.wattdepot.client");
-      LoggerUtil.setLoggingLevel(this.logger, props.get(ClientProperties.LOGGING_LEVEL_KEY));
+      logger = Logger.getLogger("org.wattdepot.client");
+      LoggerUtil.setLoggingLevel(logger, props.get(ClientProperties.LOGGING_LEVEL_KEY));
       LoggerUtil.useConsoleHandler();
-      logger.finest("setUp()");
-      this.serverURL = "http://" + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
+      serverURL = "http://" + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
           + props.get(ClientProperties.PORT_KEY) + "/";
       logger.finest("Using server " + serverURL);
       if (admin == null) {
@@ -227,10 +209,12 @@ public class TestWattDepotClient {
   }
 
   /**
-   * @throws java.lang.Exception if there is a problem.
+   * Shuts down the WattDepotServer.
+   * 
+   * @throws Exception if there is a problem.
    */
-  @After
-  public void tearDown() throws Exception {
+  @AfterClass
+  public static void stopServer() throws Exception {
     logger.finest("tearDown()");
     if (admin != null) {
       try {
@@ -239,19 +223,35 @@ public class TestWattDepotClient {
       catch (IdNotFoundException inf) { // NOPMD
         // not a problem
       }
+      admin.deleteMeasurementType(testMeasurementType);
     }
     logger.finest("Done tearDown()");
+    server.stop();
   }
+
+
+//  /**
+//   * @throws java.lang.Exception if there is a problem.
+//   */
+//  @After
+//  public void tearDown() throws Exception {
+//    logger.finest("tearDown()");
+//    if (admin != null) {
+//      try {
+//        admin.deleteOrganization(testOrg.getId());
+//      }
+//      catch (IdNotFoundException inf) { // NOPMD
+//        // not a problem
+//      }
+//    }
+//    logger.finest("Done tearDown()");
+//  }
 
   /**
    * Test method for WattDepotClient constructors.
    */
   @Test
   public void testWattDepotClient() {
-    if (test == null) {
-      setUp();
-    }
-    assertNotNull(test);
     // test some bad cases
     try {
       WattDepotClient bad = new WattDepotClient(null, testUser.getUid(),
@@ -291,14 +291,12 @@ public class TestWattDepotClient {
    */
   @Test
   public void testDepository() {
-    Depository depo = testDepository;
+    Depository depo = new Depository("testDepository",  testMeasurementType, testOrg.getId());
     // Get list
     DepositoryList list = test.getDepositories();
     assertNotNull(list);
     int size = list.getDepositories().size();
-    // assertTrue("Got " + list.getDepositories().size() + " expecting 0 ",
-    // list.getDepositories()
-    // .size() == 0);
+    assertTrue(list.getDepositories().size() >= 0);
     if (size == 0 || !list.getDepositories().contains(depo)) {
       // Put new instance (CREATE)
       test.putDepository(depo);
@@ -320,7 +318,7 @@ public class TestWattDepotClient {
         // expected.
       }
       list = test.getDepositories();
-      assertTrue(list.getDepositories().size() == 1);
+      assertTrue(list.getDepositories().size() == size + 1);
       // delete instance (DELETE)
       test.deleteDepository(depo);
       try {
@@ -351,7 +349,7 @@ public class TestWattDepotClient {
    */
   @Test
   public void testMeasurementType() {
-    MeasurementType type = testMeasurementType;
+    MeasurementType type = new MeasurementType("testMeasurementType Client", testMeasurementType.unit());
     // Put new instance (CREATE)
     try {
       test.putMeasurementType(type);
@@ -422,15 +420,15 @@ public class TestWattDepotClient {
    */
   @Test
   public void testSensor() {
-    Sensor sensor = testSensor;
+    Sensor sensor = new Sensor("testSensor Client", "uri", testSensor.getModelId(), testSensor.getOrganizationId());
     // Get list
     SensorList list = test.getSensors();
     assertNotNull(list);
-    assertTrue(list.getSensors().size() == 0);
+    int numSensors = list.getSensors().size();
+    assertTrue(list.getSensors().size() >= 0);
     try {
       // Put new instance (CREATE)
       test.putSensor(sensor);
-      fail("Can't put a sensor w/o location or model being defined.");
     }
     catch (ResourceException re) {
       if (re.getStatus().equals(Status.CLIENT_ERROR_BAD_REQUEST)) {
@@ -449,7 +447,7 @@ public class TestWattDepotClient {
       test.updateSensor(ret);
       list = test.getSensors();
       assertNotNull(list);
-      assertTrue(list.getSensors().size() == 1);
+      assertTrue(list.getSensors().size() == numSensors + 1);
       // delete instance (DELETE)
       test.deleteSensor(ret);
       try {
@@ -481,13 +479,15 @@ public class TestWattDepotClient {
   @Test
   public void testSensorGroup() {
     Set<String> sensors = new HashSet<String>();
-    sensors.add("testwattdepotclient-sensor");
+    sensors.add("testsensorgroupclient-sensor");
+    Sensor sensor = new Sensor("testsensorgroupclient sensor", "uri", testSensor.getModelId(), testSensor.getOrganizationId());
     SensorGroup group = new SensorGroup("TestWattDepotClient Sensor Group", sensors,
         testOrg.getId());
     // Get list
     SensorGroupList list = test.getSensorGroups();
     assertNotNull(list);
-    assertTrue(list.getGroups().size() == 0);
+    int numGroups = list.getGroups().size();
+    assertTrue(list.getGroups().size() >= 0);
     try {
       // Put new instance (CREATE)
       test.putSensorGroup(group);
@@ -495,8 +495,9 @@ public class TestWattDepotClient {
     }
     catch (ResourceException e) {
       if (e.getStatus().equals(Status.CLIENT_ERROR_BAD_REQUEST)) {
-        addSensorModel();
-        addSensor();
+//        addSensorModel();
+//        addSensor();
+        test.putSensor(sensor);
         test.putSensorGroup(group);
       }
     }
@@ -511,7 +512,7 @@ public class TestWattDepotClient {
       ;
       list = test.getSensorGroups();
       assertNotNull(list);
-      assertTrue(list.getGroups().size() == 1);
+      assertTrue(list.getGroups().size() == numGroups + 1);
       // delete instance (DELETE)
       test.deleteSensorGroup(ret);
       try {
@@ -520,6 +521,8 @@ public class TestWattDepotClient {
       }
       catch (IdNotFoundException e) {
         // this is what we want.
+        // clean up sensor we added
+        test.deleteSensor(sensor);
       }
     }
     catch (IdNotFoundException e) {
@@ -542,7 +545,7 @@ public class TestWattDepotClient {
    */
   @Test
   public void testSensorModel() {
-    SensorModel model = testModel;
+    SensorModel model = new SensorModel("testSensorModel", testModel.getProtocol(), testModel.getType(), testModel.getVersion());
     // Get list
     SensorModelList list = test.getSensorModels();
     assertNotNull(list);
@@ -592,15 +595,15 @@ public class TestWattDepotClient {
    */
   @Test
   public void testCollectorProcessDefinition() {
-    CollectorProcessDefinition data = testCPD;
+    CollectorProcessDefinition data = new CollectorProcessDefinition("testCollectorProcessDefinition Client", testCPD.getSensorId(), testCPD.getPollingInterval(), testCPD.getDepositoryId(), testCPD.getOrganizationId());
     // Get list
     CollectorProcessDefinitionList list = test.getCollectorProcessDefinitions();
     assertNotNull(list);
+    int numCPD = list.getDefinitions().size();
     assertTrue(list.getDefinitions().size() == 0);
     try {
       // Put new instance (CREATE)
       test.putCollectorProcessDefinition(data);
-      fail("Can't put a CollectorProcessDefinition for a sensor that isn't defined.");
     }
     catch (ResourceException e) {
       if (e.getStatus().equals(Status.CLIENT_ERROR_BAD_REQUEST)) {
@@ -709,14 +712,22 @@ public class TestWattDepotClient {
   @Test
   public void testMeasurements() {
     Depository depo = testDepository;
-    test.putDepository(depo);
+    try {
+      test.putDepository(depo);
+    }
+    catch (Exception e) {
+      // depo is already defined?
+    }
     Measurement m1 = testMeasurement1;
     Measurement m2 = testMeasurement2;
     Measurement m3 = testMeasurement3;
     try {
       try {
         test.putMeasurement(depo, m1);
-        fail("Can't put a measurement with a sensor that isn't defined.");
+        Sensor s = test.getSensor(testSensor.getId());
+        if (s == null) {
+          fail("Can't put a measurement with a sensor that isn't defined.");
+        }
       }
       catch (ResourceException re) {
         if (re.getStatus().equals(Status.CLIENT_ERROR_BAD_REQUEST)) {
@@ -845,7 +856,10 @@ public class TestWattDepotClient {
     test.putSensorGroup(group);
     // Make sure the depository is saved.
     Depository depo = testDepository;
-    test.putDepository(depo);
+    DepositoryList depositoryList = test.getDepositories();
+    if (!depositoryList.getDepositories().contains(depo)) {
+      test.putDepository(depo);
+    }
     // Create some measurements
     try {
       Date measTime1 = DateConvert.parseCalStringToDate("2013-11-20T14:35:27.925-1000");

@@ -30,6 +30,7 @@ import org.wattdepot.common.domainmodel.UserInfo;
  * @author Cam Moore
  * 
  */
+@SuppressWarnings("PMD.UnusedModifier")
 public interface UserInfoResource {
 
   /**

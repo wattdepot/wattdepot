@@ -28,6 +28,7 @@ import org.wattdepot.common.domainmodel.MeasurementRateSummary;
  * @author Cam Moore
  * 
  */
+@SuppressWarnings("PMD.UnusedModifier")
 public interface DepositorySensorSummaryResource {
 
   /**

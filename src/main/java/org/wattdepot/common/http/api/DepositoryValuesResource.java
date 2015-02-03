@@ -28,6 +28,7 @@ import org.wattdepot.common.domainmodel.MeasuredValueList;
  * @author Yongwen Xu
  * 
  */
+@SuppressWarnings("PMD.UnusedModifier")
 public interface DepositoryValuesResource {
 
   /**

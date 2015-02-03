@@ -28,6 +28,7 @@ import org.wattdepot.common.domainmodel.SensorList;
  * @author Cam Moore
  * 
  */
+@SuppressWarnings("PMD.UnusedModifier")
 public interface DepositorySensorsResource {
 
   /**

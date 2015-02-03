@@ -27,6 +27,7 @@ import org.wattdepot.common.domainmodel.SensorModel;
  * @author Cam Moore
  * 
  */
+@SuppressWarnings("PMD.UnusedModifier")
 public interface SensorModelPutResource {
 
   /**
