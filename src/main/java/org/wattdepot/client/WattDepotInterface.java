@@ -538,6 +538,7 @@ public interface WattDepotInterface {
    * @throws MeasurementListSizeExceededException if list size requirement is
    * exceeded.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void putMeasurements(Depository depository, MeasurementList measurementList)
       throws MeasurementTypeException, MeasurementListSizeExceededException;
 
