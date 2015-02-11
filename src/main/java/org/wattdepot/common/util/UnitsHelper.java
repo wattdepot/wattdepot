@@ -45,7 +45,6 @@ public class UnitsHelper {
     format.label(SI.MICRO(Unit.ONE), "ppm");
 
     quantities.put(buildName("Power", SI.WATT), SI.WATT);
-    quantities.put(buildName("Energy", SI.WATT), SI.WATT);
     quantities.put(buildName("Energy", SI.WATT.times(NonSI.HOUR)), SI.WATT.times(NonSI.HOUR));
     quantities.put(buildName("Energy", SI.KILO(SI.WATT).times(NonSI.HOUR)), SI.KILO(SI.WATT).times(NonSI.HOUR));
     quantities.put(buildName("Frequency", SI.HERTZ), SI.HERTZ);
@@ -65,7 +64,6 @@ public class UnitsHelper {
     quantities.put(buildName("Humidity", NonSI.PERCENT), NonSI.PERCENT);
     quantities.put(buildName("Concentration", SI.MICRO(Unit.ONE)), SI.MICRO(Unit.ONE));
     quantities.put(buildName("Cloud Coverage", NonSI.PERCENT), NonSI.PERCENT);
-
   }
 
   /**
