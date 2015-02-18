@@ -40,9 +40,9 @@ public class UnitsHelper {
   public static final Map<String, Unit<?>> quantities = new HashMap<String, Unit<?>>();
 
   static {
-    UnitFormat format = UnitFormat.getInstance();
-    format.alias(SI.MICRO(Unit.ONE), "ppm");
-    format.label(SI.MICRO(Unit.ONE), "ppm");
+    //UnitFormat format = UnitFormat.getInstance();
+    //format.alias(SI.MICRO(Unit.ONE), "ppm");
+    //format.label(SI.MICRO(Unit.ONE), "ppm");
 
     quantities.put(buildName("Power", SI.WATT), SI.WATT);
     quantities.put(buildName("Energy", SI.WATT.times(NonSI.HOUR)), SI.WATT.times(NonSI.HOUR));
