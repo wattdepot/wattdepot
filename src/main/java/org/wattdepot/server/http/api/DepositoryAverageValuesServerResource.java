@@ -18,7 +18,7 @@
  */
 package org.wattdepot.server.http.api;
 
-import org.wattdepot.common.domainmodel.MeasuredValueList;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.http.api.DepositoryAverageValuesResource;
 
 /**
@@ -38,7 +38,7 @@ public class DepositoryAverageValuesServerResource extends DepositoryAverageValu
    * org.wattdepot.common.http.api.DepositoryAverageValuesResource#retrieve()
    */
   @Override
-  public MeasuredValueList retrieve() {
+  public InterpolatedValueList retrieve() {
     return doRetrieve();
   }
 

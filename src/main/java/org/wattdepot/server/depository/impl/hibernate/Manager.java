@@ -53,6 +53,7 @@ public class Manager {
           .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.MeasurementImpl.class)
           .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.MeasurementTypeImpl.class)
           .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.PropertyImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.RowCount.class)
           .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.SensorImpl.class)
           .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.SensorGroupImpl.class)
           .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.SensorModelImpl.class)

@@ -1,0 +1,35 @@
+CREATE OR REPLACE FUNCTION count_rows()
+RETURNS TRIGGER AS
+'
+   BEGIN
+      IF TG_OP = ''INSERT'' THEN
+         UPDATE rowcount
+            SET totalrows = totalrows + 1
+            WHERE tablename = TG_RELNAME;
+      ELSIF TG_OP = ''DELETE'' THEN
+         UPDATE rowcount
+            SET totalrows = totalrows - 1
+            WHERE tablename = TG_RELNAME;
+      END IF;
+      RETURN NULL;
+   END;
+' LANGUAGE plpgsql;
+
+
+Need to initialize the trigger on the measurements table.
+
+BEGIN;
+   -- Make sure no rows can be added to measurements until we have finished
+   LOCK TABLE measurements IN SHARE ROW EXCLUSIVE MODE;
+
+   create TRIGGER countrows
+      AFTER INSERT OR DELETE on measurements
+      FOR EACH ROW EXECUTE PROCEDURE count_rows();
+
+   -- Initialise the row count record
+   DELETE FROM rowcount WHERE tablename = 'measurements';
+
+   INSERT INTO rowcount (pk, tablename, totalrows)
+   VALUES  (1, 'measurements',  (SELECT COUNT(*) FROM measurements));
+
+COMMIT;

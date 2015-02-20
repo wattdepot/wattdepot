@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,9 +34,7 @@ import java.util.logging.Logger;
 import javax.measure.unit.Unit;
 import javax.xml.datatype.DatatypeConfigurationException;
 
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.restlet.data.Status;
@@ -204,7 +203,12 @@ public class TestWattDepotClient {
       catch (IdNotFoundException inf) { // NOPMD
         // not a problem
       }
-      admin.deleteMeasurementType(testMeasurementType);
+      try {
+        admin.deleteMeasurementType(testMeasurementType);
+      }
+      catch (IdNotFoundException inf) { // NOPMD
+
+      }
     }
     logger.finest("Done tearDown()");
     server.stop();
@@ -852,9 +856,9 @@ public class TestWattDepotClient {
 
       InterpolatedValue iv = test.getEarliestValue(depo, sensor1);
       assertNotNull(iv);
-      assertTrue(iv.getDate().equals(s1m1.getDate()));
+      assertTrue(iv.getStart().equals(s1m1.getDate()));
       iv = test.getLatestValue(depo, sensor2);
-      assertTrue(iv.getDate().equals(s2m3.getDate()));
+      assertTrue(iv.getStart().equals(s2m3.getDate()));
 
       // Get value for group
       try {
@@ -864,11 +868,11 @@ public class TestWattDepotClient {
         iv = test.getEarliestValue(depo, group);
         assertNotNull(iv);
         assertTrue(Math.abs(iv.getValue() - 2 * value) < 0.0001);
-        assertTrue(measTime2.equals(iv.getDate()));
+        assertTrue(measTime2.equals(iv.getStart()));
         iv = test.getLatestValue(depo, group);
         assertNotNull(iv);
         assertTrue(Math.abs(iv.getValue() - 2 * value) < 0.0001);
-        assertTrue(measTime5.equals(iv.getDate()));
+        assertTrue(measTime5.equals(iv.getStart()));
       }
       catch (NoMeasurementException e) {
         e.printStackTrace();
@@ -884,6 +888,112 @@ public class TestWattDepotClient {
       fail(e.getMessage() + " should not happen.");
     }
     catch (MeasurementTypeException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen.");
+    }
+
+  }
+
+  /**
+   * Tests the getValue methods.
+   */
+  @Test
+  public void testValue() {
+    addSensorModel();
+    Sensor sensor1 = new Sensor("TestValues Sensor1", "test_sensor_uri1",
+        testModel.getId(), testOrg.getId());
+    try {
+      test.getSensor(sensor1.getId());
+    }
+    catch (IdNotFoundException e) {
+      // doesn't exist so we can add it.
+      test.putSensor(sensor1);
+    }
+
+    try {
+      Date measTime1 = DateConvert.parseCalStringToDate("2013-11-20T14:35:27.925-1000");
+      Date measTime2 = DateConvert.parseCalStringToDate("2013-11-20T14:45:27.925-1000");
+      Date measTime3 = DateConvert.parseCalStringToDate("2013-11-20T14:55:27.925-1000");
+      Date measTime4 = DateConvert.parseCalStringToDate("2013-11-20T15:05:57.925-1000");
+      Measurement m1 = new Measurement(sensor1.getId(), measTime1, 100.0, testMeasurementType.unit());
+      test.putMeasurement(testDepository, m1);
+      Measurement m2 = new Measurement(sensor1.getId(), measTime2, 150.0, testMeasurementType.unit());
+      test.putMeasurement(testDepository, m2);
+      Measurement m3 = new Measurement(sensor1.getId(), measTime3, 200.0, testMeasurementType.unit());
+      test.putMeasurement(testDepository, m3);
+      Measurement m4 = new Measurement(sensor1.getId(), measTime4, 250.0, testMeasurementType.unit());
+      test.putMeasurement(testDepository, m4);
+      Double value = test.getValue(testDepository, sensor1, measTime1);
+      assertNotNull(value);
+      assertEquals("Got wrong value expecting 100.0 got " + value, 100.0, value, 0.0001);
+      Date between12 = DateConvert.parseCalStringToDate("2013-11-20T14:40:27.925-1000");
+      value = test.getValue(testDepository, sensor1, between12);
+      assertNotNull(value);
+      assertEquals("Got wrong value expecting 125.0 got " + value, 125.0, value, 0.0001);
+    }
+    catch (ParseException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen.");
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen.");
+    }
+    catch (MeasurementTypeException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen.");
+    }
+    catch (NoMeasurementException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen.");
+    }
+  }
+
+  /**
+   * Tests the getValue methods.
+   */
+  @Test
+  public void testValues() {
+    addDepository();
+    addSensorModel();
+    addSensor();
+    try {
+      Date measTime1 = DateConvert.parseCalStringToDate("2013-11-20T14:35:27.925-1000");
+      Date measTime2 = DateConvert.parseCalStringToDate("2013-11-20T14:45:27.925-1000");
+      Date measTime3 = DateConvert.parseCalStringToDate("2013-11-20T14:55:27.925-1000");
+      Date measTime4 = DateConvert.parseCalStringToDate("2013-11-20T15:05:57.925-1000");
+      Measurement m1 = new Measurement(testSensor.getId(), measTime1, 100.0, testMeasurementType.unit());
+      test.putMeasurement(testDepository, m1);
+      Measurement m2 = new Measurement(testSensor.getId(), measTime2, 150.0, testMeasurementType.unit());
+      test.putMeasurement(testDepository, m2);
+      Measurement m3 = new Measurement(testSensor.getId(), measTime3, 200.0, testMeasurementType.unit());
+      test.putMeasurement(testDepository, m3);
+      Measurement m4 = new Measurement(testSensor.getId(), measTime4, 250.0, testMeasurementType.unit());
+      test.putMeasurement(testDepository, m4);
+      InterpolatedValueList list = test.getValues(testDepository, testSensor, measTime1, measTime3, 5, true);
+      assertNotNull(list);
+      assertEquals("Got wrong number of values, expecting 5 got " + list.getInterpolatedValues().size(), 5, list.getInterpolatedValues().size());
+      ArrayList<InterpolatedValue> values = list.getInterpolatedValues();
+      System.out.println(values.get(0));
+      list = test.getValues(testDepository, testSensor, measTime1, measTime3, 5, false);
+      assertNotNull(list);
+      assertEquals("Got wrong number of values, expecting 4 got " + list.getInterpolatedValues().size(), 4, list.getInterpolatedValues().size());
+      values = list.getInterpolatedValues();
+      System.out.println(values.get(0));
+    }
+    catch (ParseException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen.");
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen.");
+    }
+    catch (MeasurementTypeException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen.");
+    }
+    catch (NoMeasurementException e) {
       e.printStackTrace();
       fail(e.getMessage() + " should not happen.");
     }

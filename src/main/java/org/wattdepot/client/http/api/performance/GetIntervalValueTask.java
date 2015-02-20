@@ -53,8 +53,8 @@ public class GetIntervalValueTask extends PerformanceTimedTask {
   public GetIntervalValueTask(String serverUri, String username, String orgId, String password,
       boolean debug) throws BadCredentialException, IdNotFoundException, BadSensorUriException {
     super(serverUri, username, orgId, password, debug);
-    Date latest = client.getLatestValue(depository, sensor).getDate();
-    Date earliest = client.getEarliestValue(depository, sensor).getDate();
+    Date latest = client.getLatestValue(depository, sensor).getEnd();
+    Date earliest = client.getEarliestValue(depository, sensor).getStart();
     Long oneThird = (earliest.getTime() + latest.getTime()) / 2;
     Long halfDiff = (latest.getTime() - earliest.getTime()) / 4;
     this.start = new Date(oneThird - halfDiff);

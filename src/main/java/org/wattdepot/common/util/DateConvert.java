@@ -52,7 +52,7 @@ public class DateConvert {
   public static XMLGregorianCalendar parseCalString(String s) throws ParseException,
       DatatypeConfigurationException {
     XMLGregorianCalendar result = null;
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
     result = convertDate(simpleDateFormat.parse(s));
     return result;
   }

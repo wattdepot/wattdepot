@@ -56,6 +56,9 @@ public class Labels {
   /** Label for the depository id. */
   public static final String DEPOSITORY_ID_VAR = "{" + DEPOSITORY_ID + "}";
 
+  /** Label for difference InterpolatedValues. */
+  public static final String DIFFERENCE = "difference";
+
   /** The label for the earliest time. */
   public static final String EARLIEST = "earliest";
 

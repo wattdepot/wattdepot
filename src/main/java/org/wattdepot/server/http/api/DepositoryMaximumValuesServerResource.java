@@ -24,7 +24,7 @@ import org.restlet.data.Status;
 import org.wattdepot.common.analysis.DescriptiveStats;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
-import org.wattdepot.common.domainmodel.MeasuredValueList;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.MeasurementList;
 import org.wattdepot.common.http.api.DepositoryMaximumValuesResource;
 
@@ -45,8 +45,8 @@ public class DepositoryMaximumValuesServerResource extends DepositoryMeasurement
    * org.wattdepot.common.http.api.DepositoryMaximumValuesResource#retrieve()
    */
   @Override
-  public MeasuredValueList retrieve() {
-    MeasuredValueList ret = new MeasuredValueList();
+  public InterpolatedValueList retrieve() {
+    InterpolatedValueList ret = new InterpolatedValueList();
     // loop from start till end getting the measurements in the interval
     Date tempStart = startDate;
     Date tempEnd = incrementMinutes(tempStart, interval);
@@ -59,7 +59,7 @@ public class DepositoryMaximumValuesServerResource extends DepositoryMeasurement
         if (Double.isNaN(value)) {
           value = 0.0;
         }
-        ret.getMeasuredValues()
+        ret.getInterpolatedValues()
             .add(
                 new InterpolatedValue(sensorId, value, deposit.getMeasurementType(),
                     tempStart));

@@ -19,7 +19,7 @@
 package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.MeasuredValueList;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
 
 /**
  * DepositoryMaximumValuesResource - HTTP Interface for getting a
@@ -42,6 +42,6 @@ public interface DepositoryMaximumValuesResource {
    */
   @Get("json")
   // Use JSON as transport encoding.
-  public MeasuredValueList retrieve();
+  public InterpolatedValueList retrieve();
 
 }

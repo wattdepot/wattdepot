@@ -780,7 +780,7 @@ public class TestWattDepotPersistenceImpl {
         assertTrue(earliest.getSensorId().equals(m1.getSensorId()));
         assertTrue(earliest.getValue().equals(m1.getValue()));
         assertTrue(earliest.getMeasurementType().getUnits().equals(m1.getMeasurementType()));
-        assertTrue(earliest.getDate().equals(m1.getDate()));
+        assertTrue(earliest.getStart().equals(m1.getDate()));
         InterpolatedValue latest = impl.getLatestMeasuredValue(dep.getId(),
             dep.getOrganizationId(), sensorId, true);
         assertNotNull(latest);

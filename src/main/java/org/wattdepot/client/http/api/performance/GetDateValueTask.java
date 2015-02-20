@@ -52,8 +52,8 @@ public class GetDateValueTask extends PerformanceTimedTask {
   public GetDateValueTask(String serverUri, String username, String orgId, String password,
       boolean debug) throws BadCredentialException, IdNotFoundException, BadSensorUriException {
     super(serverUri, username, orgId, password, debug);
-    Date latest = client.getLatestValue(depository, sensor).getDate();
-    Date earliest = client.getEarliestValue(depository, sensor).getDate();
+    Date latest = client.getLatestValue(depository, sensor).getEnd();
+    Date earliest = client.getEarliestValue(depository, sensor).getStart();
     this.timestamp = new Date((latest.getTime() + earliest.getTime()) / 2);
 
   }
