@@ -46,7 +46,7 @@ public class TestInterpolatedValue {
     assertTrue("sensorId".equals(val.getSensorId()));
     assertTrue(10.1 == val.getValue());
     assertTrue(InstanceFactory.getMeasurementType().equals(val.getMeasurementType()));
-    assertTrue(now.equals(val.getDate()));
+    assertTrue(now.equals(val.getStart()));
   }
 
 }

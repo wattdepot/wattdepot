@@ -27,7 +27,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.restlet.resource.ServerResource;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
-import org.wattdepot.common.domainmodel.MeasuredValueList;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementList;
 import org.wattdepot.common.domainmodel.MeasurementType;
@@ -95,8 +95,8 @@ public class GvizHelper {
       if (resource instanceof MeasurementList) {
         table = getDataTable((MeasurementList)resource);
       }
-      if (resource instanceof MeasuredValueList) {
-        table = getDataTable((MeasuredValueList)resource);
+      if (resource instanceof InterpolatedValueList) {
+        table = getDataTable((InterpolatedValueList)resource);
       }
     } 
     catch (DataSourceException e) {
@@ -127,7 +127,7 @@ public class GvizHelper {
       
       TableRow row = new TableRow();
       
-      XMLGregorianCalendar xgcal = DateConvert.convertDate(mValue.getDate());
+      XMLGregorianCalendar xgcal = DateConvert.convertDate(mValue.getStart());
       row.addCell(new DateTimeValue(convertTimestamp(xgcal)));
       row.addCell(mValue.getValue());
 
@@ -185,11 +185,11 @@ public class GvizHelper {
    * @throws DataSourceException
    *          data source exception
    */
-  private static DataTable getDataTable(MeasuredValueList mList) throws DataSourceException {
+  private static DataTable getDataTable(InterpolatedValueList mList) throws DataSourceException {
     DataTable data = new DataTable();
 
     // Sets up the columns requested by any SELECT in the datasource query
-    ArrayList<InterpolatedValue> values = mList.getMeasuredValues();
+    ArrayList<InterpolatedValue> values = mList.getInterpolatedValues();
     if (! values.isEmpty()) {
       String type = values.get(0).getMeasurementType().getUnits();
       try {
@@ -200,7 +200,7 @@ public class GvizHelper {
         
         for (InterpolatedValue value : values) {
           TableRow row = new TableRow();
-          XMLGregorianCalendar xgcal = DateConvert.convertDate(value.getDate());
+          XMLGregorianCalendar xgcal = DateConvert.convertDate(value.getStart());
           row.addCell(new DateTimeValue(convertTimestamp(xgcal)));
           row.addCell(value.getValue());
           data.addRow(row);

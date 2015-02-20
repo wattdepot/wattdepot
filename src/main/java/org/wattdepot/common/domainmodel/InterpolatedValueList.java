@@ -26,27 +26,27 @@ import java.util.ArrayList;
  * @author Yongwen Xu
  * 
  */
-public class MeasuredValueList {
+public class InterpolatedValueList {
   private ArrayList<InterpolatedValue> interpolatedValues;
 
   /**
    * Default Constructor.
    */
-  public MeasuredValueList() {
+  public InterpolatedValueList() {
     interpolatedValues = new ArrayList<InterpolatedValue>();
   }
 
   /**
    * @return the measuredValues
    */
-  public ArrayList<InterpolatedValue> getMeasuredValues() {
+  public ArrayList<InterpolatedValue> getInterpolatedValues() {
     return interpolatedValues;
   }
 
   /**
    * @param interpolatedValues the measuredValues to set
    */
-  public void setMeasuredValues(ArrayList<InterpolatedValue> interpolatedValues) {
+  public void setInterpolatedValues(ArrayList<InterpolatedValue> interpolatedValues) {
     this.interpolatedValues = interpolatedValues;
   }
 
@@ -57,7 +57,7 @@ public class MeasuredValueList {
    */
   @Override
   public String toString() {
-    return "MeasuredValueList [measuredValues=" + interpolatedValues + "]";
+    return "InterpolatedValueList [InterpolatedValues=" + interpolatedValues + "]";
   }
 
 }

@@ -32,7 +32,7 @@ import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.MeasuredValueList;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -80,7 +80,7 @@ public class DepositoryAverageValuesServer extends WattDepotServerResource {
    * 
    * @return measurement list.
    */
-  public MeasuredValueList doRetrieve() {
+  public InterpolatedValueList doRetrieve() {
     getLogger().log(
         Level.INFO,
         "GET /wattdepot/{" + orgId + "}/" + Labels.DEPOSITORY + "/{" + depositoryId + "}/"
@@ -89,7 +89,7 @@ public class DepositoryAverageValuesServer extends WattDepotServerResource {
             + "={" + interval + "}&" + Labels.VALUE_TYPE + "={" + dataType + "}");
     if (isInRole(orgId)) {
       if (start != null && end != null && interval != null) {
-        MeasuredValueList ret = new MeasuredValueList();
+        InterpolatedValueList ret = new InterpolatedValueList();
         try {
           Depository depository = depot.getDepository(depositoryId, orgId, true);
           XMLGregorianCalendar startRange = DateConvert.parseCalString(start);
@@ -124,7 +124,7 @@ public class DepositoryAverageValuesServer extends WattDepotServerResource {
               }
 
               if (!Double.isNaN(stats.getMean())) {
-                ret.getMeasuredValues().add(
+                ret.getInterpolatedValues().add(
                     new InterpolatedValue(sensorId, stats.getMean(), depository
                         .getMeasurementType(), valueDate));
               }
