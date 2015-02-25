@@ -78,20 +78,7 @@ org.WattDepot.Client = function(url) {
    * string.
    */
   function getTimestampFromDate(date) {
-    function padZero(number, length) {
-      var str = '' + number;
-      while (str.length < length) {
-        str = '0' + str;
-      }
-      return str;
-    }
-
-    var timestamp = date.getFullYear() + '-' + padZero(date.getMonth() + 1, 2)
-        + '-' + padZero(date.getDate(), 2);
-    timestamp = timestamp + 'T' + padZero(date.getHours(), 2) + ':'
-        + padZero(date.getMinutes(), 2) + ':' + padZero(date.getSeconds(), 2);
-    timestamp = timestamp + '.' + padZero(date.getMilliseconds(), 3);
-    return timestamp;
+    return date.toISOString();
   }
 
   /*
