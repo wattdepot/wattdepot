@@ -23,6 +23,7 @@ import javax.measure.unit.Unit;
 import org.wattdepot.common.exception.BadSlugException;
 import org.wattdepot.common.util.Slug;
 
+
 /**
  * MeasurementType - Defines the type of a Measurement. This class includes a
  * human readable name, slug, and JScience Unit<?>.

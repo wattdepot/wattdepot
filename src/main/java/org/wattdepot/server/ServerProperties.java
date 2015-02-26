@@ -26,6 +26,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
+import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.util.UserHome;
 
 /**
@@ -47,7 +48,7 @@ public class ServerProperties {
   /** Name of property used to store the admin password. */
   public static final String ADMIN_USER_PASSWORD = "wattdepot-server.admin.password";
   /** The environment variable for storing the admin's password. */
-  public static final String ADMIN_USER_PASSWORD_ENV = "WATTDEPOT_ADMIN_PASSOWORD";
+  public static final String ADMIN_USER_PASSWORD_ENV = "WATTDEPOT_ADMIN_PASSWORD";
   /**
    * The environment variable name that holds the salt used for encrypting
    * passwords in WattDepot.
@@ -237,8 +238,8 @@ public class ServerProperties {
       serverHome = wattDepot3Home + serverSubdir;
     }
     String propFileName = serverHome + "/wattdepot-server.properties";
-    String defaultAdminName = "root";
-    String defaultAdminPassword = "admin";
+    String defaultAdminName = UserInfo.ROOT.getUid();
+    String defaultAdminPassword = UserInfo.ROOT.getPassword();
     String defaultWattDepotImpl = "org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl";
     String defaultPort = "8192";
     String defaultTestPort = "8194";

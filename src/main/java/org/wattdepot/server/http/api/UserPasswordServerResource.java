@@ -58,7 +58,7 @@ public class UserPasswordServerResource extends WattDepotServerResource implemen
   @Override
   public UserPassword retrieve() {
     getLogger().log(Level.INFO, "GET /wattdepot/{" + orgId + "}/user-password/{" + userId + "}");
-    if (!orgId.equals(Organization.ADMIN_GROUP_NAME)) {
+    if (!isInRole(Organization.ADMIN_GROUP.getId())) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Must be in the " + Organization.ADMIN_GROUP_NAME
           + " organization.");
     }
@@ -85,7 +85,7 @@ public class UserPasswordServerResource extends WattDepotServerResource implemen
   @Override
   public void update(UserPassword user) {
     getLogger().log(Level.INFO, "POST /wattdepot/{" + orgId + "}/user-password/ with " + user);
-    if (!orgId.equals(Organization.ADMIN_GROUP_NAME)) {
+    if (!isInRole(Organization.ADMIN_GROUP.getId())) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Must be in the " + Organization.ADMIN_GROUP_NAME
           + " organization.");
     }

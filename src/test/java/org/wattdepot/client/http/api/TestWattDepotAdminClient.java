@@ -18,6 +18,7 @@
  */
 package org.wattdepot.client.http.api;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -36,6 +37,7 @@ import org.wattdepot.common.domainmodel.OrganizationList;
 import org.wattdepot.common.domainmodel.Property;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserInfoList;
+import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.util.logger.LoggerUtil;
 import org.wattdepot.server.WattDepotServer;
@@ -101,83 +103,22 @@ public class TestWattDepotAdminClient {
    */
   @AfterClass
   public static void stopServer() throws Exception {
-    if (admin != null) {
-      try {
-        admin.deleteOrganization("organization-one");
-      }
-      catch (Exception e) {
-        e.printStackTrace();
-      }
-      try {
-        admin.deleteOrganization("organization-two");
-      }
-      catch (Exception e) {
-        e.printStackTrace();
-      }
-      try {
-        admin.deleteOrganization("organization-three");
-      }
-      catch (Exception e) {
-        // e.printStackTrace();
-      }
-    }
     server.stop();
   }
-
-//  /**
-//   * Setup the logging and create the WattDepotAdminClient admin.
-//   */
-//  @Before
-//  public void setUp() {
-//    try {
-//      ClientProperties props = new ClientProperties();
-//      props.setTestProperties();
-//      this.logger = Logger.getLogger("org.wattdepot.client");
-//      LoggerUtil.setLoggingLevel(this.logger, props.get(ClientProperties.LOGGING_LEVEL_KEY));
-//      LoggerUtil.useConsoleHandler();
-//      logger.finest("setUp()");
-//      this.serverURL = "http://" + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + ":"
-//          + props.get(ClientProperties.PORT_KEY) + "/";
-//      logger.finest("Using " + serverURL);
-//      if (admin == null) {
-//        try {
-//          admin = new WattDepotAdminClient(serverURL, props.get(ClientProperties.USER_NAME),
-//              "admin", props.get(ClientProperties.USER_PASSWORD));
-//        }
-//        catch (Exception e) {
-//          System.out.println("Failed with " + props.get(ClientProperties.USER_NAME) + " and "
-//              + props.get(ClientProperties.USER_PASSWORD));
-//          e.printStackTrace();
-//        }
-//      }
-//    }
-//    catch (Exception e) {
-//      e.printStackTrace();
-//    }
-//
-//  }
-
-//  /**
-//   *
-//   */
-//  @After
-//  public void tearDown() {
-//    logger.finest("tearDown()");
-//  }
 
   /**
    * Test method for Organizations.
    */
   @Test
   public void testOrganizations() {
+    String orgName = "Organization ";
     OrganizationList list = admin.getOrganizations();
     int numOrganizations = list.getOrganizations().size();
-    // create two different organizations.
-    Organization one = new Organization("Organization one");
+    Organization one = new Organization(orgName + 1);
     admin.putOrganization(one);
-    Organization two = new Organization("Organization two");
+    Organization two = new Organization(orgName + 2);
     admin.putOrganization(two);
-    Organization three = new Organization("Organization three");
+    Organization three = new Organization(orgName + 3);
     admin.putOrganization(three);
     list = admin.getOrganizations();
     assertNotNull(list);
@@ -188,7 +129,7 @@ public class TestWattDepotAdminClient {
     }
     catch (IdNotFoundException e) {
       e.printStackTrace();
-      fail(e.getMessage() + " should not happen");
+      fail(e.getMessage() + " should delete defined organization " + three.getName());
     }
     list = admin.getOrganizations();
     assertNotNull(list);
@@ -202,8 +143,46 @@ public class TestWattDepotAdminClient {
     }
     catch (IdNotFoundException e) {
       e.printStackTrace();
-      fail(e.getMessage() + " should not happen");
+      fail(e.getMessage() + " should be able to update " + two.getId());
     }
+
+    // Clean up
+    if (admin.isDefinedOrganization(one.getId())) {
+      try {
+        admin.deleteOrganization(one.getId());
+      }
+      catch (IdNotFoundException e) {
+        e.printStackTrace();
+      }
+    }
+    if (admin.isDefinedOrganization(two.getId())) {
+      try {
+        admin.deleteOrganization(two.getId());
+      }
+      catch (IdNotFoundException e) {
+        e.printStackTrace();
+      }
+    }
+    if (admin.isDefinedOrganization(three.getId())) {
+      try {
+        admin.deleteOrganization(three.getId());
+      }
+      catch (IdNotFoundException e) {
+        e.printStackTrace();
+      }
+    }
+  }
+
+  /**
+   * Test for manipulating Users.
+   */
+  @Test
+  public void testUsers() {
+    String orgName = "Group ";
+    Organization one = new Organization(orgName + 1);
+    admin.putOrganization(one);
+    Organization two = new Organization(orgName + 2);
+    admin.putOrganization(two);
     // create two users with same id different organizations.
     UserInfo u1 = new UserInfo("id", "firstName", "lastName", "email", one.getId(),
         new HashSet<Property>(), "secret1");
@@ -217,6 +196,64 @@ public class TestWattDepotAdminClient {
     ulist = admin.getUsers(two.getId());
     assertNotNull(ulist);
     assertTrue(ulist.getUsers().size() == 1);
+    u1.setEmail("new email");
+    admin.updateUser(u1);
+    ulist = admin.getUsers(one.getId());
+    assertNotNull(ulist);
+    assertTrue("Expecting 1 got " + ulist.getUsers().size(), ulist.getUsers().size() == 1);
+    assertTrue("didn't change email", ulist.getUsers().get(0).getEmail().equals("new email"));
+    // try to delete undefined user
+    try {
+      admin.deleteUser("bogus-id", u1.getOrganizationId());
+      fail("Should not be able to delete a bogus user.");
+    }
+    catch (IdNotFoundException e) {
+      // this is expected
+    }
+    assertFalse("isDefinedUser('bogus') should return false.", admin.isDefinedUserInfo("bogus-id", u1.getOrganizationId()));
+    // passwords
+//    try {
+//      UserPassword pass1 = admin.getUserPassword(u1.getUid(), u1.getOrganizationId());
+//      assertNotNull(pass1);
+//    }
+//    catch (IdNotFoundException e) {
+//      fail("u1 is defined");
+//    }
+
+    // Clean up
+    if (admin.isDefinedUserInfo(u1.getUid(), u1.getOrganizationId())) {
+      try {
+        admin.deleteUser(u1.getUid(), u1.getOrganizationId());
+      }
+      catch (IdNotFoundException e) {
+        e.printStackTrace();
+      }
+    }
+    if (admin.isDefinedUserInfo(u2.getUid(), u2.getOrganizationId())) {
+      try {
+        admin.deleteUser(u2.getUid(), u2.getOrganizationId());
+      }
+      catch (IdNotFoundException e) {
+        e.printStackTrace();
+      }
+    }
+    if (admin.isDefinedOrganization(one.getId())) {
+      try {
+        admin.deleteOrganization(one.getId());
+      }
+      catch (IdNotFoundException e) {
+        e.printStackTrace();
+      }
+    }
+    if (admin.isDefinedOrganization(two.getId())) {
+      try {
+        admin.deleteOrganization(two.getId());
+      }
+      catch (IdNotFoundException e) {
+        e.printStackTrace();
+      }
+    }
+
   }
 
 }

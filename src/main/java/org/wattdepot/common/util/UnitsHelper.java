@@ -41,8 +41,8 @@ public class UnitsHelper {
 
   static {
     UnitFormat format = UnitFormat.getInstance();
-    format.alias(SI.MICRO(Unit.ONE), "ppm");
-    format.label(SI.MICRO(Unit.ONE), "ppm");    
+    format.alias(SI.MICRO(SI.GRAM.divide(NonSI.LITER)), "ppm");
+    format.label(SI.MICRO(SI.GRAM.divide(NonSI.LITER)), "ppm");
     quantities.put(buildName("Power", SI.WATT), SI.WATT);
     quantities.put(buildName("Energy", SI.WATT.times(NonSI.HOUR)), SI.WATT.times(NonSI.HOUR));
     quantities.put(buildName("Frequency", SI.HERTZ), SI.HERTZ);
@@ -57,7 +57,7 @@ public class UnitsHelper {
     quantities.put(buildName("Mass", SI.KILOGRAM), SI.KILOGRAM);
     quantities.put(buildName("Mass", NonSI.POUND), NonSI.POUND);
     quantities.put(buildName("Humidity", NonSI.PERCENT), NonSI.PERCENT);
-    quantities.put(buildName("Concentration", SI.MICRO(Unit.ONE)), SI.MICRO(Unit.ONE));
+    quantities.put(buildName("Concentration", SI.MICRO(SI.GRAM.divide(NonSI.LITER))), SI.MICRO(SI.GRAM.divide(NonSI.LITER)));
     quantities.put(buildName("Cloud Coverage", NonSI.PERCENT), NonSI.PERCENT);
 
   }
