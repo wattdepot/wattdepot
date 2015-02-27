@@ -117,29 +117,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>selenium-maven-plugin</artifactId>
-        <version>${selenium.plugin.version}</version>
-        <executions>
-          <execution>
-            <phase>test-compile</phase>
-            <goals>
-              <goal>start-server</goal>
-            </goals>
-            <configuration>
-              <background>true</background>
-            </configuration>
-          </execution>
-          <execution>
-            <id>shutdown</id>
-            <phase>post-integration-test</phase>
-            <goals>
-              <goal>stop-server</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${surefire.plugin.version}</version>
         <configuration>

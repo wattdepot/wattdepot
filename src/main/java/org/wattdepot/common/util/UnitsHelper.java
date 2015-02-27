@@ -41,29 +41,25 @@ public class UnitsHelper {
 
   static {
     UnitFormat format = UnitFormat.getInstance();
-    format.alias(SI.MICRO(Unit.ONE), "ppm");
-    format.label(SI.MICRO(Unit.ONE), "ppm");
-
+    format.alias(SI.MICRO(SI.GRAM.divide(NonSI.LITER)), "ppm");
+    format.label(SI.MICRO(SI.GRAM.divide(NonSI.LITER)), "ppm");
     quantities.put(buildName("Power", SI.WATT), SI.WATT);
     quantities.put(buildName("Energy", SI.WATT.times(NonSI.HOUR)), SI.WATT.times(NonSI.HOUR));
-    quantities.put(buildName("Energy", SI.KILO(SI.WATT).times(NonSI.HOUR)), SI.KILO(SI.WATT).times(NonSI.HOUR));
     quantities.put(buildName("Frequency", SI.HERTZ), SI.HERTZ);
     quantities.put(buildName("Temperature", NonSI.FAHRENHEIT), NonSI.FAHRENHEIT);
     quantities.put(buildName("Temperature", SI.CELSIUS), SI.CELSIUS);
     quantities.put(buildName("Volume", NonSI.GALLON_LIQUID_US), NonSI.GALLON_LIQUID_US);
     quantities.put(buildName("Volume", NonSI.LITER), NonSI.LITER);
-    quantities.put(buildName("Volume", SI.CUBIC_METRE), SI.CUBIC_METRE);
     quantities.put(buildName("Flow Rate", NonSI.GALLON_LIQUID_US.divide(SI.SECOND)),
         NonSI.GALLON_LIQUID_US.divide(SI.SECOND));
     quantities.put(buildName("Flow Rate", NonSI.LITER.divide(SI.SECOND)),
         NonSI.LITER.divide(SI.SECOND));
-    quantities.put(buildName("Flow Rate", NonSI.LITER.divide(NonSI.MINUTE)),
-            NonSI.LITER.divide(NonSI.MINUTE));
     quantities.put(buildName("Mass", SI.KILOGRAM), SI.KILOGRAM);
     quantities.put(buildName("Mass", NonSI.POUND), NonSI.POUND);
     quantities.put(buildName("Humidity", NonSI.PERCENT), NonSI.PERCENT);
-    quantities.put(buildName("Concentration", SI.MICRO(Unit.ONE)), SI.MICRO(Unit.ONE));
+    quantities.put(buildName("Concentration", SI.MICRO(SI.GRAM.divide(NonSI.LITER))), SI.MICRO(SI.GRAM.divide(NonSI.LITER)));
     quantities.put(buildName("Cloud Coverage", NonSI.PERCENT), NonSI.PERCENT);
+
   }
 
   /**

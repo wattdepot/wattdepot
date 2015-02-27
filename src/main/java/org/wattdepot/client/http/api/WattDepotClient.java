@@ -85,6 +85,7 @@ import org.wattdepot.common.http.api.SensorPutResource;
 import org.wattdepot.common.http.api.SensorResource;
 import org.wattdepot.common.http.api.SensorsResource;
 import org.wattdepot.common.util.DateConvert;
+import org.wattdepot.common.util.UnitsHelper;
 import org.wattdepot.common.util.logger.LoggerUtil;
 
 /**
@@ -125,6 +126,8 @@ public class WattDepotClient implements WattDepotInterface {
    */
   public WattDepotClient(String serverUri, String username, String orgId, String password)
       throws BadCredentialException {
+    // ensure that the UnitsHelper class is loaded.
+    new UnitsHelper();
     this.properties = new ClientProperties();
     this.logger = Logger.getLogger("org.wattdepot.client");
     LoggerUtil.setLoggingLevel(this.logger, properties.get(ClientProperties.LOGGING_LEVEL_KEY));

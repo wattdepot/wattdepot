@@ -434,6 +434,14 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public Organization defineOrganization(String id, String name, Set<String> users)
       throws UniqueIdException, BadSlugException, IdNotFoundException {
+    Long startTime = 0l;
+    Long endTime = 0l;
+    Long diff = 0l;
+    if (timingp) {
+      timingLogger.log(Level.SEVERE, padding + "Start defineOrganizations()");
+      padding += "  ";
+      startTime = System.nanoTime();
+    }
     Organization ret = null;
     if (!Slug.validateSlug(id)) {
       throw new BadSlugException(id + " is not a valid slug.");
@@ -465,6 +473,13 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.close();
     sessionClose++;
     cache.putOrganization(ret);
+    if (timingp) {
+      endTime = System.nanoTime();
+      diff = endTime - startTime;
+      padding = padding.substring(0, padding.length() - 2);
+      timingLogger
+          .log(Level.SEVERE, padding + "defineOrganization() took " + (diff / 1E9) + " secs.");
+    }
     return ret;
   }
 

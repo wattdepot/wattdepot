@@ -426,6 +426,13 @@ public class TestWattDepotClient {
     catch (IdNotFoundException e) {
       // this is what we want.
     }
+    try {
+      test.getMeasurementType("concentration-ppm");
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+      fail("This should work.");
+    }
 
   }
 
@@ -1033,12 +1040,11 @@ public class TestWattDepotClient {
       assertNotNull(list);
       assertEquals("Got wrong number of values, expecting 5 got " + list.getInterpolatedValues().size(), 5, list.getInterpolatedValues().size());
       ArrayList<InterpolatedValue> values = list.getInterpolatedValues();
-      System.out.println(values.get(0));
       list = test.getValues(testDepository, testSensor, measTime1, measTime3, 5, false);
       assertNotNull(list);
       assertEquals("Got wrong number of values, expecting 4 got " + list.getInterpolatedValues().size(), 4, list.getInterpolatedValues().size());
       values = list.getInterpolatedValues();
-      System.out.println(values.get(0));
+      assertNotNull(values);
     }
     catch (ParseException e) {
       e.printStackTrace();
