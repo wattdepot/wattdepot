@@ -63,13 +63,13 @@ public class MeasurementCachePair {
     if (earliest == null) {
       earliest = m;
     }
-    else if (earliest.getDate().after(m.getDate())) {
+    else if (earliest.getStart().after(m.getStart())) {
       earliest = m;
     }
     if (latest == null) {
       latest = m;
     }
-    else if (latest.getDate().before(m.getDate())) {
+    else if (latest.getEnd().before(m.getEnd())) {
       latest = m;
     }
   }

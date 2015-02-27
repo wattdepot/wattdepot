@@ -85,7 +85,7 @@ public class MeasurementSummaryClient extends TimerTask {
     this.depository = client.getDepository(definition.getDepositoryId());
     this.sensor = client.getSensor(definition.getSensorId());
     InterpolatedValue v = client.getEarliestValue(this.depository, sensor);
-    this.earliest = v.getDate();
+    this.earliest = v.getStart();
   }
 
   /**

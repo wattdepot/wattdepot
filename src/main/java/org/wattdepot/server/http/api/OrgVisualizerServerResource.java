@@ -96,8 +96,8 @@ public class OrgVisualizerServerResource extends WattDepotServerResource {
               InterpolatedValue latest = depot.getLatestMeasuredValue(
                   d.getId(), orgId, sensorId, false);
               List<Date> info = new ArrayList<Date>();
-              info.add(earliest.getDate());
-              info.add(latest.getDate());
+              info.add(earliest.getStart());
+              info.add(latest.getEnd());
               sensorInfo.put(sensorId, info);
 //              endTime2 = System.nanoTime();
 //              diff2 = endTime2 - startTime2;

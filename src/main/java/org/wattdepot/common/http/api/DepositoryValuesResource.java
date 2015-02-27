@@ -19,7 +19,7 @@
 package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.MeasuredValueList;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
 
 /**
  * DepositoryValuesResource - HTTP Interface for getting the MeasuredValueList. <br>
@@ -40,5 +40,5 @@ public interface DepositoryValuesResource {
    */
   @Get("json")
   // Use JSON as transport encoding.
-  public MeasuredValueList retrieve();
+  public InterpolatedValueList retrieve();
 }

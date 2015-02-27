@@ -18,7 +18,7 @@
  */
 package org.wattdepot.server.http.api;
 
-import org.wattdepot.common.domainmodel.MeasuredValueList;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.http.api.GvizDepositoryAverageValuesResource;
 import org.wattdepot.common.util.GvizHelper;
 
@@ -57,7 +57,7 @@ public class GvizDepositoryAverageValuesServerResource extends DepositoryAverage
    */
   @Override
   public String retrieve() {
-    MeasuredValueList mList = doRetrieve();
+    InterpolatedValueList mList = doRetrieve();
     return GvizHelper.getGvizResponse(mList, tqxString, tqString);
   }
 

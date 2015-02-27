@@ -24,11 +24,12 @@ import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.DepositoryList;
-import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
-import org.wattdepot.common.domainmodel.MeasurementPruningDefinitionList;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementList;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinitionList;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.MeasurementTypeList;
 import org.wattdepot.common.domainmodel.Sensor;
@@ -431,6 +432,40 @@ public interface WattDepotInterface {
   @SuppressWarnings("PMD.UnusedModifier")
   public Double getValue(Depository depository, SensorGroup group, Date timestamp, Long gapSeconds)
       throws NoMeasurementException, MeasurementGapException;
+
+  /**
+   * @param depository The Depository storing the measurements.
+   * @param sensor The sensor making the measurements.
+   * @param start The start of the period.
+   * @param end The end of the period.
+   * @param interval The sample interval in minutes.
+   * @param usePointValues Use point values or difference values, if true point values are used, otherwise difference values.
+   * @return The InterpolatedValueList of measured values between the start time and the
+   *         end time.
+   * @throws NoMeasurementException if there are no measurements around the
+   *         start or end time.
+   */
+  @SuppressWarnings("PMD.UnusedModifier")
+  public InterpolatedValueList getValues(Depository depository, Sensor sensor, Date start, Date end, Integer interval, Boolean usePointValues)
+      throws NoMeasurementException;
+
+
+  /**
+   * @param depository The Depository storing the measurements.
+   * @param group The sensor group making the measurements.
+   * @param start The start of the period.
+   * @param end The end of the period.
+   * @param interval The sample interval in minutes.
+   * @param usePointValues Use point values or difference values, if true point values are used, otherwise difference values.
+   * @return The InterpolatedValueList of measured values between the start time and the
+   *         end time.
+   * @throws NoMeasurementException if there are no measurements around the
+   *         start or end time.
+   */
+  @SuppressWarnings("PMD.UnusedModifier")
+  public InterpolatedValueList getValues(Depository depository, SensorGroup group, Date start, Date end, Integer interval, Boolean usePointValues)
+      throws NoMeasurementException;
+
 
   /**
    * Checks to see if the given id is a defined CollectorProcessDefinition id.

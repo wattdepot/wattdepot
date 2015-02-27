@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.MeasuredValueList;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementList;
 
@@ -72,9 +72,9 @@ public class DescriptiveStats {
   /**
    * @param meas MeasuredValueList.
    */
-  public DescriptiveStats(MeasuredValueList meas) {
+  public DescriptiveStats(InterpolatedValueList meas) {
     this.data = new DescriptiveStatistics();
-    for (InterpolatedValue v : meas.getMeasuredValues()) {
+    for (InterpolatedValue v : meas.getInterpolatedValues()) {
       data.addValue(v.getValue());
     }
   }

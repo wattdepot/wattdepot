@@ -103,9 +103,15 @@ public class TestWattDepotAdminUI {
 //  @Test
 //  public void testWattDepotOrgAdmin() {
 //    try {
-//      DefaultSelenium selenium = createSeleniumClient("http://localhost:8194/wattdepot/admin/");
+//      DefaultSelenium selenium = createSeleniumClient("http://localhost:8194/");
 //      selenium.start();
-//      assertEquals("Geronimo Console", selenium.getTitle());
+//      selenium.open("http://localhost:8194/wattdepot/admin/");
+//      System.out.println(selenium.getTitle());
+//      System.out.println(selenium.getBodyText());
+//      //assertEquals("Geronimo Console", selenium.getTitle());
+////      for (int i = 0; i < 60; i++) {
+////        Thread.sleep(1000);
+////      }
 //    } catch (Exception e) {
 //      e.printStackTrace();
 //    }
