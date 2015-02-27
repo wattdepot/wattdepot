@@ -345,6 +345,17 @@ public class TestWattDepotClient {
   }
 
   /**
+   * Test get measurement type.
+   *
+   * @throws IdNotFoundException the id not found exception
+   */
+  @Test
+  public void testGetPPMMeasurementType() throws IdNotFoundException {
+    MeasurementType mt = test.getMeasurementType("concentration-ppm");
+    assertNotNull(mt);
+  }
+
+  /**
    * Test method for MeasurementTypes.
    */
   @Test
