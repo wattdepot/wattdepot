@@ -3063,7 +3063,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       if (justBefore == null) {
         session.getTransaction().commit();
         session.close();
-        throw new NoMeasurementException("Cannot find measurement before " + timestamp);
+        throw new NoMeasurementException("Cannot find measurement before " + timestamp + " in " + depot.getName() + " for " + sensor.getName());
       }
       MeasurementImpl justAfter = null;
       for (MeasurementImpl a : after) {
@@ -3079,7 +3079,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       if (justAfter == null) {
         session.getTransaction().commit();
         session.close();
-        throw new NoMeasurementException("Cannot find measurement after " + timestamp);
+        throw new NoMeasurementException("Cannot find measurement after " + timestamp + " in " + depot.getName() + " for " + sensor.getName());
       }
       Double val1 = justBefore.getValue();
       Double val2 = justAfter.getValue();
@@ -3091,7 +3091,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
         session.getTransaction().commit();
         session.close();
         throw new MeasurementGapException("Gap of " + (deltaT / 1000) + "s is longer than "
-            + gapSeconds);
+            + gapSeconds + " for " + sensor.getName() + " in " + depot.getName());
       }
       Long t3 = timestamp.getTime();
       Long toDate = t3 - t1;
@@ -3680,6 +3680,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public MeasurementPruningDefinition updateMeasurementPruningDefinition(
       MeasurementPruningDefinition gcd) throws IdNotFoundException {
+    getMeasurementPruningDefinition(gcd.getId(), gcd.getOrganizationId(), true);
+    getDepository(gcd.getDepositoryId(), gcd.getOrganizationId(), true);
+    MeasurementPruningDefinition ret = null;
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
@@ -3695,10 +3698,11 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     impl.setLastCompleted(gcd.getLastCompleted());
     impl.setNumMeasurementsCollected(gcd.getNumMeasurementsCollected());
     session.saveOrUpdate(impl);
+    ret = impl.toMPD();
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-    return null;
+    return ret;
   }
 
   /*

@@ -800,6 +800,11 @@ public class WattDepotClient implements WattDepotInterface {
     catch (DatatypeConfigurationException e) {
       throw new NoMeasurementException(e.getMessage());
     }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
     return null;
   }
 
@@ -826,6 +831,11 @@ public class WattDepotClient implements WattDepotInterface {
     }
     catch (DatatypeConfigurationException e) {
       e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
     }
     return null;
   }
@@ -855,6 +865,11 @@ public class WattDepotClient implements WattDepotInterface {
     catch (DatatypeConfigurationException e) {
       e.printStackTrace();
     }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
     return null;
   }
 
@@ -882,6 +897,11 @@ public class WattDepotClient implements WattDepotInterface {
     catch (DatatypeConfigurationException e) {
       e.printStackTrace();
     }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
     return null;
   }
 
@@ -907,8 +927,16 @@ public class WattDepotClient implements WattDepotInterface {
         return ret.getValue();
       }
     }
+    catch (ResourceException re) {
+      throw new NoMeasurementException(re.getMessage());
+    }
     catch (DatatypeConfigurationException e) {
       throw new NoMeasurementException(e.getMessage());
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
     }
     return null;
   }
@@ -933,8 +961,16 @@ public class WattDepotClient implements WattDepotInterface {
       client.release();
       return ret.getValue();
     }
+    catch (ResourceException re) {
+      throw new  NoMeasurementException(re.getCause());
+    }
     catch (DatatypeConfigurationException e) {
       e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
     }
     return null;
   }
@@ -960,8 +996,16 @@ public class WattDepotClient implements WattDepotInterface {
       client.release();
       return ret.getValue();
     }
+    catch (ResourceException re) {
+      throw new MeasurementGapException(re.getCause());
+    }
     catch (DatatypeConfigurationException e) {
       e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
     }
     return null;
   }
@@ -986,8 +1030,16 @@ public class WattDepotClient implements WattDepotInterface {
       client.release();
       return ret.getValue();
     }
+    catch (ResourceException e1) {
+      throw new MeasurementGapException(e1.getCause());
+    }
     catch (DatatypeConfigurationException e) {
       e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
     }
     return null;
   }
@@ -1045,6 +1097,11 @@ public class WattDepotClient implements WattDepotInterface {
     catch (DatatypeConfigurationException e) {
       e.printStackTrace();
     }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
     return null;
   }
 
@@ -1100,6 +1157,11 @@ public class WattDepotClient implements WattDepotInterface {
     }
     catch (DatatypeConfigurationException e) {
       e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
     }
     return null;
   }

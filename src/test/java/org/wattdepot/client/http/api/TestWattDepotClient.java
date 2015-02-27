@@ -288,6 +288,7 @@ public class TestWattDepotClient {
       list = test.getDepositories();
       assertNotNull(list);
       assertTrue(list.getDepositories().size() == size + 1);
+      assertTrue(test.isDefinedDepository(depo.getId()));
     }
     try {
       // get instance (READ)
@@ -343,6 +344,7 @@ public class TestWattDepotClient {
     catch (Exception e) {
       // expected since test isn't admin.
       admin.putMeasurementType(type);
+      assertTrue(test.isDefinedMeasurementType(type.getId()));
     }
     // Get list
     MeasurementTypeList list = test.getMeasurementTypes();
@@ -421,6 +423,7 @@ public class TestWattDepotClient {
     try {
       // Put new instance (CREATE)
       test.putSensor(sensor);
+      assertTrue(test.isDefinedSensor(sensor.getId()));
     }
     catch (ResourceException re) {
       if (re.getStatus().equals(Status.CLIENT_ERROR_BAD_REQUEST)) {
@@ -430,6 +433,7 @@ public class TestWattDepotClient {
     }
     list = test.getSensors();
     assertTrue(list.getSensors().contains(sensor));
+    assertTrue(test.isDefinedSensor(sensor.getId()));
     try {
       // get instance (READ)
       Sensor ret = test.getSensor(sensor.getId());
@@ -487,7 +491,7 @@ public class TestWattDepotClient {
     }
     catch (ResourceException e) {
       if (e.getStatus().equals(Status.CLIENT_ERROR_BAD_REQUEST)) {
-//        addSensorModel();
+        addSensorModel();
 //        addSensor();
         test.putSensor(sensor);
         test.putSensorGroup(group);
@@ -495,6 +499,7 @@ public class TestWattDepotClient {
     }
     list = test.getSensorGroups();
     assertTrue(list.getGroups().contains(group));
+    assertTrue(test.isDefinedSensorGroup(group.getId()));
     try {
       // get instance (READ)
       SensorGroup ret = test.getSensorGroup(group.getId());
@@ -547,6 +552,7 @@ public class TestWattDepotClient {
     test.putSensorModel(model);
     list = test.getSensorModels();
     assertTrue(list.getModels().contains(model));
+    assertTrue(test.isDefinedSensorModel(model.getId()));
     try {
       // get instance (READ)
       SensorModel ret = test.getSensorModel(model.getId());
@@ -592,7 +598,6 @@ public class TestWattDepotClient {
     CollectorProcessDefinitionList list = test.getCollectorProcessDefinitions();
     assertNotNull(list);
     int numCPD = list.getDefinitions().size();
-    assertTrue(list.getDefinitions().size() == 0);
     try {
       // Put new instance (CREATE)
       test.putCollectorProcessDefinition(data);
@@ -606,7 +611,9 @@ public class TestWattDepotClient {
       }
     }
     list = test.getCollectorProcessDefinitions();
+    assertTrue(list.getDefinitions().size() == numCPD + 1);
     assertTrue(list.getDefinitions().contains(data));
+    assertTrue(test.isDefinedCollectorProcessDefinition(data.getId()));
     try {
       // get instance (READ)
       CollectorProcessDefinition ret = test.getCollectorProcessDefinition(data.getId());
@@ -656,7 +663,7 @@ public class TestWattDepotClient {
     // Get the list of defined MPDs
     MeasurementPruningDefinitionList list = test.getMeasurementPruningDefinitions();
     assertNotNull(list);
-    assertTrue(list.getDefinitions().size() == 0);
+    int numMPD = list.getDefinitions().size();
     try {
       // Put new instance (CREATE)
       test.putMeasurementPruningDefinition(data);
@@ -670,20 +677,22 @@ public class TestWattDepotClient {
       }
     }
     list = test.getMeasurementPruningDefinitions();
+    assertTrue(list.getDefinitions().size() == numMPD + 1);
     assertTrue(list.getDefinitions().contains(data));
+    assertTrue(test.isDefinedMeasurementPruningDefinition(data.getId()));
     try {
       // get instance (READ)
       MeasurementPruningDefinition ret = test.getMeasurementPruningDefinition(data.getId());
       assertNotNull(ret);
       assertTrue(data.equals(ret));
       ret.setDepositoryId("bogus_depotistory_id");
-//      try {
-//        test.updateMeasurementPruningDefinition(ret);
-//        fail("Should not be able to update to bogus depository id.");
-//      }
-//      catch (Exception e) { // NOPMD
+      try {
+        test.updateMeasurementPruningDefinition(ret);
+        fail("Should not be able to update to bogus depository id.");
+      }
+      catch (Exception e) { // NOPMD
         // we expect this
-//      }
+      }
       // delete instance (DELETE)
       test.deleteMeasurementPruningDefinition(data);
       try {
@@ -695,6 +704,15 @@ public class TestWattDepotClient {
       }
     } catch (IdNotFoundException e) {
       fail("Should have " + data);
+    }
+    // error condistions
+    MeasurementPruningDefinition bogus = new MeasurementPruningDefinition("bogus", testDepository.getId(), testSensor.getId(), testOrg.getId(), 1, 1, 1);
+    try {
+      test.deleteMeasurementPruningDefinition(bogus);
+      fail("Should not be able to delete bogus MPD.");
+    }
+    catch (IdNotFoundException ie) {
+      // expected
     }
   }
 
@@ -744,6 +762,10 @@ public class TestWattDepotClient {
       // Get list
       MeasurementList list = test.getMeasurements(depo, s1, m1.getDate(), m3.getDate());
       assertNotNull(list);
+
+      SensorList sensors = test.getDepositorySensors(depo.getId());
+      assertNotNull("Should have at least one sensor.", sensors);
+      assertTrue(sensors.getSensors().contains(s2));
 
       assertTrue("expecting " + 2 + " got " + list.getMeasurements().size(), list.getMeasurements()
           .size() == 2);
@@ -907,6 +929,7 @@ public class TestWattDepotClient {
   @Test
   public void testValue() {
     addSensorModel();
+    addDepository();
     Sensor sensor1 = new Sensor("TestValues Sensor1", "test_sensor_uri1",
         testModel.getId(), testOrg.getId());
     try {
@@ -917,6 +940,21 @@ public class TestWattDepotClient {
       test.putSensor(sensor1);
     }
 
+    Sensor sensor2 = new Sensor("TestValues Sensor2", "test_sensor_uri2",
+      testModel.getId(), testOrg.getId());
+    try {
+      test.getSensor(sensor2.getId());
+    }
+    catch (IdNotFoundException e) {
+      // doesn't exist so we can add it.
+      test.putSensor(sensor2);
+    }
+    Set<String> sensors = new HashSet<String>();
+    sensors.add(sensor1.getId());
+    sensors.add(sensor2.getId());
+    SensorGroup group = new SensorGroup("TestWattDepotClient Value Sensor Group", sensors,
+      testOrg.getId());
+    test.putSensorGroup(group);
     try {
       Date measTime1 = DateConvert.parseCalStringToDate("2013-11-20T14:35:27.925-1000");
       Date measTime2 = DateConvert.parseCalStringToDate("2013-11-20T14:45:27.925-1000");
@@ -937,6 +975,79 @@ public class TestWattDepotClient {
       value = test.getValue(testDepository, sensor1, between12);
       assertNotNull(value);
       assertEquals("Got wrong value expecting 125.0 got " + value, 125.0, value, 0.0001);
+
+      Measurement m5 = new Measurement(sensor2.getId(), measTime1, 1000.0, testMeasurementType.unit());
+      Measurement m6 = new Measurement(sensor2.getId(), measTime2, 1500.0, testMeasurementType.unit());
+      Measurement m7 = new Measurement(sensor2.getId(), measTime3, 2000.0, testMeasurementType.unit());
+      Measurement m8 = new Measurement(sensor2.getId(), measTime4, 2500.0, testMeasurementType.unit());
+      test.putMeasurement(testDepository, m5);
+      test.putMeasurement(testDepository, m6);
+      test.putMeasurement(testDepository, m7);
+      test.putMeasurement(testDepository, m8);
+      value = test.getValue(testDepository, group, measTime1);
+      assertNotNull(value);
+      assertEquals("Got wrong value expecting 1100.0 got " + value, 1100.0, value, 0.0001);
+      value = test.getValue(testDepository, group, between12);
+      assertEquals("Got wrong value", 1375.0, value, 0.0001);
+      try {
+        value = test.getValue(testDepository, group, between12, 5l);
+        fail("Should throw MeasurementGapException.");
+      } catch (MeasurementGapException e) {
+        // expected
+      }
+      value = test.getValue(testDepository, group, measTime1, measTime3);
+      assertEquals("Got wrong value", 1100.0, value, 0.0001);
+      try {
+        value = test.getValue(testDepository, group, measTime1, measTime3, 5L);
+//        fail("shouldn't get here.");
+      }
+      catch (MeasurementGapException e) {
+
+      }
+      finally {
+        try {
+          test.deleteMeasurement(testDepository, m1);
+        } catch (IdNotFoundException e) {
+          e.printStackTrace();
+        }
+        try {
+          test.deleteMeasurement(testDepository, m2);
+        } catch (IdNotFoundException e) {
+          e.printStackTrace();
+        }
+        try {
+          test.deleteMeasurement(testDepository, m3);
+        } catch (IdNotFoundException e) {
+          e.printStackTrace();
+        }
+        try {
+          test.deleteMeasurement(testDepository, m4);
+        } catch (IdNotFoundException e) {
+          e.printStackTrace();
+        }
+        try {
+          test.deleteMeasurement(testDepository, m5);
+        } catch (IdNotFoundException e) {
+          e.printStackTrace();
+        }
+        try {
+          test.deleteMeasurement(testDepository, m6);
+        } catch (IdNotFoundException e) {
+          e.printStackTrace();
+        }
+        try {
+          test.deleteMeasurement(testDepository, m7);
+        } catch (IdNotFoundException e) {
+          e.printStackTrace();
+        }
+        try {
+          test.deleteMeasurement(testDepository, m8);
+        } catch (IdNotFoundException e) {
+          e.printStackTrace();
+        }
+      }
+
+
     }
     catch (ParseException e) {
       e.printStackTrace();
