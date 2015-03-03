@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Organization.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.domainmodel</a> &gt; <span class="el_source">Organization.java</span></div><h1>Organization.java</h1><pre class="source lang-java linenums">/**
+ * Organization.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.common.domainmodel;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.wattdepot.common.util.Slug;
+
+/**
+ * Organization - A group of users used to create a namespace for WattDepot
+ * entities. Users, sensors, sensor groups, collectors, depositories, and
+ * measurements all belong to a single &quot;organization&quot;.
+ * 
+ * @author Cam Moore
+ * 
+ */
+public class Organization {
+  /** The name of the admin group. */
+  public static final String ADMIN_GROUP_NAME = &quot;admin&quot;;
+  /** The admin user group. */
+<span class="fc" id="L38">  public static final Organization ADMIN_GROUP = new Organization(ADMIN_GROUP_NAME);</span>
+
+  /** The public user group. All groups can see publicly owned objects. */
+<span class="fc" id="L41">  public static final Organization PUBLIC_GROUP = new Organization(Labels.PUBLIC);</span>
+
+  /** Unique id that is also a slug usable in URLs. */
+  protected String id;
+  /** The name of the group. */
+  protected String name;
+  /** The ids of the users in this group. */
+  protected Set&lt;String&gt; users;
+
+  static {
+<span class="fc" id="L51">    ADMIN_GROUP.add(UserInfo.ROOT.getUid());</span>
+<span class="fc" id="L52">  }</span>
+
+  /**
+   * The default constructor.
+   */
+<span class="fc" id="L57">  public Organization() {</span>
+<span class="fc" id="L58">    users = new HashSet&lt;String&gt;();</span>
+<span class="fc" id="L59">  }</span>
+
+  /**
+   * @param name
+   *          The name of the Organization.
+   */
+  public Organization(String name) {
+<span class="fc" id="L66">    this(Slug.slugify(name), name, new HashSet&lt;String&gt;());</span>
+<span class="fc" id="L67">  }</span>
+
+  /**
+   * @param name
+   *          The name of the organization.
+   * @param users
+   *          The Users in the organization.
+   */
+  public Organization(String name, Set&lt;String&gt; users) {
+<span class="fc" id="L76">    this(Slug.slugify(name), name, users);</span>
+<span class="fc" id="L77">  }</span>
+
+  /**
+   * @param slug
+   *          The unique slug.
+   * @param name
+   *          The name of the organization.
+   * @param users
+   *          The Users in the organization.
+   */
+<span class="fc" id="L87">  public Organization(String slug, String name, Set&lt;String&gt; users) {</span>
+<span class="fc" id="L88">    this.id = slug;</span>
+<span class="fc" id="L89">    this.name = name;</span>
+<span class="fc" id="L90">    this.users = users;</span>
+<span class="fc" id="L91">  }</span>
+
+  /**
+   * @param userId
+   *          The id of the User to add.
+   * @return true if successful.
+   * @see java.util.List#add(java.lang.Object)
+   */
+  public boolean add(String userId) {
+<span class="fc" id="L100">    return users.add(userId);</span>
+  }
+
+  /**
+   * @param o
+   *          The user to test.
+   * @return true if the user is in the group.
+   * @see java.util.List#contains(java.lang.Object)
+   */
+  public boolean contains(Object o) {
+<span class="nc" id="L110">    return users.contains(o);</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">    if (this == obj) {</span>
+<span class="nc" id="L121">      return true;</span>
+    }
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">    if (obj == null) {</span>
+<span class="nc" id="L124">      return false;</span>
+    }
+<span class="pc bpc" id="L126" title="5 of 6 branches missed.">    if (!getClass().isAssignableFrom(obj.getClass())</span>
+        &amp;&amp; !obj.getClass().isAssignableFrom(getClass()) &amp;&amp; getClass() != obj.getClass()) {
+<span class="nc" id="L128">      return false;</span>
+    }
+<span class="fc" id="L130">    Organization other = (Organization) obj;</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">    if (id == null) {</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">      if (other.id != null) {</span>
+<span class="nc" id="L133">        return false;</span>
+      }
+    }
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">    else if (!id.equals(other.id)) {</span>
+<span class="nc" id="L137">      return false;</span>
+    }
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">    if (name == null) {</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">      if (other.name != null) {</span>
+<span class="nc" id="L141">        return false;</span>
+      }
+    }
+<span class="fc bfc" id="L144" title="All 2 branches covered.">    else if (!name.equals(other.name)) {</span>
+<span class="fc" id="L145">      return false;</span>
+    }
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">    if (users == null) {</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">      if (other.users != null) {</span>
+<span class="nc" id="L149">        return false;</span>
+      }
+    }
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">    else if (!users.equals(other.users)) {</span>
+<span class="nc" id="L153">      return false;</span>
+    }
+<span class="fc" id="L155">    return true;</span>
+  }
+
+  /**
+   * @return The unique id for the Organization.
+   */
+  public String getId() {
+<span class="fc" id="L162">    return id;</span>
+  }
+
+  /**
+   * @return the name
+   */
+  public String getName() {
+<span class="fc" id="L169">    return name;</span>
+  }
+
+  /**
+   * @return the users.
+   */
+  public Set&lt;String&gt; getUsers() {
+<span class="fc" id="L176">    return users;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+<span class="fc" id="L186">    final int prime = 31;</span>
+<span class="fc" id="L187">    int result = 1;</span>
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">    result = prime * result + ((id == null) ? 0 : id.hashCode());</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">    result = prime * result + ((name == null) ? 0 : name.hashCode());</span>
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">    result = prime * result + ((users == null) ? 0 : users.hashCode());</span>
+<span class="fc" id="L191">    return result;</span>
+  }
+
+  /**
+   * @param o
+   *          The User to remove.
+   * @return true if successful.
+   * @see java.util.List#remove(java.lang.Object)
+   */
+  public boolean remove(Object o) {
+<span class="nc" id="L201">    return users.remove(o);</span>
+  }
+
+  /**
+   * @param id
+   *          the id to set
+   */
+  public void setId(String id) {
+<span class="fc" id="L209">    this.id = id;</span>
+<span class="fc" id="L210">  }</span>
+
+  /**
+   * @param name
+   *          the name to set
+   */
+  public void setName(String name) {
+<span class="fc" id="L217">    this.name = name;</span>
+<span class="pc bpc" id="L218" title="1 of 2 branches missed.">    if (this.id == null) {</span>
+<span class="nc" id="L219">      this.id = Slug.slugify(name);</span>
+    }
+<span class="fc" id="L221">  }</span>
+
+  /**
+   * @param users
+   *          the users to set
+   */
+  public void setUsers(Set&lt;String&gt; users) {
+<span class="fc" id="L228">    this.users = users;</span>
+<span class="fc" id="L229">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+<span class="fc" id="L238">    return &quot;Organization [id=&quot; + id + &quot;, name=&quot; + name + &quot;, users=&quot; + users + &quot;]&quot;;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>UnitsHelper.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.util</a> &gt; <span class="el_source">UnitsHelper.java</span></div><h1>UnitsHelper.java</h1><pre class="source lang-java linenums">/**
+ * UnitsHelper.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.common.util;
+
+import java.io.UnsupportedEncodingException;
+import java.text.Normalizer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
+
+import javax.measure.unit.NonSI;
+import javax.measure.unit.SI;
+import javax.measure.unit.Unit;
+import javax.measure.unit.UnitFormat;
+
+/**
+ * UnitsHelper - Utility class that helps build measurement types.
+ * 
+ * @author Cam Moore
+ * 
+ */
+<span class="fc" id="L38">public class UnitsHelper {</span>
+  /** Holds the defined units. */
+<span class="fc" id="L40">  public static final Map&lt;String, Unit&lt;?&gt;&gt; quantities = new HashMap&lt;String, Unit&lt;?&gt;&gt;();</span>
+
+  static {
+<span class="fc" id="L43">    UnitFormat format = UnitFormat.getInstance();</span>
+<span class="fc" id="L44">    format.alias(SI.MICRO(SI.GRAM.divide(NonSI.LITER)), &quot;ppm&quot;);</span>
+<span class="fc" id="L45">    format.label(SI.MICRO(SI.GRAM.divide(NonSI.LITER)), &quot;ppm&quot;);</span>
+<span class="fc" id="L46">    quantities.put(buildName(&quot;Power&quot;, SI.WATT), SI.WATT);</span>
+<span class="fc" id="L47">    quantities.put(buildName(&quot;Energy&quot;, SI.WATT.times(NonSI.HOUR)), SI.WATT.times(NonSI.HOUR));</span>
+<span class="fc" id="L48">    quantities.put(buildName(&quot;Frequency&quot;, SI.HERTZ), SI.HERTZ);</span>
+<span class="fc" id="L49">    quantities.put(buildName(&quot;Temperature&quot;, NonSI.FAHRENHEIT), NonSI.FAHRENHEIT);</span>
+<span class="fc" id="L50">    quantities.put(buildName(&quot;Temperature&quot;, SI.CELSIUS), SI.CELSIUS);</span>
+<span class="fc" id="L51">    quantities.put(buildName(&quot;Volume&quot;, NonSI.GALLON_LIQUID_US), NonSI.GALLON_LIQUID_US);</span>
+<span class="fc" id="L52">    quantities.put(buildName(&quot;Volume&quot;, NonSI.LITER), NonSI.LITER);</span>
+<span class="fc" id="L53">    quantities.put(buildName(&quot;Flow Rate&quot;, NonSI.GALLON_LIQUID_US.divide(SI.SECOND)),</span>
+        NonSI.GALLON_LIQUID_US.divide(SI.SECOND));
+<span class="fc" id="L55">    quantities.put(buildName(&quot;Flow Rate&quot;, NonSI.LITER.divide(SI.SECOND)),</span>
+        NonSI.LITER.divide(SI.SECOND));
+<span class="fc" id="L57">    quantities.put(buildName(&quot;Mass&quot;, SI.KILOGRAM), SI.KILOGRAM);</span>
+<span class="fc" id="L58">    quantities.put(buildName(&quot;Mass&quot;, NonSI.POUND), NonSI.POUND);</span>
+<span class="fc" id="L59">    quantities.put(buildName(&quot;Humidity&quot;, NonSI.PERCENT), NonSI.PERCENT);</span>
+<span class="fc" id="L60">    quantities.put(buildName(&quot;Concentration&quot;, SI.MICRO(SI.GRAM.divide(NonSI.LITER))), SI.MICRO(SI.GRAM.divide(NonSI.LITER)));</span>
+<span class="fc" id="L61">    quantities.put(buildName(&quot;Cloud Coverage&quot;, NonSI.PERCENT), NonSI.PERCENT);</span>
+
+<span class="fc" id="L63">  }</span>
+
+  /**
+   * @param type
+   *          The type of the unit, Energy, Power, Mass, etc.
+   * @param unit
+   *          The Unit&lt;?&gt;.
+   * @return The name.
+   */
+  public static String buildName(String type, Unit&lt;?&gt; unit) {
+<span class="fc" id="L73">    String s = unit.toString();</span>
+<span class="fc" id="L74">    String s1 = Normalizer.normalize(s, Normalizer.Form.NFKD);</span>
+<span class="fc" id="L75">    String regex = Pattern.quote(&quot;[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+&quot;);</span>
+
+    try {
+<span class="fc" id="L78">      String s2 = new String(s1.replaceAll(regex, &quot;&quot;).getBytes(&quot;ascii&quot;), &quot;ascii&quot;);</span>
+<span class="fc" id="L79">      s2 = s2.replace(&quot;?&quot;, &quot;&quot;);</span>
+<span class="fc" id="L80">      return type + &quot; (&quot; + s2 + &quot;)&quot;;</span>
+      
+    }
+<span class="nc" id="L83">    catch (UnsupportedEncodingException e) {</span>
+<span class="nc" id="L84">      e.printStackTrace();</span>
+    }
+<span class="nc" id="L86">    return type + &quot; (&quot; + s1 + &quot;)&quot;;</span>
+  }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

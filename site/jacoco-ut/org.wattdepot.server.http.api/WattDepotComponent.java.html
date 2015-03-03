@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>WattDepotComponent.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">WattDepotComponent.java</span></div><h1>WattDepotComponent.java</h1><pre class="source lang-java linenums">/**
+ * WattDepotComponent.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.server.http.api;
+
+
+import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
+import org.restlet.Component;
+import org.restlet.Server;
+import org.restlet.data.Protocol;
+import org.restlet.ext.jackson.JacksonRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.security.MemoryRealm;
+import org.restlet.security.Role;
+import org.restlet.security.User;
+import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.domainmodel.UserPassword;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.server.StrongAES;
+import org.wattdepot.server.WattDepotPersistence;
+import org.wattdepot.server.depository.impl.hibernate.MeasurementImpl;
+
+/**
+ * WattDepotComponent - Main class to start the WattDepot Http API component of
+ * the WattDepotServer.
+ * 
+ * @author Cam Moore
+ * 
+ */
+public class WattDepotComponent extends Component {
+
+  /**
+   * Sets up the WattDepotComponent with the given WattDepot.
+   * 
+   * @param depot The persitent store.
+   * @param port the port number on which the restlet server listens.
+   */
+<span class="fc" id="L56">  public WattDepotComponent(WattDepotPersistence depot, int port) {</span>
+<span class="fc" id="L57">    setName(&quot;WattDepot HTTP API Server&quot;);</span>
+<span class="fc" id="L58">    setDescription(&quot;WattDepot RESTful server.&quot;);</span>
+<span class="fc" id="L59">    setAuthor(&quot;Cam Moore&quot;);</span>
+<span class="fc" id="L60">    getLogService().setLoggerName(&quot;org.wattdepot.server&quot;);</span>
+    // Add a CLAP client connector
+<span class="fc" id="L62">    getClients().add(Protocol.CLAP);</span>
+<span class="fc" id="L63">    getClients().add(Protocol.FILE);</span>
+<span class="fc" id="L64">    getClients().add(Protocol.HTTP);</span>
+
+    // Adds a HTTP server connector
+<span class="fc" id="L67">    Server server = getServers().add(Protocol.HTTP, port);</span>
+<span class="fc" id="L68">    server.getContext().getParameters().set(&quot;tracing&quot;, &quot;true&quot;);</span>
+
+<span class="fc" id="L70">    WattDepotApplication app = new WattDepotApplication();</span>
+<span class="fc" id="L71">    app.setDepot(depot);</span>
+    // configure the JacksonRepresentation so that it uses ISO-8601 compliant
+    // notation
+<span class="fc" id="L74">    MeasurementImpl source = new MeasurementImpl();</span>
+<span class="fc" id="L75">    Representation rep = app.getConverterService().toRepresentation(source);</span>
+    @SuppressWarnings(&quot;rawtypes&quot;)
+<span class="fc" id="L77">    ObjectMapper mapper = ((JacksonRepresentation) rep).getObjectMapper();</span>
+<span class="fc" id="L78">    mapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS,</span>
+        false);
+<span class="fc" id="L80">    mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,</span>
+        false);
+<span class="fc" id="L82">    getDefaultHost().attachDefault(app);</span>
+<span class="fc" id="L83">    app.setComponent(this);</span>
+
+    // Set up the security realm
+<span class="fc" id="L86">    MemoryRealm realm = new MemoryRealm();</span>
+<span class="fc" id="L87">    realm.setName(&quot;WattDepot Security&quot;);</span>
+<span class="fc" id="L88">    getRealms().add(realm);</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">    for (Organization group : app.getDepot().getOrganizations()) {</span>
+<span class="fc" id="L90">      app.getRoles().add(new Role(group.getId()));</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">      if (Organization.ADMIN_GROUP.getName().equals(group.getName())) {</span>
+        // need to ensure the admin user is available.
+<span class="fc" id="L93">        User user = new User(UserInfo.ROOT.getUid(), StrongAES.getInstance()</span>
+            .decrypt(UserPassword.ROOT.getEncryptedPassword()),
+            UserInfo.ROOT.getFirstName(), UserInfo.ROOT.getLastName(),
+            UserInfo.ROOT.getEmail());
+<span class="fc" id="L97">        realm.getUsers().add(user);</span>
+<span class="fc" id="L98">        realm.map(user, app.getRole(group.getId()));</span>
+      }
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">      for (String userId : group.getUsers()) {</span>
+<span class="nc" id="L101">        UserPassword up = null;</span>
+        try {
+<span class="nc" id="L103">          up = app.getDepot().getUserPassword(userId, group.getId(), true);</span>
+        }
+<span class="nc" id="L105">        catch (IdNotFoundException e) {</span>
+<span class="nc" id="L106">          e.printStackTrace();</span>
+<span class="nc" id="L107">        }</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (up != null) {</span>
+<span class="nc" id="L109">          User user = null;</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">          if (userId.equals(UserInfo.ROOT.getUid())) {</span>
+            // There isn't a UserInfo stored in persistence for ROOT.
+<span class="nc" id="L112">            user = new User(UserInfo.ROOT.getUid(), StrongAES.getInstance()</span>
+                .decrypt(up.getEncryptedPassword()),
+                UserInfo.ROOT.getFirstName(), UserInfo.ROOT.getLastName(),
+                UserInfo.ROOT.getEmail());
+          }
+          else {
+            UserInfo info;
+            try {
+<span class="nc" id="L120">              info = app.getDepot().getUser(userId, group.getId(), true);</span>
+<span class="nc" id="L121">              user = new User(info.getUid(), StrongAES.getInstance().decrypt(</span>
+                  up.getEncryptedPassword()), info.getFirstName(),
+                  info.getLastName(), info.getEmail());
+            }
+<span class="nc" id="L125">            catch (IdNotFoundException e) {</span>
+<span class="nc" id="L126">              e.printStackTrace();</span>
+<span class="nc" id="L127">            }</span>
+          }
+<span class="nc" id="L129">          realm.getUsers().add(user);</span>
+<span class="nc" id="L130">          realm.map(user, app.getRole(group.getId()));</span>
+        }
+<span class="nc" id="L132">      }</span>
+<span class="fc" id="L133">    }</span>
+
+    // Set the realm's default enroler and verifier
+<span class="fc" id="L136">    app.getContext().setDefaultEnroler(realm.getEnroler());</span>
+<span class="fc" id="L137">    app.getContext().setDefaultVerifier(realm.getVerifier());</span>
+
+    // Properties props = new Properties();
+    // InputStream inputStream = this.getClass().getClassLoader()
+    // .getResourceAsStream(&quot;log.properties&quot;);
+    // if (inputStream != null) {
+    // try {
+    // props.load(inputStream);
+    // }
+    // catch (IOException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    // }
+    // // // // Configure the log service
+    // getLogService().setLoggerName(&quot;WattDepot.AccessLog&quot;);
+    // try {
+    // LogManager.getLogManager().readConfiguration(inputStream);
+    // }
+    // catch (SecurityException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    // catch (IOException e) {
+    // // TODO Auto-generated catch block
+    // e.printStackTrace();
+    // }
+    //
+    // getLogService().setLogPropertiesRef(&quot;log.properties&quot;);
+
+<span class="fc" id="L167">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>OrganizationServerResource.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">OrganizationServerResource.java</span></div><h1>OrganizationServerResource.java</h1><pre class="source lang-java linenums">/**
+ * UserGroupServerResource.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.server.http.api;
+
+import java.util.logging.Level;
+
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import org.restlet.security.MemoryRealm;
+import org.restlet.security.Role;
+import org.restlet.security.User;
+import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.http.api.OrganizationResource;
+
+/**
+ * UserGroupServerResource - Handles the HTTP API
+ * (&quot;/wattdepot/{org-id}/organization/{org-id}&quot;).
+ * 
+ * @author Cam Moore
+ * 
+ */
+<span class="fc" id="L40">public class OrganizationServerResource extends WattDepotServerResource implements</span>
+    OrganizationResource {
+
+  private String userGroupId;
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.restlet.resource.Resource#doInit()
+   */
+  @Override
+  protected void doInit() throws ResourceException {
+<span class="fc" id="L52">    super.doInit();</span>
+<span class="fc" id="L53">    this.userGroupId = getAttribute(Labels.ORGANIZATION_ID2);</span>
+<span class="fc" id="L54">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.restlet.UserGroupResource#retrieve()
+   */
+  @Override
+  public Organization retrieve() {
+<span class="fc" id="L63">    getLogger()</span>
+        .log(Level.INFO, &quot;GET /wattdepot/{&quot; + orgId + &quot;}/organization/{&quot; + userGroupId + &quot;}&quot;);
+<span class="fc" id="L65">    Organization group = null;</span>
+<span class="pc bpc" id="L66" title="2 of 4 branches missed.">    if (isInRole(orgId) &amp;&amp; orgId.equals(userGroupId)) {</span>
+      try {
+<span class="nc" id="L68">        group = depot.getOrganization(userGroupId, true);</span>
+      }
+<span class="nc" id="L70">      catch (IdNotFoundException e) {</span>
+<span class="nc" id="L71">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + &quot; is not a defined Organization.&quot;);</span>
+<span class="nc" id="L72">      }</span>
+    }
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">    else if (isInRole(Organization.ADMIN_GROUP.getId())) {</span>
+      try {
+<span class="fc" id="L76">        group = depot.getOrganization(userGroupId, true);</span>
+      }
+<span class="fc" id="L78">      catch (IdNotFoundException e) {</span>
+<span class="fc" id="L79">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, userGroupId + &quot; is not a defined Organization.&quot;);</span>
+<span class="fc" id="L80">      }</span>
+    }
+    else {
+<span class="nc" id="L83">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Bad credentials, you cannot retrieve &quot;</span>
+          + userGroupId);
+    }
+<span class="fc" id="L86">    return group;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.restlet.UserGroupResource#remove()
+   */
+  @Override
+  public void remove() {
+<span class="fc" id="L96">    getLogger()</span>
+        .log(Level.INFO, &quot;DEL /wattdepot/{&quot; + orgId + &quot;}/organization/{&quot; + userGroupId + &quot;}&quot;);
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">    if (isInRole(Organization.ADMIN_GROUP.getId())) {</span>
+      try {
+<span class="fc" id="L100">        depot.deleteOrganization(userGroupId);</span>
+<span class="fc" id="L101">        WattDepotApplication app = (WattDepotApplication) getApplication();</span>
+        // create the new Role for the group
+<span class="fc" id="L103">        String roleName = userGroupId;</span>
+<span class="fc" id="L104">        Role role = app.getRole(roleName);</span>
+<span class="fc" id="L105">        MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm(&quot;WattDepot Security&quot;);</span>
+<span class="fc" id="L106">        app.getRoles().remove(role);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        for (User user : realm.getUsers()) {</span>
+<span class="fc" id="L108">          realm.findRoles(user).remove(role);</span>
+<span class="fc" id="L109">        }</span>
+      }
+<span class="nc" id="L111">      catch (IdNotFoundException e) {</span>
+<span class="nc" id="L112">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="pc" id="L113">      }</span>
+    }
+    else {
+<span class="nc" id="L116">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Only administrators can delete Organizations.&quot;);</span>
+    }
+<span class="fc" id="L118">  }</span>
+
+  /**
+   * @param userId The id of the UserInfo instance.
+   * @return The Restlet User that corresponds to the given UserInfo.
+   */
+  private User getUser(String userId) {
+<span class="fc" id="L125">    WattDepotApplication app = (WattDepotApplication) getApplication();</span>
+<span class="fc" id="L126">    MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm(&quot;WattDepot Security&quot;);</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">    for (User user : realm.getUsers()) { // loop through all the Restlet users</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">      if (user.getIdentifier().equals(userId)) {</span>
+<span class="fc" id="L129">        return user;</span>
+      }
+<span class="fc" id="L131">    }</span>
+<span class="nc" id="L132">    return null;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.common.http.api.OrganizationResource#update(org.wattdepot
+   * .common.domainmodel.Organization)
+   */
+  @Override
+  public void update(Organization organization) {
+<span class="fc" id="L144">    getLogger().log(Level.INFO,</span>
+        &quot;POST /wattdepot/{&quot; + orgId + &quot;}/organization/{&quot; + userGroupId + &quot;} with &quot; + organization);
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">    if (isInRole(Organization.ADMIN_GROUP.getId())) {</span>
+      try {
+<span class="fc" id="L148">        depot.updateOrganization(organization);</span>
+        // update the Realm
+<span class="fc" id="L150">        WattDepotApplication app = (WattDepotApplication) getApplication();</span>
+        // create the new Role for the group
+<span class="fc" id="L152">        String roleName = organization.getId();</span>
+<span class="fc" id="L153">        Role role = app.getRole(roleName);</span>
+<span class="fc" id="L154">        MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm(&quot;WattDepot Security&quot;);</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">        for (String userId : organization.getUsers()) {</span>
+<span class="fc" id="L156">          realm.map(getUser(userId), role);</span>
+<span class="fc" id="L157">        }</span>
+      }
+<span class="nc" id="L159">      catch (IdNotFoundException e) {</span>
+<span class="nc" id="L160">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, organization + &quot; isn't a defined Organization.&quot;);</span>
+<span class="pc" id="L161">      }</span>
+    }
+    else {
+<span class="nc" id="L164">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Only administrators can modify Organizations.&quot;);</span>
+    }
+<span class="fc" id="L166">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

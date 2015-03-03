@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>OrganizationDomain.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.client.http.api.csv</a> &gt; <span class="el_source">OrganizationDomain.java</span></div><h1>OrganizationDomain.java</h1><pre class="source lang-java linenums">/**
+ * OrganizationDomain.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.client.http.api.csv;
+
+import java.io.IOException;
+import java.util.Set;
+
+import org.wattdepot.client.http.api.WattDepotClient;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.exception.BadCredentialException;
+import org.wattdepot.common.exception.BadSensorUriException;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.util.csv.DefinitionFileReader;
+import org.wattdepot.common.util.csv.DefinitionFileWriter;
+
+/**
+ * OrganizationDomain - Provides way of initializing an Organization's domain
+ * from a definition file and saving out an Organization's domain to a file.
+ * 
+ * @author Cam Moore
+ * 
+ */
+public class OrganizationDomain {
+
+  /** The client to communicate with the WattDepot server. */
+  private WattDepotClient client;
+  /** The name of the definition file. */
+  private String fileName;
+
+  /**
+   * Initializes the OrganizationDomain.
+   * 
+   * @param serverUri The URI for the WattDepot server.
+   * @param username The name of a user defined in the WattDepot server.
+   * @param orgId the id of the organization the user is in.
+   * @param password The password for the user.
+   * @param fileName The name of the definition file.
+   * @throws BadCredentialException if the user or password don't match the
+   *         credentials in WattDepot.
+   * @throws IdNotFoundException if the processId is not defined.
+   * @throws BadSensorUriException if the Sensor's URI isn't valid.
+   */
+  public OrganizationDomain(String serverUri, String username, String orgId, String password,
+<span class="nc" id="L64">      String fileName) throws BadCredentialException, IdNotFoundException, BadSensorUriException {</span>
+<span class="nc" id="L65">    this.client = new WattDepotClient(serverUri, username, orgId, password);</span>
+<span class="nc" id="L66">    this.fileName = fileName;</span>
+<span class="nc" id="L67">  }</span>
+
+  /**
+   * Ensures that the WattDepot server has all the instances defined in the
+   * definition file.
+   * 
+   * @throws IOException if there is a problem reading the file.
+   */
+  public void initializeFromFile() throws IOException {
+<span class="nc" id="L76">    this.initializeFromFile(fileName);</span>
+<span class="nc" id="L77">  }</span>
+
+  /**
+   * Ensures that the WattDepot server has all the instances defined in the
+   * definition file.
+   * 
+   * @param name the name of the definition file.
+   * @throws IOException if there is a problem reading the file.
+   */
+  public void initializeFromFile(String name) throws IOException {
+<span class="nc" id="L87">    DefinitionFileReader reader = new DefinitionFileReader(name);</span>
+<span class="nc" id="L88">    Set&lt;String&gt; orgIds = reader.getOrgIds();</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">    if (orgIds.size() != 1) {</span>
+<span class="nc" id="L90">      throw new IOException(&quot;Bad WattDepot definition file has more than one organization id.&quot;);</span>
+    }
+<span class="nc bnc" id="L92" title="All 2 branches missed.">    if (!orgIds.contains(client.getOrganizationId())) {</span>
+<span class="nc" id="L93">      throw new IOException(client.getOrganizationId()</span>
+          + &quot; does not match the Organization ID in the file.&quot;);
+    }
+<span class="nc bnc" id="L96" title="All 2 branches missed.">    for (Depository d : reader.getDepositories()) {</span>
+<span class="nc bnc" id="L97" title="All 4 branches missed.">      if (client.getOrganizationId().equals(d.getOrganizationId())</span>
+          &amp;&amp; !client.isDefinedDepository(d.getId())) {
+<span class="nc" id="L99">        client.putDepository(d);</span>
+      }
+<span class="nc" id="L101">    }</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">    for (Sensor s : reader.getSensors()) {</span>
+<span class="nc bnc" id="L103" title="All 4 branches missed.">      if (client.getOrganizationId().equals(s.getOrganizationId())</span>
+          &amp;&amp; !client.isDefinedSensor(s.getId())) {
+<span class="nc" id="L105">        client.putSensor(s);</span>
+      }
+<span class="nc" id="L107">    }</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">    for (SensorGroup g : reader.getSensorGroups()) {</span>
+<span class="nc bnc" id="L109" title="All 4 branches missed.">      if (client.getOrganizationId().equals(g.getOrganizationId())</span>
+          &amp;&amp; !client.isDefinedSensorGroup(g.getId())) {
+<span class="nc" id="L111">        client.putSensorGroup(g);</span>
+      }
+<span class="nc" id="L113">    }</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">    for (CollectorProcessDefinition cpd : reader.getCollectorProcessDefinitions()) {</span>
+<span class="nc bnc" id="L115" title="All 4 branches missed.">      if (client.getOrganizationId().equals(cpd.getOrganizationId())</span>
+          &amp;&amp; !client.isDefinedCollectorProcessDefinition(cpd.getId())) {
+<span class="nc" id="L117">        client.putCollectorProcessDefinition(cpd);</span>
+      }
+<span class="nc" id="L119">    }</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">    for (MeasurementPruningDefinition gcd : reader.getMeasurementPruningDefinitions()) {</span>
+<span class="nc bnc" id="L121" title="All 4 branches missed.">      if (client.getOrganizationId().equals(gcd.getOrganizationId())</span>
+          &amp;&amp; !client.isDefinedMeasurementPruningDefinition(gcd.getId())) {
+<span class="nc" id="L123">        client.putMeasurementPruningDefinition(gcd);</span>
+      }
+<span class="nc" id="L125">    }</span>
+<span class="nc" id="L126">  }</span>
+
+  /**
+   * Saves out the Organization's Depositories, Sensors, SensorGroups, and
+   * CollectorProcessDefinitions.
+   * 
+   * @throws IOException if there is a problem writing the file.
+   */
+  public void saveCurrentDomain() throws IOException {
+<span class="nc" id="L135">    this.saveCurrentDomain(fileName);</span>
+<span class="nc" id="L136">  }</span>
+
+  /**
+   * Saves out the Organization's Depositories, Sensors, SensorGroups, and
+   * CollectorProcessDefinitions.
+   * 
+   * @param name the name of the file to save to.
+   * @throws IOException if there is a problem writing the file.
+   */
+  public void saveCurrentDomain(String name) throws IOException {
+<span class="nc" id="L146">    DefinitionFileWriter writer = new DefinitionFileWriter(name);</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">    for (Depository d : client.getDepositories().getDepositories()) {</span>
+<span class="nc" id="L148">      writer.add(d);</span>
+<span class="nc" id="L149">    }</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">    for (Sensor s : client.getSensors().getSensors()) {</span>
+<span class="nc" id="L151">      writer.add(s);</span>
+<span class="nc" id="L152">    }</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">    for (SensorGroup g : client.getSensorGroups().getGroups()) {</span>
+<span class="nc" id="L154">      writer.add(g);</span>
+<span class="nc" id="L155">    }</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">    for (CollectorProcessDefinition cpd : client.getCollectorProcessDefinitions().getDefinitions()) {</span>
+<span class="nc" id="L157">      writer.add(cpd);</span>
+<span class="nc" id="L158">    }</span>
+<span class="nc" id="L159">    writer.writeFile();</span>
+<span class="nc" id="L160">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

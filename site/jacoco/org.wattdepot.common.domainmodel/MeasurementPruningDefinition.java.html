@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MeasurementPruningDefinition.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.domainmodel</a> &gt; <span class="el_source">MeasurementPruningDefinition.java</span></div><h1>MeasurementPruningDefinition.java</h1><pre class="source lang-java linenums">/**
+ * MeasurementPruningDefinition.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2014  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.common.domainmodel;
+
+import java.util.Date;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+
+import org.wattdepot.common.util.DateConvert;
+import org.wattdepot.common.util.Slug;
+import org.wattdepot.common.util.tstamp.Tstamp;
+
+/**
+ * MeasurementPruningDefinition - Represents the information about a process
+ * that down samples the measurements for a particular Depository and Sensor.
+ * The process ensures that there is a minimum gap between measurements.
+ * 
+ * @author Cam Moore
+ * 
+ */
+public class MeasurementPruningDefinition implements IDomainModel {
+
+  /** The unique id for the GarbageCollectorDefinition. */
+  private String id;
+  /** The name of the GarbageCollectorDefinition. */
+  private String name;
+  /** The Depository's id. */
+  private String depositoryId;
+  /** The Sensor's id. */
+  private String sensorId;
+  /** The organization id. */
+  private String orgId;
+  /** The number of days from now to ignore. */
+  private Integer ignoreWindowDays;
+  /** The number of days after the ignore window to garbage collect. */
+  private Integer collectWindowDays;
+  /** The minimum gap between measurements in seconds. */
+  private Integer minGapSeconds;
+  /** The last time this garbage collector was started. */
+  private Date lastStarted;
+  /** The last time this garbage collector completed. */
+  private Date lastCompleted;
+  /** The number of measurements deleted during the last gc run.. */
+  private Integer numMeasurementsCollected;
+  /** The expected time of the next run. */
+  private Date nextRun;
+
+  /**
+   * Default constructor.
+   */
+<span class="fc" id="L67">  public MeasurementPruningDefinition() {</span>
+
+<span class="fc" id="L69">  }</span>
+
+  /**
+   * @param name The name of the garbage collection definition.
+   * @param depositoryId The id of the depository.
+   * @param sensorId The id of the sensor.
+   * @param orgId The id of the organization.
+   * @param ignore The number of days to ignore starting from now.
+   * @param collect The number of days to garbage collect in.
+   * @param gap The minimum gap between measurements in seconds.
+   */
+  public MeasurementPruningDefinition(String name, String depositoryId, String sensorId,
+      String orgId, Integer ignore, Integer collect, Integer gap) {
+<span class="fc" id="L82">    this(Slug.slugify(name), name, depositoryId, sensorId, orgId, ignore, collect, gap);</span>
+<span class="fc" id="L83">  }</span>
+
+  /**
+   * @param slug The id for the garbage collection definition.
+   * @param name The name of the garbage collection definition.
+   * @param depositoryId The id of the depository.
+   * @param sensorId The id of the sensor.
+   * @param orgId The id of the organization.
+   * @param ignore The number of days to ignore starting from now.
+   * @param collect The number of days to garbage collect in.
+   * @param gap The minimum gap between measurements in seconds.
+   */
+  public MeasurementPruningDefinition(String slug, String name, String depositoryId,
+<span class="fc" id="L96">      String sensorId, String orgId, Integer ignore, Integer collect, Integer gap) {</span>
+<span class="fc" id="L97">    this.id = slug;</span>
+<span class="fc" id="L98">    this.name = name;</span>
+<span class="fc" id="L99">    this.depositoryId = depositoryId;</span>
+<span class="fc" id="L100">    this.sensorId = sensorId;</span>
+<span class="fc" id="L101">    this.orgId = orgId;</span>
+<span class="fc" id="L102">    this.ignoreWindowDays = ignore;</span>
+<span class="fc" id="L103">    this.collectWindowDays = collect;</span>
+<span class="fc" id="L104">    this.minGapSeconds = gap;</span>
+<span class="fc" id="L105">    this.lastStarted = new Date();</span>
+<span class="fc" id="L106">    this.lastCompleted = lastStarted;</span>
+<span class="fc" id="L107">    this.nextRun = lastCompleted;</span>
+<span class="fc" id="L108">    this.numMeasurementsCollected = 0;</span>
+<span class="fc" id="L109">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">    if (this == obj) {</span>
+<span class="nc" id="L119">      return true;</span>
+    }
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">    if (obj == null) {</span>
+<span class="nc" id="L122">      return false;</span>
+    }
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">    if (getClass() != obj.getClass()) {</span>
+<span class="nc" id="L125">      return false;</span>
+    }
+<span class="fc" id="L127">    MeasurementPruningDefinition other = (MeasurementPruningDefinition) obj;</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">    if (collectWindowDays == null) {</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">      if (other.collectWindowDays != null) {</span>
+<span class="nc" id="L130">        return false;</span>
+      }
+    }
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">    else if (!collectWindowDays.equals(other.collectWindowDays)) {</span>
+<span class="nc" id="L134">      return false;</span>
+    }
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">    if (depositoryId == null) {</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">      if (other.depositoryId != null) {</span>
+<span class="nc" id="L138">        return false;</span>
+      }
+    }
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">    else if (!depositoryId.equals(other.depositoryId)) {</span>
+<span class="nc" id="L142">      return false;</span>
+    }
+<span class="pc bpc" id="L144" title="1 of 2 branches missed.">    if (id == null) {</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">      if (other.id != null) {</span>
+<span class="nc" id="L146">        return false;</span>
+      }
+    }
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">    else if (!id.equals(other.id)) {</span>
+<span class="nc" id="L150">      return false;</span>
+    }
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">    if (ignoreWindowDays == null) {</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">      if (other.ignoreWindowDays != null) {</span>
+<span class="nc" id="L154">        return false;</span>
+      }
+    }
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">    else if (!ignoreWindowDays.equals(other.ignoreWindowDays)) {</span>
+<span class="nc" id="L158">      return false;</span>
+    }
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">    if (minGapSeconds == null) {</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">      if (other.minGapSeconds != null) {</span>
+<span class="nc" id="L162">        return false;</span>
+      }
+    }
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">    else if (!minGapSeconds.equals(other.minGapSeconds)) {</span>
+<span class="nc" id="L166">      return false;</span>
+    }
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">    if (name == null) {</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">      if (other.name != null) {</span>
+<span class="nc" id="L170">        return false;</span>
+      }
+    }
+<span class="fc bfc" id="L173" title="All 2 branches covered.">    else if (!name.equals(other.name)) {</span>
+<span class="fc" id="L174">      return false;</span>
+    }
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">    if (sensorId == null) {</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">      if (other.sensorId != null) {</span>
+<span class="nc" id="L178">        return false;</span>
+      }
+    }
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">    else if (!sensorId.equals(other.sensorId)) {</span>
+<span class="nc" id="L182">      return false;</span>
+    }
+<span class="pc bpc" id="L184" title="1 of 2 branches missed.">    if (orgId == null) {</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">      if (other.orgId != null) {</span>
+<span class="nc" id="L186">        return false;</span>
+      }
+    }
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">    else if (!orgId.equals(other.orgId)) {</span>
+<span class="nc" id="L190">      return false;</span>
+    }
+<span class="fc" id="L192">    return true;</span>
+  }
+
+  /**
+   * @return the collectWindowDays
+   */
+  public Integer getCollectWindowDays() {
+<span class="fc" id="L199">    return collectWindowDays;</span>
+  }
+
+  /**
+   * @return the depositoryId
+   */
+  public String getDepositoryId() {
+<span class="fc" id="L206">    return depositoryId;</span>
+  }
+
+  /**
+   * @return The duration of the last run in milliseconds.
+   */
+  public Long getDuration() {
+<span class="pc bpc" id="L213" title="2 of 4 branches missed.">    if (lastStarted != null &amp;&amp; lastCompleted != null) {</span>
+<span class="fc" id="L214">      return lastCompleted.getTime() - lastStarted.getTime();</span>
+    }
+    else {
+<span class="nc" id="L217">      return 0l;</span>
+    }
+  }
+
+  /**
+   * @return the id
+   */
+  public String getId() {
+<span class="fc" id="L225">    return id;</span>
+  }
+
+  /**
+   * @return the ignoreWindowDays
+   */
+  public Integer getIgnoreWindowDays() {
+<span class="fc" id="L232">    return ignoreWindowDays;</span>
+  }
+
+  /**
+   * @return the lastCompleted
+   */
+  public Date getLastCompleted() {
+<span class="pc bpc" id="L239" title="1 of 2 branches missed.">    if (lastCompleted != null) {</span>
+<span class="fc" id="L240">      return new Date(lastCompleted.getTime());</span>
+    }
+<span class="nc" id="L242">    return null;</span>
+  }
+
+  /**
+   * @return the lastStarted
+   */
+  public Date getLastStarted() {
+<span class="pc bpc" id="L249" title="1 of 2 branches missed.">    if (lastStarted != null) {</span>
+<span class="fc" id="L250">      return new Date(lastStarted.getTime());</span>
+    }
+<span class="nc" id="L252">    return null;</span>
+  }
+
+  /**
+   * @return the minGapSeconds
+   */
+  public Integer getMinGapSeconds() {
+<span class="fc" id="L259">    return minGapSeconds;</span>
+  }
+
+  /**
+   * @return the name
+   */
+  public String getName() {
+<span class="fc" id="L266">    return name;</span>
+  }
+
+  /**
+   * @return the nextRun
+   */
+  public Date getNextRun() {
+<span class="pc bpc" id="L273" title="1 of 2 branches missed.">    if (nextRun != null) {</span>
+<span class="fc" id="L274">      return new Date(nextRun.getTime());</span>
+    }
+    else {
+<span class="nc" id="L277">      return null;</span>
+    }
+  }
+
+  /**
+   * @return the numMeasurementsCollected
+   */
+  public Integer getNumMeasurementsCollected() {
+<span class="fc" id="L285">    return numMeasurementsCollected;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.common.domainmodel.IDomainModel#getOrganizationId()
+   */
+  @Override
+  public String getOrganizationId() {
+<span class="fc" id="L295">    return orgId;</span>
+  }
+
+  /**
+   * @return the orgId
+   */
+  public String getOrgId() {
+<span class="fc" id="L302">    return orgId;</span>
+  }
+
+  /**
+   * @return the sensorId
+   */
+  public String getSensorId() {
+<span class="fc" id="L309">    return sensorId;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+<span class="fc" id="L319">    final int prime = 31;</span>
+<span class="fc" id="L320">    int result = 1;</span>
+<span class="pc bpc" id="L321" title="1 of 2 branches missed.">    result = prime * result + ((collectWindowDays == null) ? 0 : collectWindowDays.hashCode());</span>
+<span class="pc bpc" id="L322" title="1 of 2 branches missed.">    result = prime * result + ((depositoryId == null) ? 0 : depositoryId.hashCode());</span>
+<span class="pc bpc" id="L323" title="1 of 2 branches missed.">    result = prime * result + ((id == null) ? 0 : id.hashCode());</span>
+<span class="pc bpc" id="L324" title="1 of 2 branches missed.">    result = prime * result + ((ignoreWindowDays == null) ? 0 : ignoreWindowDays.hashCode());</span>
+<span class="pc bpc" id="L325" title="1 of 2 branches missed.">    result = prime * result + ((minGapSeconds == null) ? 0 : minGapSeconds.hashCode());</span>
+<span class="pc bpc" id="L326" title="1 of 2 branches missed.">    result = prime * result + ((name == null) ? 0 : name.hashCode());</span>
+<span class="pc bpc" id="L327" title="1 of 2 branches missed.">    result = prime * result + ((sensorId == null) ? 0 : sensorId.hashCode());</span>
+<span class="pc bpc" id="L328" title="1 of 2 branches missed.">    result = prime * result + ((orgId == null) ? 0 : orgId.hashCode());</span>
+<span class="fc" id="L329">    return result;</span>
+  }
+
+  /**
+   * @param collectWindowDays the collectWindowDays to set
+   */
+  public void setCollectWindowDays(Integer collectWindowDays) {
+<span class="fc" id="L336">    this.collectWindowDays = collectWindowDays;</span>
+<span class="fc" id="L337">  }</span>
+
+  /**
+   * @param depositoryId the depositoryId to set
+   */
+  public void setDepositoryId(String depositoryId) {
+<span class="fc" id="L343">    this.depositoryId = depositoryId;</span>
+<span class="fc" id="L344">  }</span>
+
+  /**
+   * @param id the id to set
+   */
+  public void setId(String id) {
+<span class="fc" id="L350">    this.id = id;</span>
+<span class="fc" id="L351">  }</span>
+
+  /**
+   * @param ignoreWindowDays the ignoreWindowDays to set
+   */
+  public void setIgnoreWindowDays(Integer ignoreWindowDays) {
+<span class="fc" id="L357">    this.ignoreWindowDays = ignoreWindowDays;</span>
+<span class="fc" id="L358">  }</span>
+
+  /**
+   * @param lastCompleted the lastCompleted to set
+   */
+  public void setLastCompleted(Date lastCompleted) {
+<span class="fc bfc" id="L364" title="All 2 branches covered.">    if (lastCompleted != null) {</span>
+<span class="fc" id="L365">      this.lastCompleted = new Date(lastCompleted.getTime());</span>
+      try {
+<span class="fc bfc" id="L367" title="All 2 branches covered.">        if (collectWindowDays &gt; 1) {</span>
+<span class="fc" id="L368">          this.nextRun = DateConvert.convertXMLCal(Tstamp.incrementDays(</span>
+              DateConvert.convertDate(lastCompleted), collectWindowDays - 1));
+        }
+        else {
+<span class="fc" id="L372">          this.nextRun = DateConvert.convertXMLCal(Tstamp.incrementDays(</span>
+              DateConvert.convertDate(lastCompleted), 1));
+        }
+      }
+<span class="nc" id="L376">      catch (DatatypeConfigurationException e) {</span>
+        // shouldn't happen
+<span class="nc" id="L378">        e.printStackTrace();</span>
+<span class="fc" id="L379">      }</span>
+    }
+<span class="fc" id="L381">  }</span>
+
+  /**
+   * @param lastStarted the lastStarted to set
+   */
+  public void setLastStarted(Date lastStarted) {
+<span class="fc bfc" id="L387" title="All 2 branches covered.">    if (lastStarted != null) {</span>
+<span class="fc" id="L388">      this.lastStarted = new Date(lastStarted.getTime());</span>
+    }
+<span class="fc" id="L390">  }</span>
+
+  /**
+   * @param minGapSeconds the minGapSeconds to set
+   */
+  public void setMinGapSeconds(Integer minGapSeconds) {
+<span class="fc" id="L396">    this.minGapSeconds = minGapSeconds;</span>
+<span class="fc" id="L397">  }</span>
+
+  /**
+   * @param name the name to set
+   */
+  public void setName(String name) {
+<span class="fc" id="L403">    this.name = name;</span>
+<span class="fc" id="L404">  }</span>
+
+  /**
+   * @param nextRun the nextRun to set
+   */
+  public void setNextRun(Date nextRun) {
+<span class="fc" id="L410">    this.nextRun = new Date(nextRun.getTime());</span>
+<span class="fc" id="L411">  }</span>
+
+  /**
+   * @param numMeasurementsCollected the numMeasurementsCollected to set
+   */
+  public void setNumMeasurementsCollected(Integer numMeasurementsCollected) {
+<span class="fc" id="L417">    this.numMeasurementsCollected = numMeasurementsCollected;</span>
+<span class="fc" id="L418">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.common.domainmodel.IDomainModel#setOrganizationId(java.lang
+   * .String)
+   */
+  @Override
+  public void setOrganizationId(String ownerId) {
+<span class="fc" id="L429">    this.orgId = ownerId;</span>
+
+<span class="fc" id="L431">  }</span>
+
+  /**
+   * @param orgId the orgId to set
+   */
+  public void setOrgId(String orgId) {
+<span class="fc" id="L437">    this.orgId = orgId;</span>
+<span class="fc" id="L438">  }</span>
+
+  /**
+   * @param sensorId the sensorId to set
+   */
+  public void setSensorId(String sensorId) {
+<span class="fc" id="L444">    this.sensorId = sensorId;</span>
+<span class="fc" id="L445">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+<span class="fc" id="L454">    return &quot;MeasurementPruningDefinition [id=&quot; + id + &quot;, name=&quot; + name + &quot;, depositoryId=&quot;</span>
+        + depositoryId + &quot;, sensorId=&quot; + sensorId + &quot;, orgId=&quot; + orgId + &quot;, ignoreWindowDays=&quot;
+        + ignoreWindowDays + &quot;, collectWindowDays=&quot; + collectWindowDays + &quot;, minGapSeconds=&quot;
+        + minGapSeconds + &quot;, lastStarted=&quot; + lastStarted + &quot;, lastCompleted=&quot; + lastCompleted
+        + &quot;, numMeasurementsCollected=&quot; + numMeasurementsCollected + &quot;]&quot;;
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

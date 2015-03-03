@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>OrgSummaryServerResource.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">OrgSummaryServerResource.java</span></div><h1>OrgSummaryServerResource.java</h1><pre class="source lang-java linenums">/**
+ * OrgSummaryServerResource.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2014  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.server.http.api;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.restlet.data.LocalReference;
+import org.restlet.data.MediaType;
+import org.restlet.data.Status;
+import org.restlet.ext.freemarker.TemplateRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
+import org.restlet.resource.Get;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
+import org.wattdepot.common.http.api.API;
+import org.wattdepot.server.ServerProperties;
+
+/**
+ * OrgSummaryServerResource - Summary Web page generator for WattDepot
+ * Organizations. It handles (&quot;/wattdepot/{org-id}/summary/&quot;).
+ * 
+ * @author Cam Moore
+ * 
+ */
+<span class="nc" id="L51">public class OrgSummaryServerResource extends WattDepotServerResource {</span>
+
+<span class="nc" id="L53">  private static DescriptiveStatistics averageGetTime = new DescriptiveStatistics();</span>
+<span class="nc" id="L54">  private static DescriptiveStatistics dbTime = new DescriptiveStatistics();</span>
+
+  /**
+   * @return The Organization summary information as an HTML Representation.
+   */
+  @Get()
+  public Representation toHtml() {
+<span class="nc" id="L61">    getLogger().log(Level.INFO, &quot;GET &quot; + API.BASE_URI + &quot;{&quot; + orgId + &quot;}/&quot; + Labels.SUMMARY + &quot;/&quot;);</span>
+<span class="nc" id="L62">    Long startTime = null;</span>
+<span class="nc" id="L63">    Long dbStartTime = null;</span>
+<span class="nc" id="L64">    Long totalMeasurements = 0l;</span>
+<span class="nc" id="L65">    boolean timingp = depot.getServerProperties().get(ServerProperties.SERVER_TIMING_KEY)</span>
+        .equals(ServerProperties.TRUE);
+<span class="nc bnc" id="L67" title="All 2 branches missed.">    if (timingp) {</span>
+<span class="nc" id="L68">      startTime = System.nanoTime();</span>
+    }
+<span class="nc bnc" id="L70" title="All 4 branches missed.">    if (isInRole(orgId) || isInRole(Organization.ADMIN_GROUP.getId())) {</span>
+<span class="nc" id="L71">      Map&lt;String, Object&gt; dataModel = new HashMap&lt;String, Object&gt;();</span>
+<span class="nc" id="L72">      dataModel.put(&quot;orgId&quot;, orgId);</span>
+<span class="nc" id="L73">      Representation rep = null;</span>
+<span class="nc" id="L74">      TemplateRepresentation template = null;</span>
+      try {
+<span class="nc bnc" id="L76" title="All 2 branches missed.">        if (timingp) {</span>
+<span class="nc" id="L77">          getLogger().log(Level.SEVERE, &quot;Start database timing.&quot;);</span>
+<span class="nc" id="L78">          dbStartTime = System.nanoTime();</span>
+        }
+<span class="nc" id="L80">        Organization org = depot.getOrganization(orgId, true);</span>
+<span class="nc" id="L81">        List&lt;Depository&gt; depos = depot.getDepositories(orgId, false);</span>
+<span class="nc" id="L82">        List&lt;Sensor&gt; sensors = new ArrayList&lt;Sensor&gt;();</span>
+<span class="nc" id="L83">        Map&lt;String, List&lt;String&gt;&gt; depositorySensors = new HashMap&lt;String, List&lt;String&gt;&gt;();</span>
+<span class="nc" id="L84">        totalMeasurements = depot.getMeasurementsCount(orgId, false);</span>
+//        List&lt;MeasurementRateSummary&gt; summaries = new ArrayList&lt;MeasurementRateSummary&gt;();
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        for (Depository d : depos) {</span>
+<span class="nc" id="L87">          depositorySensors.put(d.getId(), depot.listSensors(d.getId(), orgId, false));</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">          for (String sensorId : depositorySensors.get(d.getId())) {</span>
+<span class="nc" id="L89">            sensors.add(depot.getSensor(sensorId, orgId, false));</span>
+//            MeasurementRateSummary sum = depot.getRateSummary(d.getId(), orgId, sensorId, false);
+//            totalMeasurements += sum.getTotalCount();
+//            summaries.add(sum);
+<span class="nc" id="L93">          }</span>
+<span class="nc" id="L94">        }</span>
+<span class="nc" id="L95">        dataModel.put(&quot;name&quot;, org.getName());</span>
+<span class="nc" id="L96">        dataModel.put(&quot;depositories&quot;, depos);</span>
+<span class="nc" id="L97">        dataModel.put(&quot;sensors&quot;, sensors);</span>
+<span class="nc" id="L98">        dataModel.put(&quot;depositorySensors&quot;, depositorySensors);</span>
+<span class="nc" id="L99">        dataModel.put(&quot;totalMeasurements&quot;, totalMeasurements);</span>
+//        dataModel.put(&quot;summaries&quot;, summaries);
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        if (depot.getServerProperties().get(ServerProperties.SERVER_TIMING_KEY)</span>
+            .equals(ServerProperties.TRUE)) {
+<span class="nc" id="L103">          Long dbEndTime = System.nanoTime();</span>
+<span class="nc" id="L104">          Long diff = dbEndTime - dbStartTime;</span>
+<span class="nc" id="L105">          dbTime.addValue(diff / 1E9);</span>
+<span class="nc" id="L106">          getLogger().log(</span>
+              Level.SEVERE,
+              &quot;OrgSummary database time = &quot; + (diff / 1E9) + &quot; running average = &quot;
+                  + dbTime.getMean());
+        }
+
+<span class="nc" id="L112">        rep = new ClientResource(LocalReference.createClapReference(getClass().getPackage())</span>
+            + &quot;/OrganizationSummary.ftl&quot;).get();
+      }
+<span class="nc" id="L115">      catch (IdNotFoundException e) {</span>
+<span class="nc" id="L116">        e.printStackTrace();</span>
+<span class="nc" id="L117">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="nc" id="L118">        return null;</span>
+      }
+<span class="nc" id="L120">      catch (MisMatchedOwnerException e) {</span>
+<span class="nc" id="L121">        e.printStackTrace();</span>
+<span class="nc" id="L122">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="nc" id="L123">        return null;</span>
+<span class="nc" id="L124">      }</span>
+//      catch (NoMeasurementException e) {
+//        e.printStackTrace();
+//        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+//        return null;
+//      }
+<span class="nc" id="L130">      template = new TemplateRepresentation(rep, dataModel, MediaType.TEXT_HTML);</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">      if (timingp) {</span>
+<span class="nc" id="L132">        Long endTime = System.nanoTime();</span>
+<span class="nc" id="L133">        Long diff = endTime - startTime;</span>
+<span class="nc" id="L134">        averageGetTime.addValue(diff / 1E9);</span>
+<span class="nc" id="L135">        getLogger().log(</span>
+            Level.SEVERE,
+            &quot;Building OrgSummary Page took &quot; + (diff / 1E9) + &quot; running average = &quot;
+                + averageGetTime.getMean() + &quot; for &quot; + totalMeasurements + &quot; measurements&quot;);
+      }
+<span class="nc" id="L140">      return template;</span>
+    }
+<span class="nc" id="L142">    return null;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

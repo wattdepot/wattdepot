@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>UserInfoServerResource.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">UserInfoServerResource.java</span></div><h1>UserInfoServerResource.java</h1><pre class="source lang-java linenums">/**
+ * UserInfoServerResource.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.server.http.api;
+
+import java.util.logging.Level;
+
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import org.restlet.security.MemoryRealm;
+import org.restlet.security.User;
+import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.domainmodel.UserPassword;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.http.api.UserInfoResource;
+
+/**
+ * UserInfoServerResource - Handles the UserInfo HTTP API
+ * (&quot;/wattdepot/{org-id}/user/{user-id}&quot;).
+ * 
+ * @author Cam Moore
+ * 
+ */
+<span class="fc" id="L41">public class UserInfoServerResource extends WattDepotServerResource implements UserInfoResource {</span>
+  private String userId;
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.restlet.resource.Resource#doInit()
+   */
+  @Override
+  protected void doInit() throws ResourceException {
+<span class="fc" id="L51">    super.doInit();</span>
+<span class="fc" id="L52">    this.userId = getAttribute(Labels.USER_ID);</span>
+<span class="fc" id="L53">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.restlet.UserInfoResource#retrieve()
+   */
+  @Override
+  public UserInfo retrieve() {
+<span class="fc" id="L62">    getLogger().log(Level.INFO, &quot;GET /wattdepot/{&quot; + orgId + &quot;}/user/{&quot; + userId + &quot;}&quot;);</span>
+<span class="fc" id="L63">    UserInfo user = null;</span>
+<span class="pc bpc" id="L64" title="2 of 4 branches missed.">    if (isInRole(orgId) || isInRole(Organization.ADMIN_GROUP.getId())) {</span>
+      try {
+<span class="fc" id="L66">        user = depot.getUser(userId, orgId, true);</span>
+      }
+<span class="fc" id="L68">      catch (IdNotFoundException e) {</span>
+<span class="fc" id="L69">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;User &quot; + userId + &quot; is not defined.&quot;);</span>
+<span class="fc" id="L70">      }</span>
+    }
+    else {
+<span class="nc" id="L73">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Bad credential, you cannot view &quot; + userId);</span>
+    }
+<span class="fc" id="L75">    return user;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.restlet.UserInfoResource#store(org.wattdepot.datamodel
+   * .UserInfo)
+   */
+  @Override
+  public void update(UserInfo user) {
+<span class="fc" id="L86">    getLogger().log(Level.INFO,</span>
+        &quot;POST /wattdepot/{&quot; + orgId + &quot;}/user/{&quot; + userId + &quot;} with &quot; + user);
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">    if (isInRole(Organization.ADMIN_GROUP.getId())) {</span>
+      try {
+<span class="fc" id="L90">        depot.updateUserInfo(user);</span>
+<span class="fc" id="L91">        UserPassword password = depot.getUserPassword(user.getUid(), user.getOrganizationId(), true);</span>
+<span class="fc" id="L92">        password.setPassword(user.getPassword());</span>
+<span class="fc" id="L93">        depot.updateUserPassword(password);</span>
+<span class="fc" id="L94">        WattDepotApplication app = (WattDepotApplication) getApplication();</span>
+<span class="fc" id="L95">        MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm(&quot;WattDepot Security&quot;);</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        for (User u : realm.getUsers()) {</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">          if (u.getIdentifier().equals(user.getUid())) {</span>
+<span class="fc" id="L98">            u.setSecret(user.getPassword().toCharArray());</span>
+          }
+<span class="fc" id="L100">        }</span>
+      }
+<span class="nc" id="L102">      catch (IdNotFoundException e) {</span>
+<span class="nc" id="L103">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;No User &quot; + userId + &quot; in WattDepot.&quot;);</span>
+<span class="pc" id="L104">      }</span>
+    }
+    else {
+<span class="nc" id="L107">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Only administrators can update Users.&quot;);</span>
+    }
+<span class="fc" id="L109">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.restlet.UserInfoResource#remove()
+   */
+  @Override
+  public void remove() {
+<span class="fc" id="L118">    getLogger().log(Level.INFO, &quot;DEL /wattdepot/{&quot; + orgId + &quot;}/user/{&quot; + userId + &quot;}&quot;);</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">    if (isInRole(Organization.ADMIN_GROUP.getId())) {</span>
+      try {
+<span class="fc" id="L121">        depot.deleteUser(userId, orgId);</span>
+      }
+<span class="fc" id="L123">      catch (IdNotFoundException e) {</span>
+<span class="fc" id="L124">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="fc" id="L125">      }</span>
+    }
+    else {
+<span class="nc" id="L128">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Only administrators can delete Users.&quot;);</span>
+    }
+<span class="fc" id="L130">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

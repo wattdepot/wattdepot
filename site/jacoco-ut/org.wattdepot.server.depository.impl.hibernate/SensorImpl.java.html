@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SensorImpl.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.depository.impl.hibernate</a> &gt; <span class="el_source">SensorImpl.java</span></div><h1>SensorImpl.java</h1><pre class="source lang-java linenums">/**
+ * SensorImpl.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2014  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.server.depository.impl.hibernate;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.wattdepot.common.domainmodel.Property;
+import org.wattdepot.common.domainmodel.Sensor;
+
+/**
+ * SensorImpl - Hibernate implementation of Sensor class. Has primary key and
+ * foreign key relationships.
+ * 
+ * @author Cam Moore
+ * 
+ */
+@Entity
+@Table(name = &quot;SENSORS&quot;)
+public class SensorImpl {
+
+  /** The database primary key. */
+  @Id
+  @GeneratedValue
+  private Long pk;
+  /** A unique id for the Sensor usable in URLs. */
+  private String id;
+  /** The name of the Sensor. */
+  private String name;
+  /** The URI to the sensor. */
+  private String uri;
+  /** The model of the sensor. */
+  @ManyToOne
+  private SensorModelImpl model;
+  /** Additional properties of the sensor. */
+  @OneToMany
+  private Set&lt;PropertyImpl&gt; properties;
+  /** This sensor's organization. */
+  @ManyToOne
+  private OrganizationImpl org;
+
+  /**
+   * 
+   */
+  public SensorImpl() {
+<span class="fc" id="L69">    super();</span>
+<span class="fc" id="L70">  }</span>
+
+  /**
+   * @param id the sensor's id.
+   * @param name the sensor's name.
+   * @param uri the sensor's uri.
+   * @param model the sensor model.
+   * @param properties the sensor's properties.
+   * @param org the sensor's organization.
+   */
+  public SensorImpl(String id, String name, String uri, SensorModelImpl model,
+<span class="fc" id="L81">      Set&lt;PropertyImpl&gt; properties, OrganizationImpl org) {</span>
+<span class="fc" id="L82">    this.id = id;</span>
+<span class="fc" id="L83">    this.name = name;</span>
+<span class="fc" id="L84">    this.uri = uri;</span>
+<span class="fc" id="L85">    this.model = model;</span>
+<span class="fc" id="L86">    this.properties = properties;</span>
+<span class="fc" id="L87">    this.org = org;</span>
+<span class="fc" id="L88">  }</span>
+
+  /**
+   * @return the pk
+   */
+   public Long getPk() {
+<span class="fc" id="L94">    return pk;</span>
+  }
+
+  /**
+   * @param pk the pk to set
+   */
+  @SuppressWarnings(&quot;unused&quot;)
+  private void setPk(Long pk) {
+<span class="nc" id="L102">    this.pk = pk;</span>
+<span class="nc" id="L103">  }</span>
+
+  /**
+   * @return the id
+   */
+  public String getId() {
+<span class="fc" id="L109">    return id;</span>
+  }
+
+  /**
+   * @param id the id to set
+   */
+  public void setId(String id) {
+<span class="fc" id="L116">    this.id = id;</span>
+<span class="fc" id="L117">  }</span>
+
+  /**
+   * @return the name
+   */
+  public String getName() {
+<span class="fc" id="L123">    return name;</span>
+  }
+
+  /**
+   * @param name the name to set
+   */
+  public void setName(String name) {
+<span class="fc" id="L130">    this.name = name;</span>
+<span class="fc" id="L131">  }</span>
+
+  /**
+   * @return the uri
+   */
+  public String getUri() {
+<span class="fc" id="L137">    return uri;</span>
+  }
+
+  /**
+   * @param uri the uri to set
+   */
+  public void setUri(String uri) {
+<span class="fc" id="L144">    this.uri = uri;</span>
+<span class="fc" id="L145">  }</span>
+
+  /**
+   * @return the model
+   */
+  public SensorModelImpl getModel() {
+<span class="nc" id="L151">    return model;</span>
+  }
+
+  /**
+   * @param model the model to set
+   */
+  public void setModel(SensorModelImpl model) {
+<span class="fc" id="L158">    this.model = model;</span>
+<span class="fc" id="L159">  }</span>
+
+  /**
+   * @return the properties
+   */
+  public Set&lt;PropertyImpl&gt; getProperties() {
+<span class="fc" id="L165">    return properties;</span>
+  }
+
+  /**
+   * @param properties the properties to set
+   */
+  public void setProperties(Set&lt;PropertyImpl&gt; properties) {
+<span class="fc" id="L172">    this.properties = properties;</span>
+<span class="fc" id="L173">  }</span>
+
+  /**
+   * @return the org
+   */
+  public OrganizationImpl getOrg() {
+<span class="nc" id="L179">    return org;</span>
+  }
+
+  /**
+   * @param org the org to set
+   */
+  public void setOrg(OrganizationImpl org) {
+<span class="fc" id="L186">    this.org = org;</span>
+<span class="fc" id="L187">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+<span class="fc" id="L196">    final int prime = 31;</span>
+<span class="fc" id="L197">    int result = 1;</span>
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">    result = prime * result + ((id == null) ? 0 : id.hashCode());</span>
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">    result = prime * result + ((model == null) ? 0 : model.hashCode());</span>
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">    result = prime * result + ((name == null) ? 0 : name.hashCode());</span>
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">    result = prime * result + ((org == null) ? 0 : org.hashCode());</span>
+<span class="pc bpc" id="L202" title="1 of 2 branches missed.">    result = prime * result + ((pk == null) ? 0 : pk.hashCode());</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">    result = prime * result + ((properties == null) ? 0 : properties.hashCode());</span>
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">    result = prime * result + ((uri == null) ? 0 : uri.hashCode());</span>
+<span class="fc" id="L205">    return result;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+<span class="nc bnc" id="L215" title="All 2 branches missed.">    if (this == obj) {</span>
+<span class="nc" id="L216">      return true;</span>
+    }
+<span class="nc bnc" id="L218" title="All 2 branches missed.">    if (obj == null) {</span>
+<span class="nc" id="L219">      return false;</span>
+    }
+<span class="nc bnc" id="L221" title="All 2 branches missed.">    if (getClass() != obj.getClass()) {</span>
+<span class="nc" id="L222">      return false;</span>
+    }
+<span class="nc" id="L224">    SensorImpl other = (SensorImpl) obj;</span>
+<span class="nc bnc" id="L225" title="All 2 branches missed.">    if (id == null) {</span>
+<span class="nc bnc" id="L226" title="All 2 branches missed.">      if (other.id != null) {</span>
+<span class="nc" id="L227">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L230" title="All 2 branches missed.">    else if (!id.equals(other.id)) {</span>
+<span class="nc" id="L231">      return false;</span>
+    }
+<span class="nc bnc" id="L233" title="All 2 branches missed.">    if (model == null) {</span>
+<span class="nc bnc" id="L234" title="All 2 branches missed.">      if (other.model != null) {</span>
+<span class="nc" id="L235">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L238" title="All 2 branches missed.">    else if (!model.equals(other.model)) {</span>
+<span class="nc" id="L239">      return false;</span>
+    }
+<span class="nc bnc" id="L241" title="All 2 branches missed.">    if (name == null) {</span>
+<span class="nc bnc" id="L242" title="All 2 branches missed.">      if (other.name != null) {</span>
+<span class="nc" id="L243">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L246" title="All 2 branches missed.">    else if (!name.equals(other.name)) {</span>
+<span class="nc" id="L247">      return false;</span>
+    }
+<span class="nc bnc" id="L249" title="All 2 branches missed.">    if (org == null) {</span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">      if (other.org != null) {</span>
+<span class="nc" id="L251">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L254" title="All 2 branches missed.">    else if (!org.equals(other.org)) {</span>
+<span class="nc" id="L255">      return false;</span>
+    }
+<span class="nc bnc" id="L257" title="All 2 branches missed.">    if (pk == null) {</span>
+<span class="nc bnc" id="L258" title="All 2 branches missed.">      if (other.pk != null) {</span>
+<span class="nc" id="L259">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L262" title="All 2 branches missed.">    else if (!pk.equals(other.pk)) {</span>
+<span class="nc" id="L263">      return false;</span>
+    }
+<span class="nc bnc" id="L265" title="All 2 branches missed.">    if (properties == null) {</span>
+<span class="nc bnc" id="L266" title="All 2 branches missed.">      if (other.properties != null) {</span>
+<span class="nc" id="L267">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L270" title="All 2 branches missed.">    else if (!properties.equals(other.properties)) {</span>
+<span class="nc" id="L271">      return false;</span>
+    }
+<span class="nc bnc" id="L273" title="All 2 branches missed.">    if (uri == null) {</span>
+<span class="nc bnc" id="L274" title="All 2 branches missed.">      if (other.uri != null) {</span>
+<span class="nc" id="L275">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L278" title="All 2 branches missed.">    else if (!uri.equals(other.uri)) {</span>
+<span class="nc" id="L279">      return false;</span>
+    }
+<span class="nc" id="L281">    return true;</span>
+  }
+
+  /**
+   * @return the equivalent Sensor to this.
+   */
+  public Sensor toSensor() {
+<span class="fc" id="L288">    Set&lt;Property&gt; prop = new HashSet&lt;Property&gt;();</span>
+<span class="pc bpc" id="L289" title="1 of 2 branches missed.">    for (PropertyImpl i : properties) {</span>
+<span class="nc" id="L290">      prop.add(new Property(i.getKey(), i.getValue()));</span>
+<span class="nc" id="L291">    }</span>
+<span class="fc" id="L292">    Sensor ret = new Sensor(id, name, uri, model.getId(), prop, org.getId());</span>
+<span class="fc" id="L293">    return ret;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+<span class="fc" id="L303">    return &quot;SensorImpl [pk=&quot; + pk + &quot;, id=&quot; + id + &quot;, name=&quot; + name + &quot;, uri=&quot; + uri + &quot;, model=&quot;</span>
+        + model + &quot;, properties=&quot; + properties + &quot;, org=&quot; + org + &quot;]&quot;;
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

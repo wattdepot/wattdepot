@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>InterpolatedValue.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.domainmodel</a> &gt; <span class="el_source">InterpolatedValue.java</span></div><h1>InterpolatedValue.java</h1><pre class="source lang-java linenums">/**
+ * InterpolatedValue.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.common.domainmodel;
+
+import java.util.Date;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+
+import org.wattdepot.common.util.DateConvert;
+
+/**
+ * InterpolatedValue - represents an interpolated value derived from
+ * measurements. Has sensor id, value and measurement type.
+ * 
+ * @author Cam Moore
+ * 
+ */
+public class InterpolatedValue {
+  /** The id of the sensor making the measurement. */
+  private String sensorId;
+  /** The value of the measurement. */
+  private Double value;
+  /** The type of the measurement. */
+  private MeasurementType measurementType;
+  /** The start time of the interpolated value. */
+  private Date start;
+  /** The end time of the interpolated value. */
+  private Date end;
+
+  /**
+   * Hide the default constructor.
+   */
+<span class="fc" id="L49">  protected InterpolatedValue() {</span>
+
+<span class="fc" id="L51">  }</span>
+
+  /**
+   * Creates a new InterpolatedValue.
+   * 
+   * @param sensorId The id of the sensor that made the measurement.
+   * @param value The value of the measurement.
+   * @param measurementType The type of the measurement.
+   * @param date the time of the value.
+   */
+  public InterpolatedValue(String sensorId, Double value, MeasurementType measurementType, Date date) {
+<span class="fc" id="L62">    this(sensorId, value, measurementType, date, date);</span>
+<span class="fc" id="L63">  }</span>
+
+  /**
+   * Creates a new InterpolatedValue.
+   *
+   * @param sensorId The id of the sensor that made the measurement.
+   * @param value The value of the measurement.
+   * @param measurementType The type of the measurement.
+   * @param start the start time of the value.
+   * @param end the end time of the value.
+   */
+<span class="fc" id="L74">  public InterpolatedValue(String sensorId, Double value, MeasurementType measurementType, Date start, Date end) {</span>
+<span class="fc" id="L75">    this.sensorId = sensorId;</span>
+<span class="fc" id="L76">    this.value = value;</span>
+<span class="fc" id="L77">    this.measurementType = measurementType;</span>
+<span class="fc" id="L78">    this.start = new Date(start.getTime());</span>
+<span class="fc" id="L79">    this.end = new Date(end.getTime());</span>
+<span class="fc" id="L80">  }</span>
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+<span class="nc bnc" id="L88" title="All 2 branches missed.">    if (this == obj) {</span>
+<span class="nc" id="L89">      return true;</span>
+    }
+<span class="nc bnc" id="L91" title="All 2 branches missed.">    if (obj == null) {</span>
+<span class="nc" id="L92">      return false;</span>
+    }
+<span class="nc bnc" id="L94" title="All 2 branches missed.">    if (getClass() != obj.getClass()) {</span>
+<span class="nc" id="L95">      return false;</span>
+    }
+<span class="nc" id="L97">    InterpolatedValue other = (InterpolatedValue) obj;</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">    if (start == null) {</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">      if (other.start != null) {</span>
+<span class="nc" id="L100">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L103" title="All 2 branches missed.">    else if (!start.equals(other.start)) {</span>
+<span class="nc" id="L104">      return false;</span>
+    }
+<span class="nc bnc" id="L106" title="All 2 branches missed.">    if (end == null) {</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">      if (other.end != null) {</span>
+<span class="nc" id="L108">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L111" title="All 2 branches missed.">    else if (!end.equals(other.end)) {</span>
+<span class="nc" id="L112">      return false;</span>
+    }
+<span class="nc bnc" id="L114" title="All 2 branches missed.">    if (measurementType == null) {</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">      if (other.measurementType != null) {</span>
+<span class="nc" id="L116">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L119" title="All 2 branches missed.">    else if (!measurementType.equals(other.measurementType)) {</span>
+<span class="nc" id="L120">      return false;</span>
+    }
+<span class="nc bnc" id="L122" title="All 2 branches missed.">    if (sensorId == null) {</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">      if (other.sensorId != null) {</span>
+<span class="nc" id="L124">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L127" title="All 2 branches missed.">    else if (!sensorId.equals(other.sensorId)) {</span>
+<span class="nc" id="L128">      return false;</span>
+    }
+<span class="nc bnc" id="L130" title="All 2 branches missed.">    if (value == null) {</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">      if (other.value != null) {</span>
+<span class="nc" id="L132">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L135" title="All 2 branches missed.">    else if (!value.equals(other.value)) {</span>
+<span class="nc" id="L136">      return false;</span>
+    }
+<span class="nc" id="L138">    return true;</span>
+  }
+
+  /**
+   * @param meas a Measurement
+   * @return true if this InterpolatedValue has the same sensorId, time,
+   *         MeasurementType, and value as the Measurement.
+   */
+  public boolean equivalent(Measurement meas) {
+<span class="pc bpc" id="L147" title="1 of 2 branches missed.">    if (!sensorId.equals(meas.getSensorId())) {</span>
+<span class="nc" id="L148">      return false;</span>
+    }
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">    if (start.getTime() - meas.getDate().getTime() != 0) {</span>
+<span class="nc" id="L151">      return false;</span>
+    }
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">    if (!measurementType.getUnits().equals(meas.getMeasurementType())) {</span>
+<span class="nc" id="L154">      return false;</span>
+    }
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">    if (Math.abs(this.value - meas.getValue()) &gt; 0.0001) {</span>
+<span class="nc" id="L157">      return false;</span>
+    }
+<span class="fc" id="L159">    return true;</span>
+  }
+
+  /**
+   * @return the end time for this interpolated value.
+   */
+  public Date getEnd() {
+<span class="fc" id="L166">    return new Date(end.getTime());</span>
+  }
+
+  /**
+   * @return the measurementType
+   */
+  public MeasurementType getMeasurementType() {
+<span class="fc" id="L173">    return measurementType;</span>
+  }
+
+  /**
+   * @return the sensorId
+   */
+  public String getSensorId() {
+<span class="fc" id="L180">    return sensorId;</span>
+  }
+
+  /**
+   * @return start time of the Interpolated Value.
+   */
+  public Date getStart() {
+<span class="fc" id="L187">    return new Date(start.getTime());</span>
+  }
+
+  /**
+   * @return the value
+   */
+  public Double getValue() {
+<span class="fc" id="L194">    return value;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+<span class="nc" id="L204">    final int prime = 31;</span>
+<span class="nc" id="L205">    int result = 1;</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">    result = prime * result + ((start == null) ? 0 : start.hashCode());</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">    result = prime * result + ((end == null) ? 0 : end.hashCode());</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">    result = prime * result + ((measurementType == null) ? 0 : measurementType.hashCode());</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">    result = prime * result + ((sensorId == null) ? 0 : sensorId.hashCode());</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">    result = prime * result + ((value == null) ? 0 : value.hashCode());</span>
+<span class="nc" id="L211">    return result;</span>
+  }
+
+  /**
+   * @param end end date to set.
+   */
+  public void setEnd(Date end) {
+<span class="fc" id="L218">    this.end = new Date(end.getTime());</span>
+<span class="fc" id="L219">  }</span>
+
+  /**
+   * @param measurementType the measurementType to set
+   */
+  public void setMeasurementType(MeasurementType measurementType) {
+<span class="fc" id="L225">    this.measurementType = measurementType;</span>
+<span class="fc" id="L226">  }</span>
+
+  /**
+   * @param sensorId the sensorId to set
+   */
+  public void setSensorId(String sensorId) {
+<span class="fc" id="L232">    this.sensorId = sensorId;</span>
+<span class="fc" id="L233">  }</span>
+
+  /**
+   * @param start the start date to set.
+   */
+  public void setStart(Date start) {
+<span class="fc" id="L239">    this.start = new Date(start.getTime());</span>
+<span class="fc" id="L240">  }</span>
+
+  /**
+   * @param value the value to set
+   */
+  public void setValue(Double value) {
+<span class="fc" id="L246">    this.value = value;</span>
+<span class="fc" id="L247">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+    try {
+<span class="fc" id="L257">      return &quot;InterpolatedValue [sensorId=&quot; + sensorId + &quot;, value=&quot; + value + &quot;, measurementType=&quot;</span>
+          + measurementType + &quot;, start=&quot; + DateConvert.convertDate(start) + &quot;, end=&quot; + DateConvert.convertDate(end) + &quot;]&quot;;
+    }
+<span class="nc" id="L260">    catch (DatatypeConfigurationException e) {</span>
+      // shouldn't happen
+<span class="nc" id="L262">      e.printStackTrace();</span>
+    }
+<span class="nc" id="L264">    return &quot;InterpolatedValue [sensorId=&quot; + sensorId + &quot;, value=&quot; + value + &quot;, measurementType=&quot;</span>
+        + measurementType + &quot;, start=&quot; + start + &quot;, end= &quot; + end + &quot;]&quot;;
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

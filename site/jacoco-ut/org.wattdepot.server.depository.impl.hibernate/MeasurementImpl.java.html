@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MeasurementImpl.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.depository.impl.hibernate</a> &gt; <span class="el_source">MeasurementImpl.java</span></div><h1>MeasurementImpl.java</h1><pre class="source lang-java linenums">/**
+ * MeasurementImpl.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.server.depository.impl.hibernate;
+
+import java.util.Date;
+
+import javax.measure.unit.Unit;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Index;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+//import org.hibernate.annotations.Index;
+import org.wattdepot.common.domainmodel.Measurement;
+
+/**
+ * MeasurementImpl - Hibernate persistant version of Measurement. It is 'stored'
+ * in a Depository.
+ * 
+ * @author Cam Moore
+ * 
+ */
+@Entity
+@Table(name = &quot;MEASUREMENTS&quot;, indexes = {@Index(name = &quot;IDX_MEASUREMENT&quot;, columnList = &quot;DEPOSITORY_PK, SENSOR_PK, TIMESTAMP&quot;) })
+public class MeasurementImpl {
+  /** Database primary key. */
+  @Id
+  @GeneratedValue
+  private Long pk;
+  /** The unique id. Can be used in URIs. */
+  private String id;
+  /** The sensor that made the measurement. */
+  @ManyToOne
+//  @Index(name = &quot;IDX_MEASUREMENT&quot;)
+  private SensorImpl sensor;
+  /** The time of the measurement. */
+//  @Index(name = &quot;IDX_MEASUREMENT&quot;)
+  private Date timestamp;
+  /** The value of the measurement. */
+  private Double value;
+  /** The units of the measurement. */
+  private String units;
+  /** The Depository storing the measurement. */
+  @ManyToOne
+//  @Index(name = &quot;IDX_MEASUREMENT&quot;)
+  private DepositoryImpl depository;
+
+  /**
+   * Default constructor.
+   */
+  public MeasurementImpl() {
+<span class="fc" id="L73">    super();</span>
+<span class="fc" id="L74">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+<span class="nc bnc" id="L83" title="All 2 branches missed.">    if (this == obj) {</span>
+<span class="nc" id="L84">      return true;</span>
+    }
+<span class="nc bnc" id="L86" title="All 2 branches missed.">    if (obj == null) {</span>
+<span class="nc" id="L87">      return false;</span>
+    }
+<span class="nc bnc" id="L89" title="All 2 branches missed.">    if (getClass() != obj.getClass()) {</span>
+<span class="nc" id="L90">      return false;</span>
+    }
+<span class="nc" id="L92">    MeasurementImpl other = (MeasurementImpl) obj;</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">    if (id == null) {</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">      if (other.id != null) {</span>
+<span class="nc" id="L95">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L98" title="All 2 branches missed.">    else if (!id.equals(other.id)) {</span>
+<span class="nc" id="L99">      return false;</span>
+    }
+<span class="nc bnc" id="L101" title="All 2 branches missed.">    if (pk == null) {</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">      if (other.pk != null) {</span>
+<span class="nc" id="L103">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L106" title="All 2 branches missed.">    else if (!pk.equals(other.pk)) {</span>
+<span class="nc" id="L107">      return false;</span>
+    }
+<span class="nc bnc" id="L109" title="All 2 branches missed.">    if (sensor == null) {</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">      if (other.sensor != null) {</span>
+<span class="nc" id="L111">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L114" title="All 2 branches missed.">    else if (!sensor.equals(other.sensor)) {</span>
+<span class="nc" id="L115">      return false;</span>
+    }
+<span class="nc bnc" id="L117" title="All 2 branches missed.">    if (timestamp == null) {</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">      if (other.timestamp != null) {</span>
+<span class="nc" id="L119">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L122" title="All 2 branches missed.">    else if (!timestamp.equals(other.timestamp)) {</span>
+<span class="nc" id="L123">      return false;</span>
+    }
+<span class="nc bnc" id="L125" title="All 2 branches missed.">    if (units == null) {</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">      if (other.units != null) {</span>
+<span class="nc" id="L127">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L130" title="All 2 branches missed.">    else if (!units.equals(other.units)) {</span>
+<span class="nc" id="L131">      return false;</span>
+    }
+<span class="nc bnc" id="L133" title="All 2 branches missed.">    if (value == null) {</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">      if (other.value != null) {</span>
+<span class="nc" id="L135">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L138" title="All 2 branches missed.">    else if (!value.equals(other.value)) {</span>
+<span class="nc" id="L139">      return false;</span>
+    }
+<span class="nc" id="L141">    return true;</span>
+  }
+
+  /**
+   * @return the depository
+   */
+  public DepositoryImpl getDepository() {
+<span class="nc" id="L148">    return depository;</span>
+  }
+
+  /**
+   * @return the id
+   */
+  public String getId() {
+<span class="nc" id="L155">    return id;</span>
+  }
+
+  /**
+   * @return the pk
+   */
+  public Long getPk() {
+<span class="nc" id="L162">    return pk;</span>
+  }
+
+  /**
+   * @return the sensor
+   */
+  public SensorImpl getSensor() {
+<span class="fc" id="L169">    return sensor;</span>
+  }
+
+  /**
+   * @return the timestamp
+   */
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = &quot;MEASUREMENT_DATE&quot;)
+  public Date getTimestamp() {
+<span class="fc" id="L178">    return new Date(timestamp.getTime());</span>
+  }
+
+  /**
+   * @return the units
+   */
+  public String getUnits() {
+<span class="nc" id="L185">    return units;</span>
+  }
+
+  /**
+   * @return the value
+   */
+  public Double getValue() {
+<span class="fc" id="L192">    return value;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+<span class="nc" id="L202">    final int prime = 31;</span>
+<span class="nc" id="L203">    int result = 1;</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">    result = prime * result + ((id == null) ? 0 : id.hashCode());</span>
+<span class="nc bnc" id="L205" title="All 2 branches missed.">    result = prime * result + ((pk == null) ? 0 : pk.hashCode());</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">    result = prime * result + ((sensor == null) ? 0 : sensor.hashCode());</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">    result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">    result = prime * result + ((units == null) ? 0 : units.hashCode());</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">    result = prime * result + ((value == null) ? 0 : value.hashCode());</span>
+<span class="nc" id="L210">    return result;</span>
+  }
+
+  /**
+   * @param depository the depository to set
+   */
+  public void setDepository(DepositoryImpl depository) {
+<span class="fc" id="L217">    this.depository = depository;</span>
+<span class="fc" id="L218">  }</span>
+
+  /**
+   * @param id the id to set
+   */
+  public void setId(String id) {
+<span class="fc" id="L224">    this.id = id;</span>
+<span class="fc" id="L225">  }</span>
+
+  /**
+   * @param pk the pk to set
+   */
+  @SuppressWarnings(&quot;unused&quot;)
+  private void setPk(Long pk) {
+<span class="nc" id="L232">    this.pk = pk;</span>
+<span class="nc" id="L233">  }</span>
+
+  /**
+   * @param sensor the sensor to set
+   */
+  public void setSensor(SensorImpl sensor) {
+<span class="fc" id="L239">    this.sensor = sensor;</span>
+<span class="fc" id="L240">  }</span>
+
+  /**
+   * @param timestamp the timestamp to set
+   */
+  public void setTimestamp(Date timestamp) {
+<span class="fc" id="L246">    this.timestamp = new Date(timestamp.getTime());</span>
+<span class="fc" id="L247">  }</span>
+
+  /**
+   * @param units the units to set
+   */
+  public void setUnits(String units) {
+<span class="fc" id="L253">    this.units = units;</span>
+<span class="fc" id="L254">  }</span>
+
+
+  /**
+   * @param value the value to set
+   */
+  public void setValue(Double value) {
+<span class="fc" id="L261">    this.value = value;</span>
+<span class="fc" id="L262">  }</span>
+
+  /**
+   * @return The domainmodel Measurement that is equivalent to this
+   *         MeasurementImpl.
+   */
+  public Measurement toMeasurement() {
+<span class="fc" id="L269">    Measurement ret = new Measurement(sensor.getId(), timestamp, value, Unit.valueOf(units));</span>
+<span class="fc" id="L270">    return ret;</span>
+  }
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+<span class="nc" id="L278">    return &quot;MeasurementImpl [pk=&quot; + pk + &quot;, id=&quot; + id + &quot;, sensor=&quot; + sensor + &quot;, timestamp=&quot;</span>
+        + timestamp + &quot;, value=&quot; + value + &quot;, units=&quot; + units + &quot;, depository=&quot; + depository + &quot;]&quot;;
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

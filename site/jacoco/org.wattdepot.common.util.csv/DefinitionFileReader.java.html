@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DefinitionFileReader.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.util.csv</a> &gt; <span class="el_source">DefinitionFileReader.java</span></div><h1>DefinitionFileReader.java</h1><pre class="source lang-java linenums">/**
+ * DefinitionFileReader.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2014  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.common.util.csv;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Set;
+import java.util.HashSet;
+
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
+
+/**
+ * DefinitionFileReader reads in a WattDepot object definition file creating the
+ * domain model instances.
+ * 
+ * @author Cam Moore
+ * 
+ */
+public class DefinitionFileReader {
+
+  private BufferedReader reader;
+  private Set&lt;Depository&gt; depositories;
+  private Set&lt;SensorGroup&gt; groups;
+  private Set&lt;Sensor&gt; sensors;
+  private Set&lt;CollectorProcessDefinition&gt; cpds;
+  private Set&lt;MeasurementPruningDefinition&gt; gcds;
+  private Set&lt;String&gt; orgIds;
+
+  /**
+   * Creates a new DefinitionFileReader.
+   * 
+   * @param fileName The name of the definition file, a CSV file of WattDepot
+   *        object definitions.
+   * @throws IOException if there is a problem reading the file.
+   */
+<span class="nc" id="L57">  public DefinitionFileReader(String fileName) throws IOException {</span>
+<span class="nc" id="L58">    this.reader = new BufferedReader(new FileReader(fileName));</span>
+<span class="nc" id="L59">    this.depositories = new HashSet&lt;Depository&gt;();</span>
+<span class="nc" id="L60">    this.groups = new HashSet&lt;SensorGroup&gt;();</span>
+<span class="nc" id="L61">    this.sensors = new HashSet&lt;Sensor&gt;();</span>
+<span class="nc" id="L62">    this.cpds = new HashSet&lt;CollectorProcessDefinition&gt;();</span>
+<span class="nc" id="L63">    this.gcds = new HashSet&lt;MeasurementPruningDefinition&gt;();</span>
+<span class="nc" id="L64">    this.orgIds = new HashSet&lt;String&gt;();</span>
+<span class="nc" id="L65">    processFile();</span>
+<span class="nc" id="L66">  }</span>
+
+
+  /**
+   * @return the CollectorProcessDefinitions.
+   */
+  public Set&lt;CollectorProcessDefinition&gt; getCollectorProcessDefinitions() {
+<span class="nc" id="L73">    return cpds;</span>
+  }
+
+  
+  /**
+   * @return the Depositories
+   */
+  public Set&lt;Depository&gt; getDepositories() {
+<span class="nc" id="L81">    return depositories;</span>
+  }
+
+
+  /**
+   * @return the gcds
+   */
+  public Set&lt;MeasurementPruningDefinition&gt; getMeasurementPruningDefinitions() {
+<span class="nc" id="L89">    return gcds;</span>
+  }
+
+
+  /**
+   * @return the orgIds.
+   */
+  public Set&lt;String&gt; getOrgIds() {
+<span class="nc" id="L97">    return orgIds;</span>
+  }
+
+
+  /**
+   * @return the SensorGroups
+   */
+  public Set&lt;SensorGroup&gt; getSensorGroups() {
+<span class="nc" id="L105">    return groups;</span>
+  }
+
+
+  /**
+   * @return the Sensors
+   */
+  public Set&lt;Sensor&gt; getSensors() {
+<span class="nc" id="L113">    return sensors;</span>
+  }
+
+
+  /**
+   * @throws IOException if there is a problem reading the file.
+   */
+  private void processFile() throws IOException {
+<span class="nc" id="L121">    String line = reader.readLine();</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">    while (line != null) {</span>
+<span class="nc" id="L123">      line = line.trim();</span>
+<span class="nc bnc" id="L124" title="All 4 branches missed.">      if (!line.startsWith(&quot;#&quot;) || line.length() &gt; 0) {</span>
+        // decide what we have
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        if (line.startsWith(&quot;Depository&quot;)) {</span>
+<span class="nc" id="L127">          Depository d = CSVObjectFactory.buildDepository(line);</span>
+<span class="nc" id="L128">          orgIds.add(d.getOrganizationId());</span>
+<span class="nc" id="L129">          depositories.add(d);</span>
+<span class="nc" id="L130">        }</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        else if (line.startsWith(&quot;SensorGroup&quot;)) {</span>
+<span class="nc" id="L132">          SensorGroup sg = CSVObjectFactory.buildSensorGroup(line);</span>
+<span class="nc" id="L133">          orgIds.add(sg.getOrganizationId());</span>
+<span class="nc" id="L134">          groups.add(sg);</span>
+<span class="nc" id="L135">        }</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">        else if (line.startsWith(&quot;Sensor&quot;)) {</span>
+<span class="nc" id="L137">          Sensor s = CSVObjectFactory.buildSensor(line);</span>
+<span class="nc" id="L138">          orgIds.add(s.getOrganizationId());</span>
+<span class="nc" id="L139">          sensors.add(s);</span>
+<span class="nc" id="L140">        }</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">        else if (line.startsWith(&quot;CollectorProcessDefinition&quot;)) {</span>
+<span class="nc" id="L142">          CollectorProcessDefinition cpd = CSVObjectFactory.buildCPD(line);</span>
+<span class="nc" id="L143">          orgIds.add(cpd.getOrganizationId());</span>
+<span class="nc" id="L144">          cpds.add(cpd);</span>
+<span class="nc" id="L145">        }</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">        else if (line.startsWith(&quot;MeasurementPruningDefinition&quot;)) {</span>
+<span class="nc" id="L147">          MeasurementPruningDefinition mpd = CSVObjectFactory.buildMeasurementPruningDefinition(line);</span>
+<span class="nc" id="L148">          orgIds.add(mpd.getOrganizationId());</span>
+<span class="nc" id="L149">          gcds.add(mpd);</span>
+        }
+      }
+<span class="nc" id="L152">      line = reader.readLine();</span>
+    }
+<span class="nc" id="L154">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

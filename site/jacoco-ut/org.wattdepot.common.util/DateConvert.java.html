@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DateConvert.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.util</a> &gt; <span class="el_source">DateConvert.java</span></div><h1>DateConvert.java</h1><pre class="source lang-java linenums">/**
+ * DateConvert.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.common.util;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+/**
+ * DateUtilities - Utility functions dealing with java.util.Date and
+ * java.xml.datatype.XMLGregorianCalendar instances.
+ * 
+ * @author Cam Moore
+ * 
+ */
+<span class="nc" id="L37">public class DateConvert {</span>
+
+  /**
+   * Parses the given String representation of an XMLGregorianCalendar and
+   * returns the instance.
+   * 
+   * @param s
+   *          The String representation of an XMLGregorianCalendar with the
+   *          format yyyy-MM-dd'T'HH:mm:ss.SSS
+   * @return The XMLGregorianCalendar instance.
+   * @throws ParseException
+   *           if the string has the wrong format.
+   * @throws DatatypeConfigurationException
+   *           if there is a problems instantiating the DatatypeFactory.
+   */
+  public static XMLGregorianCalendar parseCalString(String s) throws ParseException,
+      DatatypeConfigurationException {
+<span class="fc" id="L54">    XMLGregorianCalendar result = null;</span>
+<span class="fc" id="L55">    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(&quot;yyyy-MM-dd'T'HH:mm:ss.SSSX&quot;);</span>
+<span class="fc" id="L56">    result = convertDate(simpleDateFormat.parse(s));</span>
+<span class="fc" id="L57">    return result;</span>
+  }
+
+  /**
+   * @param s
+   *          The String representation in the format yyyy-MM-dd'T'HH:mm:ss.SSS.
+   * @return The Date instance for the time.
+   * @throws ParseException
+   *           if the string has the wrong format.
+   * @throws DatatypeConfigurationException
+   *           if there is a problem initializing the DatatypeFactory.
+   */
+  public static Date parseCalStringToDate(String s) throws ParseException,
+      DatatypeConfigurationException {
+<span class="fc" id="L71">    return convertXMLCal(parseCalString(s));</span>
+  }
+
+  /**
+   * Converts a java.util.Date to a javax.xml.datatype.XMLGregorianCalendar.
+   * 
+   * @param date
+   *          The Date to convert.
+   * @return The XMLGregorianCalendar representation of the given Date.
+   * @throws DatatypeConfigurationException
+   *           if there is a problem instantiating the DatatypeFactory.
+   */
+  public static XMLGregorianCalendar convertDate(Date date) throws DatatypeConfigurationException {
+<span class="fc" id="L84">    XMLGregorianCalendar result = null;</span>
+<span class="fc" id="L85">    GregorianCalendar gregorianCalendar = (GregorianCalendar) GregorianCalendar.getInstance();</span>
+<span class="fc" id="L86">    gregorianCalendar.setTime(date);</span>
+<span class="fc" id="L87">    result = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);</span>
+<span class="fc" id="L88">    return result;</span>
+  }
+
+  /**
+   * Converts the given XMLGregorianCalendar to a java.util.Date.
+   * 
+   * @param xgc
+   *          The XMLGregorianCalendar.
+   * @return The Date representation of the XMLGregorianCalendar.
+   */
+  public static Date convertXMLCal(XMLGregorianCalendar xgc) {
+<span class="fc" id="L99">    return xgc.toGregorianCalendar().getTime();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

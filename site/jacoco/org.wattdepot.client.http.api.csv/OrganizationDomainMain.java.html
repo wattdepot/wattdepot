@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>OrganizationDomainMain.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.client.http.api.csv</a> &gt; <span class="el_source">OrganizationDomainMain.java</span></div><h1>OrganizationDomainMain.java</h1><pre class="source lang-java linenums">/**
+ * OrganizationDomainMain.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.client.http.api.csv;
+
+import java.io.IOException;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.wattdepot.common.exception.BadCredentialException;
+import org.wattdepot.common.exception.BadSensorUriException;
+import org.wattdepot.common.exception.IdNotFoundException;
+
+/**
+ * OrganizationDomainMain - Reads in an Organization domain definition file and
+ * ensures the WattDepot server has all the instances defined in the file.
+ * 
+ * @author Cam Moore
+ * 
+ */
+<span class="nc" id="L40">public class OrganizationDomainMain {</span>
+
+  /**
+   * @param args command line arguments -s &lt;server uri&gt; -u &lt;username&gt; -p
+   *        &lt;password&gt; -o &lt;orgId&gt; -f &lt;fileName&gt; [-d].
+   * @throws BadSensorUriException if there is a problem with the WattDepot
+   *         sensor definition.
+   * @throws IdNotFoundException if there is a problem with the organization id.
+   * @throws BadCredentialException if the credentials are not valid.
+   * @throws IOException if there is a problem with reading the file.
+   */
+  public static void main(String[] args) throws BadCredentialException,
+      IdNotFoundException, BadSensorUriException, IOException {
+<span class="nc" id="L53">    Options options = new Options();</span>
+<span class="nc" id="L54">    CommandLine cmd = null;</span>
+<span class="nc" id="L55">    String serverUri = null;</span>
+<span class="nc" id="L56">    String username = null;</span>
+<span class="nc" id="L57">    String organizationId = null;</span>
+<span class="nc" id="L58">    String password = null;</span>
+<span class="nc" id="L59">    String fileName = null;</span>
+<span class="nc" id="L60">    boolean debug = false;</span>
+
+<span class="nc" id="L62">    options.addOption(&quot;h&quot;, false,</span>
+        &quot;Usage: OrganizationDomainMain -s &lt;server uri&gt; -u &lt;username&gt;&quot;
+            + &quot; -p &lt;password&gt; -o &lt;orgId&gt; -f &lt;fileName&gt; [-d]&quot;);
+<span class="nc" id="L65">    options.addOption(&quot;s&quot;, &quot;server&quot;, true,</span>
+        &quot;WattDepot Server URI. (http://server.wattdepot.org)&quot;);
+<span class="nc" id="L67">    options.addOption(&quot;u&quot;, &quot;username&quot;, true, &quot;Username&quot;);</span>
+<span class="nc" id="L68">    options.addOption(&quot;o&quot;, &quot;organizationId&quot;, true, &quot;User's Organization id.&quot;);</span>
+<span class="nc" id="L69">    options.addOption(&quot;p&quot;, &quot;password&quot;, true, &quot;Password&quot;);</span>
+<span class="nc" id="L70">    options.addOption(&quot;f&quot;, &quot;fileName&quot;, true, &quot;Domain definition file name.&quot;);</span>
+<span class="nc" id="L71">    options.addOption(&quot;d&quot;, &quot;debug&quot;, false,</span>
+        &quot;Displays debugging information.&quot;);
+
+<span class="nc" id="L74">    CommandLineParser parser = new PosixParser();</span>
+<span class="nc" id="L75">    HelpFormatter formatter = new HelpFormatter();</span>
+    try {
+<span class="nc" id="L77">      cmd = parser.parse(options, args);</span>
+    }
+<span class="nc" id="L79">    catch (ParseException e) {</span>
+<span class="nc" id="L80">      System.err.println(&quot;Command line parsing failed. Reason: &quot;</span>
+          + e.getMessage() + &quot;. Exiting.&quot;);
+<span class="nc" id="L82">      System.exit(1);</span>
+<span class="nc" id="L83">    }</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">    if (cmd.hasOption(&quot;h&quot;)) {</span>
+<span class="nc" id="L85">      formatter.printHelp(&quot;OrganizationDomainMain&quot;, options);</span>
+<span class="nc" id="L86">      System.exit(0);</span>
+    }
+<span class="nc bnc" id="L88" title="All 2 branches missed.">    if (cmd.hasOption(&quot;s&quot;)) {</span>
+<span class="nc" id="L89">      serverUri = cmd.getOptionValue(&quot;s&quot;);</span>
+    }
+    else {
+<span class="nc" id="L92">      serverUri = &quot;http://server.wattdepot.org/&quot;;</span>
+    }
+<span class="nc bnc" id="L94" title="All 2 branches missed.">    if (cmd.hasOption(&quot;u&quot;)) {</span>
+<span class="nc" id="L95">      username = cmd.getOptionValue(&quot;u&quot;);</span>
+    }
+    else {
+<span class="nc" id="L98">      username = &quot;user&quot;;</span>
+    }
+<span class="nc bnc" id="L100" title="All 2 branches missed.">    if (cmd.hasOption(&quot;p&quot;)) {</span>
+<span class="nc" id="L101">      password = cmd.getOptionValue(&quot;p&quot;);</span>
+    }
+    else {
+<span class="nc" id="L104">      password = &quot;default&quot;;</span>
+    }
+<span class="nc bnc" id="L106" title="All 2 branches missed.">    if (cmd.hasOption(&quot;o&quot;)) {</span>
+<span class="nc" id="L107">      organizationId = cmd.getOptionValue(&quot;o&quot;);</span>
+    }
+    else {
+<span class="nc" id="L110">      organizationId = &quot;organization&quot;;</span>
+    }
+<span class="nc bnc" id="L112" title="All 2 branches missed.">    if (cmd.hasOption(&quot;f&quot;)) {</span>
+<span class="nc" id="L113">      fileName = cmd.getOptionValue(&quot;f&quot;);</span>
+    }
+    else {
+<span class="nc" id="L116">      fileName = &quot;organization.csv&quot;;</span>
+    }
+<span class="nc" id="L118">    debug = cmd.hasOption(&quot;d&quot;);</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">    if (debug) {</span>
+<span class="nc" id="L120">      System.out.println(&quot;Organization Domain Main:&quot;);</span>
+<span class="nc" id="L121">      System.out.println(&quot;    WattDepotServer: &quot; + serverUri);</span>
+<span class="nc" id="L122">      System.out.println(&quot;    Username: &quot; + username);</span>
+<span class="nc" id="L123">      System.out.println(&quot;    OrganizationId: &quot; + organizationId);</span>
+<span class="nc" id="L124">      System.out.println(&quot;    Password: ********&quot;);</span>
+<span class="nc" id="L125">      System.out.println(&quot;    fileName: &quot; + fileName);</span>
+    }
+<span class="nc" id="L127">    OrganizationDomain od = new OrganizationDomain(serverUri, username,</span>
+        organizationId, password, fileName);
+<span class="nc" id="L129">    od.initializeFromFile();</span>
+<span class="nc" id="L130">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

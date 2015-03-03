@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>RowCount.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.depository.impl.hibernate</a> &gt; <span class="el_source">RowCount.java</span></div><h1>RowCount.java</h1><pre class="source lang-java linenums">/*
+ * This file is part of WattDepot.
+ *
+ *  Copyright (C) 2015  Cam Moore
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package org.wattdepot.server.depository.impl.hibernate;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * Keeps track of the number of rows in each of the other tables.
+ *
+ * @author Cam Moore
+ * Created by Cam Moore on 2/3/15.
+ */
+@Entity
+@Table(name = &quot;ROWCOUNT&quot;)
+<span class="fc" id="L35">public class RowCount {</span>
+  /** Database primary key. */
+  @Id
+  @GeneratedValue
+  private Long pk;
+  private String tableName;
+  private Long totalRows;
+
+  /* (non-Javadoc)
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+<span class="nc" id="L48">    return &quot;RowCount[&quot; +</span>
+        &quot;pk=&quot; + pk +
+        &quot;, tableName='&quot; + tableName + '\'' +
+        &quot;, totalRows=&quot; + totalRows +
+        ']';
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object o) {
+<span class="nc bnc" id="L62" title="All 2 branches missed.">    if (this == o) {</span>
+<span class="nc" id="L63">      return true;</span>
+    }
+<span class="nc bnc" id="L65" title="All 2 branches missed.">    if (!(o instanceof RowCount)) {</span>
+<span class="nc" id="L66">      return false;</span>
+    }
+
+<span class="nc" id="L69">    RowCount rowCount = (RowCount) o;</span>
+
+<span class="nc bnc" id="L71" title="All 6 branches missed.">    if (pk != null ? !pk.equals(rowCount.pk) : rowCount.pk != null) {</span>
+<span class="nc" id="L72">      return false;</span>
+    }
+<span class="nc bnc" id="L74" title="All 6 branches missed.">    if (tableName != null ? !tableName.equals(rowCount.tableName) : rowCount.tableName != null) {</span>
+<span class="nc" id="L75">      return false;</span>
+    }
+<span class="nc bnc" id="L77" title="All 6 branches missed.">    if (totalRows != null ? !totalRows.equals(rowCount.totalRows) : rowCount.totalRows != null) {</span>
+<span class="nc" id="L78">      return false;</span>
+    }
+
+<span class="nc" id="L81">    return true;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+<span class="nc bnc" id="L91" title="All 2 branches missed.">    int result = pk != null ? pk.hashCode() : 0;</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">    result = 31 * result + (tableName != null ? tableName.hashCode() : 0);</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">    result = 31 * result + (totalRows != null ? totalRows.hashCode() : 0);</span>
+<span class="nc" id="L94">    return result;</span>
+  }
+
+  /**
+   * @return The number of rows.
+   */
+  public Long getTotalRows() {
+<span class="nc" id="L101">    return totalRows;</span>
+  }
+
+  /**
+   * Sets the number of rows.
+   * @param totalRows the new number of rows.
+   */
+  public void setTotalRows(Long totalRows) {
+<span class="nc" id="L109">    this.totalRows = totalRows;</span>
+<span class="nc" id="L110">  }</span>
+
+  /**
+   * @return The table name.
+   */
+  public String getTableName() {
+<span class="nc" id="L116">    return tableName;</span>
+  }
+
+  /**
+   * @param tableName The new table name.
+   */
+  public void setTableName(String tableName) {
+<span class="nc" id="L123">    this.tableName = tableName;</span>
+<span class="nc" id="L124">  }</span>
+
+  /**
+   * @return the primary key.
+   */
+  public Long getPk() {
+<span class="nc" id="L130">    return pk;</span>
+  }
+
+  /**
+   * @param pk the new primary key.
+   */
+  public void setPk(Long pk) {
+<span class="nc" id="L137">    this.pk = pk;</span>
+<span class="nc" id="L138">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

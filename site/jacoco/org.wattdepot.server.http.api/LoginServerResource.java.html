@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>LoginServerResource.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">LoginServerResource.java</span></div><h1>LoginServerResource.java</h1><pre class="source lang-java linenums">/**
+ * LoginServerResource.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.server.http.api;
+
+import java.util.logging.Level;
+
+import org.restlet.data.CookieSetting;
+import org.restlet.data.Form;
+import org.restlet.resource.Post;
+import org.restlet.resource.ResourceException;
+
+/**
+ * LoginServerResource - Handles the login form.
+ * 
+ * @author Cam Moore
+ * 
+ */
+<span class="nc" id="L34">public class LoginServerResource extends WattDepotServerResource {</span>
+
+  private String username;
+  private String password;
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.restlet.resource.Resource#doInit()
+   */
+  @Override
+  protected void doInit() throws ResourceException {
+<span class="nc" id="L46">    super.doInit();</span>
+<span class="nc" id="L47">    Form foo = new Form(getRequest().getEntity());</span>
+<span class="nc" id="L48">    username = foo.getFirstValue(&quot;Username&quot;);</span>
+<span class="nc" id="L49">    password = foo.getFirstValue(&quot;Password&quot;);</span>
+<span class="nc" id="L50">  }</span>
+
+  /**
+   * logs user in.
+   */
+  @Post
+  public void login() {
+<span class="nc" id="L57">    getLogger().log(Level.INFO, &quot;POST /wattdepot/login/&quot;);</span>
+<span class="nc" id="L58">    WattDepotApplication app = (WattDepotApplication) getApplication();</span>
+<span class="nc" id="L59">    WebSession session = app.createWebSession(username, password);</span>
+<span class="nc" id="L60">    String redirectUri = null;</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">    if (session != null) {</span>
+      // add the session cookie.
+<span class="nc" id="L63">      getCookieSettings().add(new CookieSetting(&quot;sessionToken&quot;, session.getId()));</span>
+<span class="nc" id="L64">      redirectUri = &quot;/wattdepot/&quot; + session.getGroupId() + &quot;/&quot;;</span>
+    } 
+    else {
+<span class="nc" id="L67">      redirectUri = &quot;/wattdepot/&quot;;</span>
+    }
+<span class="nc bnc" id="L69" title="All 2 branches missed.">    if (redirectUri != null) {</span>
+<span class="nc" id="L70">      redirectSeeOther(redirectUri);</span>
+    }
+<span class="nc" id="L72">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

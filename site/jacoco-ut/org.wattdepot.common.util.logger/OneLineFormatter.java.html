@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>OneLineFormatter.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.util.logger</a> &gt; <span class="el_source">OneLineFormatter.java</span></div><h1>OneLineFormatter.java</h1><pre class="source lang-java linenums">package org.wattdepot.common.util.logger;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.logging.Formatter;
+import java.util.logging.LogRecord;
+
+/**
+ * Provides a one line formatter for use with WattDepot logging. Supports optional date stamp prefix
+ * and optional appending of a newline. Portions of this code are adapted from
+ * http://hackystat-utilities.googlecode.com/
+ * 
+ * @author Philip Johnson
+ * @author Robert Brewer
+ */
+public class OneLineFormatter extends Formatter {
+
+  /** Whether or not to include the date stamp in the format string. */
+<span class="nc" id="L20">  private boolean enableDateStamp = true;</span>
+
+  /** Whether or not to add a newline. */
+<span class="nc" id="L23">  private boolean enableNewline = true;</span>
+
+  /**
+   * Default constructor that enables the date stamp and new line.
+   */
+  public OneLineFormatter() {
+<span class="nc" id="L29">    this(true, true);</span>
+<span class="nc" id="L30">  }</span>
+
+  /**
+   * One line format string with optional date stamp. Always adds a newline.
+   * 
+   * @param enableDateStamp If true, a date stamp is inserted.
+   */
+  public OneLineFormatter(boolean enableDateStamp) {
+<span class="nc" id="L38">    this(enableDateStamp, true);</span>
+<span class="nc" id="L39">  }</span>
+
+  /**
+   * One line format string with optional date stamp and optional newline.
+   * 
+   * @param enableDateStamp If true, a date stamp is inserted.
+   * @param enableNewline If true, a newline is always inserted.
+   */
+<span class="nc" id="L47">  public OneLineFormatter(boolean enableDateStamp, boolean enableNewline) {</span>
+<span class="nc" id="L48">    this.enableDateStamp = enableDateStamp;</span>
+<span class="nc" id="L49">    this.enableNewline = enableNewline;</span>
+<span class="nc" id="L50">  }</span>
+
+  /**
+   * Formats the passed log string as a single line. Prefixes the log string with a date stamp if
+   * enabled, and adds a newline if enabled.
+   * 
+   * @param record A log record.
+   * @return The message string.
+   */
+  @Override
+  public String format(LogRecord record) {
+<span class="nc" id="L61">    StringBuffer buff = new StringBuffer();</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">    if (this.enableDateStamp) {</span>
+<span class="nc" id="L63">      SimpleDateFormat dateFormat = new SimpleDateFormat(&quot;yyyy/MM/dd HH:mm:ss&quot;, Locale.US);</span>
+<span class="nc" id="L64">      buff.append(dateFormat.format(new Date()));</span>
+<span class="nc" id="L65">      buff.append(&quot;  &quot;);</span>
+    }
+<span class="nc" id="L67">    buff.append(record.getMessage());</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">    if (this.enableNewline) {</span>
+<span class="nc" id="L69">      buff.append(System.getProperty(&quot;line.separator&quot;));</span>
+    }
+<span class="nc" id="L71">    return buff.toString();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

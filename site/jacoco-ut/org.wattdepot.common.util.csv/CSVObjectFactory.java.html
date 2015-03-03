@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>CSVObjectFactory.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.util.csv</a> &gt; <span class="el_source">CSVObjectFactory.java</span></div><h1>CSVObjectFactory.java</h1><pre class="source lang-java linenums">/**
+ * ObjectFactory.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2014  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.common.util.csv;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.measure.unit.Unit;
+
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
+import org.wattdepot.common.domainmodel.MeasurementType;
+import org.wattdepot.common.domainmodel.Property;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.util.Slug;
+
+import au.com.bytecode.opencsv.CSVReader;
+
+/**
+ * ObjectFactory factory class for converting WattDepot domain model instances
+ * into a CSV entry and converting a CSV entry into a domain model instance.
+ * 
+ * @author Cam Moore
+ * 
+ */
+<span class="nc" id="L46">public class CSVObjectFactory {</span>
+
+  /**
+   * @param cpd the CollectorProcessDefinition.
+   * @return The CSV entity for the given CollectorProcessDefinition.
+   */
+  public static String toCSV(CollectorProcessDefinition cpd) {
+<span class="fc" id="L53">    StringBuffer buf = new StringBuffer();</span>
+    // class name
+<span class="fc" id="L55">    buf.append(cpd.getClass().getSimpleName());</span>
+<span class="fc" id="L56">    buf.append(&quot;,&quot;);</span>
+    // name
+<span class="fc" id="L58">    buf.append(cpd.getName());</span>
+<span class="fc" id="L59">    buf.append(&quot;,&quot;);</span>
+    // sensor id
+<span class="fc" id="L61">    buf.append(cpd.getSensorId());</span>
+<span class="fc" id="L62">    buf.append(&quot;,&quot;);</span>
+    // polling
+<span class="fc" id="L64">    buf.append(cpd.getPollingInterval());</span>
+<span class="fc" id="L65">    buf.append(&quot;,&quot;);</span>
+    // depository id
+<span class="fc" id="L67">    buf.append(cpd.getDepositoryId());</span>
+<span class="fc" id="L68">    buf.append(&quot;,&quot;);</span>
+<span class="fc" id="L69">    buf.append(cpd.getOrganizationId());</span>
+<span class="fc" id="L70">    buf.append(&quot;,&quot;);</span>
+<span class="fc" id="L71">    buf.append(getPropertiesCSV(cpd.getProperties()));</span>
+<span class="fc" id="L72">    return buf.toString();</span>
+  }
+
+  /**
+   * @param csv the CSV to parse.
+   * @return the CollectorProcessDefinition
+   * @throws IOException if there is a problem parsing the csv.
+   */
+  public static CollectorProcessDefinition buildCPD(String csv) throws IOException {
+<span class="fc" id="L81">    CSVReader reader = new CSVReader(new StringReader(csv));</span>
+    try {
+<span class="fc" id="L83">      String[] line = reader.readNext();</span>
+<span class="pc bpc" id="L84" title="2 of 4 branches missed.">      if (CollectorProcessDefinition.class.getSimpleName().equals(line[0]) &amp;&amp; line.length &gt;= 7) {</span>
+<span class="fc" id="L85">        String name = line[1];</span>
+<span class="fc" id="L86">        String sensorId = line[2];</span>
+<span class="fc" id="L87">        Long polling = Long.parseLong(line[3]);</span>
+<span class="fc" id="L88">        String depositoryId = line[4];</span>
+<span class="fc" id="L89">        String orgId = line[5];</span>
+<span class="fc" id="L90">        Set&lt;Property&gt; properties = buildProperties(line, 6);</span>
+<span class="fc" id="L91">        return new CollectorProcessDefinition(Slug.slugify(name), name, sensorId, polling,</span>
+            depositoryId, properties, orgId);
+      }
+    }
+    finally {
+<span class="pc" id="L96">      reader.close();</span>
+<span class="nc" id="L97">    }</span>
+<span class="nc" id="L98">    return null;</span>
+  }
+
+  /**
+   * @param depo the Depository.
+   * @return The CSV entity for the given Depository.
+   */
+  public static String toCSV(Depository depo) {
+<span class="fc" id="L106">    StringBuffer buf = new StringBuffer();</span>
+    // class name
+<span class="fc" id="L108">    buf.append(depo.getClass().getSimpleName());</span>
+<span class="fc" id="L109">    buf.append(&quot;,&quot;);</span>
+    // name
+<span class="fc" id="L111">    buf.append(depo.getName());</span>
+<span class="fc" id="L112">    buf.append(&quot;,&quot;);</span>
+    // measurement Type name
+<span class="fc" id="L114">    buf.append(depo.getMeasurementType().getName());</span>
+<span class="fc" id="L115">    buf.append(&quot;,&quot;);</span>
+    // measurement Type units
+<span class="fc" id="L117">    buf.append(depo.getMeasurementType().getUnits());</span>
+<span class="fc" id="L118">    buf.append(&quot;,&quot;);</span>
+    // organization
+<span class="fc" id="L120">    buf.append(depo.getOrganizationId());</span>
+<span class="fc" id="L121">    return buf.toString();</span>
+  }
+
+  /**
+   * @param csv The CSV entity to parse.
+   * @return The Depository
+   * @throws IOException if there is a problem parsing the String.
+   */
+  public static Depository buildDepository(String csv) throws IOException {
+<span class="fc" id="L130">    CSVReader reader = new CSVReader(new StringReader(csv));</span>
+    try {
+<span class="fc" id="L132">      String[] line = reader.readNext();</span>
+<span class="pc bpc" id="L133" title="2 of 4 branches missed.">      if (Depository.class.getSimpleName().equals(line[0]) &amp;&amp; line.length == 5) {</span>
+<span class="fc" id="L134">        String name = line[1];</span>
+<span class="fc" id="L135">        String measTypeName = line[2];</span>
+<span class="fc" id="L136">        String measTypeUnits = line[3];</span>
+<span class="fc" id="L137">        MeasurementType type = new MeasurementType(measTypeName, Unit.valueOf(measTypeUnits));</span>
+<span class="fc" id="L138">        String orgId = line[4];</span>
+<span class="fc" id="L139">        return new Depository(Slug.slugify(name), name, type, orgId);</span>
+      }
+    }
+    finally {
+<span class="pc" id="L143">      reader.close();</span>
+<span class="nc" id="L144">    }</span>
+<span class="nc" id="L145">    return null;</span>
+  }
+
+  /**
+   * @param sensor The Sensor.
+   * @return The CSV string representing the Sensor.
+   */
+  public static String toCSV(Sensor sensor) {
+<span class="fc" id="L153">    StringBuffer buf = new StringBuffer();</span>
+    // class name
+<span class="fc" id="L155">    buf.append(sensor.getClass().getSimpleName());</span>
+<span class="fc" id="L156">    buf.append(&quot;,&quot;);</span>
+    // name
+<span class="fc" id="L158">    buf.append(sensor.getName());</span>
+<span class="fc" id="L159">    buf.append(&quot;,&quot;);</span>
+    // uri
+<span class="fc" id="L161">    buf.append(sensor.getUri());</span>
+<span class="fc" id="L162">    buf.append(&quot;,&quot;);</span>
+    // modelId
+<span class="fc" id="L164">    buf.append(sensor.getModelId());</span>
+<span class="fc" id="L165">    buf.append(&quot;,&quot;);</span>
+    // orgId
+<span class="fc" id="L167">    buf.append(sensor.getOrganizationId());</span>
+<span class="fc" id="L168">    buf.append(&quot;,&quot;);</span>
+    // properties
+<span class="fc" id="L170">    buf.append(getPropertiesCSV(sensor.getProperties()));</span>
+<span class="fc" id="L171">    return buf.toString();</span>
+  }
+
+  /**
+   * @param csv The CSV entity to parse.
+   * @return the Sensor.
+   * @throws IOException if there is a problem parsing the String.
+   */
+  public static Sensor buildSensor(String csv) throws IOException {
+<span class="fc" id="L180">    CSVReader reader = new CSVReader(new StringReader(csv));</span>
+    try {
+<span class="fc" id="L182">      String[] line = reader.readNext();</span>
+<span class="pc bpc" id="L183" title="2 of 4 branches missed.">      if (Sensor.class.getSimpleName().equals(line[0]) &amp;&amp; line.length &gt;= 6) {</span>
+<span class="fc" id="L184">        String name = line[1];</span>
+<span class="fc" id="L185">        String uri = line[2];</span>
+<span class="fc" id="L186">        String modelId = line[3];</span>
+<span class="fc" id="L187">        String orgId = line[4];</span>
+<span class="fc" id="L188">        Set&lt;Property&gt; properties = buildProperties(line, 5);</span>
+<span class="fc" id="L189">        return new Sensor(Slug.slugify(name), name, uri, modelId, properties, orgId);</span>
+      }
+    }
+    finally {
+<span class="pc" id="L193">      reader.close();</span>
+<span class="nc" id="L194">    }</span>
+<span class="nc" id="L195">    return null;</span>
+  }
+
+  /**
+   * @param group The SensorGroup to convert.
+   * @return The CSV for the group.
+   */
+  public static String toCSV(SensorGroup group) {
+<span class="fc" id="L203">    StringBuffer buf = new StringBuffer();</span>
+    // class name
+<span class="fc" id="L205">    buf.append(group.getClass().getSimpleName());</span>
+<span class="fc" id="L206">    buf.append(&quot;,&quot;);</span>
+    // name
+<span class="fc" id="L208">    buf.append(group.getName());</span>
+<span class="fc" id="L209">    buf.append(&quot;,&quot;);</span>
+    // orgId
+<span class="fc" id="L211">    buf.append(group.getOrganizationId());</span>
+<span class="fc" id="L212">    buf.append(&quot;,&quot;);</span>
+<span class="fc" id="L213">    buf.append(group.getSensors().size());</span>
+<span class="fc" id="L214">    buf.append(&quot;,&quot;);</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">    for (String sensor : group.getSensors()) {</span>
+<span class="fc" id="L216">      buf.append(sensor);</span>
+<span class="fc" id="L217">      buf.append(&quot;,&quot;);</span>
+<span class="fc" id="L218">    }</span>
+<span class="fc" id="L219">    return buf.toString();</span>
+  }
+
+  /**
+   * @param csv The CSV representation of the SensorGroup
+   * @return The SensorGroup
+   * @throws IOException if there is a problem parsing the String.
+   */
+  public static SensorGroup buildSensorGroup(String csv) throws IOException {
+<span class="fc" id="L228">    CSVReader reader = new CSVReader(new StringReader(csv));</span>
+    try {
+<span class="fc" id="L230">      String[] line = reader.readNext();</span>
+<span class="pc bpc" id="L231" title="2 of 4 branches missed.">      if (line.length &gt;= 4 &amp;&amp; SensorGroup.class.getSimpleName().equals(line[0])) {</span>
+<span class="fc" id="L232">        String name = line[1];</span>
+<span class="fc" id="L233">        String orgId = line[2];</span>
+<span class="fc" id="L234">        Integer numSensors = Integer.parseInt(line[3]);</span>
+<span class="fc" id="L235">        Set&lt;String&gt; sensors = new HashSet&lt;String&gt;();</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">        for (int i = 0; i &lt; numSensors; i++) {</span>
+<span class="fc" id="L237">          sensors.add(line[4 + i]);</span>
+        }
+<span class="fc" id="L239">        return new SensorGroup(Slug.slugify(name), name, sensors, orgId);</span>
+      }
+    }
+    finally {
+<span class="pc" id="L243">      reader.close();</span>
+<span class="nc" id="L244">    }</span>
+<span class="nc" id="L245">    return null;</span>
+  }
+
+  /**
+   * @param gcd The MeasurementPruningDefinition to convert.
+   * @return The CSV for the MeasurementPruningDefinition.
+   */
+  public static String toCSV(MeasurementPruningDefinition gcd) {
+<span class="nc" id="L253">    StringBuffer buf = new StringBuffer();</span>
+    // class name
+<span class="nc" id="L255">    buf.append(gcd.getClass().getSimpleName());</span>
+<span class="nc" id="L256">    buf.append(&quot;,&quot;);</span>
+    // name
+<span class="nc" id="L258">    buf.append(gcd.getName());</span>
+<span class="nc" id="L259">    buf.append(&quot;,&quot;);</span>
+    // depositoryId
+<span class="nc" id="L261">    buf.append(gcd.getDepositoryId());</span>
+<span class="nc" id="L262">    buf.append(&quot;,&quot;);</span>
+    // sensorId
+<span class="nc" id="L264">    buf.append(gcd.getSensorId());</span>
+<span class="nc" id="L265">    buf.append(&quot;,&quot;);</span>
+    // organizationId
+<span class="nc" id="L267">    buf.append(gcd.getOrgId());</span>
+<span class="nc" id="L268">    buf.append(&quot;,&quot;);</span>
+    // ignore Window
+<span class="nc" id="L270">    buf.append(gcd.getIgnoreWindowDays());</span>
+<span class="nc" id="L271">    buf.append(&quot;,&quot;);</span>
+    // collection window
+<span class="nc" id="L273">    buf.append(gcd.getCollectWindowDays());</span>
+<span class="nc" id="L274">    buf.append(&quot;,&quot;);</span>
+    // min gap
+<span class="nc" id="L276">    buf.append(gcd.getMinGapSeconds());</span>
+<span class="nc" id="L277">    buf.append(&quot;,&quot;);</span>
+<span class="nc" id="L278">    return buf.toString();</span>
+  }
+
+  /**
+   * @param csv The CSV representation of the SensorGroup
+   * @return The SensorGroup
+   * @throws IOException if there is a problem parsing the String.
+   */
+  public static MeasurementPruningDefinition buildMeasurementPruningDefinition(String csv)
+      throws IOException {
+<span class="nc" id="L288">    CSVReader reader = new CSVReader(new StringReader(csv));</span>
+    try {
+<span class="nc" id="L290">      String[] line = reader.readNext();</span>
+<span class="nc bnc" id="L291" title="All 4 branches missed.">      if (line.length == 8 &amp;&amp; MeasurementPruningDefinition.class.getSimpleName().equals(line[0])) {</span>
+<span class="nc" id="L292">        String name = line[1];</span>
+<span class="nc" id="L293">        String depositoryId = line[2];</span>
+<span class="nc" id="L294">        String sensorId = line[3];</span>
+<span class="nc" id="L295">        String orgId = line[4];</span>
+<span class="nc" id="L296">        Integer ignore = Integer.parseInt(line[5]);</span>
+<span class="nc" id="L297">        Integer collect = Integer.parseInt(line[6]);</span>
+<span class="nc" id="L298">        Integer gap = Integer.parseInt(line[7]);</span>
+<span class="nc" id="L299">        return new MeasurementPruningDefinition(name, depositoryId, sensorId, orgId, ignore,</span>
+            collect, gap);
+      }
+    }
+    finally {
+<span class="nc" id="L304">      reader.close();</span>
+<span class="nc" id="L305">    }</span>
+<span class="nc" id="L306">    return null;</span>
+
+  }
+
+  /**
+   * @param properties Set of properties.
+   * @return The properties as a CSV entry with trailing ,.
+   */
+  private static String getPropertiesCSV(Set&lt;Property&gt; properties) {
+<span class="fc" id="L315">    StringBuffer buf = new StringBuffer();</span>
+<span class="fc" id="L316">    buf.append(properties.size());</span>
+<span class="fc" id="L317">    buf.append(&quot;,&quot;);</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">    for (Property p : properties) {</span>
+<span class="fc" id="L319">      buf.append(p.getKey());</span>
+<span class="fc" id="L320">      buf.append(&quot;,&quot;);</span>
+<span class="fc" id="L321">      buf.append(p.getValue());</span>
+<span class="fc" id="L322">      buf.append(&quot;,&quot;);</span>
+<span class="fc" id="L323">    }</span>
+<span class="fc" id="L324">    return buf.toString();</span>
+  }
+
+  /**
+   * @param values The String [] holding the properties.
+   * @param index The index to where the properties are stored.
+   * @return a Set of Properties.
+   */
+  private static Set&lt;Property&gt; buildProperties(String[] values, int index) {
+<span class="fc" id="L333">    Set&lt;Property&gt; properties = new HashSet&lt;Property&gt;();</span>
+<span class="fc" id="L334">    int numProps = Integer.parseInt(values[index]);</span>
+<span class="fc bfc" id="L335" title="All 2 branches covered.">    for (int i = 0; i &lt; numProps; i++) {</span>
+<span class="fc" id="L336">      Property p = new Property();</span>
+<span class="fc" id="L337">      p.setKey(values[index + i * 2 + 1]);</span>
+<span class="fc" id="L338">      p.setValue(values[index + i * 2 + 2]);</span>
+<span class="fc" id="L339">      properties.add(p);</span>
+    }
+<span class="fc" id="L341">    return properties;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

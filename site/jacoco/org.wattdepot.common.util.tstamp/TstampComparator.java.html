@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>TstampComparator.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.util.tstamp</a> &gt; <span class="el_source">TstampComparator.java</span></div><h1>TstampComparator.java</h1><pre class="source lang-java linenums">package org.wattdepot.common.util.tstamp;
+
+import java.io.Serializable;
+import java.util.Comparator;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+
+/**
+ * Implements a comparator for XMLGregorianCalendar instances consistent with the Tstamp operations.
+ * @author Philip Johnson
+ */
+<span class="fc" id="L12">public class TstampComparator implements Serializable, Comparator&lt;XMLGregorianCalendar&gt; {</span>
+
+  /** For serialization. */
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * Compares the two instances. 
+   * @param tstamp1 The first tstamp.
+   * @param tstamp2 The second tstamp.
+   * @return -1, 0, or +1 depending. 
+   */
+  @Override
+  public int compare(XMLGregorianCalendar tstamp1, XMLGregorianCalendar tstamp2) {
+<span class="fc bfc" id="L25" title="All 2 branches covered.">    if (Tstamp.greaterThan(tstamp1, tstamp2)) {</span>
+<span class="fc" id="L26">      return 1;</span>
+    } 
+<span class="pc bpc" id="L28" title="1 of 2 branches missed.">    else if (Tstamp.lessThan(tstamp1, tstamp2)) {</span>
+<span class="fc" id="L29">      return -1;</span>
+    }
+    else {
+<span class="nc" id="L32">      return 0;</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

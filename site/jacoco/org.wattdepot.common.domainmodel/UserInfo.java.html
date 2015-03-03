@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>UserInfo.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.domainmodel</a> &gt; <span class="el_source">UserInfo.java</span></div><h1>UserInfo.java</h1><pre class="source lang-java linenums">/**
+ * User.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.common.domainmodel;
+
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.wattdepot.server.ServerProperties;
+
+/**
+ * User - represents a user of WattDepot.
+ * 
+ * @author Cam Moore
+ * 
+ */
+public class UserInfo {
+  /** Name of property used to store the admin username. */
+  public static final String ADMIN_USER_NAME = &quot;wattdepot-server.admin.name&quot;;
+
+  /** The admin user. */
+<span class="fc" id="L39">  public static final UserInfo ROOT = new UserInfo(&quot;root&quot;, &quot;root&quot;, null, null,</span>
+      Organization.ADMIN_GROUP_NAME, new HashSet&lt;Property&gt;(), &quot;admin&quot;);
+
+  /** A unique id for the User. */
+  private String uid;
+  /** The User's first name. */
+  private String firstName;
+  /** The User's last name. */
+  private String lastName;
+  /** The User's email address. */
+  private String email;
+  /** Additional properties of the user. */
+  private Set&lt;Property&gt; properties;
+  /** orgId the organization id this user belongs to. */
+  private String organizationId;
+  /** The user's password. */
+  private String password;
+
+  static {
+<span class="fc" id="L58">    String adminName = System.getenv().get(ServerProperties.ADMIN_USER_NAME_ENV);</span>
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">    if (adminName != null) {</span>
+<span class="nc" id="L60">      ROOT.setUid(adminName);</span>
+    }
+    else {
+<span class="fc" id="L63">      RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">      for (String arg : runtimeMxBean.getInputArguments()) {</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        if (arg.startsWith(&quot;-Dwattdepot-server.admin.name&quot;)) {</span>
+<span class="nc" id="L66">          adminName = arg.split(&quot;=&quot;)[1];</span>
+        }
+<span class="fc" id="L68">      }</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">      if (adminName != null) {</span>
+<span class="nc" id="L70">        ROOT.setUid(adminName);</span>
+      }
+    }
+<span class="fc" id="L73">    String adminPassword = System.getenv().get(ServerProperties.ADMIN_USER_PASSWORD_ENV);</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">    if (adminPassword != null) {</span>
+<span class="nc" id="L75">      ROOT.setPassword(adminPassword);</span>
+    }
+    else {
+<span class="fc" id="L78">      RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">      for (String arg : runtimeMxBean.getInputArguments()) {</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        if (arg.startsWith(&quot;-Dwattdepot-server.admin.password&quot;)) {</span>
+<span class="nc" id="L81">          adminPassword = arg.split(&quot;=&quot;)[1];</span>
+        }
+<span class="fc" id="L83">      }</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">      if (adminPassword != null) {</span>
+<span class="nc" id="L85">        ROOT.setPassword(adminPassword);</span>
+      }
+    }
+<span class="fc" id="L88">  }</span>
+
+  /**
+   * The default constructor.
+   */
+<span class="fc" id="L93">  public UserInfo() {</span>
+
+<span class="fc" id="L95">  }</span>
+
+  /**
+   * Creates a new UserInfo with the given information.
+   * 
+   * @param id The unique id.
+   * @param firstName The user's name.
+   * @param lastName The user's last name.
+   * @param email The user's email address.
+   * @param orgId The id of the organization this user belongs to.
+   * @param properties The additional properties for the user.
+   * @param password the user's password.
+   */
+  public UserInfo(String id, String firstName, String lastName, String email, String orgId,
+<span class="fc" id="L109">      Set&lt;Property&gt; properties, String password) {</span>
+<span class="fc" id="L110">    this.uid = id;</span>
+<span class="fc" id="L111">    this.firstName = firstName;</span>
+<span class="fc" id="L112">    this.lastName = lastName;</span>
+<span class="fc" id="L113">    this.email = email;</span>
+<span class="fc" id="L114">    this.organizationId = orgId;</span>
+<span class="fc" id="L115">    this.properties = properties;</span>
+<span class="fc" id="L116">    this.password = password;</span>
+<span class="fc" id="L117">  }</span>
+
+  /**
+   * @param e The Property to add.
+   * @return true if added.
+   * @see java.util.List#add(java.lang.Object)
+   */
+  public boolean addProperty(Property e) {
+<span class="nc" id="L125">    return properties.add(e);</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">    if (this == obj) {</span>
+<span class="nc" id="L136">      return true;</span>
+    }
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">    if (obj == null) {</span>
+<span class="nc" id="L139">      return false;</span>
+    }
+<span class="pc bpc" id="L141" title="5 of 6 branches missed.">    if (!getClass().isAssignableFrom(obj.getClass())</span>
+        &amp;&amp; !obj.getClass().isAssignableFrom(getClass()) &amp;&amp; getClass() != obj.getClass()) {
+<span class="nc" id="L143">      return false;</span>
+    }
+<span class="fc" id="L145">    UserInfo other = (UserInfo) obj;</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">    if (uid == null) {</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">      if (other.uid != null) {</span>
+<span class="nc" id="L148">        return false;</span>
+      }
+    }
+<span class="pc bpc" id="L151" title="1 of 2 branches missed.">    else if (!uid.equals(other.uid)) {</span>
+<span class="nc" id="L152">      return false;</span>
+    }
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">    if (firstName == null) {</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">      if (other.firstName != null) {</span>
+<span class="nc" id="L156">        return false;</span>
+      }
+    }
+<span class="fc bfc" id="L159" title="All 2 branches covered.">    else if (!firstName.equals(other.firstName)) {</span>
+<span class="fc" id="L160">      return false;</span>
+    }
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">    if (properties == null) {</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">      if (other.properties != null) {</span>
+<span class="nc" id="L164">        return false;</span>
+      }
+    }
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">    else if (!properties.equals(other.properties)) {</span>
+<span class="nc" id="L168">      return false;</span>
+    }
+<span class="fc" id="L170">    return true;</span>
+  }
+
+  /**
+   * @return the email
+   */
+  public String getEmail() {
+<span class="fc" id="L177">    return email;</span>
+  }
+
+  /**
+   * @return the firstName
+   */
+  public String getFirstName() {
+<span class="fc" id="L184">    return firstName;</span>
+  }
+
+  /**
+   * @return the lastName
+   */
+  public String getLastName() {
+<span class="fc" id="L191">    return lastName;</span>
+  }
+
+  /**
+   * @return the organizationId
+   */
+  public String getOrganizationId() {
+<span class="fc" id="L198">    return organizationId;</span>
+  }
+
+  /**
+   * @return the password
+   */
+  public String getPassword() {
+<span class="fc" id="L205">    return password;</span>
+  }
+
+  /**
+   * @return the properties
+   */
+  public Set&lt;Property&gt; getProperties() {
+<span class="fc" id="L212">    return properties;</span>
+  }
+
+  /**
+   * @param key The key.
+   * @return The value of associated with the key.
+   */
+  public Property getProperty(String key) {
+<span class="nc bnc" id="L220" title="All 2 branches missed.">    for (Property p : properties) {</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">      if (p.getKey().equals(key)) {</span>
+<span class="nc" id="L222">        return p;</span>
+      }
+<span class="nc" id="L224">    }</span>
+<span class="nc" id="L225">    return null;</span>
+  }
+
+  /**
+   * @return the unique id.
+   */
+  public String getUid() {
+<span class="fc" id="L232">    return uid;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+<span class="fc" id="L242">    final int prime = 31;</span>
+<span class="fc" id="L243">    int result = 1;</span>
+<span class="pc bpc" id="L244" title="1 of 2 branches missed.">    result = prime * result + ((uid == null) ? 0 : uid.hashCode());</span>
+<span class="pc bpc" id="L245" title="1 of 2 branches missed.">    result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());</span>
+<span class="pc bpc" id="L246" title="1 of 2 branches missed.">    result = prime * result + ((properties == null) ? 0 : properties.hashCode());</span>
+<span class="fc" id="L247">    return result;</span>
+  }
+
+  /**
+   * @param o The Property to remove.
+   * @return true if removed.
+   * @see java.util.List#remove(java.lang.Object)
+   */
+  public boolean removeProperty(Object o) {
+<span class="nc" id="L256">    return properties.remove(o);</span>
+  }
+
+  /**
+   * @param email the email to set
+   */
+  public void setEmail(String email) {
+<span class="fc" id="L263">    this.email = email;</span>
+<span class="fc" id="L264">  }</span>
+
+  /**
+   * @param firstName the firstName to set
+   */
+  public void setFirstName(String firstName) {
+<span class="fc" id="L270">    this.firstName = firstName;</span>
+<span class="fc" id="L271">  }</span>
+
+  /**
+   * @param lastName the lastName to set
+   */
+  public void setLastName(String lastName) {
+<span class="fc" id="L277">    this.lastName = lastName;</span>
+<span class="fc" id="L278">  }</span>
+
+  /**
+   * @param organizationId the organizationId to set
+   */
+  public void setOrganizationId(String organizationId) {
+<span class="fc" id="L284">    this.organizationId = organizationId;</span>
+<span class="fc" id="L285">  }</span>
+
+  /**
+   * @param password the password to set
+   */
+  public void setPassword(String password) {
+<span class="fc" id="L291">    this.password = password;</span>
+<span class="fc" id="L292">  }</span>
+
+  /**
+   * @param properties the properties to set
+   */
+  public void setProperties(Set&lt;Property&gt; properties) {
+<span class="fc" id="L298">    this.properties = properties;</span>
+<span class="fc" id="L299">  }</span>
+
+  /**
+   * @param id the id to set
+   */
+  public void setUid(String id) {
+<span class="fc" id="L305">    this.uid = id;</span>
+<span class="fc" id="L306">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+<span class="fc" id="L315">    return &quot;User [uid=&quot; + uid + &quot;, firstname=&quot; + firstName + &quot;, lastname=&quot; + lastName + &quot;, email=&quot;</span>
+        + email + &quot;, properties=&quot; + properties + &quot;]&quot;;
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

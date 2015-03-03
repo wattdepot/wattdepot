@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Manager.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.depository.impl.hibernate</a> &gt; <span class="el_source">Manager.java</span></div><h1>Manager.java</h1><pre class="source lang-java linenums">/**
+ * Manager.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.server.depository.impl.hibernate;
+
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+import org.wattdepot.server.ServerProperties;
+
+/**
+ * Manager - provides access to the singleton SessionFactory needed to persist
+ * the objects.
+ * 
+ * @author Cam Moore
+ * 
+ */
+<span class="nc" id="L34">public class Manager {</span>
+  private static SessionFactory validateFactory;
+  private static ServiceRegistry validateRegistry;
+  private static SessionFactory sessionFactory;
+  private static ServiceRegistry serviceRegistry;
+
+  /**
+   * @param properties The ServerProperties that contain the database
+   *        configuration.
+   * @return The singleton SessionFactory.
+   */
+  public static SessionFactory getFactory(ServerProperties properties) {
+<span class="fc bfc" id="L46" title="All 2 branches covered.">    if (sessionFactory == null) {</span>
+<span class="fc" id="L47">      Configuration cfg = new Configuration()</span>
+          .addAnnotatedClass(
+              org.wattdepot.server.depository.impl.hibernate.CollectorProcessDefinitionImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.DepositoryImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.DepositorySensorContribution.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.MeasurementPruningDefinitionImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.MeasurementImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.MeasurementTypeImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.PropertyImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.RowCount.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.SensorImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.SensorGroupImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.SensorModelImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.OrganizationImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.UserInfoImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.UserPasswordImpl.class)
+          .setProperty(&quot;hibernate.connection.driver_class&quot;,
+              properties.get(ServerProperties.DB_CONNECTION_DRIVER))
+          .setProperty(&quot;hibernate.connection.url&quot;,
+              properties.get(ServerProperties.DB_CONNECTION_URL))
+          .setProperty(&quot;hibernate.connection.username&quot;,
+              properties.get(ServerProperties.DB_USER_NAME))
+          .setProperty(&quot;hibernate.connection.password&quot;,
+              properties.get(ServerProperties.DB_PASSWORD))
+          .setProperty(&quot;hibernate.c3p0.min_size&quot;, &quot;5&quot;).setProperty(&quot;hibernate.c3p0.max_size&quot;, &quot;20&quot;)
+          .setProperty(&quot;hibernate.c3p0.timeout&quot;, &quot;1800&quot;)
+          .setProperty(&quot;hibernate.c3p0.max_statements&quot;, &quot;50&quot;)
+          .setProperty(&quot;hibernate.dialect&quot;, &quot;org.hibernate.dialect.PostgreSQLDialect&quot;)
+          .setProperty(&quot;hibernate.show_sql&quot;, properties.get(ServerProperties.DB_SHOW_SQL))
+          .setProperty(&quot;hibernate.hbm2ddl.auto&quot;, properties.get(ServerProperties.DB_TABLE_UPDATE));
+<span class="fc" id="L77">      serviceRegistry = new StandardServiceRegistryBuilder().applySettings(cfg.getProperties()).build();</span>
+      // A SessionFactory is set up once for an application
+<span class="fc" id="L79">      sessionFactory = cfg.buildSessionFactory(serviceRegistry);</span>
+
+      // // A SessionFactory is set up once for an application
+//       sessionFactory = new Configuration().configure() // configures settings
+//       // from
+//       // hibernate.cfg.xml
+//       .buildSessionFactory();
+
+    }
+<span class="fc" id="L88">    return sessionFactory;</span>
+  }
+
+  /**
+   * @param properties The ServerProperties that contain the database
+   *        configuration.
+   * @return The singleton SessionFactory.
+   */
+  public static SessionFactory getValidateFactory(ServerProperties properties) {
+<span class="nc bnc" id="L97" title="All 2 branches missed.">    if (validateFactory == null) {</span>
+<span class="nc" id="L98">      Configuration cfg = new Configuration()</span>
+          .addAnnotatedClass(
+              org.wattdepot.server.depository.impl.hibernate.CollectorProcessDefinitionImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.DepositoryImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.MeasurementImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.MeasurementTypeImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.PropertyImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.SensorImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.SensorGroupImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.SensorModelImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.OrganizationImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.UserInfoImpl.class)
+          .addAnnotatedClass(org.wattdepot.server.depository.impl.hibernate.UserPasswordImpl.class)
+          .setProperty(&quot;hibernate.connection.driver_class&quot;,
+              properties.get(ServerProperties.DB_CONNECTION_DRIVER))
+          .setProperty(&quot;hibernate.connection.url&quot;,
+              properties.get(ServerProperties.DB_CONNECTION_URL))
+          .setProperty(&quot;hibernate.connection.username&quot;,
+              properties.get(ServerProperties.DB_USER_NAME))
+          .setProperty(&quot;hibernate.connection.password&quot;,
+              properties.get(ServerProperties.DB_PASSWORD))
+          .setProperty(&quot;hibernate.c3p0.min_size&quot;, &quot;5&quot;).setProperty(&quot;hibernate.c3p0.max_size&quot;, &quot;20&quot;)
+          .setProperty(&quot;hibernate.c3p0.timeout&quot;, &quot;1800&quot;)
+          .setProperty(&quot;hibernate.c3p0.max_statements&quot;, &quot;50&quot;)
+          .setProperty(&quot;hibernate.dialect&quot;, &quot;org.hibernate.dialect.PostgreSQLDialect&quot;)
+          .setProperty(&quot;hibernate.show_sql&quot;, properties.get(ServerProperties.DB_SHOW_SQL))
+          .setProperty(&quot;hibernate.hbm2ddl.auto&quot;, &quot;validate&quot;);
+<span class="nc" id="L125">      validateRegistry = new StandardServiceRegistryBuilder().applySettings(cfg.getProperties()).build();</span>
+      // A SessionFactory is set up once for an application
+<span class="nc" id="L127">      validateFactory = cfg.buildSessionFactory(validateRegistry);</span>
+
+    }
+<span class="nc" id="L130">    return validateFactory;</span>
+  }
+  
+  /**
+   * Closes the SessionFactory. Should be called when shutting down the system.
+   */
+  public static void closeSession() {
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">    if (sessionFactory != null) {</span>
+<span class="fc" id="L138">      sessionFactory.close();</span>
+<span class="fc" id="L139">      sessionFactory = null;</span>
+    }
+<span class="pc bpc" id="L141" title="1 of 2 branches missed.">    if (validateFactory != null) {</span>
+<span class="nc" id="L142">      validateFactory.close();</span>
+<span class="nc" id="L143">      validateFactory = null;</span>
+    }
+<span class="fc" id="L145">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

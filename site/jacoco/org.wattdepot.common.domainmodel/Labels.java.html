@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Labels.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.domainmodel</a> &gt; <span class="el_source">Labels.java</span></div><h1>Labels.java</h1><pre class="source lang-java linenums">/**
+ * Labels.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.common.domainmodel;
+
+/**
+ * Labels Strings used to create the HTTP URLs and requests.
+ * 
+ * @author Cam Moore
+ * 
+ */
+<span class="nc" id="L27">public class Labels {</span>
+  /** The String indicating admin group. */
+  public static final String ADMIN = &quot;admin&quot;;
+
+  /** The String indicating average operation. */
+  public static final String AVERAGE = &quot;average&quot;;
+
+  /** The label for a given CollectorProcessDefinition. */
+  public static final String COLLECTOR_PROCESS_DEFINITION = &quot;collector-process-definition&quot;;
+
+  /** The label for the CollectorProcessDefinition id. */
+  public static final String COLLECTOR_PROCESS_DEFINITION_ID = &quot;collector-process-definition-id&quot;;
+
+  /** The label for the CollectorProcessDefinition id variable. */
+  public static final String COLLECTOR_PROCESS_DEFINITION_ID_VAR = &quot;{&quot;
+      + COLLECTOR_PROCESS_DEFINITION_ID + &quot;}&quot;;
+
+  /** The label for all CollectorProcessDefinition. */
+  public static final String COLLECTOR_PROCESS_DEFINITIONS = &quot;collector-process-definitions&quot;;
+
+  /** The label for all the Depositories. */
+  public static final String DEPOSITORIES = &quot;depositories&quot;;
+
+  /** The label for a given Depository. */
+  public static final String DEPOSITORY = &quot;depository&quot;;
+
+  /** Label for the depository id. */
+  public static final String DEPOSITORY_ID = &quot;depository-id&quot;;
+
+  /** Label for the depository id. */
+  public static final String DEPOSITORY_ID_VAR = &quot;{&quot; + DEPOSITORY_ID + &quot;}&quot;;
+
+  /** Label for difference InterpolatedValues. */
+  public static final String DIFFERENCE = &quot;difference&quot;;
+
+  /** The label for the earliest time. */
+  public static final String EARLIEST = &quot;earliest&quot;;
+
+  /** The label for the end timestamp. */
+  public static final String END = &quot;end&quot;;
+
+  /** The label for a given MeasurementPruningDefinition. */
+  public static final String MEASUREMENT_PRUNING_DEFINITION = &quot;measurement-pruning-definition&quot;;
+
+  /** The label for the MeasurementPruningDefinition id. */
+  public static final String MEASUREMENT_PRUNING_DEFINITION_ID = &quot;measurement-pruning-definition-id&quot;;
+
+  /** The label for the MeasurementPruningDefinition id variable. */
+  public static final String MEASUREMENT_PRUNING_DEFINITION_ID_VAR = &quot;{&quot;
+      + MEASUREMENT_PRUNING_DEFINITION_ID + &quot;}&quot;;
+
+  /** The label for all MeasurementPruningDefinitions. */
+  public static final String MEASUREMENT_PRUNING_DEFINITIONS = &quot;measurement-pruning-definitions&quot;;
+  
+  /** The label for gap. */
+  public static final String GAP = &quot;gap&quot;;
+
+  /** The label for google visualization. */
+  public static final String GVIZ = &quot;gviz&quot;;
+
+  /** The label for sampling internal or interval values. */
+  public static final String INTERVAL = &quot;interval&quot;;
+
+  /** The label for the latest time. */
+  public static final String LATEST = &quot;latest&quot;;
+
+  /** The label for a given Location. */
+  public static final String LOCATION = &quot;location&quot;;
+
+  /** Label for the location id. */
+  public static final String LOCATION_ID = &quot;location-id&quot;;
+
+  /** Label for the location id. */
+  public static final String LOCATION_ID_VAR = &quot;{&quot; + LOCATION_ID + &quot;}&quot;;
+
+  /** The label for all the Locations. */
+  public static final String LOCATIONS = &quot;locations&quot;;
+
+  /** The label for the maximum operation. */
+  public static final String MAXIMUM = &quot;maximum&quot;;
+
+  /** The label for a given Measurement. */
+  public static final String MEASUREMENT = &quot;measurement&quot;;
+
+  /** The label for the Measurement id. */
+  public static final String MEASUREMENT_ID = &quot;measurement-id&quot;;
+
+  /** The label for the Measurement id. */
+  public static final String MEASUREMENT_ID_VAR = &quot;{&quot; + MEASUREMENT_ID + &quot;}&quot;;
+
+  /** The label for a given MeasurementType. */
+  public static final String MEASUREMENT_TYPE = &quot;measurement-type&quot;;
+
+  /** Label for the measurment type id. */
+  public static final String MEASUREMENT_TYPE_ID = &quot;measurement-type-id&quot;;
+
+  /** Label for the measurment type id. */
+  public static final String MEASUREMENT_TYPE_ID_VAR = &quot;{&quot; + MEASUREMENT_TYPE_ID + &quot;}&quot;;
+
+  /** The label for all the MeasurementTypes. */
+  public static final String MEASUREMENT_TYPES = &quot;measurement-types&quot;;
+
+  /** The label for all the Measurements. */
+  public static final String MEASUREMENTS = &quot;measurements&quot;;
+
+  /** The label for the minimum operation. */
+  public static final String MINIMUM = &quot;minimum&quot;;
+
+  /** The URI for manipulating a given Organization. */
+  public static final String ORGANIZATION = &quot;organization&quot;;
+
+  /** Label for the organization id. */
+  public static final String ORGANIZATION_ID = &quot;org-id&quot;;
+
+  /** Label for the organization id. */
+  public static final String ORGANIZATION_ID_VAR = &quot;{&quot; + ORGANIZATION_ID + &quot;}&quot;;
+
+  /** Label for the organization id. */
+  public static final String ORGANIZATION_ID2 = &quot;org-id2&quot;;
+
+  /** Label for the organization id. */
+  public static final String ORGANIZATION_ID2_VAR = &quot;{&quot; + ORGANIZATION_ID2 + &quot;}&quot;;
+
+  /** URI component for manipulating all Organizations. */
+  public static final String ORGANIZATIONS = &quot;organizations&quot;;
+
+  /** The label for point values. */
+  public static final String POINT = &quot;point&quot;;
+
+  /** The label/group for public objects. */
+  public static final String PUBLIC = &quot;public&quot;;
+
+  /** The label for a given Sensor. */
+  public static final String SENSOR = &quot;sensor&quot;;
+
+  /** The label for a given SensorGroup. */
+  public static final String SENSOR_GROUP = &quot;sensor-group&quot;;
+
+  /** Label for the sensor group id. */
+  public static final String SENSOR_GROUP_ID = &quot;sensor-group-id&quot;;
+
+  /** Label for the sensor group id. */
+  public static final String SENSOR_GROUP_ID_VAR = &quot;{&quot; + SENSOR_GROUP_ID + &quot;}&quot;;
+
+  /** The label for all SensorGroups. */
+  public static final String SENSOR_GROUPS = &quot;sensor-groups&quot;;
+
+  /** Label for the sensor id. */
+  public static final String SENSOR_ID = &quot;sensor-id&quot;;
+
+  /** Label for the sensor id. */
+  public static final String SENSOR_ID_VAR = &quot;{&quot; + SENSOR_ID + &quot;}&quot;;
+
+  /** The label for a given SensorModel. */
+  public static final String SENSOR_MODEL = &quot;sensor-model&quot;;
+
+  /** Label for the sensormodel id. */
+  public static final String SENSOR_MODEL_ID = &quot;sensor-model-id&quot;;
+
+  /** Label for the sensormodel id. */
+  public static final String SENSOR_MODEL_ID_VAR = &quot;{&quot; + SENSOR_MODEL_ID + &quot;}&quot;;
+
+  /** The label for all SensorModels. */
+  public static final String SENSOR_MODELS = &quot;sensor-models&quot;;
+
+  /** The label for all Sensors. */
+  public static final String SENSORS = &quot;sensors&quot;;
+
+  /** The label for the start timestamp. */
+  public static final String START = &quot;start&quot;;
+
+  /** The label for getting a summary. */
+  public static final String SUMMARY = &quot;summary&quot;;
+
+  /** The label for the timestamp. */
+  public static final String TIMESTAMP = &quot;timestamp&quot;;
+
+  /** The URI for manipulating a given UserInfo. */
+  public static final String USER = &quot;user&quot;;
+
+  /** Label for the user id. */
+  public static final String USER_ID = &quot;user-id&quot;;
+
+  /** Label for the user id. */
+  public static final String USER_ID_VAR = &quot;{&quot; + USER_ID + &quot;}&quot;;
+
+  /** The label for UserPassword. */
+  public static final String USER_PASSWORD = &quot;user-password&quot;;
+
+  /** Label for the user-password id. */
+  public static final String USER_PASSWORD_ID = &quot;user-password-id&quot;;
+
+  /** Label for the user-password id variable. */
+  public static final String USER_PASSWORD_ID_VAR = &quot;{&quot; + USER_PASSWORD_ID + &quot;}&quot;;
+
+  /** The URI for manipulating a given UserInfo. */
+  public static final String USERS = &quot;users&quot;;
+
+  /** The label for a 'measured' value. */
+  public static final String VALUE = &quot;value&quot;;
+
+  /** The label for determining what type of value to return. */
+  public static final String VALUE_TYPE = &quot;value-type&quot;;
+
+  /** The label for 'measured' values. */
+  public static final String VALUES = &quot;values&quot;;
+
+  /** The label for visualizing interpolated values. */
+  public static final String VISUALIZE = &quot;visualize&quot;;
+
+  /** The base label used for WattDepot. */
+  public static final String WATTDEPOT = &quot;wattdepot&quot;;
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

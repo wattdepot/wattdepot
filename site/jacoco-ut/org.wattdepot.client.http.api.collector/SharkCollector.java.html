@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SharkCollector.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.client.http.api.collector</a> &gt; <span class="el_source">SharkCollector.java</span></div><h1>SharkCollector.java</h1><pre class="source lang-java linenums">/**
+ * SharkCollector.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.client.http.api.collector;
+
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.Date;
+
+import javax.measure.unit.NonSI;
+import javax.measure.unit.SI;
+import javax.measure.unit.Unit;
+
+import net.wimpi.modbus.Modbus;
+import net.wimpi.modbus.io.ModbusTCPTransaction;
+import net.wimpi.modbus.msg.ExceptionResponse;
+import net.wimpi.modbus.msg.ModbusResponse;
+import net.wimpi.modbus.msg.ReadMultipleRegistersRequest;
+import net.wimpi.modbus.msg.ReadMultipleRegistersResponse;
+import net.wimpi.modbus.net.TCPMasterConnection;
+import net.wimpi.modbus.util.ModbusUtil;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.jscience.physics.amount.Amount;
+import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.MeasurementType;
+import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.exception.BadCredentialException;
+import org.wattdepot.common.exception.BadSensorUriException;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MeasurementTypeException;
+import org.wattdepot.common.util.tstamp.Tstamp;
+
+/**
+ * SharkCollector - Polls a ElectroIndustries Shark power meter for power &amp;
+ * energy data periodically, and sends the results to a WattDepot server. For
+ * more information about Shark meters, see:
+ * http://www.electroind.com/pdf/Shark_New
+ * /E149721_Shark_200-S_Meter_Manual_V.1.03.pdf
+ * 
+ * Inspired by the wattdepot2 SharkSensor.
+ * 
+ * @author Cam Moore
+ * 
+ */
+public class SharkCollector extends MultiThreadedCollector {
+
+  // Note that the Modbus register map in the Shark manual appears to start at
+  // 1, while jamod
+  // expects it to start at 0, so you must subtract 1 from the register index
+  // listed in the manual!
+  /** Register index for &quot;Power &amp; Energy Format&quot;. */
+  private static final int ENERGY_FORMAT_REGISTER = 30006 - 1;
+  /** Number of words (registers) that make up &quot;Power &amp; Energy Format&quot;. */
+  private static final int ENERGY_FORMAT_LENGTH = 1;
+  /** Register index for &quot;W-hours, Total&quot;. */
+  private static final int ENERGY_REGISTER = 1506 - 1;
+  /** Number of words (registers) that make up &quot;W-hours, Total&quot;. */
+  private static final int ENERGY_LENGTH = 2;
+  /** Register index for &quot;Watts, 3-Ph total&quot;. */
+  private static final int POWER_REGISTER = 1018 - 1;
+  /** Number of words (registers) that make up &quot;Watts, 3-Ph total&quot;. */
+  private static final int POWER_LENGTH = 2;
+  /** InetAddress of the meter to be polled. */
+  private InetAddress meterAddress;
+  /** The Shark sensor. */
+  private Sensor sensor;
+  /**
+   * Stores the energy multiplier configured on the meter, which really means
+   * whether the energy value returned is in Wh, kWh, or MWh.
+   */
+<span class="nc" id="L96">  private double energyMultiplier = 0;</span>
+  /**
+   * Stores the configured number of energy digits after the decimal point. For
+   * example, if the retrieved energy value is &quot;12345678&quot; and the decimals value
+   * is 2, then the actual energy value is &quot;123456.78&quot;.
+   */
+<span class="nc" id="L102">  private int energyDecimals = 0;</span>
+  /**
+   * Whether all required parameters (such as energy format parameters from the
+   * meter) have been successfully retrieved.
+   */
+<span class="nc" id="L107">  private boolean initialized = false;</span>
+
+  /** The MeasurementType the Depository stores. */
+  private MeasurementType measType;
+  /** The Unit of the depository. */
+  private Unit&lt;?&gt; measUnit;
+  /** The name of the sensor this collector is polling. */
+  private String sensorName;
+
+  /**
+   * Initializes the SharkCollector.
+   * 
+   * @param serverUri
+   *          The URI for the WattDepot server.
+   * @param username
+   *          The name of a user defined in the WattDepot server.
+   * @param orgId
+   *          the user's organization id.
+   * @param password
+   *          The password for the user.
+   * @param collectorId
+   *          The CollectorProcessDefinitionId used to initialize this
+   *          collector.
+   * @param debug
+   *          flag for debugging messages.
+   * @throws BadCredentialException
+   *           if the user or password don't match the credentials in WattDepot.
+   * @throws IdNotFoundException
+   *           if the processId is not defined.
+   * @throws BadSensorUriException
+   *           if the Sensor's URI isn't valid.
+   */
+  public SharkCollector(String serverUri, String username, String orgId, String password,
+      String collectorId, boolean debug) throws BadCredentialException, IdNotFoundException,
+      BadSensorUriException {
+<span class="nc" id="L142">    super(serverUri, username, orgId, password, collectorId, debug);</span>
+<span class="nc" id="L143">    this.measType = depository.getMeasurementType();</span>
+<span class="nc" id="L144">    this.measUnit = Unit.valueOf(measType.getUnits());</span>
+<span class="nc" id="L145">    this.sensor = client.getSensor(definition.getSensorId());</span>
+<span class="nc" id="L146">    this.sensorName = sensor.getName();</span>
+
+    URL sensorURL;
+    try {
+<span class="nc" id="L150">      sensorURL = new URL(sensor.getUri());</span>
+<span class="nc" id="L151">      String sensorHostName = sensorURL.getHost();</span>
+<span class="nc" id="L152">      this.meterAddress = InetAddress.getByName(sensorHostName);</span>
+    }
+<span class="nc" id="L154">    catch (MalformedURLException e) {</span>
+<span class="nc" id="L155">      throw new BadSensorUriException(sensor.getUri() + &quot; is not a valid URI.&quot;);</span>
+    }
+<span class="nc" id="L157">    catch (UnknownHostException e) {</span>
+<span class="nc" id="L158">      throw new BadSensorUriException(&quot;Unable to resolve sensor at &quot; + sensor.getUri());</span>
+<span class="nc" id="L159">    }</span>
+<span class="nc" id="L160">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.util.TimerTask#run()
+   */
+  @Override
+  public void run() {
+<span class="nc bnc" id="L169" title="All 2 branches missed.">    if (!this.initialized) {</span>
+<span class="nc" id="L170">      this.initialized = initialize();</span>
+    }
+<span class="nc bnc" id="L172" title="All 2 branches missed.">    if (initialized) {</span>
+<span class="nc" id="L173">      Measurement meas = pollMeter(this.meterAddress, this.energyMultiplier, this.energyDecimals);</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">      if (meas != null) {</span>
+        try {
+<span class="nc" id="L176">          this.client.putMeasurement(depository, meas);</span>
+        }
+<span class="nc" id="L178">        catch (MeasurementTypeException e) {</span>
+<span class="nc" id="L179">          System.err.format(&quot;%s does not store %s measurements%n&quot;, depository.getName(),</span>
+              meas.getMeasurementType());
+<span class="nc" id="L181">        }</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">        if (debug) {</span>
+<span class="nc" id="L183">          System.out.println(meas);</span>
+        }
+      }
+    }
+<span class="nc" id="L187">  }</span>
+
+  /**
+   * Processes the command line arguments and starts the Shark Collector.
+   * 
+   * @param args
+   *          command line arguments.
+   */
+  public static void main(String[] args) {
+<span class="nc" id="L196">    Options options = new Options();</span>
+<span class="nc" id="L197">    options.addOption(&quot;h&quot;, &quot;help&quot;, false,</span>
+        &quot;Usage: EGaugeCollector &lt;server uri&gt; &lt;username&gt; &lt;password&gt; &lt;collectorid&gt;&quot;);
+<span class="nc" id="L199">    options.addOption(&quot;s&quot;, &quot;server&quot;, true, &quot;WattDepot Server URI. (http://server.wattdepot.org)&quot;);</span>
+<span class="nc" id="L200">    options.addOption(&quot;u&quot;, &quot;username&quot;, true, &quot;Username&quot;);</span>
+<span class="nc" id="L201">    options.addOption(&quot;o&quot;, &quot;organizationId&quot;, true, &quot;User's Organization id.&quot;);</span>
+<span class="nc" id="L202">    options.addOption(&quot;p&quot;, &quot;password&quot;, true, &quot;Password&quot;);</span>
+<span class="nc" id="L203">    options.addOption(&quot;c&quot;, &quot;collectorId&quot;, true, &quot;Collector Process Definition Id.&quot;);</span>
+<span class="nc" id="L204">    options.addOption(&quot;d&quot;, &quot;debug&quot;, false, &quot;Displays sensor data as it is sent to the server.&quot;);</span>
+
+<span class="nc" id="L206">    CommandLine cmd = null;</span>
+<span class="nc" id="L207">    String serverUri = null;</span>
+<span class="nc" id="L208">    String username = null;</span>
+<span class="nc" id="L209">    String organizationId = null;</span>
+<span class="nc" id="L210">    String password = null;</span>
+<span class="nc" id="L211">    String collectorId = null;</span>
+<span class="nc" id="L212">    boolean debug = false;</span>
+
+<span class="nc" id="L214">    CommandLineParser parser = new PosixParser();</span>
+<span class="nc" id="L215">    HelpFormatter formatter = new HelpFormatter();</span>
+    try {
+<span class="nc" id="L217">      cmd = parser.parse(options, args);</span>
+    }
+<span class="nc" id="L219">    catch (ParseException e) {</span>
+<span class="nc" id="L220">      System.err.println(&quot;Command line parsing failed. Reason: &quot; + e.getMessage() + &quot;. Exiting.&quot;);</span>
+<span class="nc" id="L221">      System.exit(1);</span>
+<span class="nc" id="L222">    }</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">    if (cmd.hasOption(&quot;h&quot;)) {</span>
+<span class="nc" id="L224">      formatter.printHelp(&quot;SharkCollector&quot;, options);</span>
+<span class="nc" id="L225">      System.exit(0);</span>
+    }
+<span class="nc bnc" id="L227" title="All 2 branches missed.">    if (cmd.hasOption(&quot;s&quot;)) {</span>
+<span class="nc" id="L228">      serverUri = cmd.getOptionValue(&quot;s&quot;);</span>
+    }
+    else {
+<span class="nc" id="L231">      serverUri = &quot;http://localhost:8192/&quot;;</span>
+    }
+<span class="nc bnc" id="L233" title="All 2 branches missed.">    if (cmd.hasOption(&quot;u&quot;)) {</span>
+<span class="nc" id="L234">      username = cmd.getOptionValue(&quot;u&quot;);</span>
+    }
+    else {
+<span class="nc" id="L237">      username = UserInfo.ROOT.getUid();</span>
+    }
+<span class="nc bnc" id="L239" title="All 2 branches missed.">    if (cmd.hasOption(&quot;o&quot;)) {</span>
+<span class="nc" id="L240">      organizationId = cmd.getOptionValue(&quot;o&quot;);</span>
+    }
+    else {
+<span class="nc" id="L243">      organizationId = Organization.ADMIN_GROUP.getId();</span>
+    }
+<span class="nc bnc" id="L245" title="All 2 branches missed.">    if (cmd.hasOption(&quot;p&quot;)) {</span>
+<span class="nc" id="L246">      password = cmd.getOptionValue(&quot;p&quot;);</span>
+    }
+    else {
+<span class="nc" id="L249">      password = &quot;default&quot;;</span>
+    }
+<span class="nc bnc" id="L251" title="All 2 branches missed.">    if (cmd.hasOption(&quot;c&quot;)) {</span>
+<span class="nc" id="L252">      collectorId = cmd.getOptionValue(&quot;c&quot;);</span>
+    }
+    else {
+<span class="nc" id="L255">      collectorId = &quot;ilima_6th_power&quot;;</span>
+    }
+
+<span class="nc" id="L258">    debug = cmd.hasOption(&quot;d&quot;);</span>
+
+<span class="nc bnc" id="L260" title="All 2 branches missed.">    if (debug) {</span>
+<span class="nc" id="L261">      System.out.println(&quot;WattDepot Server: &quot; + serverUri);</span>
+<span class="nc" id="L262">      System.out.println(&quot;Username: &quot; + username);</span>
+<span class="nc" id="L263">      System.out.println(&quot;Password: &quot; + password);</span>
+<span class="nc" id="L264">      System.out.println(&quot;Collector Process Definition Id: &quot; + collectorId);</span>
+<span class="nc" id="L265">      System.out.println(&quot;debug: &quot; + debug);</span>
+<span class="nc" id="L266">      System.out.println();</span>
+    }
+    try {
+<span class="nc bnc" id="L269" title="All 2 branches missed.">      if (!MultiThreadedCollector.start(serverUri, username, organizationId, password, collectorId,</span>
+          debug)) {
+<span class="nc" id="L271">        System.exit(1);</span>
+      }
+    }
+<span class="nc" id="L274">    catch (InterruptedException e) {</span>
+<span class="nc" id="L275">      e.printStackTrace();</span>
+<span class="nc" id="L276">      System.exit(1);</span>
+    }
+<span class="nc" id="L278">    catch (BadCredentialException e) {</span>
+<span class="nc" id="L279">      e.printStackTrace();</span>
+<span class="nc" id="L280">      System.exit(1);</span>
+<span class="nc" id="L281">    }</span>
+<span class="nc" id="L282">  }</span>
+
+  /**
+   * Need to retrieve some configuration parameters from meter, but only want to
+   * do it once per session. Note that all failures to retrieve the parameters
+   * are considered temporary for caution's sake, so a misconfigured meter might
+   * continue to be polled indefinitely until the problem is resolved.
+   * 
+   * @return True if configuration parameters could be retrieved from meter,
+   *         false otherwise.
+   */
+  private boolean initialize() {
+    ModbusResponse response;
+<span class="nc" id="L295">    ReadMultipleRegistersResponse goodResponse = null;</span>
+    try {
+<span class="nc" id="L297">      response = readRegisters(this.meterAddress, ENERGY_FORMAT_REGISTER, ENERGY_FORMAT_LENGTH);</span>
+    }
+<span class="nc" id="L299">    catch (Exception e) {</span>
+<span class="nc" id="L300">      System.err.format(</span>
+          &quot;%s: Unable to retrieve energy format parameters from meter %s: %s, retrying.%n&quot;,
+          Tstamp.makeTimestamp(), this.sensorName, e.getMessage());
+<span class="nc" id="L303">      return false;</span>
+<span class="nc" id="L304">    }</span>
+<span class="nc bnc" id="L305" title="All 2 branches missed.">    if (response instanceof ReadMultipleRegistersResponse) {</span>
+<span class="nc" id="L306">      goodResponse = (ReadMultipleRegistersResponse) response;</span>
+    }
+<span class="nc bnc" id="L308" title="All 2 branches missed.">    else if (response instanceof ExceptionResponse) {</span>
+<span class="nc" id="L309">      System.err</span>
+          .format(
+              &quot;Got Modbus exception response while retrieving energy format parameters from meter %s, code: %s%n&quot;,
+              this.sensorName, ((ExceptionResponse) response).getExceptionCode());
+<span class="nc" id="L313">      return false;</span>
+    }
+    else {
+<span class="nc" id="L316">      System.err</span>
+          .format(
+              &quot;Got strange Modbus reply while retrieving energy format parameters from meter %s, aborting.%n&quot;,
+              this.sensorName);
+<span class="nc" id="L320">      return false;</span>
+    }
+
+<span class="nc" id="L323">    double energyMultiplier = decodeEnergyMultiplier(goodResponse);</span>
+<span class="nc bnc" id="L324" title="All 2 branches missed.">    if (energyMultiplier == 0) {</span>
+<span class="nc" id="L325">      System.err.format(&quot;Got bad energy multiplier from meter %s energy format, aborting.%n&quot;,</span>
+          this.sensorName);
+<span class="nc" id="L327">      return false;</span>
+    }
+
+<span class="nc" id="L330">    int energyDecimals = decodeEnergyDecimals(goodResponse);</span>
+<span class="nc bnc" id="L331" title="All 2 branches missed.">    if (energyDecimals == 0) {</span>
+<span class="nc" id="L332">      System.err.format(&quot;Got bad energy decimal format from meter %s energy format, aborting.%n&quot;,</span>
+          this.sensorName);
+<span class="nc" id="L334">      return false;</span>
+    }
+    // Able to retrieve all the energy format parameters, so set the class
+    // fields for future use
+<span class="nc" id="L338">    this.energyMultiplier = energyMultiplier;</span>
+<span class="nc" id="L339">    this.energyDecimals = energyDecimals;</span>
+<span class="nc" id="L340">    return true;</span>
+
+  }
+
+  /**
+   * Reads one or more consecutive registers from a device using Modbus/TCP
+   * using the default TCP port (502).
+   * 
+   * @param address
+   *          The IP address of the device to be read from
+   * @param register
+   *          The Modbus register to be read, as a decimal integer
+   * @param length
+   *          The number of registers to read
+   * @return A ReadMultipleRegistersResponse containing the response from the
+   *         device, or null if there was some unexpected error.
+   * @throws Exception
+   *           If an error occurs while attempting to read the registers.
+   */
+  private ModbusResponse readRegisters(InetAddress address, int register, int length)
+      throws Exception {
+<span class="nc" id="L361">    return readRegisters(address, Modbus.DEFAULT_PORT, register, length);</span>
+  }
+
+  /**
+   * Reads one or more consecutive registers from a device using Modbus/TCP.
+   * 
+   * @param address
+   *          The IP address of the device to be read from
+   * @param port
+   *          The destination TCP port to connect to
+   * @param register
+   *          The Modbus register to be read, as a decimal integer
+   * @param length
+   *          The number of registers to read
+   * @return A ReadMultipleRegistersResponse containing the response from the
+   *         device, or null if there was some unexpected error.
+   * @throws Exception
+   *           If an error occurs while attempting to read the registers.
+   */
+  private ModbusResponse readRegisters(InetAddress address, int port, int register, int length)
+      throws Exception {
+<span class="nc" id="L382">    TCPMasterConnection connection = null;</span>
+<span class="nc" id="L383">    ModbusTCPTransaction transaction = null;</span>
+<span class="nc" id="L384">    ReadMultipleRegistersRequest request = null;</span>
+<span class="nc" id="L385">    ModbusResponse response = null;</span>
+
+    // Open the connection
+<span class="nc" id="L388">    connection = new TCPMasterConnection(address);</span>
+    try {
+<span class="nc" id="L390">      connection.setPort(port);</span>
+<span class="nc" id="L391">      connection.connect();</span>
+
+      // Prepare the request
+<span class="nc" id="L394">      request = new ReadMultipleRegistersRequest(register, length);</span>
+
+      // Prepare the transaction
+<span class="nc" id="L397">      transaction = new ModbusTCPTransaction(connection);</span>
+<span class="nc" id="L398">      transaction.setRequest(request);</span>
+<span class="nc" id="L399">      transaction.execute();</span>
+<span class="nc" id="L400">      response = transaction.getResponse();</span>
+
+    }
+    finally {
+      // Close the connection
+<span class="nc" id="L405">      connection.close();</span>
+<span class="nc" id="L406">    }</span>
+
+<span class="nc" id="L408">    return response;</span>
+  }
+
+  /**
+   * Decodes the energy multiplier configured on the meter, which really means
+   * whether the energy value returned is in Wh, kWh, or MWh.
+   * 
+   * @param response
+   *          The response from the meter containing the power and energy
+   *          format.
+   * @return A double that represents the scale which energy readings should be
+   *         multiplied by, or 0 if there was some problem decoding the value.
+   */
+  private double decodeEnergyMultiplier(ReadMultipleRegistersResponse response) {
+<span class="nc bnc" id="L422" title="All 4 branches missed.">    if (response != null &amp;&amp; response.getWordCount() == 1) {</span>
+      // From Shark manual, bitmap looks like this (&quot;-&quot; is unused bit
+      // apparently):
+      // ppppiinn feee-ddd
+      //
+      // pppp = power scale (0-unit, 3-kilo, 6-mega, 8-auto)
+      // ii = power digits after decimal point (0-3),
+      // applies only if f=1 and pppp is not auto
+      // nn = number of energy digits (5-8 --&gt; 0-3)
+      // eee = energy scale (0-unit, 3-kilo, 6-mega)
+      // f = decimal point for power
+      // (0=data-dependant placement, 1=fixed placement per ii value)
+      // ddd = energy digits after decimal point (0-6)
+
+      // Get energy scale by shifting off 4 bits and then mask with 111
+<span class="nc" id="L437">      int energyScale = (response.getRegisterValue(0) &gt;&gt;&gt; 4) &amp; 7;</span>
+<span class="nc bnc" id="L438" title="All 4 branches missed.">      switch (energyScale) {</span>
+      case 0:
+        // watts
+<span class="nc" id="L441">        return 1.0;</span>
+      case 3:
+        // kilowatts
+<span class="nc" id="L444">        return 1000.0;</span>
+      case 6:
+        // megawatts
+<span class="nc" id="L447">        return 1000000.0;</span>
+      default:
+        // should never happen, according to manual, so return 0
+        // System.err.println(&quot;Unknown energy scale from meter, defaulting to kWh&quot;);
+<span class="nc" id="L451">        return 0.0;</span>
+      }
+    }
+    else {
+<span class="nc" id="L455">      return 0.0;</span>
+    }
+  }
+
+  /**
+   * Decodes the configured number of energy digits after the decimal point. For
+   * example, if the retrieved energy value is &quot;12345678&quot; and the decimals value
+   * is 2, then the actual energy value is &quot;123456.78&quot;.
+   * 
+   * @param response
+   *          The response from the meter containing the power and energy
+   *          format.
+   * @return An int that represents the number of ending digits from the energy
+   *         reading that should be considered as decimals.
+   */
+  private int decodeEnergyDecimals(ReadMultipleRegistersResponse response) {
+<span class="nc bnc" id="L471" title="All 4 branches missed.">    if (response != null &amp;&amp; response.getWordCount() == 1) {</span>
+      // From Shark manual, bitmap looks like this (&quot;-&quot; is unused bit
+      // apparently):
+      // ppppiinn feee-ddd
+      //
+      // pppp = power scale (0-unit, 3-kilo, 6-mega, 8-auto)
+      // ii = power digits after decimal point (0-3),
+      // applies only if f=1 and pppp is not auto
+      // nn = number of energy digits (5-8 --&gt; 0-3)
+      // eee = energy scale (0-unit, 3-kilo, 6-mega)
+      // f = decimal point for power
+      // (0=data-dependant placement, 1=fixed placement per ii value)
+      // ddd = energy digits after decimal point (0-6)
+
+      // Get # of energy digits after decimal point by masking with 111
+<span class="nc" id="L486">      return response.getRegisterValue(0) &amp; 7;</span>
+    }
+    else {
+<span class="nc" id="L489">      return 0;</span>
+    }
+  }
+
+  /**
+   * @return true if the depository stores power measurements.
+   */
+  private boolean isPower() {
+<span class="nc" id="L497">    return measType.getId().startsWith(&quot;power&quot;);</span>
+  }
+
+  /**
+   * Connects to the meter, retrieves the latest data, and returns it as a
+   * Measurement.
+   * 
+   * @param sensorAddress
+   *          The address of the meter.
+   * @param energyMultiplier
+   *          The amount to multiply energy readings to account for unit of
+   *          measurement.
+   * @param energyDecimals
+   *          The configured number of decimals include in the energy reading.
+   * @return The meter data as a Measurement.
+   */
+  private Measurement pollMeter(InetAddress sensorAddress, double energyMultiplier,
+      int energyDecimals) {
+<span class="nc" id="L515">    return pollMeter(sensorAddress, Modbus.DEFAULT_PORT, energyMultiplier, energyDecimals);</span>
+  }
+
+  /**
+   * @param sensorAddress
+   *          The address of the meter.
+   * @param port
+   *          The port to communicate with.
+   * @param energyMultiplier
+   *          The amount to multiply energy readings to account for unit of
+   *          measurement.
+   * @param energyDecimals
+   *          The configured number of decimals include in the energy reading.
+   * @return The meter data as a Measurement.
+   */
+  private Measurement pollMeter(InetAddress sensorAddress, int port, double energyMultiplier,
+      int energyDecimals) {
+<span class="nc" id="L532">    Measurement meas = null;</span>
+    // Record current time as close approximation to time for reading we are
+    // about to make
+<span class="nc" id="L535">    Date timestamp = new Date();</span>
+    ModbusResponse energyResponse, powerResponse;
+<span class="nc" id="L537">    ReadMultipleRegistersResponse goodResponse = null;</span>
+    try {
+      // Make both queries in rapid succession to reduce any lag on sensor side
+<span class="nc" id="L540">      energyResponse = readRegisters(sensorAddress, port, ENERGY_REGISTER, ENERGY_LENGTH);</span>
+<span class="nc" id="L541">      powerResponse = readRegisters(sensorAddress, port, POWER_REGISTER, POWER_LENGTH);</span>
+    }
+<span class="nc" id="L543">    catch (Exception e) {</span>
+<span class="nc" id="L544">      System.err.format(&quot;%s Unable to retrieve energy data from meter %s: %s.%n&quot;, new Date(),</span>
+          this.sensorName, e.getMessage());
+<span class="nc" id="L546">      return null;</span>
+<span class="nc" id="L547">    }</span>
+
+    // First handle energy response
+<span class="nc bnc" id="L550" title="All 2 branches missed.">    if (energyResponse instanceof ReadMultipleRegistersResponse) {</span>
+<span class="nc" id="L551">      goodResponse = (ReadMultipleRegistersResponse) energyResponse;</span>
+    }
+<span class="nc bnc" id="L553" title="All 2 branches missed.">    else if (energyResponse instanceof ExceptionResponse) {</span>
+<span class="nc" id="L554">      System.err.format(</span>
+          &quot;Got Modbus exception response while retrieving energy data from meter %s, code: %s%n&quot;,
+          this.sensorName, ((ExceptionResponse) energyResponse).getExceptionCode());
+<span class="nc" id="L557">      return null;</span>
+    }
+    else {
+<span class="nc" id="L560">      System.err.format(&quot;Got strange Modbus reply while retrieving energy data from meter %s.%n&quot;,</span>
+          this.sensorName);
+<span class="nc" id="L562">      return null;</span>
+    }
+<span class="nc" id="L564">    int wattHoursInt = ModbusUtil.registersToInt(extractByteArray(goodResponse));</span>
+    // Take integer value, divide by 10^energyDecimals to move decimal point to
+    // right place,
+    // then multiply by a value depending on units (nothing, kilo, or mega).
+<span class="nc" id="L568">    double wattHours = (wattHoursInt / (Math.pow(10.0, energyDecimals))) * energyMultiplier;</span>
+
+    // Then handle power response
+<span class="nc bnc" id="L571" title="All 2 branches missed.">    if (powerResponse instanceof ReadMultipleRegistersResponse) {</span>
+<span class="nc" id="L572">      goodResponse = (ReadMultipleRegistersResponse) powerResponse;</span>
+    }
+<span class="nc bnc" id="L574" title="All 2 branches missed.">    else if (powerResponse instanceof ExceptionResponse) {</span>
+<span class="nc" id="L575">      System.err.format(</span>
+          &quot;Got Modbus exception response while retrieving power data from meter %s, code: %s%n&quot;,
+          this.sensorName, ((ExceptionResponse) powerResponse).getExceptionCode());
+<span class="nc" id="L578">      return null;</span>
+    }
+    else {
+<span class="nc" id="L581">      System.err.println(&quot;Got strange Modbus reply while retrieving power data from meter.&quot;);</span>
+<span class="nc" id="L582">      return null;</span>
+    }
+<span class="nc" id="L584">    float watts = ModbusUtil.registersToFloat(extractByteArray(goodResponse));</span>
+<span class="nc" id="L585">    Double value = null;</span>
+    // power is given in W
+<span class="nc" id="L587">    Amount&lt;?&gt; power = Amount.valueOf(watts, SI.WATT);</span>
+    // energy given in Wh
+<span class="nc" id="L589">    Amount&lt;?&gt; energy = Amount.valueOf(wattHours, SI.WATT.times(NonSI.HOUR));</span>
+
+<span class="nc bnc" id="L591" title="All 2 branches missed.">    if (isPower()) {</span>
+<span class="nc" id="L592">      value = power.to(measUnit).getEstimatedValue();</span>
+    }
+    else {
+<span class="nc" id="L595">      value = energy.to(measUnit).getEstimatedValue();</span>
+    }
+<span class="nc" id="L597">    meas = new Measurement(sensor.getId(), timestamp, value, measUnit);</span>
+<span class="nc" id="L598">    return meas;</span>
+  }
+
+  /**
+   * Given a response with two consecutive registers, extract the values as a 4
+   * byte array so they can be passed to methods in ModbusUtil. It seems like
+   * there should be a better way to do this.
+   * 
+   * @param response
+   *          The response containing the two registers
+   * @return a byte[4] array or null if there is a problem with the response.
+   */
+  private byte[] extractByteArray(ReadMultipleRegistersResponse response) {
+<span class="nc" id="L611">    byte[] regBytes = new byte[4];</span>
+<span class="nc bnc" id="L612" title="All 2 branches missed.">    if (response.getWordCount() == 2) {</span>
+<span class="nc" id="L613">      regBytes[0] = response.getRegister(0).toBytes()[0];</span>
+<span class="nc" id="L614">      regBytes[1] = response.getRegister(0).toBytes()[1];</span>
+<span class="nc" id="L615">      regBytes[2] = response.getRegister(1).toBytes()[0];</span>
+<span class="nc" id="L616">      regBytes[3] = response.getRegister(1).toBytes()[1];</span>
+<span class="nc" id="L617">      return regBytes;</span>
+    }
+    else {
+<span class="nc" id="L620">      return null;</span>
+    }
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

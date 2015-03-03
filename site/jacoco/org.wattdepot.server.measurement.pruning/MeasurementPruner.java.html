@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MeasurementPruner.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.measurement.pruning</a> &gt; <span class="el_source">MeasurementPruner.java</span></div><h1>MeasurementPruner.java</h1><pre class="source lang-java linenums">/**
+ * MeasurementGarbageCollector.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2014  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.server.measurement.pruning;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
+import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.util.DateConvert;
+import org.wattdepot.common.util.tstamp.Tstamp;
+import org.wattdepot.server.ServerProperties;
+import org.wattdepot.server.WattDepotPersistence;
+
+/**
+ * MeasurementGarbageCollector - Removes measurements from the WattDepot
+ * repository that are at a higher frequency sampling rate than desired.
+ * 
+ * @author Cam Moore
+ * 
+ */
+public class MeasurementPruner extends TimerTask {
+
+  /**
+   * The window to get the measurements. Hopefully allows for quicker
+   * performance.
+   */
+  public static final int PRUNE_WINDOW = 6 * 60;
+
+  private WattDepotPersistence persistance;
+  private MeasurementPruningDefinition definition;
+  private boolean debug;
+
+  /**
+   * Create a MeasurementGarbageCollector.
+   * 
+   * @param properties The ServerProperties that define the type of persistence.
+   * @param gcdId The id of the MeasurementPruningDefintion.
+   * @param orgId The id of the Organization.
+   * @param debug true if want debugging information.
+   * @throws Exception If there is a problem instantiating the
+   *         WattDepotPersistence.
+   */
+  public MeasurementPruner(ServerProperties properties, String gcdId, String orgId, boolean debug)
+<span class="nc" id="L77">      throws Exception {</span>
+    // Get the WattDepotPersistence implementation.
+<span class="nc" id="L79">    String depotClass = properties.get(ServerProperties.WATT_DEPOT_IMPL_KEY);</span>
+<span class="nc" id="L80">    this.persistance = (WattDepotPersistence) Class.forName(depotClass)</span>
+        .getConstructor(ServerProperties.class).newInstance(properties);
+<span class="nc" id="L82">    this.definition = this.persistance.getMeasurementPruningDefinition(gcdId, orgId, true);</span>
+<span class="nc" id="L83">    this.debug = debug;</span>
+<span class="nc" id="L84">  }</span>
+
+  /**
+   * @return the definition
+   */
+  public MeasurementPruningDefinition getDefinition() {
+<span class="nc" id="L90">    return definition;</span>
+  }
+
+  /**
+   * @return The end of the collection window.
+   */
+  private Date getEndDate() {
+    XMLGregorianCalendar now;
+<span class="nc" id="L98">    Date ret = null;</span>
+    try {
+<span class="nc" id="L100">      now = DateConvert.convertDate(new Date());</span>
+<span class="nc" id="L101">      XMLGregorianCalendar endCal = Tstamp</span>
+          .incrementDays(now, -1 * definition.getIgnoreWindowDays());
+<span class="nc" id="L103">      ret = DateConvert.convertXMLCal(endCal);</span>
+    }
+<span class="nc" id="L105">    catch (DatatypeConfigurationException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L107">      e.printStackTrace();</span>
+<span class="nc" id="L108">    }</span>
+<span class="nc" id="L109">    return ret;</span>
+  }
+
+  /**
+   * @param sensorId the id of the sensor to get measurements for.
+   * @return The Measurements in the collection window.
+   * @throws IdNotFoundException if there is a problem with the
+   *         MeasurementPruningDefintion.
+   */
+  private List&lt;Measurement&gt; getMeasurementsToCheck(String sensorId) throws IdNotFoundException {
+<span class="nc" id="L119">    Date start = getStartDate();</span>
+<span class="nc" id="L120">    Date end = getEndDate();</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">    if (debug) {</span>
+<span class="nc" id="L122">      SimpleDateFormat df = new SimpleDateFormat();</span>
+<span class="nc" id="L123">      System.out.println(&quot;Collection window for &quot; + sensorId + &quot; is from &quot; + df.format(start)</span>
+          + &quot; to &quot; + df.format(end));
+    }
+<span class="nc" id="L126">    return this.persistance.getMeasurements(this.definition.getDepositoryId(),</span>
+        this.definition.getOrgId(), sensorId, end, start, false);
+  }
+
+  /**
+   * @return A list of measurements to garbage collect. They are at a higher
+   *         sample rate than desired.
+   * @throws IdNotFoundException if there is a problem with the
+   *         MeasurementPruningDefinition.
+   */
+  public List&lt;Measurement&gt; getMeasurementsToDelete() throws IdNotFoundException {
+<span class="nc" id="L137">    Long startTime = 0l;</span>
+<span class="nc" id="L138">    Long endTime = 0l;</span>
+<span class="nc" id="L139">    Long diff = 0l;</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">    if (debug) {</span>
+<span class="nc" id="L141">      startTime = System.nanoTime();</span>
+    }
+<span class="nc" id="L143">    List&lt;Measurement&gt; ret = new ArrayList&lt;Measurement&gt;();</span>
+<span class="nc" id="L144">    SensorGroup group = this.persistance.getSensorGroup(this.definition.getSensorId(),</span>
+        this.definition.getOrgId(), false);
+<span class="nc bnc" id="L146" title="All 2 branches missed.">    if (group != null) {</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">      for (String s : group.getSensors()) {</span>
+<span class="nc" id="L148">        ret.addAll(getMeasurementsToDelete(s));</span>
+<span class="nc" id="L149">      }</span>
+    }
+    else {
+<span class="nc" id="L152">      ret = getMeasurementsToDelete(this.definition.getSensorId());</span>
+    }
+<span class="nc bnc" id="L154" title="All 2 branches missed.">    if (debug) {</span>
+<span class="nc" id="L155">      endTime = System.nanoTime();</span>
+<span class="nc" id="L156">      diff = endTime - startTime;</span>
+<span class="nc" id="L157">      System.out.println(&quot;getMeasurementsToDelete() took &quot; + (diff / 1E9) + &quot; secs.&quot;);</span>
+    }
+<span class="nc" id="L159">    return ret;</span>
+  }
+
+  /**
+   * @param sensorId The id of the sensor making the measurements.
+   * @return The List of measurements to delete for the given sensor.
+   * @throws IdNotFoundException if there is a problem with the sensorId.
+   */
+  private List&lt;Measurement&gt; getMeasurementsToDelete(String sensorId) throws IdNotFoundException {
+<span class="nc" id="L168">    List&lt;Measurement&gt; ret = new ArrayList&lt;Measurement&gt;();</span>
+<span class="nc" id="L169">    List&lt;Measurement&gt; check = getMeasurementsToCheck(sensorId);</span>
+<span class="nc" id="L170">    int size = check.size();</span>
+<span class="nc" id="L171">    int index = 1;</span>
+<span class="nc" id="L172">    int baseIndex = 0;</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">    while (index &lt; size - 1) {</span>
+<span class="nc" id="L174">      long secondsBetween = Math.abs((check.get(index).getDate().getTime() - check.get(baseIndex)</span>
+          .getDate().getTime()) / 1000);
+<span class="nc bnc" id="L176" title="All 2 branches missed.">      if (secondsBetween &lt; definition.getMinGapSeconds()) {</span>
+<span class="nc" id="L177">        ret.add(check.get(index++));</span>
+      }
+      else {
+<span class="nc" id="L180">        baseIndex = index;</span>
+<span class="nc" id="L181">        index++;</span>
+      }
+<span class="nc" id="L183">    }</span>
+<span class="nc" id="L184">    return ret;</span>
+
+  }
+
+  /**
+   * @return the persistance
+   */
+  public WattDepotPersistence getPersistance() {
+<span class="nc" id="L192">    return persistance;</span>
+  }
+
+  /**
+   * @return The start of the collection window.
+   */
+  private Date getStartDate() {
+    XMLGregorianCalendar now;
+<span class="nc" id="L200">    Date ret = null;</span>
+    try {
+<span class="nc" id="L202">      now = DateConvert.convertDate(new Date());</span>
+<span class="nc" id="L203">      XMLGregorianCalendar startCal = Tstamp.incrementDays(now,</span>
+          -1 * definition.getIgnoreWindowDays());
+<span class="nc" id="L205">      startCal = Tstamp.incrementDays(startCal, -1 * definition.getCollectWindowDays());</span>
+<span class="nc" id="L206">      ret = DateConvert.convertXMLCal(startCal);</span>
+    }
+<span class="nc" id="L208">    catch (DatatypeConfigurationException e) {</span>
+      // TODO Auto-generated catch block
+<span class="nc" id="L210">      e.printStackTrace();</span>
+<span class="nc" id="L211">    }</span>
+<span class="nc" id="L212">    return ret;</span>
+  }
+
+  /**
+   * Processes the command line arguments and runs the
+   * MeasurementGarbageCollector one time.
+   * 
+   * @param args The command line arguments.
+   * @throws Exception if there is a problem.
+   */
+  public static void main(String[] args) throws Exception {
+<span class="nc" id="L223">    Options options = new Options();</span>
+<span class="nc" id="L224">    options</span>
+        .addOption(&quot;h&quot;, &quot;help&quot;, false,
+            &quot;Usage: MeasurementPruner -o &lt;orgId&gt; -m &lt;measurement pruning definition id&gt;&quot;
+                + &quot; [-d] [-s]&quot;);
+<span class="nc" id="L228">    options.addOption(&quot;o&quot;, &quot;orgId&quot;, true, &quot;Organization Id.&quot;);</span>
+<span class="nc" id="L229">    options.addOption(&quot;m&quot;, &quot;mpd&quot;, true, &quot;MeasurementPruningDefinition Id.&quot;);</span>
+<span class="nc" id="L230">    options.addOption(&quot;d&quot;, &quot;debug&quot;, false, &quot;Display debugging information.&quot;);</span>
+<span class="nc" id="L231">    options.addOption(&quot;s&quot;, &quot;single&quot;, false, &quot;Run gc only once, right away.&quot;);</span>
+
+<span class="nc" id="L233">    CommandLine cmd = null;</span>
+<span class="nc" id="L234">    String orgId = null;</span>
+<span class="nc" id="L235">    String gcdId = null;</span>
+<span class="nc" id="L236">    boolean debug = false;</span>
+<span class="nc" id="L237">    boolean single = false;</span>
+<span class="nc" id="L238">    CommandLineParser parser = new PosixParser();</span>
+<span class="nc" id="L239">    HelpFormatter formatter = new HelpFormatter();</span>
+    try {
+<span class="nc" id="L241">      cmd = parser.parse(options, args);</span>
+    }
+<span class="nc" id="L243">    catch (ParseException e) {</span>
+<span class="nc" id="L244">      System.err.println(&quot;Command line parsing failed. Reason: &quot; + e.getMessage() + &quot;. Exiting.&quot;);</span>
+<span class="nc" id="L245">      System.exit(1);</span>
+<span class="nc" id="L246">    }</span>
+<span class="nc bnc" id="L247" title="All 2 branches missed.">    if (cmd.hasOption(&quot;h&quot;)) {</span>
+<span class="nc" id="L248">      formatter.printHelp(&quot;MeasurementGarbageCollector&quot;, options);</span>
+<span class="nc" id="L249">      System.exit(0);</span>
+    }
+<span class="nc bnc" id="L251" title="All 2 branches missed.">    if (cmd.hasOption(&quot;o&quot;)) {</span>
+<span class="nc" id="L252">      orgId = cmd.getOptionValue(&quot;o&quot;);</span>
+    }
+    else {
+<span class="nc" id="L255">      orgId = Organization.ADMIN_GROUP.getId();</span>
+    }
+<span class="nc bnc" id="L257" title="All 2 branches missed.">    if (cmd.hasOption(&quot;m&quot;)) {</span>
+<span class="nc" id="L258">      gcdId = cmd.getOptionValue(&quot;m&quot;);</span>
+    }
+<span class="nc" id="L260">    debug = cmd.hasOption(&quot;d&quot;);</span>
+<span class="nc" id="L261">    single = cmd.hasOption(&quot;s&quot;);</span>
+<span class="nc bnc" id="L262" title="All 2 branches missed.">    if (debug) {</span>
+<span class="nc" id="L263">      System.out.println(&quot;Measurement Garbage Collection:&quot;);</span>
+<span class="nc" id="L264">      System.out.println(&quot;Org Id = &quot; + orgId);</span>
+<span class="nc" id="L265">      System.out.println(&quot;GCD Id = &quot; + gcdId);</span>
+<span class="nc" id="L266">      System.out.println(&quot;Single run = &quot; + single);</span>
+    }
+<span class="nc" id="L268">    ServerProperties properties = new ServerProperties();</span>
+    // if (debug) {
+    // properties.set(ServerProperties.SERVER_TIMING_KEY,
+    // ServerProperties.TRUE);
+    // }
+<span class="nc" id="L273">    MeasurementPruner mgc = new MeasurementPruner(properties, gcdId, orgId, debug);</span>
+<span class="nc bnc" id="L274" title="All 2 branches missed.">    if (single) {</span>
+<span class="nc" id="L275">      mgc.pruneMeasurements();</span>
+    }
+    else {
+      // Set up the TimerTask to run the gc at the right time.
+<span class="nc bnc" id="L279" title="All 2 branches missed.">      if (debug) {</span>
+<span class="nc" id="L280">        System.out.println(&quot;Setting up Timer for &quot; + mgc);</span>
+      }
+<span class="nc" id="L282">      Timer t = new Timer();</span>
+<span class="nc" id="L283">      t.schedule(mgc, mgc.millisToNextRun(), mgc.getGCPeriod());</span>
+    }
+<span class="nc" id="L285">  }</span>
+
+  /**
+   * @return The number of milliseconds to wait till the next expected run time.
+   */
+  private long millisToNextRun() {
+<span class="nc bnc" id="L291" title="All 2 branches missed.">    if (debug) {</span>
+<span class="nc" id="L292">      System.out.print(&quot;milliseconds to next run is &quot;);</span>
+    }
+<span class="nc bnc" id="L294" title="All 2 branches missed.">    if (definition.getNextRun() == null) {</span>
+<span class="nc bnc" id="L295" title="All 2 branches missed.">      if (debug) {</span>
+<span class="nc" id="L296">        System.out.println(&quot;0&quot;);</span>
+      }
+<span class="nc" id="L298">      return 0l;</span>
+    }
+    else {
+<span class="nc" id="L301">      long delay = definition.getNextRun().getTime() - new Date().getTime();</span>
+<span class="nc bnc" id="L302" title="All 2 branches missed.">      if (debug) {</span>
+<span class="nc" id="L303">        System.out.println(delay);</span>
+      }
+<span class="nc bnc" id="L305" title="All 2 branches missed.">      if (delay &lt; 0) {</span>
+<span class="nc" id="L306">        delay = 0l;</span>
+      }
+<span class="nc" id="L308">      return delay;</span>
+    }
+  }
+
+  /**
+   * @return The number of milliseconds to wait between GC runs.
+   */
+  private long getGCPeriod() {
+<span class="nc" id="L316">    int period = 24 * 60 * 60 * 1000; // defaults to once a day</span>
+<span class="nc bnc" id="L317" title="All 2 branches missed.">    if (definition.getCollectWindowDays() &gt; 1) {</span>
+<span class="nc" id="L318">      period = (definition.getCollectWindowDays() - 1) * 24 * 60 * 60 * 1000;</span>
+<span class="nc bnc" id="L319" title="All 2 branches missed.">      if (debug) {</span>
+<span class="nc" id="L320">        System.out.println(&quot;GC period is &quot; + period + &quot; milliseconds.&quot;);</span>
+      }
+    }
+<span class="nc" id="L323">    return period;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.util.TimerTask#run()
+   */
+  @Override
+  public void run() {
+    try {
+<span class="nc" id="L334">      pruneMeasurements();</span>
+    }
+<span class="nc" id="L336">    catch (DatatypeConfigurationException e) {</span>
+<span class="nc" id="L337">      e.printStackTrace();</span>
+    }
+<span class="nc" id="L339">    catch (IdNotFoundException e) {</span>
+<span class="nc" id="L340">      e.printStackTrace();</span>
+<span class="nc" id="L341">    }</span>
+<span class="nc" id="L342">  }</span>
+
+  /**
+   * Prunes the measurements.
+   * 
+   * @throws DatatypeConfigurationException if there is a problem with
+   *         DateConvert.
+   * @throws IdNotFoundException if there is a problem with persistence.
+   */
+  public void pruneMeasurements() throws DatatypeConfigurationException, IdNotFoundException {
+<span class="nc" id="L352">    Date lastStarted = new Date();</span>
+<span class="nc" id="L353">    Integer deleted = 0;</span>
+<span class="nc bnc" id="L354" title="All 2 branches missed.">    if (debug) {</span>
+<span class="nc" id="L355">      System.out.println(&quot;Starting run at &quot; + new SimpleDateFormat().format(lastStarted));</span>
+    }
+    // figure out the 6 hour windows to delete
+<span class="nc" id="L358">    XMLGregorianCalendar start = DateConvert.convertDate(getStartDate());</span>
+<span class="nc" id="L359">    XMLGregorianCalendar end = DateConvert.convertDate(getEndDate());</span>
+<span class="nc" id="L360">    List&lt;XMLGregorianCalendar&gt; windows = Tstamp.getTimestampList(start, end, PRUNE_WINDOW);</span>
+<span class="nc" id="L361">    String sensorId = this.definition.getSensorId();</span>
+<span class="nc" id="L362">    SensorGroup group = this.persistance</span>
+        .getSensorGroup(sensorId, this.definition.getOrgId(), false);
+<span class="nc bnc" id="L364" title="All 2 branches missed.">    if (group != null) {</span>
+<span class="nc bnc" id="L365" title="All 2 branches missed.">      for (String s : group.getSensors()) {</span>
+<span class="nc bnc" id="L366" title="All 2 branches missed.">        for (int i = 0; i &lt; windows.size() - 1; i++) {</span>
+<span class="nc" id="L367">          Date windowStart = DateConvert.convertXMLCal(windows.get(i));</span>
+<span class="nc" id="L368">          Date windowEnd = DateConvert.convertXMLCal(windows.get(i + 1));</span>
+<span class="nc" id="L369">          List&lt;Measurement&gt; check = this.persistance.getMeasurements(</span>
+              this.definition.getDepositoryId(), this.definition.getOrgId(), s, windowStart,
+              windowEnd, false);
+<span class="nc" id="L372">          int size = check.size();</span>
+<span class="nc bnc" id="L373" title="All 2 branches missed.">          if (debug) {</span>
+<span class="nc" id="L374">            System.out.println(&quot;Sensor &quot; + s + &quot;: &quot; + windowStart + &quot; to &quot; + windowEnd + &quot; has &quot;</span>
+                + size + &quot; measurements&quot;);
+          }
+<span class="nc" id="L377">          int index = 1;</span>
+<span class="nc" id="L378">          int baseIndex = 0;</span>
+<span class="nc bnc" id="L379" title="All 2 branches missed.">          while (index &lt; size - 1) {</span>
+<span class="nc" id="L380">            long secondsBetween = Math.abs((check.get(index).getDate().getTime() - check</span>
+                .get(baseIndex).getDate().getTime()) / 1000);
+<span class="nc bnc" id="L382" title="All 2 branches missed.">            if (secondsBetween &lt; definition.getMinGapSeconds()) {</span>
+<span class="nc" id="L383">              this.persistance.deleteMeasurement(this.definition.getDepositoryId(),</span>
+                  this.definition.getOrganizationId(), check.get(index++).getId());
+<span class="nc" id="L385">              deleted++;</span>
+            }
+            else {
+<span class="nc" id="L388">              baseIndex = index;</span>
+<span class="nc" id="L389">              index++;</span>
+            }
+<span class="nc" id="L391">          }</span>
+        }
+
+<span class="nc" id="L394">      }</span>
+    }
+    else {
+<span class="nc bnc" id="L397" title="All 2 branches missed.">      for (int i = 0; i &lt; windows.size() - 1; i++) {</span>
+<span class="nc" id="L398">        Date windowStart = DateConvert.convertXMLCal(windows.get(i));</span>
+<span class="nc" id="L399">        Date windowEnd = DateConvert.convertXMLCal(windows.get(i + 1));</span>
+<span class="nc" id="L400">        List&lt;Measurement&gt; check = this.persistance.getMeasurements(</span>
+            this.definition.getDepositoryId(), this.definition.getOrgId(), sensorId, windowStart,
+            windowEnd, false);
+<span class="nc" id="L403">        int size = check.size();</span>
+<span class="nc bnc" id="L404" title="All 2 branches missed.">        if (debug) {</span>
+<span class="nc" id="L405">          System.out.println(&quot;Sensor &quot; + sensorId + &quot;: &quot; + windowStart + &quot; to &quot; + windowEnd</span>
+              + &quot; has &quot; + size + &quot; measurements&quot;);
+        }
+<span class="nc" id="L408">        int index = 1;</span>
+<span class="nc" id="L409">        int baseIndex = 0;</span>
+<span class="nc bnc" id="L410" title="All 2 branches missed.">        while (index &lt; size - 1) {</span>
+<span class="nc" id="L411">          long secondsBetween = Math.abs((check.get(index).getDate().getTime() - check</span>
+              .get(baseIndex).getDate().getTime()) / 1000);
+<span class="nc bnc" id="L413" title="All 2 branches missed.">          if (secondsBetween &lt; definition.getMinGapSeconds()) {</span>
+<span class="nc" id="L414">            this.persistance.deleteMeasurement(this.definition.getDepositoryId(),</span>
+                this.definition.getOrganizationId(), check.get(index++).getId());
+<span class="nc" id="L416">            deleted++;</span>
+          }
+          else {
+<span class="nc" id="L419">            baseIndex = index;</span>
+<span class="nc" id="L420">            index++;</span>
+          }
+<span class="nc" id="L422">        }</span>
+      }
+    }
+<span class="nc" id="L425">    Date lastCompleted = new Date();</span>
+<span class="nc" id="L426">    this.definition.setLastStarted(lastStarted);</span>
+<span class="nc" id="L427">    this.definition.setLastCompleted(lastCompleted);</span>
+<span class="nc" id="L428">    this.definition.setNumMeasurementsCollected(deleted);</span>
+    try {
+<span class="nc" id="L430">      this.persistance.updateMeasurementPruningDefinition(this.definition);</span>
+    }
+<span class="nc" id="L432">    catch (IdNotFoundException e) {</span>
+<span class="nc" id="L433">      e.printStackTrace();</span>
+<span class="nc" id="L434">    }</span>
+<span class="nc bnc" id="L435" title="All 2 branches missed.">    if (debug) {</span>
+<span class="nc" id="L436">      System.out.println(&quot;Finished run at &quot; + new SimpleDateFormat().format(lastCompleted));</span>
+<span class="nc" id="L437">      System.out.println(&quot;Deleted &quot; + deleted + &quot; measurements.&quot;);</span>
+    }
+<span class="nc" id="L439">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

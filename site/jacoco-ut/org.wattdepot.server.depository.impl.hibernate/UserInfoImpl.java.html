@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>UserInfoImpl.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.depository.impl.hibernate</a> &gt; <span class="el_source">UserInfoImpl.java</span></div><h1>UserInfoImpl.java</h1><pre class="source lang-java linenums">/**
+ * UserInfoImpl.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.server.depository.impl.hibernate;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.wattdepot.common.domainmodel.Property;
+import org.wattdepot.common.domainmodel.UserInfo;
+
+/**
+ * UserInfoImpl - Hibernate implementation of UserInfo. Supports a Long pk
+ * value.
+ * 
+ * @author Cam Moore
+ * 
+ */
+@Entity
+@Table(name = &quot;USERS&quot;)
+public class UserInfoImpl {
+
+  /** Database primary key. */
+  @Id
+  @GeneratedValue
+  private Long pk;
+  /** A unique id for the User. */
+  private String uid;
+  /** The User's first name. */
+  private String firstName;
+  /** The User's last name. */
+  private String lastName;
+  /** The User's email address. */
+  private String email;
+  /** Additional properties of the user. */
+  @OneToMany
+  private Set&lt;PropertyImpl&gt; properties;
+  /** This user's organization. */
+  @ManyToOne
+  private OrganizationImpl org;
+
+  /**
+   * Default constructor.
+   */
+<span class="fc" id="L67">  public UserInfoImpl() {</span>
+
+<span class="fc" id="L69">  }</span>
+
+  /**
+   * @param uid the user's uid.
+   * @param firstName the user's first name.
+   * @param lastName the user's last name.
+   * @param email the user's email address.
+   * @param properties additional properties.
+   * @param org the user's organization.
+   */
+  public UserInfoImpl(String uid, String firstName, String lastName, String email,
+<span class="fc" id="L80">      Set&lt;PropertyImpl&gt; properties, OrganizationImpl org) {</span>
+<span class="fc" id="L81">    this.uid = uid;</span>
+<span class="fc" id="L82">    this.firstName = firstName;</span>
+<span class="fc" id="L83">    this.lastName = lastName;</span>
+<span class="fc" id="L84">    this.email = email;</span>
+<span class="fc" id="L85">    this.properties = properties;</span>
+<span class="fc" id="L86">    this.org = org;</span>
+<span class="pc bpc" id="L87" title="2 of 4 branches missed.">    if (org != null &amp;&amp; !org.getUsers().contains(this)) {</span>
+<span class="fc" id="L88">      org.getUsers().add(this);</span>
+    }
+<span class="fc" id="L90">  }</span>
+
+  /**
+   * @return the email
+   */
+  public String getEmail() {
+<span class="nc" id="L96">    return email;</span>
+  }
+
+  /**
+   * @return the firstName
+   */
+  public String getFirstName() {
+<span class="nc" id="L103">    return firstName;</span>
+  }
+
+  /**
+   * @return the lastName
+   */
+  public String getLastName() {
+<span class="nc" id="L110">    return lastName;</span>
+  }
+
+  /**
+   * @return the org
+   */
+  public OrganizationImpl getOrg() {
+<span class="nc" id="L117">    return org;</span>
+  }
+
+  /**
+   * @return the pk
+   */
+  public Long getPk() {
+<span class="nc" id="L124">    return pk;</span>
+  }
+
+  /**
+   * @return the properties
+   */
+  @OneToMany
+  public Set&lt;PropertyImpl&gt; getProperties() {
+<span class="nc" id="L132">    return properties;</span>
+  }
+
+  /**
+   * @return the uid
+   */
+  public String getUid() {
+<span class="fc" id="L139">    return uid;</span>
+  }
+
+  /**
+   * @param email the email to set
+   */
+  public void setEmail(String email) {
+<span class="fc" id="L146">    this.email = email;</span>
+<span class="fc" id="L147">  }</span>
+
+  /**
+   * @param firstName the firstName to set
+   */
+  public void setFirstName(String firstName) {
+<span class="fc" id="L153">    this.firstName = firstName;</span>
+<span class="fc" id="L154">  }</span>
+
+  /**
+   * @param lastName the lastName to set
+   */
+  public void setLastName(String lastName) {
+<span class="fc" id="L160">    this.lastName = lastName;</span>
+<span class="fc" id="L161">  }</span>
+
+  /**
+   * @param org the org to set
+   */
+  public void setOrg(OrganizationImpl org) {
+<span class="fc" id="L167">    this.org = org;</span>
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">    if (!org.getUsers().contains(this)) {</span>
+<span class="nc" id="L169">      org.getUsers().add(this);</span>
+    }
+<span class="fc" id="L171">  }</span>
+
+  /**
+   * @param pk the pk to set
+   */
+  @SuppressWarnings(&quot;unused&quot;)
+  private void setPk(Long pk) {
+<span class="nc" id="L178">    this.pk = pk;</span>
+<span class="nc" id="L179">  }</span>
+
+  /**
+   * @param properties the properties to set
+   */
+  public void setProperties(Set&lt;PropertyImpl&gt; properties) {
+<span class="fc" id="L185">    this.properties = properties;</span>
+<span class="fc" id="L186">  }</span>
+
+  /**
+   * @param uid the uid to set
+   */
+  public void setUid(String uid) {
+<span class="fc" id="L192">    this.uid = uid;</span>
+<span class="fc" id="L193">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+<span class="fc" id="L202">    final int prime = 31;</span>
+<span class="fc" id="L203">    int result = 1;</span>
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">    result = prime * result + ((email == null) ? 0 : email.hashCode());</span>
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">    result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());</span>
+<span class="pc bpc" id="L206" title="1 of 2 branches missed.">    result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());</span>
+<span class="pc bpc" id="L207" title="1 of 2 branches missed.">    result = prime * result + ((org == null) ? 0 : org.getId().hashCode());</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">    result = prime * result + ((pk == null) ? 0 : pk.hashCode());</span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">    result = prime * result + ((properties == null) ? 0 : properties.hashCode());</span>
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">    result = prime * result + ((uid == null) ? 0 : uid.hashCode());</span>
+<span class="fc" id="L211">    return result;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+<span class="nc bnc" id="L221" title="All 2 branches missed.">    if (this == obj) {</span>
+<span class="nc" id="L222">      return true;</span>
+    }
+<span class="nc bnc" id="L224" title="All 2 branches missed.">    if (obj == null) {</span>
+<span class="nc" id="L225">      return false;</span>
+    }
+<span class="nc bnc" id="L227" title="All 2 branches missed.">    if (getClass() != obj.getClass()) {</span>
+<span class="nc" id="L228">      return false;</span>
+    }
+<span class="nc" id="L230">    UserInfoImpl other = (UserInfoImpl) obj;</span>
+<span class="nc bnc" id="L231" title="All 2 branches missed.">    if (email == null) {</span>
+<span class="nc bnc" id="L232" title="All 2 branches missed.">      if (other.email != null) {</span>
+<span class="nc" id="L233">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L236" title="All 2 branches missed.">    else if (!email.equals(other.email)) {</span>
+<span class="nc" id="L237">      return false;</span>
+    }
+<span class="nc bnc" id="L239" title="All 2 branches missed.">    if (firstName == null) {</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">      if (other.firstName != null) {</span>
+<span class="nc" id="L241">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L244" title="All 2 branches missed.">    else if (!firstName.equals(other.firstName)) {</span>
+<span class="nc" id="L245">      return false;</span>
+    }
+<span class="nc bnc" id="L247" title="All 2 branches missed.">    if (lastName == null) {</span>
+<span class="nc bnc" id="L248" title="All 2 branches missed.">      if (other.lastName != null) {</span>
+<span class="nc" id="L249">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L252" title="All 2 branches missed.">    else if (!lastName.equals(other.lastName)) {</span>
+<span class="nc" id="L253">      return false;</span>
+    }
+<span class="nc bnc" id="L255" title="All 2 branches missed.">    if (org == null) {</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">      if (other.org != null) {</span>
+<span class="nc" id="L257">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L260" title="All 2 branches missed.">    else if (!org.getId().equals(other.org.getId())) {</span>
+<span class="nc" id="L261">      return false;</span>
+    }
+<span class="nc bnc" id="L263" title="All 2 branches missed.">    if (pk == null) {</span>
+<span class="nc bnc" id="L264" title="All 2 branches missed.">      if (other.pk != null) {</span>
+<span class="nc" id="L265">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L268" title="All 2 branches missed.">    else if (!pk.equals(other.pk)) {</span>
+<span class="nc" id="L269">      return false;</span>
+    }
+<span class="nc bnc" id="L271" title="All 2 branches missed.">    if (properties == null) {</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">      if (other.properties != null) {</span>
+<span class="nc" id="L273">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L276" title="All 2 branches missed.">    else if (!properties.equals(other.properties)) {</span>
+<span class="nc" id="L277">      return false;</span>
+    }
+<span class="nc bnc" id="L279" title="All 2 branches missed.">    if (uid == null) {</span>
+<span class="nc bnc" id="L280" title="All 2 branches missed.">      if (other.uid != null) {</span>
+<span class="nc" id="L281">        return false;</span>
+      }
+    }
+<span class="nc bnc" id="L284" title="All 2 branches missed.">    else if (!uid.equals(other.uid)) {</span>
+<span class="nc" id="L285">      return false;</span>
+    }
+<span class="nc" id="L287">    return true;</span>
+  }
+
+  /**
+   * @return a UserInfo equivalent to this.
+   */
+  public UserInfo toUserInfo() {
+<span class="fc" id="L294">    Set&lt;Property&gt; props = new HashSet&lt;Property&gt;();</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">    for (PropertyImpl i : properties) {</span>
+<span class="fc" id="L296">      props.add(new Property(i.getKey(), i.getValue()));</span>
+<span class="fc" id="L297">    }</span>
+<span class="fc" id="L298">    UserInfo ret = new UserInfo(uid, firstName, lastName, email, org.getId(), props, &quot;********&quot;);</span>
+<span class="fc" id="L299">    return ret;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+<span class="nc" id="L309">    return &quot;UserInfoImpl [pk=&quot; + pk + &quot;, uid=&quot; + uid + &quot;, firstName=&quot; + firstName + &quot;, lastName=&quot;</span>
+        + lastName + &quot;, email=&quot; + email + &quot;, properties=&quot; + properties + &quot;, orgId=&quot; + org.getId()
+        + &quot;]&quot;;
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

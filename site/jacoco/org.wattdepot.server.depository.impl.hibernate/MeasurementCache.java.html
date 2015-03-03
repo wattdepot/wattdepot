@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MeasurementCache.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.depository.impl.hibernate</a> &gt; <span class="el_source">MeasurementCache.java</span></div><h1>MeasurementCache.java</h1><pre class="source lang-java linenums">/*
+ * This file is part of WattDepot.
+ *
+ *  Copyright (C) 2014  Cam Moore
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package org.wattdepot.server.depository.impl.hibernate;
+
+import org.wattdepot.common.domainmodel.InterpolatedValue;
+
+import java.util.HashMap;
+
+/**
+ * Caches the earliest and latest measurements organized by Organization, Depository and Sensor.
+ * Created by Cam Mmoore on 12/3/14.
+ * @author Cam Moore
+ */
+public class MeasurementCache {
+  // OrgId, DepositoryId, SensorId, MeasurementChachePair
+  private HashMap&lt;String, HashMap&lt;String, HashMap&lt;String, MeasurementCachePair&gt;&gt;&gt; cache;
+
+  /** Default constructor.*/
+<span class="nc" id="L36">  public MeasurementCache() {</span>
+<span class="nc" id="L37">    this.cache = new HashMap&lt;String, HashMap&lt;String, HashMap&lt;String, MeasurementCachePair&gt;&gt;&gt;();</span>
+<span class="nc" id="L38">  }</span>
+
+  /**
+   * Gets the earliest measurement date for the given sensor.
+   * @param orgId The organization id.
+   * @param depotId The depository id.
+   * @param sensorId The sensor id.
+   * @return The earliest measurement as an InterpolatedValue or null if there aren't any measurements.
+   */
+  public InterpolatedValue getEarliest(String orgId, String depotId, String sensorId) {
+<span class="nc" id="L48">    HashMap&lt;String, HashMap&lt;String, MeasurementCachePair&gt;&gt; orgMap = cache.get(orgId);</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">    if (orgMap == null) {</span>
+<span class="nc" id="L50">      return null;</span>
+    }
+<span class="nc" id="L52">    HashMap&lt;String, MeasurementCachePair&gt; depotMap = orgMap.get(depotId);</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">    if (depotMap == null) {</span>
+<span class="nc" id="L54">      return null;</span>
+    }
+<span class="nc" id="L56">    MeasurementCachePair sensorInfo = depotMap.get(sensorId);</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">    if (sensorInfo == null) {</span>
+<span class="nc" id="L58">      return null;</span>
+    }
+    else {
+<span class="nc" id="L61">      return sensorInfo.getEarliest();</span>
+    }
+  }
+
+  /**
+   * Gets the date of the latest measurement for the given sensor.
+   * @param orgId The organization id.
+   * @param depotId The depository id.
+   * @param sensorId The sensor id.
+   * @return The latest measurement as an InterpolatedValue or null if there aren't any measurements.
+   */
+  public InterpolatedValue getLatest(String orgId, String depotId, String sensorId) {
+<span class="nc" id="L73">    HashMap&lt;String, HashMap&lt;String, MeasurementCachePair&gt;&gt; orgMap = cache.get(orgId);</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">    if (orgMap == null) {</span>
+<span class="nc" id="L75">      return null;</span>
+    }
+<span class="nc" id="L77">    HashMap&lt;String, MeasurementCachePair&gt; depotMap = orgMap.get(depotId);</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">    if (depotMap == null) {</span>
+<span class="nc" id="L79">      return null;</span>
+    }
+<span class="nc" id="L81">    MeasurementCachePair sensorInfo = depotMap.get(sensorId);</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">    if (sensorInfo == null) {</span>
+<span class="nc" id="L83">      return null;</span>
+    }
+    else {
+<span class="nc" id="L86">      return sensorInfo.getLatest();</span>
+    }
+  }
+
+  /**
+   * Updates the Sensor's information with the given InterpolatedValue.
+   * @param orgId The organization id.
+   * @param depotId The depository id.
+   * @param sensorId The sensor id.
+   * @param iv The interpolated value for the measurement.
+   */
+  public void update(String orgId, String depotId, String sensorId, InterpolatedValue iv) {
+<span class="nc" id="L98">    HashMap&lt;String, HashMap&lt;String, MeasurementCachePair&gt;&gt; orgMap = cache.get(orgId);</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">    if (orgMap == null) {</span>
+<span class="nc" id="L100">      orgMap = new HashMap&lt;String, HashMap&lt;String, MeasurementCachePair&gt;&gt;();</span>
+<span class="nc" id="L101">      cache.put(orgId, orgMap);</span>
+    }
+<span class="nc" id="L103">    HashMap&lt;String, MeasurementCachePair&gt; depotMap = orgMap.get(depotId);</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">    if (depotMap == null) {</span>
+<span class="nc" id="L105">      depotMap = new HashMap&lt;String, MeasurementCachePair&gt;();</span>
+<span class="nc" id="L106">      orgMap.put(depotId, depotMap);</span>
+    }
+<span class="nc" id="L108">    MeasurementCachePair sensorInfo = depotMap.get(sensorId);</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">    if (sensorInfo == null) {</span>
+<span class="nc" id="L110">      sensorInfo = new MeasurementCachePair(iv);</span>
+<span class="nc" id="L111">      depotMap.put(sensorId, sensorInfo);</span>
+    }
+    else {
+<span class="nc" id="L114">      sensorInfo.update(iv);</span>
+    }
+<span class="nc" id="L116">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

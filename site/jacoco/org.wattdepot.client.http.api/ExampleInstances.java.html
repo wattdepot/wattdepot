@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ExampleInstances.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.client.http.api</a> &gt; <span class="el_source">ExampleInstances.java</span></div><h1>ExampleInstances.java</h1><pre class="source lang-java linenums">/**
+ * ExampleInstances.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.client.http.api;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import org.wattdepot.client.ClientProperties;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.MeasurementType;
+import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.domainmodel.Property;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.exception.BadCredentialException;
+import org.wattdepot.common.exception.IdNotFoundException;
+
+/**
+ * ExampleInstances inserts some example instances into WattDepot.
+ * 
+ * @author Cam Moore
+ * 
+ */
+public class ExampleInstances {
+
+  private WattDepotAdminClient admin;
+  private WattDepotClient cmoore;
+  private WattDepotClient johnson;
+
+  /**
+   * Creates several clients for inserting instances into WattDepot.
+   */
+<span class="nc" id="L51">  public ExampleInstances() {</span>
+<span class="nc" id="L52">    ClientProperties props = new ClientProperties();</span>
+<span class="nc" id="L53">    String serverURL = &quot;http://&quot;</span>
+        + props.get(ClientProperties.WATTDEPOT_SERVER_HOST) + &quot;:&quot;
+        + props.get(ClientProperties.PORT_KEY) + &quot;/&quot;;
+    try {
+<span class="nc" id="L57">      admin = new WattDepotAdminClient(serverURL,</span>
+          props.get(ClientProperties.USER_NAME), Organization.ADMIN_GROUP_NAME,
+          props.get(ClientProperties.USER_PASSWORD));
+    }
+<span class="nc" id="L61">    catch (Exception e) {</span>
+<span class="nc" id="L62">      System.out.println(&quot;Failed with &quot; + props.get(ClientProperties.USER_NAME)</span>
+          + &quot; and &quot; + props.get(ClientProperties.USER_PASSWORD));
+<span class="nc" id="L64">    }</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">    if (admin != null) {</span>
+<span class="nc" id="L66">      setUpOrganization();</span>
+      try {
+<span class="nc" id="L68">        cmoore = new WattDepotClient(serverURL, &quot;cmoore&quot;, &quot;uh&quot;, &quot;secret1&quot;);</span>
+      }
+<span class="nc" id="L70">      catch (BadCredentialException e) {</span>
+<span class="nc" id="L71">        e.printStackTrace();</span>
+<span class="nc" id="L72">      }</span>
+      try {
+<span class="nc" id="L74">        johnson = new WattDepotClient(serverURL, &quot;johnson&quot;, &quot;uh&quot;, &quot;secret2&quot;);</span>
+      }
+<span class="nc" id="L76">      catch (BadCredentialException e) {</span>
+<span class="nc" id="L77">        e.printStackTrace();</span>
+<span class="nc" id="L78">      }</span>
+    }
+<span class="nc" id="L80">  }</span>
+
+  /**
+   * Creates a University of Hawaii, Manoa organization and two users in that
+   * organziation.
+   */
+  private void setUpOrganization() {
+<span class="nc" id="L87">    Organization org = new Organization(&quot;uh&quot;, &quot;University of Hawaii, Manoa&quot;,</span>
+        new HashSet&lt;String&gt;());
+<span class="nc" id="L89">    UserInfo user1 = new UserInfo(&quot;cmoore&quot;, &quot;Cam&quot;, &quot;Moore&quot;,</span>
+        &quot;cmoore@hawaii.edu&quot;, org.getId(), new HashSet&lt;Property&gt;(), &quot;secret1&quot;);
+<span class="nc" id="L91">    UserInfo user2 = new UserInfo(&quot;johnson&quot;, &quot;Philip&quot;, &quot;Johnson&quot;,</span>
+        &quot;philipmjohnson@gmail.com&quot;, org.getId(), new HashSet&lt;Property&gt;(),
+        &quot;secret2&quot;);
+<span class="nc" id="L94">    org.getUsers().add(user1.getUid());</span>
+<span class="nc" id="L95">    org.getUsers().add(user2.getUid());</span>
+    // check to see if the instances are defined in WattDepot
+<span class="nc bnc" id="L97" title="All 6 branches missed.">    if (!admin.isDefinedOrganization(org.getId())</span>
+        &amp;&amp; !admin.isDefinedUserInfo(user1.getUid(), org.getId())
+        &amp;&amp; !admin.isDefinedUserInfo(user2.getUid(), org.getId())) {
+      // Add the organization and users
+      // 1st add 'empty' organization
+<span class="nc" id="L102">      org.setUsers(new HashSet&lt;String&gt;());</span>
+<span class="nc" id="L103">      admin.putOrganization(org);</span>
+      // 2nd add users
+<span class="nc" id="L105">      admin.putUser(user1);</span>
+<span class="nc" id="L106">      admin.putUser(user2);</span>
+      // 3rd update organization
+<span class="nc" id="L108">      org.add(user1.getUid());</span>
+<span class="nc" id="L109">      org.add(user2.getUid());</span>
+<span class="nc" id="L110">      admin.updateOrganization(org);</span>
+    }
+<span class="nc" id="L112">  }</span>
+
+  /**
+   * Creates two Depositories, a SensorLocation, two Sensors, a SensorGroup, and
+   * two CollectorProcessDefinitions.
+   */
+  private void setUpItems() {
+<span class="nc" id="L119">    Sensor telco = new Sensor(&quot;Ilima 6th telco&quot;, &quot;http://telco&quot;, &quot;shark&quot;,</span>
+        cmoore.getOrganizationId());
+    // NOTE: we can use either client to test and store the sensor.
+<span class="nc bnc" id="L122" title="All 2 branches missed.">    if (!cmoore.isDefinedSensor(telco.getId())) {</span>
+<span class="nc" id="L123">      johnson.putSensor(telco);</span>
+    }
+<span class="nc" id="L125">    Sensor elect = new Sensor(&quot;Ilima 6th electrical&quot;, &quot;http://elect&quot;, &quot;shark&quot;,</span>
+        cmoore.getOrganizationId());
+<span class="nc bnc" id="L127" title="All 2 branches missed.">    if (!johnson.isDefinedSensor(elect.getId())) {</span>
+<span class="nc" id="L128">      cmoore.putSensor(elect);</span>
+    }
+<span class="nc" id="L130">    Set&lt;String&gt; sensors = new HashSet&lt;String&gt;();</span>
+<span class="nc" id="L131">    sensors.add(telco.getId());</span>
+<span class="nc" id="L132">    sensors.add(elect.getId());</span>
+<span class="nc" id="L133">    SensorGroup ilima6 = new SensorGroup(&quot;Ilima 6th&quot;, sensors,</span>
+        cmoore.getOrganizationId());
+<span class="nc bnc" id="L135" title="All 2 branches missed.">    if (!cmoore.isDefinedSensorGroup(ilima6.getId())) {</span>
+<span class="nc" id="L136">      johnson.putSensorGroup(ilima6);</span>
+    }
+<span class="nc" id="L138">    MeasurementType e = null;</span>
+<span class="nc" id="L139">    MeasurementType p = null;</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">    if (cmoore.isDefinedMeasurementType(&quot;energy-wh&quot;)) {</span>
+      try {
+<span class="nc" id="L142">        e = cmoore.getMeasurementType(&quot;energy-wh&quot;);</span>
+      }
+<span class="nc" id="L144">      catch (IdNotFoundException e1) { // NOPMD</span>
+        // can't happen
+<span class="nc" id="L146">      }</span>
+    }
+<span class="nc bnc" id="L148" title="All 2 branches missed.">    if (johnson.isDefinedMeasurementType(&quot;power-w&quot;)) {</span>
+      try {
+<span class="nc" id="L150">        p = johnson.getMeasurementType(&quot;power-w&quot;);</span>
+      }
+<span class="nc" id="L152">      catch (IdNotFoundException e1) { // NOPMD</span>
+        // can't happen
+<span class="nc" id="L154">      }</span>
+    }
+<span class="nc" id="L156">    Depository energy = null;</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">    if (e != null) {</span>
+<span class="nc" id="L158">      energy = new Depository(&quot;Ilima Energy&quot;, e, cmoore.getOrganizationId());</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">      if (!cmoore.isDefinedDepository(energy.getId())) {</span>
+<span class="nc" id="L160">        johnson.putDepository(energy);</span>
+      }
+<span class="nc" id="L162">      CollectorProcessDefinition energyCPD1 = new CollectorProcessDefinition(</span>
+          &quot;Ilima 6th telco energy&quot;, telco.getId(), 10L, energy.getId(),
+          energy.getOrganizationId());
+<span class="nc" id="L165">      CollectorProcessDefinition energyCPD2 = new CollectorProcessDefinition(</span>
+          &quot;Ilima 6th elect energy&quot;, elect.getId(), 10L, energy.getId(),
+          energy.getOrganizationId());
+<span class="nc bnc" id="L168" title="All 2 branches missed.">      if (!cmoore.isDefinedCollectorProcessDefinition(energyCPD2.getId())) {</span>
+<span class="nc" id="L169">        cmoore.putCollectorProcessDefinition(energyCPD2);</span>
+      }
+<span class="nc bnc" id="L171" title="All 2 branches missed.">      if (!cmoore.isDefinedCollectorProcessDefinition(energyCPD1.getId())) {</span>
+<span class="nc" id="L172">        cmoore.putCollectorProcessDefinition(energyCPD1);</span>
+      }
+    }
+<span class="nc bnc" id="L175" title="All 2 branches missed.">    if (p != null) {</span>
+<span class="nc" id="L176">      Depository power = new Depository(&quot;Ilima Power&quot;, p,</span>
+          cmoore.getOrganizationId());
+<span class="nc bnc" id="L178" title="All 2 branches missed.">      if (!johnson.isDefinedDepository(power.getId())) {</span>
+<span class="nc" id="L179">        johnson.putDepository(power);</span>
+      }
+    }
+<span class="nc" id="L182">  }</span>
+
+  /**
+   * @param args command line arguments.
+   */
+  public static void main(String[] args) {
+<span class="nc" id="L188">    ExampleInstances e = new ExampleInstances();</span>
+<span class="nc" id="L189">    e.setUpItems();</span>
+<span class="nc" id="L190">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

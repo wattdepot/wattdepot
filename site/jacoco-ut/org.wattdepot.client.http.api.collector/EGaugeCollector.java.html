@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>EGaugeCollector.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.client.http.api.collector</a> &gt; <span class="el_source">EGaugeCollector.java</span></div><h1>EGaugeCollector.java</h1><pre class="source lang-java linenums">/**
+ * EGaugeCollector.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.client.http.api.collector;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Date;
+
+import javax.measure.unit.SI;
+import javax.measure.unit.Unit;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.jscience.physics.amount.Amount;
+import org.w3c.dom.Document;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.MeasurementType;
+import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.domainmodel.Property;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorModel;
+import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.exception.BadCredentialException;
+import org.wattdepot.common.exception.BadSensorUriException;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MeasurementTypeException;
+import org.wattdepot.common.util.SensorModelHelper;
+import org.wattdepot.common.util.tstamp.Tstamp;
+import org.xml.sax.SAXException;
+
+/**
+ * EGaugeCollector - Collector for eGauge meters.
+ * 
+ * @author Cam Moore
+ * 
+ */
+public class EGaugeCollector extends MultiThreadedCollector {
+
+  /** The URI to access the eGauge data. */
+  private String eGaugeUri;
+  /** The name of the register to be polled by the collector. */
+  private String registerName;
+  /** The MeasurementType the Depository stores. */
+  private MeasurementType measType;
+  /** The Unit of the depository. */
+  private Unit&lt;?&gt; measUnit;
+  /** The eGuage sensor. */
+  private Sensor sensor;
+
+  /**
+   * Initializes the EGaugeCollector.
+   * 
+   * @param serverUri
+   *          The URI for the WattDepot server.
+   * @param username
+   *          The name of a user defined in the WattDepot server.
+   * @param orgId
+   *          the id of the organization.
+   * @param password
+   *          The password for the user.
+   * @param collectorId
+   *          The CollectorProcessDefinitionId used to initialize this
+   *          collector.
+   * @param debug
+   *          flag for debugging messages.
+   * @throws BadCredentialException
+   *           if the user or password don't match the credentials in WattDepot.
+   * @throws IdNotFoundException
+   *           if the processId is not defined.
+   * @throws BadSensorUriException
+   *           if the Sensor's URI isn't valid.
+   */
+  public EGaugeCollector(String serverUri, String username, String orgId, String password,
+      String collectorId, boolean debug) throws BadCredentialException, IdNotFoundException,
+      BadSensorUriException {
+<span class="nc" id="L107">    super(serverUri, username, orgId, password, collectorId, debug);</span>
+<span class="nc" id="L108">    this.measType = depository.getMeasurementType();</span>
+<span class="nc" id="L109">    this.measUnit = Unit.valueOf(measType.getUnits());</span>
+<span class="nc" id="L110">    this.sensor = client.getSensor(definition.getSensorId());</span>
+
+<span class="nc" id="L112">    Property prop = this.definition.getProperty(&quot;registerName&quot;);</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">    if (prop != null) {</span>
+<span class="nc" id="L114">      this.registerName = prop.getValue();</span>
+    }
+    URL sensorURL;
+    try {
+<span class="nc" id="L118">      sensorURL = new URL(sensor.getUri());</span>
+<span class="nc" id="L119">      String sensorHostName = sensorURL.getHost();</span>
+      // CAM using v1&amp;tot&amp;inst returns v1.0 xml data.
+<span class="nc" id="L121">      this.eGaugeUri = &quot;http://&quot; + sensorHostName + &quot;/cgi-bin/egauge?v1&amp;tot&amp;inst&quot;;</span>
+    }
+<span class="nc" id="L123">    catch (MalformedURLException e) {</span>
+<span class="nc" id="L124">      throw new BadSensorUriException(client.getSensor(definition.getSensorId()).getUri()</span>
+          + &quot; is not a valid URI.&quot;);
+<span class="nc" id="L126">    }</span>
+<span class="nc" id="L127">  }</span>
+
+  /**
+   * @param serverUri
+   *          The URI for the WattDepot server.
+   * @param username
+   *          The name of a user defined in the WattDepot server.
+   * @param orgId
+   *          the user's organization id.
+   * @param password
+   *          The password for the user.
+   * @param sensor
+   *          The Sensor to poll.
+   * @param pollingInterval
+   *          The polling interval in seconds.
+   * @param depository
+   *          The Depository to store the measurements.
+   * @param debug
+   *          flag for debugging messages.
+   * @throws BadCredentialException
+   *           if the user or password don't match the credentials in WattDepot.
+   * @throws BadSensorUriException
+   *           if the Sensor's URI isn't valid.
+   * @throws IdNotFoundException
+   *           if the processId is not defined.
+   */
+  public EGaugeCollector(String serverUri, String username, String orgId, String password,
+      Sensor sensor, Long pollingInterval, Depository depository, boolean debug)
+      throws BadCredentialException, BadSensorUriException, IdNotFoundException {
+<span class="nc" id="L156">    super(serverUri, username, orgId, password, sensor.getId(), pollingInterval, depository,</span>
+        debug);
+<span class="nc" id="L158">    this.measType = depository.getMeasurementType();</span>
+<span class="nc" id="L159">    this.measUnit = Unit.valueOf(measType.getUnits());</span>
+<span class="nc" id="L160">    this.sensor = client.getSensor(definition.getSensorId());</span>
+
+<span class="nc" id="L162">    Property prop = this.definition.getProperty(&quot;registerName&quot;);</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">    if (prop != null) {</span>
+<span class="nc" id="L164">      this.registerName = prop.getValue();</span>
+    }
+    URL sensorURL;
+    try {
+<span class="nc" id="L168">      sensorURL = new URL(client.getSensor(definition.getSensorId()).getUri());</span>
+<span class="nc" id="L169">      String sensorHostName = sensorURL.getHost();</span>
+      // CAM using v1&amp;tot&amp;inst returns v1.0 xml data.
+<span class="nc" id="L171">      this.eGaugeUri = &quot;http://&quot; + sensorHostName + &quot;/cgi-bin/egauge?v1&amp;tot&amp;inst&quot;;</span>
+    }
+<span class="nc" id="L173">    catch (MalformedURLException e) {</span>
+<span class="nc" id="L174">      throw new BadSensorUriException(client.getSensor(definition.getSensorId()).getUri()</span>
+          + &quot; is not a valid URI.&quot;);
+<span class="nc" id="L176">    }</span>
+
+<span class="nc" id="L178">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.client.impl.restlet.collector.MultiThreadedCollector#isValid
+   * ()
+   */
+  @Override
+  public boolean isValid() {
+<span class="nc" id="L189">    boolean ret = super.isValid();</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">    if (ret) {</span>
+      // check the type of the Sensor
+      try {
+<span class="nc" id="L193">        SensorModel sm = client.getSensorModel(sensor.getModelId());</span>
+<span class="nc" id="L194">        String type = sm.getType();</span>
+<span class="nc" id="L195">        ret &amp;= type.equals(SensorModelHelper.EGAUGE);</span>
+      }
+<span class="nc" id="L197">      catch (IdNotFoundException e) {</span>
+<span class="nc" id="L198">        ret = false;</span>
+<span class="nc" id="L199">      }</span>
+    }
+<span class="nc bnc" id="L201" title="All 4 branches missed.">    if (this.registerName == null || this.registerName.length() == 0) {</span>
+<span class="nc" id="L202">      return false;</span>
+    }
+    // validate that measType is power or energy.
+<span class="nc bnc" id="L205" title="All 4 branches missed.">    if (!measType.getId().startsWith(&quot;power&quot;) &amp;&amp; !measType.getId().startsWith(&quot;energy&quot;)) {</span>
+<span class="nc" id="L206">      return false;</span>
+    }
+
+<span class="nc" id="L209">    return ret;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.util.TimerTask#run()
+   */
+  @Override
+  public void run() {
+<span class="nc" id="L219">    Measurement meas = null;</span>
+<span class="nc" id="L220">    DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();</span>
+<span class="nc" id="L221">    domFactory.setNamespaceAware(true);</span>
+    try {
+<span class="nc" id="L223">      DocumentBuilder builder = domFactory.newDocumentBuilder();</span>
+
+      // Have to make HTTP connection manually so we can set proper timeouts
+<span class="nc" id="L226">      URL url = new URL(eGaugeUri);</span>
+      URLConnection httpConnection;
+<span class="nc" id="L228">      httpConnection = url.openConnection();</span>
+      // Set both connect and read timeouts to 15 seconds. No point in long
+      // timeouts since the
+      // sensor will retry before too long anyway.
+<span class="nc" id="L232">      httpConnection.setConnectTimeout(15 * 1000);</span>
+<span class="nc" id="L233">      httpConnection.setReadTimeout(15 * 1000);</span>
+<span class="nc" id="L234">      httpConnection.connect();</span>
+
+      // Record current time as close approximation to time for reading we are
+      // about to make
+<span class="nc" id="L238">      Date timestamp = new Date();</span>
+
+<span class="nc" id="L240">      Document doc = builder.parse(httpConnection.getInputStream());</span>
+
+<span class="nc" id="L242">      XPathFactory factory = XPathFactory.newInstance();</span>
+<span class="nc" id="L243">      XPath powerXpath = factory.newXPath();</span>
+<span class="nc" id="L244">      XPath energyXpath = factory.newXPath();</span>
+      // Path to get the current power consumed measured by the meter in watts
+<span class="nc" id="L246">      String exprPowerString = &quot;//r[@rt='total' and @t='P' and @n='&quot; + this.registerName</span>
+          + &quot;']/i/text()&quot;;
+<span class="nc" id="L248">      XPathExpression exprPower = powerXpath.compile(exprPowerString);</span>
+      // Path to get the energy consumed month to date in watt seconds
+<span class="nc" id="L250">      String exprEnergyString = &quot;//r[@rt='total' and @t='P' and @n='&quot; + this.registerName</span>
+          + &quot;']/v/text()&quot;;
+<span class="nc" id="L252">      XPathExpression exprEnergy = energyXpath.compile(exprEnergyString);</span>
+<span class="nc" id="L253">      Object powerResult = exprPower.evaluate(doc, XPathConstants.NUMBER);</span>
+<span class="nc" id="L254">      Object energyResult = exprEnergy.evaluate(doc, XPathConstants.NUMBER);</span>
+
+<span class="nc" id="L256">      Double value = null;</span>
+      // power is given in W
+<span class="nc" id="L258">      Amount&lt;?&gt; power = Amount.valueOf((Double) powerResult, SI.WATT);</span>
+      // energy given in Ws
+<span class="nc" id="L260">      Amount&lt;?&gt; energy = Amount.valueOf((Double) energyResult, SI.WATT.times(SI.SECOND));</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">      if (isPower()) {</span>
+<span class="nc" id="L262">        value = power.to(measUnit).getEstimatedValue();</span>
+      }
+      else {
+<span class="nc" id="L265">        value = energy.to(measUnit).getEstimatedValue();</span>
+      }
+<span class="nc" id="L267">      meas = new Measurement(definition.getSensorId(), timestamp, value, measUnit);</span>
+    }
+<span class="nc" id="L269">    catch (MalformedURLException e) {</span>
+<span class="nc" id="L270">      System.err.format(&quot;URI %s was invalid leading to malformed URL%n&quot;, eGaugeUri);</span>
+    }
+<span class="nc" id="L272">    catch (XPathExpressionException e) {</span>
+<span class="nc" id="L273">      System.err.println(&quot;Bad XPath expression, this should never happen.&quot;);</span>
+    }
+<span class="nc" id="L275">    catch (ParserConfigurationException e) {</span>
+<span class="nc" id="L276">      System.err.println(&quot;Unable to configure XML parser, this is weird.&quot;);</span>
+    }
+<span class="nc" id="L278">    catch (SAXException e) {</span>
+<span class="nc" id="L279">      System.err.format(</span>
+          &quot;%s: Got bad XML from eGauge sensor %s (%s), hopefully this is temporary.%n&quot;,
+          Tstamp.makeTimestamp(), sensor.getName(), e);
+    }
+<span class="nc" id="L283">    catch (IOException e) {</span>
+<span class="nc" id="L284">      System.err.format(</span>
+          &quot;%s: Unable to retrieve data from eGauge sensor %s (%s), hopefully this is temporary.%n&quot;,
+          Tstamp.makeTimestamp(), sensor.getName(), e);
+<span class="nc" id="L287">    }</span>
+
+<span class="nc bnc" id="L289" title="All 2 branches missed.">    if (meas != null) {</span>
+      try {
+<span class="nc" id="L291">        this.client.putMeasurement(depository, meas);</span>
+      }
+<span class="nc" id="L293">      catch (MeasurementTypeException e) {</span>
+<span class="nc" id="L294">        System.err.format(&quot;%s does not store %s measurements%n&quot;, depository.getName(),</span>
+            meas.getMeasurementType());
+<span class="nc" id="L296">      }</span>
+<span class="nc bnc" id="L297" title="All 2 branches missed.">      if (debug) {</span>
+<span class="nc" id="L298">        System.out.println(meas);</span>
+      }
+    }
+<span class="nc" id="L301">  }</span>
+
+  /**
+   * @return true if the depository stores power measurements.
+   */
+  private boolean isPower() {
+<span class="nc" id="L307">    return measType.getId().startsWith(&quot;power&quot;);</span>
+  }
+
+  /**
+   * Processes the command line arguments and starts the eGauge Collector.
+   * 
+   * @param args
+   *          command line arguments.
+   */
+  public static void main(String[] args) {
+<span class="nc" id="L317">    Options options = new Options();</span>
+<span class="nc" id="L318">    options.addOption(&quot;h&quot;, &quot;help&quot;, false,</span>
+        &quot;Usage: EGaugeCollector &lt;server uri&gt; &lt;username&gt; &lt;password&gt; &lt;collectorid&gt;&quot;);
+<span class="nc" id="L320">    options.addOption(&quot;s&quot;, &quot;server&quot;, true, &quot;WattDepot Server URI. (http://server.wattdepot.org)&quot;);</span>
+<span class="nc" id="L321">    options.addOption(&quot;u&quot;, &quot;username&quot;, true, &quot;Username&quot;);</span>
+<span class="nc" id="L322">    options.addOption(&quot;o&quot;, &quot;organizationId&quot;, true, &quot;User's Organization id.&quot;);</span>
+<span class="nc" id="L323">    options.addOption(&quot;p&quot;, &quot;password&quot;, true, &quot;Password&quot;);</span>
+<span class="nc" id="L324">    options.addOption(&quot;c&quot;, &quot;collector&quot;, true, &quot;Collector Process Definition Id&quot;);</span>
+<span class="nc" id="L325">    options.addOption(&quot;d&quot;, &quot;debug&quot;, false, &quot;Displays sensor data as it is sent to the server.&quot;);</span>
+
+<span class="nc" id="L327">    CommandLine cmd = null;</span>
+<span class="nc" id="L328">    String serverUri = null;</span>
+<span class="nc" id="L329">    String username = null;</span>
+<span class="nc" id="L330">    String organizationId = null;</span>
+<span class="nc" id="L331">    String password = null;</span>
+<span class="nc" id="L332">    String collectorId = null;</span>
+<span class="nc" id="L333">    boolean debug = false;</span>
+
+<span class="nc" id="L335">    CommandLineParser parser = new PosixParser();</span>
+<span class="nc" id="L336">    HelpFormatter formatter = new HelpFormatter();</span>
+    try {
+<span class="nc" id="L338">      cmd = parser.parse(options, args);</span>
+    }
+<span class="nc" id="L340">    catch (ParseException e) {</span>
+<span class="nc" id="L341">      System.err.println(&quot;Command line parsing failed. Reason: &quot; + e.getMessage() + &quot;. Exiting.&quot;);</span>
+<span class="nc" id="L342">      System.exit(1);</span>
+<span class="nc" id="L343">    }</span>
+<span class="nc bnc" id="L344" title="All 2 branches missed.">    if (cmd.hasOption(&quot;h&quot;)) {</span>
+<span class="nc" id="L345">      formatter.printHelp(&quot;EGaugeCollector&quot;, options);</span>
+<span class="nc" id="L346">      System.exit(0);</span>
+    }
+<span class="nc bnc" id="L348" title="All 2 branches missed.">    if (cmd.hasOption(&quot;s&quot;)) {</span>
+<span class="nc" id="L349">      serverUri = cmd.getOptionValue(&quot;s&quot;);</span>
+    }
+    else {
+<span class="nc" id="L352">      serverUri = &quot;http://localhost:8119/&quot;;</span>
+    }
+<span class="nc bnc" id="L354" title="All 2 branches missed.">    if (cmd.hasOption(&quot;u&quot;)) {</span>
+<span class="nc" id="L355">      username = cmd.getOptionValue(&quot;u&quot;);</span>
+    }
+    else {
+<span class="nc" id="L358">      username = UserInfo.ROOT.getUid();</span>
+    }
+<span class="nc bnc" id="L360" title="All 2 branches missed.">    if (cmd.hasOption(&quot;o&quot;)) {</span>
+<span class="nc" id="L361">      organizationId = cmd.getOptionValue(&quot;o&quot;);</span>
+    }
+    else {
+<span class="nc" id="L364">      organizationId = Organization.ADMIN_GROUP.getId();</span>
+    }
+<span class="nc bnc" id="L366" title="All 2 branches missed.">    if (cmd.hasOption(&quot;p&quot;)) {</span>
+<span class="nc" id="L367">      password = cmd.getOptionValue(&quot;p&quot;);</span>
+    }
+    else {
+<span class="nc" id="L370">      password = &quot;default&quot;;</span>
+    }
+<span class="nc bnc" id="L372" title="All 2 branches missed.">    if (cmd.hasOption(&quot;c&quot;)) {</span>
+<span class="nc" id="L373">      collectorId = cmd.getOptionValue(&quot;c&quot;);</span>
+    }
+    else {
+<span class="nc" id="L376">      collectorId = &quot;ilima_6th_power&quot;;</span>
+    }
+
+<span class="nc" id="L379">    debug = cmd.hasOption(&quot;d&quot;);</span>
+
+<span class="nc bnc" id="L381" title="All 2 branches missed.">    if (debug) {</span>
+<span class="nc" id="L382">      System.out.println(&quot;WattDepot Server: &quot; + serverUri);</span>
+<span class="nc" id="L383">      System.out.println(&quot;Username: &quot; + username);</span>
+<span class="nc" id="L384">      System.out.println(&quot;OrganizationID: &quot; + organizationId);</span>
+<span class="nc" id="L385">      System.out.println(&quot;Password: &quot; + password);</span>
+<span class="nc" id="L386">      System.out.println(&quot;Collector Process Definition Id: &quot; + collectorId);</span>
+<span class="nc" id="L387">      System.out.println(&quot;debug: &quot; + debug);</span>
+<span class="nc" id="L388">      System.out.println();</span>
+    }
+    try {
+<span class="nc bnc" id="L391" title="All 2 branches missed.">      if (!MultiThreadedCollector.start(serverUri, username, organizationId, password, collectorId,</span>
+          debug)) {
+<span class="nc" id="L393">        System.exit(1);</span>
+      }
+    }
+<span class="nc" id="L396">    catch (InterruptedException e) {</span>
+<span class="nc" id="L397">      e.printStackTrace();</span>
+<span class="nc" id="L398">      System.exit(1);</span>
+    }
+<span class="nc" id="L400">    catch (BadCredentialException e) {</span>
+<span class="nc" id="L401">      e.printStackTrace();</span>
+<span class="nc" id="L402">      System.exit(1);</span>
+<span class="nc" id="L403">    }</span>
+<span class="nc" id="L404">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

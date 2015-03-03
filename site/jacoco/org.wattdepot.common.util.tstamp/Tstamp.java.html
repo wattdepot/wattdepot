@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Tstamp.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.util.tstamp</a> &gt; <span class="el_source">Tstamp.java</span></div><h1>Tstamp.java</h1><pre class="source lang-java linenums">package org.wattdepot.common.util.tstamp;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.List;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+/**
+ * Utility class that facilitates Timestamp representation and processing. There
+ * are too many classes already named &quot;Timestamp&quot;, thus the abbreviated name.
+ * 
+ * @author Philip Johnson
+ */
+public final class Tstamp {
+
+  /** Make this class noninstantiable. */
+<span class="nc" id="L22">  private Tstamp() {</span>
+    // Do nothing.
+<span class="nc" id="L24">  }</span>
+
+  private static final String factoryErrorMsg = &quot;Bad DataTypeFactory&quot;;
+
+<span class="fc" id="L28">  private static long MILLISECS_PER_DAY = 24 * 60 * 60 * 1000;</span>
+
+  /**
+   * Returns true if the passed string can be parsed into an
+   * XMLGregorianCalendar object.
+   * 
+   * @param lexicalRepresentation The string representation.
+   * @return True if the string is a legal XMLGregorianCalendar.
+   */
+  public static boolean isTimestamp(String lexicalRepresentation) {
+    try {
+<span class="nc" id="L39">      DatatypeFactory factory = DatatypeFactory.newInstance();</span>
+<span class="nc" id="L40">      factory.newXMLGregorianCalendar(lexicalRepresentation);</span>
+<span class="nc" id="L41">      return true;</span>
+
+    }
+<span class="nc" id="L44">    catch (Exception e) {</span>
+<span class="nc" id="L45">      return false;</span>
+    }
+  }
+
+  /**
+   * Returns an XMLGregorianCalendar, given its string representation. Missing
+   * hours, minutes, second, millisecond, and timezone fields are given
+   * defaults.
+   * 
+   * @param rep The string representation.
+   * @return The timestamp.
+   * @throws Exception If the string cannot be parsed into a timestamp.
+   */
+  public static XMLGregorianCalendar makeTimestamp(String rep) throws Exception {
+<span class="fc" id="L59">    DatatypeFactory factory = DatatypeFactory.newInstance();</span>
+<span class="fc" id="L60">    long mills = factory.newXMLGregorianCalendar(rep).toGregorianCalendar().getTimeInMillis();</span>
+<span class="fc" id="L61">    return makeTimestamp(mills);</span>
+  }
+
+  /**
+   * Converts a javax.sql.Timestamp into a
+   * javax.xml.datatype.XMLGregorianCalendar.
+   * 
+   * @param tstamp The javax.sql.Timestamp
+   * @return A new instance of a javax.xml.datatype.XmlGregorianCalendar
+   */
+  public static XMLGregorianCalendar makeTimestamp(java.sql.Timestamp tstamp) {
+<span class="nc" id="L72">    DatatypeFactory factory = null;</span>
+    try {
+<span class="nc" id="L74">      factory = DatatypeFactory.newInstance();</span>
+<span class="nc" id="L75">      GregorianCalendar calendar = new GregorianCalendar();</span>
+<span class="nc" id="L76">      calendar.setTimeInMillis(tstamp.getTime());</span>
+<span class="nc" id="L77">      return factory.newXMLGregorianCalendar(calendar);</span>
+    }
+<span class="nc" id="L79">    catch (DatatypeConfigurationException e) {</span>
+<span class="nc" id="L80">      throw new RuntimeException(factoryErrorMsg, e);</span>
+    }
+  }
+
+  /**
+   * Converts the specified time in milliseconds into a
+   * javax.xml.datatype.XMLGregorianCalendar.
+   * 
+   * @param timeInMillis the specified time in milliseconds to convert.
+   * @return A new instance of a javax.xml.datatype.XmlGregorianCalendar
+   */
+  public static XMLGregorianCalendar makeTimestamp(long timeInMillis) {
+<span class="fc" id="L92">    DatatypeFactory factory = null;</span>
+    try {
+<span class="fc" id="L94">      factory = DatatypeFactory.newInstance();</span>
+<span class="fc" id="L95">      GregorianCalendar calendar = new GregorianCalendar();</span>
+<span class="fc" id="L96">      calendar.setTimeInMillis(timeInMillis);</span>
+<span class="fc" id="L97">      return factory.newXMLGregorianCalendar(calendar);</span>
+    }
+<span class="nc" id="L99">    catch (DatatypeConfigurationException e) {</span>
+<span class="nc" id="L100">      throw new RuntimeException(factoryErrorMsg, e);</span>
+    }
+  }
+
+  // /**
+  // * Converts the specified Day into a
+  // javax.xml.datatype.XMLGregorianCalendar.
+  // * @param day The day to be converted.
+  // * @return A new instance of a javax.xml.datatype.XmlGregorianCalendar.
+  // */
+  // public static XMLGregorianCalendar makeTimestamp(Day day) {
+  // DatatypeFactory factory = null;
+  // try {
+  // factory = DatatypeFactory.newInstance();
+  // GregorianCalendar calendar = new GregorianCalendar();
+  // calendar.setTimeInMillis(day.getDate().getTime());
+  // return factory.newXMLGregorianCalendar(calendar);
+  // }
+  // catch (DatatypeConfigurationException e) {
+  // throw new RuntimeException(factoryErrorMsg, e);
+  // }
+  // }
+
+  /**
+   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp
+   * incremented by the number of days.
+   * 
+   * @param tstamp The base date and time.
+   * @param days The number of days to increment. This can be a negative number.
+   * @return A new XMLGregorianCalendar instance representing the inc'd time.
+   */
+  public static XMLGregorianCalendar incrementDays(XMLGregorianCalendar tstamp, int days) {
+<span class="fc" id="L132">    DatatypeFactory factory = null;</span>
+    try {
+<span class="fc" id="L134">      factory = DatatypeFactory.newInstance();</span>
+<span class="fc" id="L135">      GregorianCalendar calendar = new GregorianCalendar();</span>
+<span class="fc" id="L136">      long millis = tstamp.toGregorianCalendar().getTimeInMillis();</span>
+<span class="fc" id="L137">      millis += 1000L * 60 * 60 * 24 * days;</span>
+<span class="fc" id="L138">      calendar.setTimeInMillis(millis);</span>
+<span class="fc" id="L139">      return factory.newXMLGregorianCalendar(calendar);</span>
+    }
+<span class="nc" id="L141">    catch (DatatypeConfigurationException e) {</span>
+<span class="nc" id="L142">      throw new RuntimeException(factoryErrorMsg, e);</span>
+    }
+  }
+
+  /**
+   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp
+   * incremented by the number of hours.
+   * 
+   * @param tstamp The base date and time.
+   * @param hours The number of hours to increment. This can be a negative
+   *        number.
+   * @return A new XMLGregorianCalendar instance representing the inc'd time.
+   */
+  public static XMLGregorianCalendar incrementHours(XMLGregorianCalendar tstamp, int hours) {
+<span class="fc" id="L156">    DatatypeFactory factory = null;</span>
+    try {
+<span class="fc" id="L158">      factory = DatatypeFactory.newInstance();</span>
+<span class="fc" id="L159">      GregorianCalendar calendar = new GregorianCalendar();</span>
+<span class="fc" id="L160">      long millis = tstamp.toGregorianCalendar().getTimeInMillis();</span>
+<span class="fc" id="L161">      millis += 1000L * 60 * 60 * hours;</span>
+<span class="fc" id="L162">      calendar.setTimeInMillis(millis);</span>
+<span class="fc" id="L163">      return factory.newXMLGregorianCalendar(calendar);</span>
+    }
+<span class="nc" id="L165">    catch (DatatypeConfigurationException e) {</span>
+<span class="nc" id="L166">      throw new RuntimeException(factoryErrorMsg, e);</span>
+    }
+  }
+
+  /**
+   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp
+   * incremented by the number of minutes.
+   * 
+   * @param tstamp The base date and time.
+   * @param minutes The number of minutes to increment. This can be a negative
+   *        number.
+   * @return A new XMLGregorianCalendar instance representing the inc'd time.
+   */
+  public static XMLGregorianCalendar incrementMinutes(XMLGregorianCalendar tstamp, int minutes) {
+<span class="fc" id="L180">    DatatypeFactory factory = null;</span>
+    try {
+<span class="fc" id="L182">      factory = DatatypeFactory.newInstance();</span>
+<span class="fc" id="L183">      GregorianCalendar calendar = new GregorianCalendar();</span>
+<span class="fc" id="L184">      long millis = tstamp.toGregorianCalendar().getTimeInMillis();</span>
+<span class="fc" id="L185">      millis += 1000L * 60 * minutes;</span>
+<span class="fc" id="L186">      calendar.setTimeInMillis(millis);</span>
+<span class="fc" id="L187">      return factory.newXMLGregorianCalendar(calendar);</span>
+    }
+<span class="nc" id="L189">    catch (DatatypeConfigurationException e) {</span>
+<span class="nc" id="L190">      throw new RuntimeException(factoryErrorMsg, e);</span>
+    }
+  }
+
+  /**
+   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp
+   * incremented by the number of seconds.
+   * 
+   * @param tstamp The base date and time.
+   * @param seconds The number of seconds to increment. This can be a negative
+   *        number.
+   * @return A new XMLGregorianCalendar instance representing the inc'd time.
+   */
+  public static XMLGregorianCalendar incrementSeconds(XMLGregorianCalendar tstamp, int seconds) {
+<span class="fc" id="L204">    DatatypeFactory factory = null;</span>
+    try {
+<span class="fc" id="L206">      factory = DatatypeFactory.newInstance();</span>
+<span class="fc" id="L207">      GregorianCalendar calendar = new GregorianCalendar();</span>
+<span class="fc" id="L208">      long millis = tstamp.toGregorianCalendar().getTimeInMillis();</span>
+<span class="fc" id="L209">      millis += 1000L * seconds;</span>
+<span class="fc" id="L210">      calendar.setTimeInMillis(millis);</span>
+<span class="fc" id="L211">      return factory.newXMLGregorianCalendar(calendar);</span>
+    }
+<span class="nc" id="L213">    catch (DatatypeConfigurationException e) {</span>
+<span class="nc" id="L214">      throw new RuntimeException(factoryErrorMsg, e);</span>
+    }
+  }
+
+  /**
+   * Returns a new XMLGregorianCalendar corresponding to the passed tstamp
+   * incremented by the number of milliseconds.
+   * 
+   * @param tstamp The base date and time.
+   * @param milliseconds The number of milliseconds to increment. This can be a
+   *        negative number.
+   * @return A new XMLGregorianCalendar instance representing the inc'd time.
+   */
+  public static XMLGregorianCalendar incrementMilliseconds(XMLGregorianCalendar tstamp,
+      long milliseconds) {
+<span class="fc" id="L229">    DatatypeFactory factory = null;</span>
+    try {
+<span class="fc" id="L231">      factory = DatatypeFactory.newInstance();</span>
+<span class="fc" id="L232">      GregorianCalendar calendar = new GregorianCalendar();</span>
+<span class="fc" id="L233">      long millis = tstamp.toGregorianCalendar().getTimeInMillis();</span>
+<span class="fc" id="L234">      millis += milliseconds;</span>
+<span class="fc" id="L235">      calendar.setTimeInMillis(millis);</span>
+<span class="fc" id="L236">      return factory.newXMLGregorianCalendar(calendar);</span>
+    }
+<span class="nc" id="L238">    catch (DatatypeConfigurationException e) {</span>
+<span class="nc" id="L239">      throw new RuntimeException(factoryErrorMsg, e);</span>
+    }
+  }
+
+  /**
+   * Returns a new java.sql.Timestamp created from a
+   * javax.xml.datatype.XMLGregorianCalendar.
+   * 
+   * @param calendar The XML timestamp.
+   * @return The SQL timestamp.
+   */
+  public static java.sql.Timestamp makeTimestamp(XMLGregorianCalendar calendar) {
+<span class="nc" id="L251">    return new java.sql.Timestamp(calendar.toGregorianCalendar().getTimeInMillis());</span>
+  }
+
+  /**
+   * Returns an XMLGregorianCalendar corresponding to the current time.
+   * 
+   * @return The timestamp.
+   */
+  public static XMLGregorianCalendar makeTimestamp() {
+    try {
+<span class="fc" id="L261">      DatatypeFactory factory = DatatypeFactory.newInstance();</span>
+<span class="fc" id="L262">      return factory.newXMLGregorianCalendar(new GregorianCalendar());</span>
+    }
+<span class="nc" id="L264">    catch (Exception e) {</span>
+<span class="nc" id="L265">      throw new RuntimeException(factoryErrorMsg, e);</span>
+    }
+  }
+
+  /**
+   * Returns true if tstamp is equal to or between start and end.
+   * 
+   * @param start The start time.
+   * @param tstamp The timestamp to test.
+   * @param end The end time.
+   * @return True if tstamp is between start and end.
+   */
+  public static boolean inBetween(XMLGregorianCalendar start, XMLGregorianCalendar tstamp,
+      XMLGregorianCalendar end) {
+<span class="fc" id="L279">    long startMillis = start.toGregorianCalendar().getTimeInMillis();</span>
+<span class="fc" id="L280">    long endMillis = end.toGregorianCalendar().getTimeInMillis();</span>
+<span class="fc" id="L281">    long tstampMillis = tstamp.toGregorianCalendar().getTimeInMillis();</span>
+<span class="pc bpc" id="L282" title="1 of 4 branches missed.">    return tstampMillis &gt;= startMillis &amp;&amp; tstampMillis &lt;= endMillis;</span>
+  }
+
+  /**
+   * Returns true if time1 &gt; time2.
+   * 
+   * @param time1 The first time.
+   * @param time2 The second time.
+   * @return True if time1 &gt; time2
+   */
+  public static boolean greaterThan(XMLGregorianCalendar time1, XMLGregorianCalendar time2) {
+<span class="fc" id="L293">    long time1Millis = time1.toGregorianCalendar().getTimeInMillis();</span>
+<span class="fc" id="L294">    long time2Millis = time2.toGregorianCalendar().getTimeInMillis();</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">    return time1Millis &gt; time2Millis;</span>
+  }
+
+  /**
+   * Returns the number of days between time1 and time2. Returns a negative
+   * number if day1 is after day2. Takes into account daylight savings time
+   * issues.
+   * 
+   * @param day1 The first day.
+   * @param day2 The second day.
+   * @return The number of days between the two days.
+   */
+  public static int daysBetween(XMLGregorianCalendar day1, XMLGregorianCalendar day2) {
+<span class="fc" id="L308">    return (int) (getUnixDay(day2) - getUnixDay(day1));</span>
+  }
+
+  /**
+   * Returns a long representing the number of days since the Unix epoch to the
+   * passed day.
+   * 
+   * @param day The day of interest.
+   * @return The number of days since the epoch.
+   */
+  private static long getUnixDay(XMLGregorianCalendar day) {
+<span class="fc" id="L319">    GregorianCalendar greg = day.toGregorianCalendar();</span>
+<span class="fc" id="L320">    long offset = greg.get(Calendar.ZONE_OFFSET) + greg.get(Calendar.DST_OFFSET);</span>
+<span class="fc" id="L321">    long daysSinceEpoch = (long) Math.floor((double) (greg.getTime().getTime() + offset)</span>
+        / ((double) MILLISECS_PER_DAY));
+<span class="fc" id="L323">    return daysSinceEpoch;</span>
+  }
+
+  /**
+   * Returns true if timeString1 &gt; timeString2. Throws an unchecked
+   * IllegalArgument exception if the strings can't be converted to timestamps.
+   * 
+   * @param timeString1 The first time.
+   * @param timeString2 The second time.
+   * @return True if time1 &gt; time2
+   */
+  public static boolean greaterThan(String timeString1, String timeString2) {
+    try {
+<span class="nc" id="L336">      DatatypeFactory factory = DatatypeFactory.newInstance();</span>
+<span class="nc" id="L337">      XMLGregorianCalendar time1 = factory.newXMLGregorianCalendar(timeString1);</span>
+<span class="nc" id="L338">      XMLGregorianCalendar time2 = factory.newXMLGregorianCalendar(timeString2);</span>
+<span class="nc" id="L339">      return greaterThan(time1, time2);</span>
+    }
+<span class="nc" id="L341">    catch (Exception e) {</span>
+<span class="nc" id="L342">      throw new IllegalArgumentException(&quot;Illegal timestring&quot;, e);</span>
+    }
+  }
+
+  /**
+   * Returns true if time1 &lt; time2.
+   * 
+   * @param time1 The first time.
+   * @param time2 The second time.
+   * @return True if time1 &lt; time2
+   */
+  public static boolean lessThan(XMLGregorianCalendar time1, XMLGregorianCalendar time2) {
+<span class="fc" id="L354">    long time1Millis = time1.toGregorianCalendar().getTimeInMillis();</span>
+<span class="fc" id="L355">    long time2Millis = time2.toGregorianCalendar().getTimeInMillis();</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">    return time1Millis &lt; time2Millis;</span>
+  }
+
+  /**
+   * Returns true if time1 equals time2.
+   * 
+   * @param time1 The first time.
+   * @param time2 The second time.
+   * @return True if time1 equals time2
+   */
+  public static boolean equal(XMLGregorianCalendar time1, XMLGregorianCalendar time2) {
+<span class="fc" id="L367">    long millis1 = time1.toGregorianCalendar().getTimeInMillis();</span>
+<span class="fc" id="L368">    long millis2 = time2.toGregorianCalendar().getTimeInMillis();</span>
+<span class="pc bpc" id="L369" title="1 of 2 branches missed.">    return millis1 == millis2;</span>
+  }
+
+  /**
+   * Returns differences between time1 and time2 in milliseconds.
+   * 
+   * @param time1 Start.
+   * @param time2 End.
+   * @return Difference between two times in milliseconds.
+   */
+  public static long diff(XMLGregorianCalendar time1, XMLGregorianCalendar time2) {
+<span class="fc" id="L380">    long millis1 = time1.toGregorianCalendar().getTimeInMillis();</span>
+<span class="fc" id="L381">    long millis2 = time2.toGregorianCalendar().getTimeInMillis();</span>
+<span class="fc" id="L382">    return millis2 - millis1;</span>
+  }
+
+  /**
+   * Returns true if the passed timestamp indicates some time today or some time
+   * in the future.
+   * 
+   * @param timestamp The timestamp of interest.
+   * @return True if it's today or some day in the future.
+   */
+  public static boolean isTodayOrLater(XMLGregorianCalendar timestamp) {
+<span class="fc" id="L393">    XMLGregorianCalendar today = Tstamp.makeTimestamp();</span>
+<span class="pc bpc" id="L394" title="2 of 6 branches missed.">    boolean isToday = today.getYear() == timestamp.getYear()</span>
+        &amp;&amp; today.getMonth() == timestamp.getMonth()
+        &amp;&amp; today.getDay() == timestamp.getDay();
+<span class="fc bfc" id="L397" title="All 2 branches covered.">    boolean afterToday = today.toGregorianCalendar().getTimeInMillis() &lt; timestamp</span>
+        .toGregorianCalendar().getTimeInMillis();
+<span class="fc bfc" id="L399" title="All 4 branches covered.">    return isToday || afterToday;</span>
+  }
+
+  /**
+   * Returns true if the passed timestamp indicates some time yesterday or some
+   * time in the future. This is useful for the Commit/Churn DPDs, where the
+   * sensor typically sends data not from the current day, but from the day
+   * before.
+   * 
+   * @param timestamp The timestamp of interest.
+   * @return True if it's today or some day in the future.
+   */
+  public static boolean isYesterdayOrLater(XMLGregorianCalendar timestamp) {
+<span class="fc" id="L412">    XMLGregorianCalendar yesterday = Tstamp.incrementDays(Tstamp.makeTimestamp(), -1);</span>
+
+<span class="pc bpc" id="L414" title="1 of 6 branches missed.">    boolean isYesterday = yesterday.getYear() == timestamp.getYear()</span>
+        &amp;&amp; yesterday.getMonth() == timestamp.getMonth()
+        &amp;&amp; yesterday.getDay() == timestamp.getDay();
+<span class="fc bfc" id="L417" title="All 2 branches covered.">    boolean afterYesterday = yesterday.toGregorianCalendar().getTimeInMillis() &lt; timestamp</span>
+        .toGregorianCalendar().getTimeInMillis();
+<span class="fc bfc" id="L419" title="All 4 branches covered.">    return isYesterday || afterYesterday;</span>
+  }
+
+  /**
+   * Returns a newly created sorted list of tstamps from the passed collection.
+   * 
+   * @param tstamps The timestamps to be sorted.
+   * @return A new list of tstamps, now in sorted order.
+   */
+  public static List&lt;XMLGregorianCalendar&gt; sort(Collection&lt;XMLGregorianCalendar&gt; tstamps) {
+<span class="fc" id="L429">    List&lt;XMLGregorianCalendar&gt; tstampList = new ArrayList&lt;XMLGregorianCalendar&gt;(tstamps);</span>
+<span class="fc" id="L430">    Collections.sort(tstampList, new TstampComparator());</span>
+<span class="fc" id="L431">    return tstampList;</span>
+  }
+
+  /**
+   * Helper function that prepares a List timestamps, between the start time and
+   * end time, at the given sampling interval.
+   * 
+   * @param startTime The start of the range requested.
+   * @param endTime The start of the range requested.
+   * @param intervalMinutes The sampling interval requested in minutes.
+   * @return The List of XMLGregorianCalendars.
+   */
+  public static List&lt;XMLGregorianCalendar&gt; getTimestampList(XMLGregorianCalendar startTime,
+      XMLGregorianCalendar endTime, int intervalMinutes) {
+    long intervalMilliseconds;
+<span class="fc" id="L446">    long rangeLength = Tstamp.diff(startTime, endTime);</span>
+<span class="fc" id="L447">    long minutesToMilliseconds = 60L * 1000L;</span>
+
+<span class="fc bfc" id="L449" title="All 2 branches covered.">    if (intervalMinutes &lt; 0) {</span>
+<span class="fc" id="L450">      return null;</span>
+    }
+<span class="fc bfc" id="L452" title="All 2 branches covered.">    if (rangeLength &lt;= 0) {</span>
+      // either startTime == endTime, or startTime &gt; endTime
+<span class="fc" id="L454">      return null;</span>
+    }
+<span class="fc bfc" id="L456" title="All 2 branches covered.">    else if (intervalMinutes == 0) {</span>
+      // use default interval
+<span class="fc" id="L458">      intervalMilliseconds = rangeLength / 10;</span>
+    }
+<span class="pc bpc" id="L460" title="1 of 2 branches missed.">    else if ((intervalMinutes * minutesToMilliseconds) &gt; rangeLength) {</span>
+      // TODO BOGUS, should throw an exception so callers can distinguish
+      // between problems
+<span class="nc" id="L463">      return null;</span>
+    }
+    else {
+      // got a good interval
+<span class="fc" id="L467">      intervalMilliseconds = intervalMinutes * minutesToMilliseconds;</span>
+    }
+    // DEBUG
+    // System.out.format(&quot;%nstartTime=%s, endTime=%s, interval=%d min%n&quot;,
+    // startTime, endTime,
+    // intervalMilliseconds / minutesToMilliseconds);
+
+    // Build list of timestamps, starting with startTime, separated by
+    // intervalMilliseconds
+<span class="fc" id="L476">    List&lt;XMLGregorianCalendar&gt; timestampList = new ArrayList&lt;XMLGregorianCalendar&gt;();</span>
+<span class="fc" id="L477">    XMLGregorianCalendar timestamp = startTime;</span>
+<span class="fc bfc" id="L478" title="All 2 branches covered.">    while (Tstamp.lessThan(timestamp, endTime)) {</span>
+<span class="fc" id="L479">      timestampList.add(timestamp);</span>
+      // System.out.format(&quot;timestamp=%s%n&quot;, timestamp); // DEBUG
+<span class="fc" id="L481">      timestamp = Tstamp.incrementMilliseconds(timestamp, intervalMilliseconds);</span>
+    }
+    // add endTime to cover the last runt interval which is &lt;=
+    // intervalMilliseconds
+<span class="fc" id="L485">    timestampList.add(endTime);</span>
+    // System.out.format(&quot;timestamp=%s%n&quot;, endTime); // DEBUG
+<span class="fc" id="L487">    return timestampList;</span>
+  }
+
+  /**
+   * Produces a list of n + 1 XMLGregorianCalendar instances that span the given
+   * time interval by dividing the interval by n.
+   * 
+   * @param n The number of timestamps to generate.
+   * @param startTime The start of the interval.
+   * @param endTime The end of the interval.
+   * @return A List&lt;XMLGregorianCalendar&gt; of size n.
+   */
+  public static List&lt;XMLGregorianCalendar&gt; getNTimestampList(int n, XMLGregorianCalendar startTime,
+      XMLGregorianCalendar endTime) {
+<span class="nc" id="L501">    long rangeLength = Tstamp.diff(startTime, endTime);</span>
+<span class="nc" id="L502">    long sampleIntervalMilliseconds = rangeLength / n;</span>
+    
+    // Build list of timestamps, starting with startTime, separated by
+    // intervalMilliseconds
+<span class="nc" id="L506">    List&lt;XMLGregorianCalendar&gt; timestampList = new ArrayList&lt;XMLGregorianCalendar&gt;();</span>
+<span class="nc" id="L507">    XMLGregorianCalendar timestamp = startTime;</span>
+<span class="nc bnc" id="L508" title="All 4 branches missed.">    while (Tstamp.lessThan(timestamp, endTime) || Tstamp.equal(timestamp, endTime)) {</span>
+<span class="nc" id="L509">      timestampList.add(timestamp);</span>
+      // System.out.format(&quot;timestamp=%s%n&quot;, timestamp); // DEBUG
+<span class="nc" id="L511">      timestamp = Tstamp.incrementMilliseconds(timestamp, sampleIntervalMilliseconds);</span>
+    }
+    // add endTime to cover the last runt interval which is &lt;=
+    // intervalMilliseconds
+<span class="nc" id="L515">    timestampList.add(endTime);</span>
+    // System.out.format(&quot;timestamp=%s%n&quot;, endTime); // DEBUG
+<span class="nc" id="L517">    return timestampList;</span>
+
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

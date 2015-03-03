@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>CollectorProcessDefinitionServerResource.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">CollectorProcessDefinitionServerResource.java</span></div><h1>CollectorProcessDefinitionServerResource.java</h1><pre class="source lang-java linenums">/**
+ * CollectorProcessDefinitionServerResource.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.server.http.api;
+
+import java.util.logging.Level;
+
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
+import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
+import org.wattdepot.common.http.api.CollectorProcessDefinitionResource;
+
+/**
+ * CollectorProcessDefinitionServerResource - Handles the
+ * CollectorProcessDefinition HTTP API (
+ * &quot;/wattdepot/{org-id}/collector-process-definition/{collector-process-definition-id}&quot;
+ * ).
+ * 
+ * @author Cam Moore
+ * 
+ */
+<span class="fc" id="L40">public class CollectorProcessDefinitionServerResource extends WattDepotServerResource implements</span>
+    CollectorProcessDefinitionResource {
+
+  /** The collector-process-definition_id from the request. */
+  private String definitionId;
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.restlet.resource.Resource#doInit()
+   */
+  @Override
+  protected void doInit() throws ResourceException {
+<span class="fc" id="L53">    super.doInit();</span>
+<span class="fc" id="L54">    this.definitionId = getAttribute(Labels.COLLECTOR_PROCESS_DEFINITION_ID);</span>
+<span class="fc" id="L55">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.restlet.CollectorProcessDefinitionResource#retrieve()
+   */
+  @Override
+  public CollectorProcessDefinition retrieve() {
+<span class="fc" id="L64">    getLogger().log(Level.INFO,</span>
+        &quot;GET /wattdepot/{&quot; + orgId + &quot;}/CollectorProcessDefinition/{&quot; + definitionId + &quot;}&quot;);
+<span class="fc" id="L66">    CollectorProcessDefinition process = null;</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">    if (isInRole(orgId)) {</span>
+      try {
+<span class="fc" id="L69">        process = depot.getCollectorProcessDefinition(definitionId, orgId, true);</span>
+      }
+<span class="fc" id="L71">      catch (IdNotFoundException e) {</span>
+<span class="fc" id="L72">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="fc" id="L73">      }</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">      if (process == null) {</span>
+<span class="fc" id="L75">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;CollectorProcessDefinition &quot; + definitionId</span>
+            + &quot; is not defined.&quot;);
+      }
+    }
+    else {
+<span class="nc" id="L80">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Bad credentials.&quot;);</span>
+    }
+<span class="fc" id="L82">    return process;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.restlet.CollectorProcessDefinitionResource#remove()
+   */
+  @Override
+  public void remove() {
+<span class="fc" id="L92">    getLogger().log(Level.INFO,</span>
+        &quot;DEL /wattdepot/{&quot; + orgId + &quot;}/collector-process-definition/{&quot; + definitionId + &quot;}&quot;);
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">    if (isInRole(orgId)) {</span>
+      try {
+<span class="fc" id="L96">        depot.deleteCollectorProcessDefinition(definitionId, orgId);</span>
+      }
+<span class="fc" id="L98">      catch (IdNotFoundException e) {</span>
+<span class="fc" id="L99">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+      }
+<span class="nc" id="L101">      catch (MisMatchedOwnerException e) {</span>
+<span class="nc" id="L102">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="pc" id="L103">      }</span>
+    }
+    else {
+<span class="nc" id="L106">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Bad credentials.&quot;);</span>
+    }
+<span class="fc" id="L108">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.common.http.api.CollectorProcessDefinitionResource#update
+   * (org.wattdepot .common.domainmodel.CollectorProcessDefinition)
+   */
+  @Override
+  public void update(CollectorProcessDefinition definition) {
+<span class="fc" id="L119">    getLogger().log(</span>
+        Level.INFO,
+        &quot;POST /wattdepot/{&quot; + orgId + &quot;}/collector-process-definition/{&quot; + definitionId + &quot;} with &quot;
+            + definition);
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">    if (isInRole(orgId)) {</span>
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">      if (definition.getId().equals(definitionId)) {</span>
+        try {
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">          if (depot.getCollectorProcessDefinitionIds(orgId, true).contains(definition.getId())) {</span>
+            try {
+<span class="nc" id="L128">              depot.updateCollectorProcessDefinition(definition);</span>
+            }
+<span class="fc" id="L130">            catch (IdNotFoundException e) {</span>
+<span class="fc" id="L131">              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="nc" id="L132">            }</span>
+          }
+        }
+<span class="nc" id="L135">        catch (IdNotFoundException e) {</span>
+<span class="nc" id="L136">          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="pc" id="L137">        }</span>
+      }
+      else {
+<span class="nc" id="L140">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Ids do not match.&quot;);</span>
+      }
+    }
+    else {
+<span class="nc" id="L144">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Bad credentials.&quot;);</span>
+    }
+<span class="fc" id="L146">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

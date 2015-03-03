@@ -1,0 +1,12 @@
+org.wattdepot.client
+org.wattdepot.client.http.api
+org.wattdepot.common.domainmodel
+org.wattdepot.common.util
+org.wattdepot.common.util.csv
+org.wattdepot.common.util.logger
+org.wattdepot.common.util.tstamp
+org.wattdepot.server
+org.wattdepot.server.depository.impl.hibernate
+org.wattdepot.server.measurement.pruning
+org.wattdepot.systest
+org.wattdepot.test

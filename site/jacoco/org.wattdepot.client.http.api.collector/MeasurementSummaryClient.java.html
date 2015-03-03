@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MeasurementSummaryClient.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.client.http.api.collector</a> &gt; <span class="el_source">MeasurementSummaryClient.java</span></div><h1>MeasurementSummaryClient.java</h1><pre class="source lang-java linenums">/**
+ * MeasurementSummaryClient.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2014  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.client.http.api.collector;
+
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.wattdepot.client.http.api.WattDepotClient;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.InterpolatedValue;
+import org.wattdepot.common.domainmodel.MeasurementList;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.exception.BadCredentialException;
+import org.wattdepot.common.exception.BadSensorUriException;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.util.DateConvert;
+import org.wattdepot.common.util.tstamp.Tstamp;
+
+/**
+ * MeasurementSummaryClient polls the WattDepot server asking for the all the
+ * measurements in a depository.
+ * 
+ * @author Cam Moore
+ * 
+ */
+public class MeasurementSummaryClient extends TimerTask {
+  /** Flag for debugging messages. */
+  private boolean debug;
+  /** The client used to communicate with the WattDepot server. */
+  private WattDepotClient client;
+  /** The Depository for storing measurements. */
+  private Depository depository;
+  /** The Sensor making the measurements. */
+  private Sensor sensor;
+  /** The time of the earliest measurement. */
+  private Date earliest;
+  /** Flag for using a window. */
+  private boolean windowP;
+
+  /**
+   * @param serverUri The URI for the WattDepot server.
+   * @param username The name of a user defined in the WattDepot server.
+   * @param orgId the id of the organization the user is in.
+   * @param password The password for the user.
+   * @param collectorId The CollectorProcessDefinitionId used to initialize this
+   *        collector.
+   * @param debug flag for debugging messages.
+   * @throws BadCredentialException if the user or password don't match the
+   *         credentials in WattDepot.
+   * @throws IdNotFoundException if the processId is not defined.
+   * @throws BadSensorUriException if the Sensor's URI isn't valid.
+   */
+  public MeasurementSummaryClient(String serverUri, String username, String orgId, String password,
+      String collectorId, boolean debug) throws BadCredentialException, IdNotFoundException,
+<span class="nc" id="L81">      BadSensorUriException {</span>
+<span class="nc" id="L82">    this.client = new WattDepotClient(serverUri, username, orgId, password);</span>
+<span class="nc" id="L83">    this.debug = debug;</span>
+<span class="nc" id="L84">    CollectorProcessDefinition definition = client.getCollectorProcessDefinition(collectorId);</span>
+<span class="nc" id="L85">    this.depository = client.getDepository(definition.getDepositoryId());</span>
+<span class="nc" id="L86">    this.sensor = client.getSensor(definition.getSensorId());</span>
+<span class="nc" id="L87">    InterpolatedValue v = client.getEarliestValue(this.depository, sensor);</span>
+<span class="nc" id="L88">    this.earliest = v.getStart();</span>
+<span class="nc" id="L89">  }</span>
+
+  /**
+   * @param args command line arguments.
+   */
+  public static void main(String[] args) {
+<span class="nc" id="L95">    Options options = new Options();</span>
+<span class="nc" id="L96">    options.addOption(&quot;h&quot;, false, &quot;Usage: MeasurementSummaryClient -s &lt;server uri&gt; -u &lt;username&gt;&quot;</span>
+        + &quot; -p &lt;password&gt; -o &lt;orgId&gt; -c &lt;collectorId&gt; -m &lt;millisecond sleep&gt; [-d]&quot;);
+<span class="nc" id="L98">    options.addOption(&quot;s&quot;, &quot;server&quot;, true, &quot;WattDepot Server URI. (http://server.wattdepot.org)&quot;);</span>
+<span class="nc" id="L99">    options.addOption(&quot;u&quot;, &quot;username&quot;, true, &quot;Username&quot;);</span>
+<span class="nc" id="L100">    options.addOption(&quot;o&quot;, &quot;organizationId&quot;, true, &quot;User's Organization id.&quot;);</span>
+<span class="nc" id="L101">    options.addOption(&quot;p&quot;, &quot;password&quot;, true, &quot;Password&quot;);</span>
+<span class="nc" id="L102">    options.addOption(&quot;c&quot;, &quot;collector&quot;, true, &quot;Collector Process Definition Id&quot;);</span>
+<span class="nc" id="L103">    options.addOption(&quot;m&quot;, &quot;milliseconds&quot;, true, &quot;Number of milliseconds to sleep between polls.&quot;);</span>
+<span class="nc" id="L104">    options.addOption(&quot;d&quot;, &quot;debug&quot;, false, &quot;Displays sensor data as it is sent to the server.&quot;);</span>
+<span class="nc" id="L105">    options.addOption(&quot;w&quot;, &quot;windowing&quot;, false,</span>
+        &quot;Use a window instead of getting all the measurements.&quot;);
+
+<span class="nc" id="L108">    CommandLine cmd = null;</span>
+<span class="nc" id="L109">    String serverUri = null;</span>
+<span class="nc" id="L110">    String username = null;</span>
+<span class="nc" id="L111">    String organizationId = null;</span>
+<span class="nc" id="L112">    String password = null;</span>
+<span class="nc" id="L113">    String collectorId = null;</span>
+<span class="nc" id="L114">    Integer milliSeconds = null;</span>
+<span class="nc" id="L115">    boolean debug = false;</span>
+<span class="nc" id="L116">    boolean windowP = false;</span>
+
+<span class="nc" id="L118">    CommandLineParser parser = new PosixParser();</span>
+<span class="nc" id="L119">    HelpFormatter formatter = new HelpFormatter();</span>
+    try {
+<span class="nc" id="L121">      cmd = parser.parse(options, args);</span>
+    }
+<span class="nc" id="L123">    catch (ParseException e) {</span>
+<span class="nc" id="L124">      System.err.println(&quot;Command line parsing failed. Reason: &quot; + e.getMessage() + &quot;. Exiting.&quot;);</span>
+<span class="nc" id="L125">      System.exit(1);</span>
+<span class="nc" id="L126">    }</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">    if (cmd.hasOption(&quot;h&quot;)) {</span>
+<span class="nc" id="L128">      formatter.printHelp(&quot;StressTestCollector&quot;, options);</span>
+<span class="nc" id="L129">      System.exit(0);</span>
+    }
+<span class="nc bnc" id="L131" title="All 2 branches missed.">    if (cmd.hasOption(&quot;s&quot;)) {</span>
+<span class="nc" id="L132">      serverUri = cmd.getOptionValue(&quot;s&quot;);</span>
+    }
+    else {
+<span class="nc" id="L135">      serverUri = &quot;http://server.wattdepot.org/&quot;;</span>
+    }
+<span class="nc bnc" id="L137" title="All 2 branches missed.">    if (cmd.hasOption(&quot;u&quot;)) {</span>
+<span class="nc" id="L138">      username = cmd.getOptionValue(&quot;u&quot;);</span>
+    }
+    else {
+<span class="nc" id="L141">      username = &quot;user&quot;;</span>
+    }
+<span class="nc bnc" id="L143" title="All 2 branches missed.">    if (cmd.hasOption(&quot;p&quot;)) {</span>
+<span class="nc" id="L144">      password = cmd.getOptionValue(&quot;p&quot;);</span>
+    }
+    else {
+<span class="nc" id="L147">      password = &quot;default&quot;;</span>
+    }
+<span class="nc bnc" id="L149" title="All 2 branches missed.">    if (cmd.hasOption(&quot;o&quot;)) {</span>
+<span class="nc" id="L150">      organizationId = cmd.getOptionValue(&quot;o&quot;);</span>
+    }
+    else {
+<span class="nc" id="L153">      organizationId = &quot;organization&quot;;</span>
+    }
+<span class="nc bnc" id="L155" title="All 2 branches missed.">    if (cmd.hasOption(&quot;c&quot;)) {</span>
+<span class="nc" id="L156">      collectorId = cmd.getOptionValue(&quot;c&quot;);</span>
+    }
+    else {
+<span class="nc" id="L159">      collectorId = &quot;stress_test&quot;;</span>
+    }
+<span class="nc bnc" id="L161" title="All 2 branches missed.">    if (cmd.hasOption(&quot;m&quot;)) {</span>
+<span class="nc" id="L162">      milliSeconds = Integer.parseInt(cmd.getOptionValue(&quot;m&quot;));</span>
+    }
+    else {
+<span class="nc" id="L165">      milliSeconds = 1000;</span>
+    }
+<span class="nc" id="L167">    debug = cmd.hasOption(&quot;d&quot;);</span>
+<span class="nc" id="L168">    windowP = cmd.hasOption(&quot;w&quot;);</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">    if (debug) {</span>
+<span class="nc" id="L170">      System.out.println(&quot;Measurement Summary Client:&quot;);</span>
+<span class="nc" id="L171">      System.out.println(&quot;    WattDepotServer: &quot; + serverUri);</span>
+<span class="nc" id="L172">      System.out.println(&quot;    Username: &quot; + username);</span>
+<span class="nc" id="L173">      System.out.println(&quot;    OrganizationId: &quot; + organizationId);</span>
+<span class="nc" id="L174">      System.out.println(&quot;    Password :&quot; + password);</span>
+<span class="nc" id="L175">      System.out.println(&quot;    CPD Id: &quot; + collectorId);</span>
+<span class="nc" id="L176">      System.out.println(&quot;    MilliSeconds: &quot; + milliSeconds);</span>
+<span class="nc" id="L177">      System.out.println(&quot;    Windowing: &quot; + windowP);</span>
+    }
+<span class="nc" id="L179">    Timer t = new Timer();</span>
+    try {
+<span class="nc" id="L181">      MeasurementSummaryClient c = new MeasurementSummaryClient(serverUri, username,</span>
+          organizationId, password, collectorId, debug);
+<span class="nc" id="L183">      c.windowP = windowP;</span>
+<span class="nc" id="L184">      System.out.format(&quot;Started MeasurementSummaryClient at %s%n&quot;, Tstamp.makeTimestamp());</span>
+<span class="nc" id="L185">      t.schedule(c, 0, milliSeconds);</span>
+    }
+<span class="nc" id="L187">    catch (BadCredentialException e) {</span>
+<span class="nc" id="L188">      e.printStackTrace();</span>
+    }
+<span class="nc" id="L190">    catch (IdNotFoundException e) {</span>
+<span class="nc" id="L191">      e.printStackTrace();</span>
+    }
+<span class="nc" id="L193">    catch (BadSensorUriException e) {</span>
+<span class="nc" id="L194">      e.printStackTrace();</span>
+<span class="nc" id="L195">    }</span>
+<span class="nc" id="L196">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.util.TimerTask#run()
+   */
+  @Override
+  public void run() {
+<span class="nc" id="L205">    Date now = new Date();</span>
+<span class="nc" id="L206">    MeasurementList meas = null;</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">    if (windowP) {</span>
+<span class="nc" id="L208">      XMLGregorianCalendar end = Tstamp.makeTimestamp(now.getTime());</span>
+<span class="nc" id="L209">      XMLGregorianCalendar start = Tstamp.incrementSeconds(end, -30);</span>
+<span class="nc" id="L210">      meas = client.getMeasurements(depository, sensor, DateConvert.convertXMLCal(start),</span>
+          DateConvert.convertXMLCal(end));
+<span class="nc bnc" id="L212" title="All 2 branches missed.">      if (debug) {</span>
+<span class="nc" id="L213">        System.out</span>
+            .println(&quot;At &quot; + end + &quot; there are &quot; + meas.getMeasurements().size()
+                + &quot; measurements in the window. Query took &quot;
+                + Tstamp.diff(end, Tstamp.makeTimestamp()));
+      }
+<span class="nc" id="L218">    }</span>
+    else {
+<span class="nc" id="L220">      meas = client.getMeasurements(depository, sensor, this.earliest, now);</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">      if (debug) {</span>
+<span class="nc" id="L222">        XMLGregorianCalendar start = Tstamp.makeTimestamp(now.getTime());</span>
+<span class="nc" id="L223">        XMLGregorianCalendar end = Tstamp.makeTimestamp();</span>
+<span class="nc" id="L224">        System.out.println(&quot;Query started at &quot; + start + &quot; there are &quot;</span>
+            + meas.getMeasurements().size() + &quot; measurements. Query ended at &quot; + end + &quot;. Took &quot;
+            + Tstamp.diff(start, end));
+      }
+    }
+<span class="nc" id="L229">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

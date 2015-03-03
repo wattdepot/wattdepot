@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SensorList.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.domainmodel</a> &gt; <span class="el_source">SensorList.java</span></div><h1>SensorList.java</h1><pre class="source lang-java linenums">/**
+ * SensorList.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.common.domainmodel;
+
+import java.util.ArrayList;
+
+/**
+ * SensorList - List of Sensors. Gets around a Jackson problem of converting
+ * ArrayLists to JSON and back.
+ * 
+ * @author Cam Moore
+ * 
+ */
+public class SensorList {
+  private ArrayList&lt;Sensor&gt; sensors;
+
+  /**
+   * Default Constructor.
+   */
+<span class="fc" id="L36">  public SensorList() {</span>
+<span class="fc" id="L37">    sensors = new ArrayList&lt;Sensor&gt;();</span>
+<span class="fc" id="L38">  }</span>
+
+  /**
+   * @return the groups
+   */
+  public ArrayList&lt;Sensor&gt; getSensors() {
+<span class="fc" id="L44">    return sensors;</span>
+  }
+
+  /**
+   * @param groups the groups to set
+   */
+  public void setSensors(ArrayList&lt;Sensor&gt; groups) {
+<span class="fc" id="L51">    this.sensors = groups;</span>
+<span class="fc" id="L52">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

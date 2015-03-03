@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>GetDateValueThroughput.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.client.http.api.performance</a> &gt; <span class="el_source">GetDateValueThroughput.java</span></div><h1>GetDateValueThroughput.java</h1><pre class="source lang-java linenums">/**
+ * GetDateValueThroughput.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2014  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.client.http.api.performance;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.wattdepot.common.exception.BadCredentialException;
+import org.wattdepot.common.exception.BadSensorUriException;
+import org.wattdepot.common.exception.IdNotFoundException;
+
+/**
+ * GetDateValueThroughput - Attempts to determine the maximum rate of getting
+ * the value at a date for a Sensor in a WattDepot installation.
+ * 
+ * @author Cam Moore
+ * 
+ */
+public class GetDateValueThroughput extends TimerTask {
+
+  /** Manages the GetDateValueTasks. */
+  private Timer timer;
+  /** The GetDateValueTask we will sample. */
+  private GetDateValueTask sampleTask;
+  /** The WattDepot server's URI. */
+  private String serverUri;
+  /** The WattDepot User. */
+  private String username;
+  /** The WattDepot User's organization. */
+  private String orgId;
+  /** The WattDepot User's password. */
+  private String password;
+  /** Flag for debugging. */
+  private boolean debug;
+  /** The number of times we've checked the stats. */
+  private Integer numChecks;
+  private DescriptiveStatistics averageGetTime;
+  private DescriptiveStatistics averageMinGetTime;
+  private DescriptiveStatistics averageMaxGetTime;
+
+  private Long getsPerSec;
+  private Long calculatedGetsPerSec;
+
+  /**
+   * Initializes the GetDateValueThroughput instance.
+   * 
+   * @param serverUri The URI for the WattDepot server.
+   * @param username The name of a user defined in the WattDepot server.
+   * @param orgId the id of the organization the user is in.
+   * @param password The password for the user.
+   * @param debug flag for debugging messages.
+   * @throws BadCredentialException if the user or password don't match the
+   *         credentials in WattDepot.
+   * @throws IdNotFoundException if the processId is not defined.
+   * @throws BadSensorUriException if the Sensor's URI isn't valid.
+   */
+  public GetDateValueThroughput(String serverUri, String username, String orgId, String password,
+<span class="nc" id="L81">      boolean debug) throws BadCredentialException, IdNotFoundException, BadSensorUriException {</span>
+<span class="nc" id="L82">    this.serverUri = serverUri;</span>
+<span class="nc" id="L83">    this.username = username;</span>
+<span class="nc" id="L84">    this.orgId = orgId;</span>
+<span class="nc" id="L85">    this.password = password;</span>
+<span class="nc" id="L86">    this.debug = debug;</span>
+<span class="nc" id="L87">    this.numChecks = 0;</span>
+<span class="nc" id="L88">    this.getsPerSec = 1l;</span>
+<span class="nc" id="L89">    this.calculatedGetsPerSec = 1l;</span>
+<span class="nc" id="L90">    this.averageMaxGetTime = new DescriptiveStatistics();</span>
+<span class="nc" id="L91">    this.averageMinGetTime = new DescriptiveStatistics();</span>
+<span class="nc" id="L92">    this.averageGetTime = new DescriptiveStatistics();</span>
+<span class="nc" id="L93">    this.timer = new Timer(&quot;throughput&quot;);</span>
+<span class="nc" id="L94">    this.sampleTask = new GetDateValueTask(serverUri, username, orgId, password, debug);</span>
+    // Starting at 1 get/second
+<span class="nc" id="L96">    this.timer.schedule(sampleTask, 0, 1000);</span>
+<span class="nc" id="L97">  }</span>
+
+  /**
+   * @param args command line arguments -s &lt;server uri&gt; -u &lt;username&gt; -p
+   *        &lt;password&gt; -o &lt;orgId&gt; -n &lt;numSamples&gt; [-d].
+   * @throws BadSensorUriException if there is a problem with the WattDepot
+   *         sensor definition.
+   * @throws IdNotFoundException if there is a problem with the organization id.
+   * @throws BadCredentialException if the credentials are not valid.
+   */
+  public static void main(String[] args) throws BadCredentialException, IdNotFoundException,
+      BadSensorUriException {
+<span class="nc" id="L109">    Options options = new Options();</span>
+<span class="nc" id="L110">    CommandLine cmd = null;</span>
+<span class="nc" id="L111">    String serverUri = null;</span>
+<span class="nc" id="L112">    String username = null;</span>
+<span class="nc" id="L113">    String organizationId = null;</span>
+<span class="nc" id="L114">    String password = null;</span>
+<span class="nc" id="L115">    Integer numSamples = null;</span>
+<span class="nc" id="L116">    boolean debug = false;</span>
+
+<span class="nc" id="L118">    options.addOption(&quot;h&quot;, false, &quot;Usage: GetDateValueThroughput -s &lt;server uri&gt; -u &lt;username&gt;&quot;</span>
+        + &quot; -p &lt;password&gt; -o &lt;orgId&gt; [-d]&quot;);
+<span class="nc" id="L120">    options.addOption(&quot;s&quot;, &quot;server&quot;, true, &quot;WattDepot Server URI. (http://server.wattdepot.org)&quot;);</span>
+<span class="nc" id="L121">    options.addOption(&quot;u&quot;, &quot;username&quot;, true, &quot;Username&quot;);</span>
+<span class="nc" id="L122">    options.addOption(&quot;o&quot;, &quot;organizationId&quot;, true, &quot;User's Organization id.&quot;);</span>
+<span class="nc" id="L123">    options.addOption(&quot;p&quot;, &quot;password&quot;, true, &quot;Password&quot;);</span>
+<span class="nc" id="L124">    options.addOption(&quot;n&quot;, &quot;numSamples&quot;, true, &quot;Number of puts to sample.&quot;);</span>
+<span class="nc" id="L125">    options.addOption(&quot;d&quot;, &quot;debug&quot;, false, &quot;Displays statistics as the Measurements are stored.&quot;);</span>
+<span class="nc" id="L126">    CommandLineParser parser = new PosixParser();</span>
+<span class="nc" id="L127">    HelpFormatter formatter = new HelpFormatter();</span>
+    try {
+<span class="nc" id="L129">      cmd = parser.parse(options, args);</span>
+    }
+<span class="nc" id="L131">    catch (ParseException e) {</span>
+<span class="nc" id="L132">      System.err.println(&quot;Command line parsing failed. Reason: &quot; + e.getMessage() + &quot;. Exiting.&quot;);</span>
+<span class="nc" id="L133">      System.exit(1);</span>
+<span class="nc" id="L134">    }</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">    if (cmd.hasOption(&quot;h&quot;)) {</span>
+<span class="nc" id="L136">      formatter.printHelp(&quot;GetDateValueThroughput&quot;, options);</span>
+<span class="nc" id="L137">      System.exit(0);</span>
+    }
+<span class="nc bnc" id="L139" title="All 2 branches missed.">    if (cmd.hasOption(&quot;s&quot;)) {</span>
+<span class="nc" id="L140">      serverUri = cmd.getOptionValue(&quot;s&quot;);</span>
+    }
+    else {
+<span class="nc" id="L143">      serverUri = &quot;http://server.wattdepot.org/&quot;;</span>
+    }
+<span class="nc bnc" id="L145" title="All 2 branches missed.">    if (cmd.hasOption(&quot;u&quot;)) {</span>
+<span class="nc" id="L146">      username = cmd.getOptionValue(&quot;u&quot;);</span>
+    }
+    else {
+<span class="nc" id="L149">      username = &quot;user&quot;;</span>
+    }
+<span class="nc bnc" id="L151" title="All 2 branches missed.">    if (cmd.hasOption(&quot;p&quot;)) {</span>
+<span class="nc" id="L152">      password = cmd.getOptionValue(&quot;p&quot;);</span>
+    }
+    else {
+<span class="nc" id="L155">      password = &quot;default&quot;;</span>
+    }
+<span class="nc bnc" id="L157" title="All 2 branches missed.">    if (cmd.hasOption(&quot;o&quot;)) {</span>
+<span class="nc" id="L158">      organizationId = cmd.getOptionValue(&quot;o&quot;);</span>
+    }
+    else {
+<span class="nc" id="L161">      organizationId = &quot;organization&quot;;</span>
+    }
+<span class="nc bnc" id="L163" title="All 2 branches missed.">    if (cmd.hasOption(&quot;n&quot;)) {</span>
+<span class="nc" id="L164">      numSamples = Integer.parseInt(cmd.getOptionValue(&quot;n&quot;));</span>
+    }
+    else {
+<span class="nc" id="L167">      numSamples = 13;</span>
+    }
+<span class="nc" id="L169">    debug = cmd.hasOption(&quot;d&quot;);</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">    if (debug) {</span>
+<span class="nc" id="L171">      System.out.println(&quot;GetDateValue Throughput:&quot;);</span>
+<span class="nc" id="L172">      System.out.println(&quot;    WattDepotServer: &quot; + serverUri);</span>
+<span class="nc" id="L173">      System.out.println(&quot;    Username: &quot; + username);</span>
+<span class="nc" id="L174">      System.out.println(&quot;    OrganizationId: &quot; + organizationId);</span>
+<span class="nc" id="L175">      System.out.println(&quot;    Password: ********&quot;);</span>
+<span class="nc" id="L176">      System.out.println(&quot;    Samples: &quot; + numSamples);</span>
+    }
+
+<span class="nc" id="L179">    Timer t = new Timer(&quot;monitoring&quot;);</span>
+<span class="nc" id="L180">    t.schedule(new GetDateValueThroughput(serverUri, username, organizationId, password, debug), 0,</span>
+        numSamples * 1000);
+<span class="nc" id="L182">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.util.TimerTask#run()
+   */
+  @Override
+  public void run() {
+    // wake up to check the stats.
+<span class="nc bnc" id="L192" title="All 2 branches missed.">    if (this.numChecks == 0) {</span>
+      // haven't actually run so do nothing.
+<span class="nc" id="L194">      this.numChecks++;</span>
+      // should I put a bogus first rate so we don't start too fast?
+      // this.averageGetTime.addValue(1.0); // took 1 second per so we start with a
+                                         // low average.
+    }
+    else {
+<span class="nc" id="L200">      this.timer.cancel();</span>
+<span class="nc" id="L201">      this.numChecks++;</span>
+<span class="nc" id="L202">      Double aveTime = sampleTask.getAverageTime();</span>
+<span class="nc" id="L203">      this.averageGetTime.addValue(aveTime / 1E9);</span>
+<span class="nc" id="L204">      this.averageMinGetTime.addValue(sampleTask.getMinTime() / 1E9);</span>
+<span class="nc" id="L205">      this.averageMaxGetTime.addValue(sampleTask.getMaxTime() / 1E9);</span>
+<span class="nc" id="L206">      this.calculatedGetsPerSec = calculateGetRate(averageGetTime);</span>
+<span class="nc" id="L207">      this.getsPerSec = calculatedGetsPerSec;</span>
+      // System.out.println(&quot;Min put time = &quot; + (sampleTask.getMinTime() /
+      // 1E9));
+<span class="nc" id="L210">      System.out.println(&quot;Ave get value (date) time = &quot; + (aveTime / 1E9) + &quot; =&gt; &quot;</span>
+          + Math.round(1.0 / (aveTime / 1E9)) + &quot; gets/sec.&quot;);
+      // System.out.println(&quot;Max put time = &quot; + (sampleTask.getMaxTime() /
+      // 1E9));
+      // System.out.println(&quot;Max put rate = &quot; +
+      // calculateGetRate(averageMinGetTime));
+<span class="nc" id="L216">      System.out.println(&quot;Setting rate to &quot; + this.calculatedGetsPerSec);</span>
+      // System.out.println(&quot;Min put rate = &quot; +
+      // calculateGetRate(averageMaxGetTime));
+<span class="nc" id="L219">      this.timer = new Timer(&quot;throughput&quot;);</span>
+<span class="nc" id="L220">      this.sampleTask = null;</span>
+      // if (debug) {
+      // System.out.println(&quot;Starting &quot; + this.measPerSec +
+      // &quot; threads @ 1 meas/s&quot;);
+      // }
+<span class="nc bnc" id="L225" title="All 2 branches missed.">      if (getsPerSec &lt; 200) {</span>
+<span class="nc bnc" id="L226" title="All 2 branches missed.">        for (int i = 0; i &lt; getsPerSec; i++) {</span>
+          try {
+<span class="nc bnc" id="L228" title="All 2 branches missed.">            if (this.sampleTask == null) {</span>
+<span class="nc" id="L229">              this.sampleTask = new GetDateValueTask(serverUri, username, orgId, password, debug);</span>
+<span class="nc" id="L230">              timer.schedule(sampleTask, 0, 1000);</span>
+<span class="nc" id="L231">              Thread.sleep(10);</span>
+              // if (debug) {
+              // System.out.println(&quot;Starting task &quot; + i);
+              // }
+            }
+            else {
+<span class="nc" id="L237">              timer.schedule(new GetDateValueTask(serverUri, username, orgId, password, debug), 0,</span>
+                  1000);
+<span class="nc" id="L239">              Thread.sleep(10);</span>
+            }
+          }
+<span class="nc" id="L242">          catch (BadCredentialException e) { // NOPMD</span>
+<span class="nc" id="L243">            e.printStackTrace();</span>
+            // should not happen.
+          }
+<span class="nc" id="L246">          catch (IdNotFoundException e) { // NOPMD</span>
+<span class="nc" id="L247">            e.printStackTrace();</span>
+            // should not happen.
+          }
+<span class="nc" id="L250">          catch (BadSensorUriException e) { // NOPMD</span>
+<span class="nc" id="L251">            e.printStackTrace();</span>
+            // should not happen
+          }
+<span class="nc" id="L254">          catch (InterruptedException e) { // NOPMD</span>
+<span class="nc" id="L255">            e.printStackTrace();</span>
+            // should not happen
+<span class="nc" id="L257">          }</span>
+        }
+      }
+    }
+<span class="nc" id="L261">  }</span>
+
+  /**
+   * @param stats the DescriptiveStatistics to calculate the mean put time.
+   * @return The estimated put rate based upon the time it takes to put a single
+   *         measurement.
+   */
+  private Long calculateGetRate(DescriptiveStatistics stats) {
+<span class="nc" id="L269">    double putTime = stats.getMean();</span>
+<span class="nc" id="L270">    Long ret = null;</span>
+<span class="nc" id="L271">    double numPuts = 1.0 / putTime;</span>
+<span class="nc" id="L272">    ret = Math.round(numPuts);</span>
+<span class="nc" id="L273">    return ret;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

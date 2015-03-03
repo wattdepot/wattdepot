@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>NOAAWeatherCollector.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.client.http.api.collector</a> &gt; <span class="el_source">NOAAWeatherCollector.java</span></div><h1>NOAAWeatherCollector.java</h1><pre class="source lang-java linenums">/**
+ * NOAAWeatherCollector.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.client.http.api.collector;
+
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Date;
+
+import javax.measure.unit.Unit;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.w3c.dom.Document;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.MeasurementType;
+import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.domainmodel.Property;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorModel;
+import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.exception.BadCredentialException;
+import org.wattdepot.common.exception.BadSensorUriException;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MeasurementTypeException;
+import org.wattdepot.common.util.SensorModelHelper;
+import org.wattdepot.common.util.tstamp.Tstamp;
+import org.xml.sax.SAXException;
+
+/**
+ * NOAAWeatherCollector - Collector for NOAA Weather Current Observations.
+ * 
+ * @author Cam Moore
+ * 
+ */
+public class NOAAWeatherCollector extends MultiThreadedCollector {
+
+  /** The URI to access the NOAA Weather data. */
+  private String noaaWeatherUri;
+  /** The name of the register to be polled by the collector. */
+  private String registerName;
+  /** The MeasurementType the Depository stores. */
+  private MeasurementType measType;
+  /** The Unit of the depository. */
+  private Unit&lt;?&gt; measUnit;
+  /** The eGuage sensor. */
+  private Sensor sensor;
+
+  /**
+   * Initializes the NOAAWeatherCollector.
+   * 
+   * @param serverUri The URI for the WattDepot server.
+   * @param username The name of a user defined in the WattDepot server.
+   * @param orgId the id of the organization.
+   * @param password The password for the user.
+   * @param collectorId The CollectorProcessDefinitionId used to initialize this
+   *        collector.
+   * @param debug flag for debugging messages.
+   * @throws BadCredentialException if the user or password don't match the
+   *         credentials in WattDepot.
+   * @throws IdNotFoundException if the processId is not defined.
+   * @throws BadSensorUriException if the Sensor's URI isn't valid.
+   */
+  public NOAAWeatherCollector(String serverUri, String username, String orgId, String password,
+      String collectorId, boolean debug) throws BadCredentialException, IdNotFoundException,
+      BadSensorUriException {
+<span class="nc" id="L97">    super(serverUri, username, orgId, password, collectorId, debug);</span>
+<span class="nc" id="L98">    this.measType = depository.getMeasurementType();</span>
+<span class="nc" id="L99">    this.measUnit = Unit.valueOf(measType.getUnits());</span>
+<span class="nc" id="L100">    this.sensor = client.getSensor(definition.getSensorId());</span>
+
+<span class="nc" id="L102">    Property prop = this.definition.getProperty(&quot;registerName&quot;);</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">    if (prop != null) {</span>
+<span class="nc" id="L104">      this.registerName = prop.getValue();</span>
+    }
+    try {
+<span class="nc" id="L107">      new URL(sensor.getUri());</span>
+<span class="nc" id="L108">      this.noaaWeatherUri = sensor.getUri();</span>
+    }
+<span class="nc" id="L110">    catch (MalformedURLException e) {</span>
+<span class="nc" id="L111">      throw new BadSensorUriException(client.getSensor(definition.getSensorId()).getUri()</span>
+          + &quot; is not a valid URI.&quot;);
+<span class="nc" id="L113">    }</span>
+<span class="nc" id="L114">  }</span>
+
+  /**
+   * @param serverUri The URI for the WattDepot server.
+   * @param username The name of a user defined in the WattDepot server.
+   * @param orgId the user's organization id.
+   * @param password The password for the user.
+   * @param sensor The Sensor to poll.
+   * @param pollingInterval The polling interval in seconds.
+   * @param depository The Depository to store the measurements.
+   * @param debug flag for debugging messages.
+   * @throws BadCredentialException if the user or password don't match the
+   *         credentials in WattDepot.
+   * @throws BadSensorUriException if the Sensor's URI isn't valid.
+   * @throws IdNotFoundException if the processId is not defined.
+   */
+  public NOAAWeatherCollector(String serverUri, String username, String orgId, String password,
+      Sensor sensor, Long pollingInterval, Depository depository, boolean debug)
+      throws BadCredentialException, BadSensorUriException, IdNotFoundException {
+<span class="nc" id="L133">    super(serverUri, username, orgId, password, sensor.getId(), pollingInterval, depository, debug);</span>
+<span class="nc" id="L134">    this.measType = depository.getMeasurementType();</span>
+<span class="nc" id="L135">    this.measUnit = Unit.valueOf(measType.getUnits());</span>
+<span class="nc" id="L136">    this.sensor = client.getSensor(definition.getSensorId());</span>
+
+<span class="nc" id="L138">    Property prop = this.definition.getProperty(&quot;registerName&quot;);</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">    if (prop != null) {</span>
+<span class="nc" id="L140">      this.registerName = prop.getValue();</span>
+    }
+    try {
+<span class="nc" id="L143">      new URL(sensor.getUri());</span>
+<span class="nc" id="L144">      this.noaaWeatherUri = sensor.getUri();</span>
+    }
+<span class="nc" id="L146">    catch (MalformedURLException e) {</span>
+<span class="nc" id="L147">      throw new BadSensorUriException(client.getSensor(definition.getSensorId()).getUri()</span>
+          + &quot; is not a valid URI.&quot;);
+<span class="nc" id="L149">    }</span>
+
+<span class="nc" id="L151">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.client.impl.restlet.collector.MultiThreadedCollector#isValid
+   * ()
+   */
+  @Override
+  public boolean isValid() {
+<span class="nc" id="L162">    boolean ret = super.isValid();</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">    if (ret) {</span>
+      // check the type of the Sensor
+      try {
+<span class="nc" id="L166">        SensorModel sm = client.getSensorModel(sensor.getModelId());</span>
+<span class="nc" id="L167">        String type = sm.getType();</span>
+<span class="nc" id="L168">        ret &amp;= type.equals(SensorModelHelper.CURRENT_OBSERVATION);</span>
+      }
+<span class="nc" id="L170">      catch (IdNotFoundException e) {</span>
+<span class="nc" id="L171">        ret = false;</span>
+<span class="nc" id="L172">      }</span>
+    }
+<span class="nc bnc" id="L174" title="All 4 branches missed.">    if (this.registerName == null || this.registerName.length() == 0) {</span>
+<span class="nc" id="L175">      return false;</span>
+    }
+    // validate that measType is .
+<span class="nc bnc" id="L178" title="All 6 branches missed.">    if (!measType.getId().startsWith(&quot;temperature&quot;) &amp;&amp; !measType.getId().startsWith(&quot;humidity&quot;)</span>
+        &amp;&amp; !measType.getId().startsWith(&quot;cloud&quot;)) {
+<span class="nc" id="L180">      return false;</span>
+    }
+
+<span class="nc" id="L183">    return ret;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.util.TimerTask#run()
+   */
+  @Override
+  public void run() {
+<span class="nc" id="L193">    Measurement meas = null;</span>
+<span class="nc" id="L194">    DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();</span>
+<span class="nc" id="L195">    domFactory.setNamespaceAware(true);</span>
+    try {
+<span class="nc" id="L197">      DocumentBuilder builder = domFactory.newDocumentBuilder();</span>
+
+      // Have to make HTTP connection manually so we can set proper timeouts
+<span class="nc" id="L200">      URL url = new URL(noaaWeatherUri);</span>
+      URLConnection httpConnection;
+<span class="nc" id="L202">      httpConnection = url.openConnection();</span>
+      // Set both connect and read timeouts to 15 seconds. No point in long
+      // timeouts since the
+      // sensor will retry before too long anyway.
+<span class="nc" id="L206">      httpConnection.setConnectTimeout(15 * 1000);</span>
+<span class="nc" id="L207">      httpConnection.setReadTimeout(15 * 1000);</span>
+<span class="nc" id="L208">      httpConnection.connect();</span>
+
+      // Record current time as close approximation to time for reading we are
+      // about to make
+<span class="nc" id="L212">      Date timestamp = new Date();</span>
+
+<span class="nc" id="L214">      Document doc = builder.parse(httpConnection.getInputStream());</span>
+
+<span class="nc" id="L216">      XPathFactory factory = XPathFactory.newInstance();</span>
+<span class="nc" id="L217">      XPath xPath = factory.newXPath();</span>
+      // path to the data
+<span class="nc" id="L219">      String valString = &quot;/current_observation/&quot; + this.registerName + &quot;/text()&quot;;</span>
+<span class="nc" id="L220">      XPathExpression exprValue = xPath.compile(valString);</span>
+<span class="nc" id="L221">      Object result = new Double(0);</span>
+<span class="nc bnc" id="L222" title="All 2 branches missed.">      if (this.registerName.equals(&quot;weather&quot;)) {</span>
+<span class="nc" id="L223">        Object cloudCoverage = exprValue.evaluate(doc, XPathConstants.STRING);</span>
+<span class="nc" id="L224">        String cloudStr = cloudCoverage.toString();</span>
+<span class="nc bnc" id="L225" title="All 4 branches missed.">        if (cloudStr.equalsIgnoreCase(&quot;sunny&quot;) || cloudStr.equalsIgnoreCase(&quot;clear&quot;)) {</span>
+          // 0 to 1/8 cloud coverage
+<span class="nc" id="L227">          result = new Double(6.25);</span>
+        }
+<span class="nc bnc" id="L229" title="All 4 branches missed.">        else if (cloudStr.equalsIgnoreCase(&quot;mostly sunny&quot;)</span>
+            || cloudStr.equalsIgnoreCase(&quot;mostly clear&quot;)) {
+          // 1/8 to 2/8 cloud coverage
+<span class="nc" id="L232">          result = new Double(18.75);</span>
+        }
+<span class="nc bnc" id="L234" title="All 4 branches missed.">        else if (cloudStr.equalsIgnoreCase(&quot;partly sunny&quot;)</span>
+            || cloudStr.equalsIgnoreCase(&quot;partly cloudy&quot;)) {
+          // 3/8 to 5/8 cloud coverage
+<span class="nc" id="L237">          result = new Double(50.0);</span>
+        }
+<span class="nc bnc" id="L239" title="All 2 branches missed.">        else if (cloudStr.equalsIgnoreCase(&quot;mostly cloudy&quot;)) {</span>
+          // 6/8 to 7/8 cloud coverage
+<span class="nc" id="L241">          result = new Double(81.25);</span>
+        }
+<span class="nc bnc" id="L243" title="All 2 branches missed.">        else if (cloudStr.equalsIgnoreCase(&quot;cloudy&quot;)) {</span>
+          // 7/8 to 100% cloud coverage
+<span class="nc" id="L245">          result = new Double(93.75);</span>
+        }
+<span class="nc" id="L247">      }</span>
+      else {
+<span class="nc" id="L249">        result = exprValue.evaluate(doc, XPathConstants.NUMBER);</span>
+      }
+
+<span class="nc" id="L252">      Double value = (Double) result;</span>
+<span class="nc" id="L253">      meas = new Measurement(definition.getSensorId(), timestamp, value, measUnit);</span>
+    }
+<span class="nc" id="L255">    catch (MalformedURLException e) {</span>
+<span class="nc" id="L256">      System.err.format(&quot;URI %s was invalid leading to malformed URL%n&quot;, noaaWeatherUri);</span>
+    }
+<span class="nc" id="L258">    catch (XPathExpressionException e) {</span>
+<span class="nc" id="L259">      System.err.println(&quot;Bad XPath expression, this should never happen.&quot;);</span>
+    }
+<span class="nc" id="L261">    catch (ParserConfigurationException e) {</span>
+<span class="nc" id="L262">      System.err.println(&quot;Unable to configure XML parser, this is weird.&quot;);</span>
+    }
+<span class="nc" id="L264">    catch (SAXException e) {</span>
+<span class="nc" id="L265">      System.err.format(</span>
+          &quot;%s: Got bad XML from eGauge sensor %s (%s), hopefully this is temporary.%n&quot;,
+          Tstamp.makeTimestamp(), sensor.getName(), e);
+    }
+<span class="nc" id="L269">    catch (IOException e) {</span>
+<span class="nc" id="L270">      System.err.format(</span>
+          &quot;%s: Unable to retrieve data from eGauge sensor %s (%s), hopefully this is temporary.%n&quot;,
+          Tstamp.makeTimestamp(), sensor.getName(), e);
+<span class="nc" id="L273">    }</span>
+
+<span class="nc bnc" id="L275" title="All 2 branches missed.">    if (meas != null) {</span>
+      try {
+<span class="nc" id="L277">        this.client.putMeasurement(depository, meas);</span>
+      }
+<span class="nc" id="L279">      catch (MeasurementTypeException e) {</span>
+<span class="nc" id="L280">        System.err.format(&quot;%s does not store %s measurements%n&quot;, depository.getName(),</span>
+            meas.getMeasurementType());
+<span class="nc" id="L282">      }</span>
+<span class="nc bnc" id="L283" title="All 2 branches missed.">      if (debug) {</span>
+<span class="nc" id="L284">        System.out.println(meas);</span>
+      }
+    }
+<span class="nc" id="L287">  }</span>
+
+  /**
+   * Processes the command line arguments and starts the NOAA Weather Collector.
+   * 
+   * @param args command line arguments.
+   */
+  public static void main(String[] args) {
+<span class="nc" id="L295">    Options options = new Options();</span>
+<span class="nc" id="L296">    options</span>
+        .addOption(&quot;h&quot;, &quot;help&quot;, false,
+            &quot;Usage: NOAAWeatherCollector -s &lt;server uri&gt; -u &lt;username&gt; -p &lt;password&gt; -c &lt;collectorid&gt; [-d]&quot;);
+<span class="nc" id="L299">    options.addOption(&quot;s&quot;, &quot;server&quot;, true, &quot;WattDepot Server URI. (http://server.wattdepot.org)&quot;);</span>
+<span class="nc" id="L300">    options.addOption(&quot;u&quot;, &quot;username&quot;, true, &quot;Username&quot;);</span>
+<span class="nc" id="L301">    options.addOption(&quot;o&quot;, &quot;organizationId&quot;, true, &quot;User's Organization id.&quot;);</span>
+<span class="nc" id="L302">    options.addOption(&quot;p&quot;, &quot;password&quot;, true, &quot;Password&quot;);</span>
+<span class="nc" id="L303">    options.addOption(&quot;c&quot;, &quot;collector&quot;, true, &quot;Collector Process Definition Id&quot;);</span>
+<span class="nc" id="L304">    options.addOption(&quot;d&quot;, &quot;debug&quot;, false, &quot;Displays sensor data as it is sent to the server.&quot;);</span>
+
+<span class="nc" id="L306">    CommandLine cmd = null;</span>
+<span class="nc" id="L307">    String serverUri = null;</span>
+<span class="nc" id="L308">    String username = null;</span>
+<span class="nc" id="L309">    String organizationId = null;</span>
+<span class="nc" id="L310">    String password = null;</span>
+<span class="nc" id="L311">    String collectorId = null;</span>
+<span class="nc" id="L312">    boolean debug = false;</span>
+
+<span class="nc" id="L314">    CommandLineParser parser = new PosixParser();</span>
+<span class="nc" id="L315">    HelpFormatter formatter = new HelpFormatter();</span>
+    try {
+<span class="nc" id="L317">      cmd = parser.parse(options, args);</span>
+    }
+<span class="nc" id="L319">    catch (ParseException e) {</span>
+<span class="nc" id="L320">      System.err.println(&quot;Command line parsing failed. Reason: &quot; + e.getMessage() + &quot;. Exiting.&quot;);</span>
+<span class="nc" id="L321">      System.exit(1);</span>
+<span class="nc" id="L322">    }</span>
+<span class="nc bnc" id="L323" title="All 2 branches missed.">    if (cmd.hasOption(&quot;h&quot;)) {</span>
+<span class="nc" id="L324">      formatter.printHelp(&quot;NOAAWeatherCollector&quot;, options);</span>
+<span class="nc" id="L325">      System.exit(0);</span>
+    }
+<span class="nc bnc" id="L327" title="All 2 branches missed.">    if (cmd.hasOption(&quot;s&quot;)) {</span>
+<span class="nc" id="L328">      serverUri = cmd.getOptionValue(&quot;s&quot;);</span>
+    }
+    else {
+<span class="nc" id="L331">      serverUri = &quot;http://localhost:8119/&quot;;</span>
+    }
+<span class="nc bnc" id="L333" title="All 2 branches missed.">    if (cmd.hasOption(&quot;u&quot;)) {</span>
+<span class="nc" id="L334">      username = cmd.getOptionValue(&quot;u&quot;);</span>
+    }
+    else {
+<span class="nc" id="L337">      username = UserInfo.ROOT.getUid();</span>
+    }
+<span class="nc bnc" id="L339" title="All 2 branches missed.">    if (cmd.hasOption(&quot;o&quot;)) {</span>
+<span class="nc" id="L340">      organizationId = cmd.getOptionValue(&quot;o&quot;);</span>
+    }
+    else {
+<span class="nc" id="L343">      organizationId = Organization.ADMIN_GROUP.getId();</span>
+    }
+<span class="nc bnc" id="L345" title="All 2 branches missed.">    if (cmd.hasOption(&quot;p&quot;)) {</span>
+<span class="nc" id="L346">      password = cmd.getOptionValue(&quot;p&quot;);</span>
+    }
+    else {
+<span class="nc" id="L349">      password = &quot;default&quot;;</span>
+    }
+<span class="nc bnc" id="L351" title="All 2 branches missed.">    if (cmd.hasOption(&quot;c&quot;)) {</span>
+<span class="nc" id="L352">      collectorId = cmd.getOptionValue(&quot;c&quot;);</span>
+    }
+    else {
+<span class="nc" id="L355">      collectorId = &quot;ilima_6th_power&quot;;</span>
+    }
+
+<span class="nc" id="L358">    debug = cmd.hasOption(&quot;d&quot;);</span>
+
+<span class="nc bnc" id="L360" title="All 2 branches missed.">    if (debug) {</span>
+<span class="nc" id="L361">      System.out.println(&quot;WattDepot Server: &quot; + serverUri);</span>
+<span class="nc" id="L362">      System.out.println(&quot;Username: &quot; + username);</span>
+<span class="nc" id="L363">      System.out.println(&quot;OrganizationID: &quot; + organizationId);</span>
+<span class="nc" id="L364">      System.out.println(&quot;Password: &quot; + password);</span>
+<span class="nc" id="L365">      System.out.println(&quot;Collector Process Definition Id: &quot; + collectorId);</span>
+<span class="nc" id="L366">      System.out.println(&quot;debug: &quot; + debug);</span>
+<span class="nc" id="L367">      System.out.println();</span>
+    }
+    try {
+<span class="nc bnc" id="L370" title="All 2 branches missed.">      if (!MultiThreadedCollector.start(serverUri, username, organizationId, password, collectorId,</span>
+          debug)) {
+<span class="nc" id="L372">        System.exit(1);</span>
+      }
+    }
+<span class="nc" id="L375">    catch (InterruptedException e) {</span>
+<span class="nc" id="L376">      e.printStackTrace();</span>
+<span class="nc" id="L377">      System.exit(1);</span>
+    }
+<span class="nc" id="L379">    catch (BadCredentialException e) {</span>
+<span class="nc" id="L380">      e.printStackTrace();</span>
+<span class="nc" id="L381">      System.exit(1);</span>
+<span class="nc" id="L382">    }</span>
+<span class="nc" id="L383">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

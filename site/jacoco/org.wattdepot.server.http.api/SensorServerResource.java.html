@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SensorServerResource.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">SensorServerResource.java</span></div><h1>SensorServerResource.java</h1><pre class="source lang-java linenums">/**
+ * SensorServerResource.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.server.http.api;
+
+import java.util.logging.Level;
+
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
+import org.wattdepot.common.http.api.SensorResource;
+
+/**
+ * SensorServerResource - Handles the Sensor HTTP API
+ * (&quot;/wattdepot/{org-id}/sensor/{sensor-id}&quot;).
+ * 
+ * @author Cam Moore
+ * 
+ */
+<span class="fc" id="L38">public class SensorServerResource extends WattDepotServerResource implements SensorResource {</span>
+  private String sensorId;
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.restlet.resource.Resource#doInit()
+   */
+  @Override
+  protected void doInit() throws ResourceException {
+<span class="fc" id="L48">    super.doInit();</span>
+<span class="fc" id="L49">    this.sensorId = getAttribute(Labels.SENSOR_ID);</span>
+<span class="fc" id="L50">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.restlet.SensorResource#remove()
+   */
+  @Override
+  public void remove() {
+<span class="fc" id="L59">    getLogger().log(Level.INFO, &quot;DEL /wattdepot/{&quot; + orgId + &quot;}/sensor/{&quot; + sensorId + &quot;}&quot;);</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">    if (isInRole(orgId)) {</span>
+      try {
+<span class="fc" id="L62">        depot.deleteSensor(sensorId, orgId);</span>
+      }
+<span class="fc" id="L64">      catch (IdNotFoundException e) {</span>
+<span class="fc" id="L65">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+      }
+<span class="nc" id="L67">      catch (MisMatchedOwnerException e) {</span>
+<span class="nc" id="L68">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="pc" id="L69">      }</span>
+    }
+    else {
+<span class="nc" id="L72">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Bad credentials.&quot;);</span>
+    }
+<span class="fc" id="L74">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.restlet.SensorResource#retrieve()
+   */
+  @Override
+  public Sensor retrieve() {
+<span class="fc" id="L83">    getLogger().log(Level.INFO, &quot;GET /wattdepot/{&quot; + orgId + &quot;}/sensor/{&quot; + sensorId + &quot;}&quot;);</span>
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">    if (isInRole(orgId)) {</span>
+<span class="fc" id="L85">      Sensor sensor = null;</span>
+      try {
+<span class="fc" id="L87">        sensor = depot.getSensor(sensorId, orgId, true);</span>
+      }
+<span class="nc" id="L89">      catch (MisMatchedOwnerException e) {</span>
+<span class="nc" id="L90">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+      }
+<span class="fc" id="L92">      catch (IdNotFoundException e) {</span>
+<span class="fc" id="L93">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Sensor &quot; + sensorId + &quot; is not defined.&quot;);</span>
+<span class="pc" id="L94">      }</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">      if (sensor == null) {</span>
+<span class="fc" id="L96">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Sensor &quot; + sensorId + &quot; is not defined.&quot;);</span>
+      }
+<span class="fc" id="L98">      return sensor;</span>
+    }
+    else {
+<span class="nc" id="L101">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Bad credentials.&quot;);</span>
+<span class="nc" id="L102">      return null;</span>
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.common.http.api.SensorResource#update(org.wattdepot.common
+   * .domainmodel.Sensor)
+   */
+  @Override
+  public void update(Sensor sensor) {
+<span class="fc" id="L115">    getLogger().log(Level.INFO,</span>
+        &quot;POST /wattdepot/{&quot; + orgId + &quot;}/sensor/{&quot; + sensorId + &quot;} with &quot; + sensor);
+    try {
+<span class="fc" id="L118">      depot.getOrganization(orgId, true);</span>
+    }
+<span class="nc" id="L120">    catch (IdNotFoundException e) {</span>
+<span class="nc" id="L121">      getLogger().log(Level.INFO, e.getMessage());</span>
+<span class="nc" id="L122">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + &quot; does not exist.&quot;);</span>
+<span class="fc" id="L123">    }</span>
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">    if (sensorId.equals(sensor.getId())) {</span>
+      try {
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">        if (depot.getSensorIds(orgId, true).contains(sensor.getId())) {</span>
+          try {
+<span class="fc" id="L128">            depot.updateSensor(sensor);</span>
+          }
+<span class="nc" id="L130">          catch (IdNotFoundException e) {</span>
+<span class="nc" id="L131">            getLogger().log(Level.INFO, e.getMessage());</span>
+<span class="nc" id="L132">            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="pc" id="L133">          }</span>
+        }
+        else {
+<span class="nc" id="L136">          getLogger().log(Level.INFO, sensor.getName() + &quot; is not defined.&quot;);</span>
+<span class="nc" id="L137">          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, sensor.getName() + &quot; is not defined.&quot;);</span>
+        }
+      }
+<span class="nc" id="L140">      catch (IdNotFoundException e) {</span>
+<span class="nc" id="L141">        getLogger().log(Level.INFO, e.getMessage());</span>
+<span class="nc" id="L142">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + &quot; is not a defined Organization id.&quot;);</span>
+<span class="pc" id="L143">      }</span>
+    }
+    else {
+<span class="nc" id="L146">      getLogger().log(Level.INFO, &quot;Ids do not match.&quot;);</span>
+<span class="nc" id="L147">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Ids do not match.&quot;);</span>
+    }
+<span class="fc" id="L149">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

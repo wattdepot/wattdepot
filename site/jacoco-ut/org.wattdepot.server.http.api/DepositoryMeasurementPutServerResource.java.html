@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DepositoryMeasurementPutServerResource.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">DepositoryMeasurementPutServerResource.java</span></div><h1>DepositoryMeasurementPutServerResource.java</h1><pre class="source lang-java linenums">/**
+ * DepositoryMeasurementServerResource.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.server.http.api;
+
+import java.util.logging.Level;
+
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MeasurementTypeException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
+import org.wattdepot.common.http.api.DepositoryMeasurementPutResource;
+
+/**
+ * DepositoryMeasurementServerResource - Handles the Measurement HTTP API
+ * (&quot;/wattdepot/{org-id}/depository/{depository_id}/measurement/&quot;).
+ * 
+ * @author Cam Moore
+ * 
+ */
+<span class="fc" id="L41">public class DepositoryMeasurementPutServerResource extends WattDepotServerResource implements</span>
+    DepositoryMeasurementPutResource {
+  private String depositoryId;
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.restlet.resource.Resource#doInit()
+   */
+  @Override
+  protected void doInit() throws ResourceException {
+<span class="fc" id="L52">    super.doInit();</span>
+<span class="fc" id="L53">    this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);</span>
+<span class="fc" id="L54">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.wattdepot.restlet.DepositoryMeasurementResource#store(org.wattdepot3
+   * .datamodel.Measurement)
+   */
+  @Override
+  public void store(Measurement meas) {
+<span class="fc" id="L65">    getLogger().log(</span>
+        Level.INFO,
+        &quot;PUT /wattdepot/{&quot; + orgId + &quot;}/depository/{&quot; + depositoryId + &quot;}/measurement/ with &quot;
+            + meas);
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">    if (isInRole(orgId)) {</span>
+      try {
+<span class="fc" id="L71">        Depository depository = depot.getDepository(depositoryId, orgId, true);</span>
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">        if (depository != null) {</span>
+<span class="fc" id="L73">          Sensor sensor = depot.getSensor(meas.getSensorId(), orgId, true);</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">          if (sensor != null) {</span>
+<span class="fc" id="L75">            depot.putMeasurement(depositoryId, orgId, meas);</span>
+          }
+          else {
+<span class="nc" id="L78">            setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Sensor &quot; + meas.getSensorId()</span>
+                + &quot; does not exist&quot;);
+          }
+<span class="fc" id="L81">        }</span>
+        else {
+<span class="nc" id="L83">          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + &quot; does not exist.&quot;);</span>
+        }
+      }
+<span class="nc" id="L86">      catch (MisMatchedOwnerException e) {</span>
+<span class="nc" id="L87">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+      }
+<span class="nc" id="L89">      catch (MeasurementTypeException e) {</span>
+<span class="nc" id="L90">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+      }
+<span class="nc" id="L92">      catch (IdNotFoundException e) {</span>
+<span class="nc" id="L93">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="pc" id="L94">      }</span>
+    }
+    else {
+<span class="nc" id="L97">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Bad credentials.&quot;);</span>
+    }
+<span class="fc" id="L99">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

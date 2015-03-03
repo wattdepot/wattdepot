@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>SensorGroupServerResource.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">SensorGroupServerResource.java</span></div><h1>SensorGroupServerResource.java</h1><pre class="source lang-java linenums">/**
+ * SensorGroupServerResource.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.server.http.api;
+
+import java.util.logging.Level;
+
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
+import org.wattdepot.common.http.api.SensorGroupResource;
+
+/**
+ * SensorGroupServerResource - Handles the SensorGroup HTTP API
+ * (&quot;/wattdepot/{org-id}/sensor-group/{sensor-group_id}&quot;).
+ * 
+ * @author Cam Moore
+ * 
+ */
+<span class="fc" id="L38">public class SensorGroupServerResource extends WattDepotServerResource implements</span>
+    SensorGroupResource {
+
+  /** The sensorgroup_id from the request. */
+  private String sensorGroupId;
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.restlet.resource.Resource#doInit()
+   */
+  @Override
+  protected void doInit() throws ResourceException {
+<span class="fc" id="L51">    super.doInit();</span>
+<span class="fc" id="L52">    this.sensorGroupId = getAttribute(Labels.SENSOR_GROUP_ID);</span>
+<span class="fc" id="L53">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.restlet.SensorGroupResource#retrieve()
+   */
+  @Override
+  public SensorGroup retrieve() {
+<span class="fc" id="L62">    getLogger().log(Level.INFO,</span>
+        &quot;GET /wattdepot/{&quot; + orgId + &quot;}/sensor-group/{&quot; + sensorGroupId + &quot;}&quot;);
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">    if (isInRole(orgId)) {</span>
+<span class="fc" id="L65">      SensorGroup group = null;</span>
+      try {
+<span class="fc" id="L67">        group = depot.getSensorGroup(sensorGroupId, orgId, true);</span>
+      }
+<span class="fc" id="L69">      catch (IdNotFoundException e) {</span>
+<span class="fc" id="L70">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="fc" id="L71">      }</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">      if (group == null) {</span>
+<span class="fc" id="L73">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;SensorGroup &quot; + sensorGroupId</span>
+            + &quot; is not defined.&quot;);
+
+      }
+<span class="fc" id="L77">      return group;</span>
+    }
+    else {
+<span class="nc" id="L80">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Bad credentials.&quot;);</span>
+<span class="nc" id="L81">      return null;</span>
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.restlet.SensorGroupResource#store(org.wattdepot
+   * .datamodel.SensorGroup)
+   */
+  @Override
+  public void update(SensorGroup sensorgroup) {
+<span class="fc" id="L93">    getLogger()</span>
+        .log(Level.INFO, &quot;POST /wattdepot/{&quot; + orgId + &quot;}/sensor-group/ with &quot; + sensorgroup);
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">    if (isInRole(orgId)) {</span>
+      try {
+<span class="fc" id="L97">        depot.getOrganization(orgId, true);</span>
+      }
+<span class="nc" id="L99">      catch (IdNotFoundException e) {</span>
+<span class="nc" id="L100">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + &quot; does not exist.&quot;);</span>
+<span class="fc" id="L101">      }</span>
+      try {
+<span class="pc bpc" id="L103" title="1 of 2 branches missed.">        if (depot.getSensorGroupIds(orgId, true).contains(sensorgroup.getId())) {</span>
+<span class="fc" id="L104">          depot.updateSensorGroup(sensorgroup);</span>
+        }
+        else {
+<span class="nc" id="L107">          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Can't update undefined SensorGroup &quot;</span>
+              + sensorgroup.getName());
+        }
+      }
+<span class="nc" id="L111">      catch (IdNotFoundException e) {</span>
+<span class="nc" id="L112">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + &quot; does not exist.&quot;);</span>
+<span class="pc" id="L113">      }</span>
+    }
+    else {
+<span class="nc" id="L116">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Bad credentials.&quot;);</span>
+    }
+<span class="fc" id="L118">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.restlet.SensorGroupResource#remove()
+   */
+  @Override
+  public void remove() {
+<span class="fc" id="L127">    getLogger().log(Level.INFO,</span>
+        &quot;DEL /wattdepot/{&quot; + orgId + &quot;}/sensor-group/{&quot; + sensorGroupId + &quot;}&quot;);
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">    if (isInRole(orgId)) {</span>
+      try {
+<span class="fc" id="L131">        depot.deleteSensorGroup(sensorGroupId, orgId);</span>
+      }
+<span class="fc" id="L133">      catch (IdNotFoundException e) {</span>
+<span class="fc" id="L134">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+      }
+<span class="nc" id="L136">      catch (MisMatchedOwnerException e) {</span>
+<span class="nc" id="L137">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="pc" id="L138">      }</span>
+    }
+    else {
+<span class="nc" id="L141">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Bad credentials.&quot;);</span>
+    }
+<span class="fc" id="L143">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

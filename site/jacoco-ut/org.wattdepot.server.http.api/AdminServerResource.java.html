@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>AdminServerResource.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">AdminServerResource.java</span></div><h1>AdminServerResource.java</h1><pre class="source lang-java linenums">/**
+ * AdministratorServerResource.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.server.http.api;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+
+import org.restlet.data.LocalReference;
+import org.restlet.data.MediaType;
+import org.restlet.data.Status;
+import org.restlet.ext.freemarker.TemplateRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
+import org.restlet.resource.Get;
+import org.restlet.security.User;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
+import org.wattdepot.common.domainmodel.MeasurementType;
+import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.domainmodel.SensorModel;
+import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.http.api.API;
+
+/**
+ * AdministratorServerResource - Administrative interface for WattDepot. It
+ * handles the HTTP API (&quot;/wattdepot/{org-id}/&quot;).
+ * 
+ * @author Cam Moore
+ * 
+ */
+<span class="fc" id="L53">public class AdminServerResource extends WattDepotServerResource {</span>
+
+  /**
+   * @return The admin user interface as an HTML Representation.
+   */
+  @Get()
+  public Representation toHtml() {
+<span class="fc" id="L60">    getLogger().log(Level.INFO, &quot;GET &quot; + API.BASE_URI + &quot;{&quot; + orgId + &quot;}/&quot;);</span>
+<span class="pc bpc" id="L61" title="3 of 4 branches missed.">    if (!isInRole(orgId) &amp;&amp; !isInRole(Organization.ADMIN_GROUP.getId())) {</span>
+<span class="nc" id="L62">      User user = getClientInfo().getUser();</span>
+      // The user isn't in the orgId. Search for the user in other
+      // organizations.
+<span class="nc" id="L65">      boolean foundUser = false;</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">      for (UserInfo ui : depot.getUsers()) {</span>
+<span class="nc bnc" id="L67" title="All 4 branches missed.">        if (ui.getUid().equals(user.getIdentifier()) &amp;&amp; isInRole(ui.getOrganizationId())) {</span>
+<span class="nc" id="L68">          redirectPermanent(&quot;/wattdepot/&quot; + ui.getOrganizationId() + &quot;/&quot;);</span>
+<span class="nc" id="L69">          foundUser = true;</span>
+        }
+<span class="nc" id="L71">      }</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">      if (!foundUser) {</span>
+<span class="nc" id="L73">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST);</span>
+      }
+<span class="nc" id="L75">    }</span>
+    else {
+<span class="fc" id="L77">      Map&lt;String, Object&gt; dataModel = new HashMap&lt;String, Object&gt;();</span>
+<span class="fc" id="L78">      dataModel.put(&quot;orgId&quot;, orgId);</span>
+<span class="fc" id="L79">      String address = getServerInfo().getAddress();</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">      if (address.startsWith(&quot;0&quot;)) {</span>
+<span class="nc" id="L81">        address = &quot;localhost&quot;;</span>
+      }
+<span class="fc" id="L83">      dataModel.put(&quot;serverAddress&quot;, address);</span>
+<span class="fc" id="L84">      dataModel.put(&quot;serverPort&quot;, getServerInfo().getPort());</span>
+<span class="fc" id="L85">      Representation rep = null;</span>
+<span class="fc" id="L86">      TemplateRepresentation template = null;</span>
+      // decide what to show based upon the orgId.
+<span class="fc bfc" id="L88" title="All 2 branches covered.">      if (orgId.equals(Organization.ADMIN_GROUP.getId())) {</span>
+        // admin can manipulate users and organizations
+<span class="fc" id="L90">        List&lt;UserInfo&gt; users = depot.getUsers();</span>
+<span class="fc" id="L91">        List&lt;Organization&gt; orgs = depot.getOrganizations();</span>
+<span class="fc" id="L92">        dataModel.put(&quot;users&quot;, users);</span>
+<span class="fc" id="L93">        dataModel.put(&quot;orgs&quot;, orgs);</span>
+<span class="fc" id="L94">        dataModel.put(&quot;rootUid&quot;, UserInfo.ROOT.getUid());</span>
+<span class="fc" id="L95">        dataModel.put(&quot;adminId&quot;, Organization.ADMIN_GROUP.getId());</span>
+<span class="fc" id="L96">        rep = new ClientResource(LocalReference.createClapReference(getClass().getPackage())</span>
+            + &quot;/UserAdmin.ftl&quot;).get();
+<span class="fc" id="L98">      }</span>
+      else {
+        try {
+          // regular organization, can manipulate sensors, depositories
+<span class="fc" id="L102">          depot.getOrganization(orgId, true);</span>
+<span class="fc" id="L103">          List&lt;Depository&gt; depos = depot.getDepositories(orgId, false);</span>
+<span class="fc" id="L104">          List&lt;Sensor&gt; sensors = depot.getSensors(orgId, false);</span>
+<span class="fc" id="L105">          List&lt;SensorModel&gt; sensorModels = depot.getSensorModels();</span>
+<span class="fc" id="L106">          List&lt;SensorGroup&gt; sensorGroups = depot.getSensorGroups(orgId, false);</span>
+<span class="fc" id="L107">          List&lt;CollectorProcessDefinition&gt; cpds = depot</span>
+              .getCollectorProcessDefinitions(orgId, false);
+<span class="fc" id="L109">          List&lt;MeasurementType&gt; measurementTypes = depot.getMeasurementTypes();</span>
+<span class="fc" id="L110">          List&lt;MeasurementPruningDefinition&gt; gcds = depot.getMeasurementPruningDefinitions(orgId,</span>
+              false);
+<span class="fc" id="L112">          dataModel.put(&quot;depositories&quot;, depos);</span>
+<span class="fc" id="L113">          dataModel.put(&quot;sensors&quot;, sensors);</span>
+<span class="fc" id="L114">          dataModel.put(&quot;sensorgroups&quot;, sensorGroups);</span>
+<span class="fc" id="L115">          dataModel.put(&quot;sensormodels&quot;, sensorModels);</span>
+<span class="fc" id="L116">          dataModel.put(&quot;cpds&quot;, cpds);</span>
+<span class="fc" id="L117">          dataModel.put(&quot;measurementtypes&quot;, measurementTypes);</span>
+<span class="fc" id="L118">          dataModel.put(&quot;mpds&quot;, gcds);</span>
+<span class="fc" id="L119">          rep = new ClientResource(LocalReference.createClapReference(getClass().getPackage())</span>
+              + &quot;/OrganizationAdmin.ftl&quot;).get();
+        }
+<span class="nc" id="L122">        catch (IdNotFoundException e) {</span>
+<span class="nc" id="L123">          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="fc" id="L124">        }</span>
+      }
+<span class="fc" id="L126">      template = new TemplateRepresentation(rep, dataModel, MediaType.TEXT_HTML);</span>
+<span class="fc" id="L127">      return template;</span>
+    }
+<span class="nc" id="L129">    return null;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

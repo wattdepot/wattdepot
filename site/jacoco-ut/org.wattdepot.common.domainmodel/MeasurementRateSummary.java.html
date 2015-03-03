@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MeasurementRateSummary.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.domainmodel</a> &gt; <span class="el_source">MeasurementRateSummary.java</span></div><h1>MeasurementRateSummary.java</h1><pre class="source lang-java linenums">/**
+ * MeasurementRateSummary.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.common.domainmodel;
+
+import java.util.Date;
+
+/**
+ * MeasurementRateSummary a summary of the Measurements created by a given
+ * Sensor in a Depository. This class breaks down the time intervals to the last
+ * minute, last fifteen minutes, last hour and last day.
+ * 
+ * @author Cam Moore
+ * 
+ */
+public class MeasurementRateSummary {
+  /** The id of the sensor making the measurements. */
+  private String sensorId;
+  /** The id of the depository storing the measurements. */
+  private String depositoryId;
+  /** The time of the summary. */
+  private Date timestamp;
+  /** The latest value. */
+  private Double latestValue;
+  /** The type of the measurements. */
+  private MeasurementType type;
+  /** Number of measurements in the last minute. */
+  private Long oneMinuteCount;
+  /** The rate of measurements per second in the last minute. */
+  private Double oneMinuteRate;
+  /** Total number of measurements. */
+  private Long totalCount;
+
+  /**
+   * Default constructor.
+   */
+<span class="fc" id="L52">  public MeasurementRateSummary() {</span>
+
+<span class="fc" id="L54">  }</span>
+
+  /**
+   * @return the sensorId
+   */
+  public String getSensorId() {
+<span class="fc" id="L60">    return sensorId;</span>
+  }
+
+  /**
+   * @param sensorId the sensorId to set
+   */
+  public void setSensorId(String sensorId) {
+<span class="fc" id="L67">    this.sensorId = sensorId;</span>
+<span class="fc" id="L68">  }</span>
+
+  /**
+   * @return the depositoryId
+   */
+  public String getDepositoryId() {
+<span class="fc" id="L74">    return depositoryId;</span>
+  }
+
+  /**
+   * @param depositoryId the depositoryId to set
+   */
+  public void setDepositoryId(String depositoryId) {
+<span class="fc" id="L81">    this.depositoryId = depositoryId;</span>
+<span class="fc" id="L82">  }</span>
+
+  /**
+   * @return the timestamp
+   */
+  public Date getTimestamp() {
+<span class="fc" id="L88">    return new Date(timestamp.getTime());</span>
+  }
+
+  /**
+   * @param timestamp the timestamp to set
+   */
+  public void setTimestamp(Date timestamp) {
+<span class="fc" id="L95">    this.timestamp = new Date(timestamp.getTime());</span>
+<span class="fc" id="L96">  }</span>
+
+  /**
+   * @return the latestValue
+   */
+  public Double getLatestValue() {
+<span class="fc" id="L102">    return latestValue;</span>
+  }
+
+  /**
+   * @param latestValue the latestValue to set
+   */
+  public void setLatestValue(Double latestValue) {
+<span class="fc" id="L109">    this.latestValue = latestValue;</span>
+<span class="fc" id="L110">  }</span>
+
+  /**
+   * @return the type
+   */
+  public MeasurementType getType() {
+<span class="fc" id="L116">    return type;</span>
+  }
+
+  /**
+   * @param type the type to set
+   */
+  public void setType(MeasurementType type) {
+<span class="fc" id="L123">    this.type = type;</span>
+<span class="fc" id="L124">  }</span>
+
+  /**
+   * @return the oneMinuteCount
+   */
+  public Long getOneMinuteCount() {
+<span class="fc" id="L130">    return oneMinuteCount;</span>
+  }
+
+  /**
+   * @param oneMinuteCount the oneMinuteCount to set
+   */
+  public void setOneMinuteCount(Long oneMinuteCount) {
+<span class="fc" id="L137">    this.oneMinuteCount = oneMinuteCount;</span>
+<span class="fc" id="L138">  }</span>
+
+  /**
+   * @return the oneMinuteRate
+   */
+  public Double getOneMinuteRate() {
+<span class="fc" id="L144">    return oneMinuteRate;</span>
+  }
+
+  /**
+   * @param oneMinuteRate the oneMinuteRate to set
+   */
+  public void setOneMinuteRate(Double oneMinuteRate) {
+<span class="fc" id="L151">    this.oneMinuteRate = oneMinuteRate;</span>
+<span class="fc" id="L152">  }</span>
+
+  /**
+   * @return the totalCount
+   */
+  public Long getTotalCount() {
+<span class="fc" id="L158">    return totalCount;</span>
+  }
+
+  /**
+   * @param totalCount the totalCount to set
+   */
+  public void setTotalCount(Long totalCount) {
+<span class="fc" id="L165">    this.totalCount = totalCount;</span>
+<span class="fc" id="L166">  }</span>
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#hashCode()
+   */
+  @Override
+  public int hashCode() {
+<span class="fc" id="L175">    final int prime = 31;</span>
+<span class="fc" id="L176">    int result = 1;</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">    result = prime * result + ((depositoryId == null) ? 0 : depositoryId.hashCode());</span>
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">    result = prime * result + ((oneMinuteCount == null) ? 0 : oneMinuteCount.hashCode());</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">    result = prime * result + ((oneMinuteRate == null) ? 0 : oneMinuteRate.hashCode());</span>
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">    result = prime * result + ((sensorId == null) ? 0 : sensorId.hashCode());</span>
+<span class="pc bpc" id="L181" title="1 of 2 branches missed.">    result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());</span>
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">    result = prime * result + ((latestValue == null) ? 0 : latestValue.hashCode());</span>
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">    result = prime * result + ((totalCount == null) ? 0 : totalCount.hashCode());</span>
+<span class="fc" id="L184">    return result;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#equals(java.lang.Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+<span class="fc bfc" id="L194" title="All 2 branches covered.">    if (this == obj) {</span>
+<span class="fc" id="L195">      return true;</span>
+    }
+<span class="fc bfc" id="L197" title="All 2 branches covered.">    if (obj == null) {</span>
+<span class="fc" id="L198">      return false;</span>
+    }
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">    if (getClass() != obj.getClass()) {</span>
+<span class="nc" id="L201">      return false;</span>
+    }
+<span class="fc" id="L203">    MeasurementRateSummary other = (MeasurementRateSummary) obj;</span>
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">    if (latestValue == null) {</span>
+<span class="nc bnc" id="L205" title="All 2 branches missed.">      if (other.latestValue != null) {</span>
+<span class="nc" id="L206">        return false;</span>
+      }
+    }
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">    else if (!latestValue.equals(other.latestValue)) {</span>
+<span class="nc" id="L210">      return false;</span>
+    }
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">    if (depositoryId == null) {</span>
+<span class="nc bnc" id="L213" title="All 2 branches missed.">      if (other.depositoryId != null) {</span>
+<span class="nc" id="L214">        return false;</span>
+      }
+    }
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">    else if (!depositoryId.equals(other.depositoryId)) {</span>
+<span class="nc" id="L218">      return false;</span>
+    }
+<span class="pc bpc" id="L220" title="1 of 2 branches missed.">    if (oneMinuteCount == null) {</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">      if (other.oneMinuteCount != null) {</span>
+<span class="nc" id="L222">        return false;</span>
+      }
+    }
+<span class="pc bpc" id="L225" title="1 of 2 branches missed.">    else if (!oneMinuteCount.equals(other.oneMinuteCount)) {</span>
+<span class="nc" id="L226">      return false;</span>
+    }
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">    if (oneMinuteRate == null) {</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">      if (other.oneMinuteRate != null) {</span>
+<span class="nc" id="L230">        return false;</span>
+      }
+    }
+<span class="pc bpc" id="L233" title="1 of 2 branches missed.">    else if (!oneMinuteRate.equals(other.oneMinuteRate)) {</span>
+<span class="nc" id="L234">      return false;</span>
+    }
+<span class="pc bpc" id="L236" title="1 of 2 branches missed.">    if (sensorId == null) {</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">      if (other.sensorId != null) {</span>
+<span class="nc" id="L238">        return false;</span>
+      }
+    }
+<span class="pc bpc" id="L241" title="1 of 2 branches missed.">    else if (!sensorId.equals(other.sensorId)) {</span>
+<span class="nc" id="L242">      return false;</span>
+    }
+<span class="pc bpc" id="L244" title="1 of 2 branches missed.">    if (timestamp == null) {</span>
+<span class="nc bnc" id="L245" title="All 2 branches missed.">      if (other.timestamp != null) {</span>
+<span class="nc" id="L246">        return false;</span>
+      }
+    }
+<span class="pc bpc" id="L249" title="1 of 2 branches missed.">    else if (!timestamp.equals(other.timestamp)) {</span>
+<span class="nc" id="L250">      return false;</span>
+    }
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">    if (totalCount == null) {</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">      if (other.totalCount != null) {</span>
+<span class="nc" id="L254">        return false;</span>
+      }
+    }
+<span class="pc bpc" id="L257" title="1 of 2 branches missed.">    else if (!totalCount.equals(other.totalCount)) {</span>
+<span class="nc" id="L258">      return false;</span>
+    }
+<span class="fc" id="L260">    return true;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Object#toString()
+   */
+  @Override
+  public String toString() {
+<span class="fc" id="L270">    return &quot;MeasurementRateSummary [sensorId=&quot; + sensorId + &quot;, depositoryId=&quot; + depositoryId</span>
+        + &quot;, timestamp=&quot; + timestamp + &quot;, latest value =&quot; + latestValue + &quot;, oneMinuteCount=&quot;
+        + oneMinuteCount + &quot;, oneMinuteRate=&quot; + oneMinuteRate + &quot;, totalCount=&quot; + totalCount + &quot;]&quot;;
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

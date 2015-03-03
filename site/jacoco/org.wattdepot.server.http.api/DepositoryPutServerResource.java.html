@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DepositoryPutServerResource.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">DepositoryPutServerResource.java</span></div><h1>DepositoryPutServerResource.java</h1><pre class="source lang-java linenums">/**
+ * DepositoryServerResource.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.server.http.api;
+
+import java.util.logging.Level;
+
+import org.restlet.data.Status;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.exception.BadSlugException;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.UniqueIdException;
+import org.wattdepot.common.http.api.DepositoryPutResource;
+
+/**
+ * DepositoryPutServerResource - Handles Depository HTTP API
+ * (&quot;/wattdepot/{org-id}/depository/&quot;).
+ * 
+ * @author Cam Moore
+ * 
+ */
+<span class="fc" id="L37">public class DepositoryPutServerResource extends WattDepotServerResource implements</span>
+    DepositoryPutResource {
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.wattdepot.restlet.DepositoryResource#store(org.wattdepot.
+   * datamodel.Depository)
+   */
+  @Override
+  public void store(Depository depository) {
+<span class="fc" id="L48">    getLogger().log(Level.INFO, &quot;PUT /wattdepot/{&quot; + orgId + &quot;}/depository/ with &quot; + depository);</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">    if (isInRole(orgId)) {</span>
+      try {
+<span class="fc" id="L51">        depot.getOrganization(orgId, true);</span>
+      }
+<span class="nc" id="L53">      catch (IdNotFoundException e1) {</span>
+<span class="nc" id="L54">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, orgId + &quot; does not exist.&quot;);</span>
+<span class="fc" id="L55">      }</span>
+      try {
+<span class="fc" id="L57">        depot.defineDepository(depository.getId(), depository.getName(),</span>
+            depository.getMeasurementType(), orgId);
+      }
+<span class="fc" id="L60">      catch (UniqueIdException e) {</span>
+<span class="fc" id="L61">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+      }
+<span class="nc" id="L63">      catch (IdNotFoundException e) {</span>
+<span class="nc" id="L64">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+      }
+<span class="nc" id="L66">      catch (BadSlugException e) {</span>
+<span class="nc" id="L67">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="pc" id="L68">      }</span>
+    }
+    else {
+<span class="nc" id="L71">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Bad credentials.&quot;);</span>
+    }
+<span class="fc" id="L73">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

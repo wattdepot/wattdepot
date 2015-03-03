@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ClientProperties.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.client</a> &gt; <span class="el_source">ClientProperties.java</span></div><h1>ClientProperties.java</h1><pre class="source lang-java linenums">/**
+ * ClientProperties.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.client;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TreeMap;
+import java.util.logging.Logger;
+
+import org.wattdepot.common.util.UserHome;
+
+/**
+ * ClientProperties - Provides access to the values stored in the
+ * wattdepot-client.properties file.
+ * 
+ * @author Cam Moore
+ * 
+ */
+public class ClientProperties {
+  /** The full path to the client's home directory. */
+  public static final String CLIENT_HOME_DIR = &quot;wattdepot-client.homedir&quot;;
+  /** Name of property used to store the username. */
+  public static final String USER_NAME = &quot;wattdepot-client.user.name&quot;;
+  /** Name of property used to store the password. */
+  public static final String USER_PASSWORD = &quot;wattdepot-client.user.password&quot;;
+  /** The wattdepot server host. */
+  public static final String WATTDEPOT_SERVER_HOST = &quot;wattdepot-server.hostname&quot;;
+  /** The wattdepot server port key. */
+  public static final String PORT_KEY = &quot;wattdepot-server.port&quot;;
+  /** The wattdepot server port key during testing. */
+  public static final String TEST_PORT_KEY = &quot;wattdepot-server.test.port&quot;;
+  /** The logging level key. */
+  public static final String LOGGING_LEVEL_KEY = &quot;wattdepot-client.logging.level&quot;;
+
+  /** Where we store the properties. */
+  private Properties properties;
+
+  /**
+   * Creates a new ClientProperties instance using the default filename. Prints
+   * an error to the console if problems occur on loading.
+   */
+  public ClientProperties() {
+<span class="fc" id="L61">    this(null);</span>
+<span class="fc" id="L62">  }</span>
+
+  /**
+   * Creates a new ClientProperties instance loaded from the given directory
+   * name. Prints an error to the console if problems occur on loading.
+   * 
+   * @param clientSubdir
+   *          The name of the subdirectory used to store all files for the
+   *          client.
+   */
+<span class="fc" id="L72">  public ClientProperties(String clientSubdir) {</span>
+    try {
+<span class="fc" id="L74">      initializeProperties(clientSubdir);</span>
+    }
+<span class="nc" id="L76">    catch (Exception e) {</span>
+<span class="nc" id="L77">      Logger.getLogger(&quot;org.wattdepot.properties&quot;).info(</span>
+          &quot;Error initializing client properties. &quot; + e.getMessage());
+<span class="fc" id="L79">    }</span>
+<span class="fc" id="L80">  }</span>
+
+  /**
+   * Returns a string containing all current properties in alphabetical order.
+   * Properties with the word &quot;password&quot; in their key list &quot;((hidden))&quot; rather
+   * than their actual value for security reasons. This is not super
+   * sophisticated - other properties such as database URLs might benefit from
+   * being hidden too - but it should work for now.
+   * 
+   * @return A string with the properties.
+   */
+  public String echoProperties() {
+<span class="fc" id="L92">    String cr = System.getProperty(&quot;line.separator&quot;);</span>
+<span class="fc" id="L93">    String eq = &quot; = &quot;;</span>
+<span class="fc" id="L94">    String pad = &quot;                &quot;;</span>
+    // Adding them to a treemap has the effect of alphabetizing them.
+<span class="fc" id="L96">    TreeMap&lt;String, String&gt; alphaProps = new TreeMap&lt;String, String&gt;();</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">    for (Map.Entry&lt;Object, Object&gt; entry : this.properties.entrySet()) {</span>
+<span class="fc" id="L98">      String propName = (String) entry.getKey();</span>
+<span class="fc" id="L99">      String propValue = (String) entry.getValue();</span>
+<span class="fc" id="L100">      alphaProps.put(propName, propValue);</span>
+<span class="fc" id="L101">    }</span>
+<span class="fc" id="L102">    StringBuffer buff = new StringBuffer(25);</span>
+<span class="fc" id="L103">    buff.append(&quot;Server Properties:&quot;).append(cr);</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">    for (String key : alphaProps.keySet()) {</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">      if (key.contains(&quot;password&quot;)) {</span>
+<span class="fc" id="L106">        buff.append(pad).append(key).append(eq).append(&quot;((hidden))&quot;).append(cr);</span>
+      }
+      else {
+<span class="fc" id="L109">        buff.append(pad).append(key).append(eq).append(get(key)).append(cr);</span>
+      }
+<span class="fc" id="L111">    }</span>
+<span class="fc" id="L112">    return buff.toString();</span>
+  }
+
+  /**
+   * Returns the value of the Server Property specified by the key.
+   * 
+   * @param key
+   *          Should be one of the public static final strings in this class.
+   * @return The value of the key, or null if not found.
+   */
+  public String get(String key) {
+<span class="fc" id="L123">    return this.properties.getProperty(key);</span>
+  }
+
+  /**
+   * Sets the properties to their &quot;test&quot; equivalents and updates the system
+   * properties.
+   */
+  public void setTestProperties() {
+<span class="fc" id="L131">    properties.setProperty(PORT_KEY, properties.getProperty(TEST_PORT_KEY));</span>
+<span class="fc" id="L132">    trimProperties(properties);</span>
+    // update the system properties object to reflect these new values.
+<span class="fc" id="L134">    Properties systemProperties = System.getProperties();</span>
+<span class="fc" id="L135">    systemProperties.putAll(properties);</span>
+<span class="fc" id="L136">    System.setProperties(systemProperties);</span>
+
+<span class="fc" id="L138">  }</span>
+
+  /**
+   * Reads in the properties in wattdepot-client.properties if the file exists,
+   * and provides default values for all properties not mentioned in this file.
+   * Will also add any pre-existing System properties that start with
+   * &quot;wattdepot-client.&quot;.
+   * 
+   * @param clientSubdir
+   *          The name of the subdirectory used to store all files for this
+   *          client.
+   * @throws Exception
+   *           if there is a problem.
+   */
+  private void initializeProperties(String clientSubdir) throws Exception {
+<span class="fc" id="L153">    Logger logger = Logger.getLogger(&quot;org.wattdepot.properties&quot;);</span>
+<span class="fc" id="L154">    String userHome = UserHome.getHomeString();</span>
+<span class="fc" id="L155">    String wattDepot3Home = userHome + &quot;/.wattdepot3/&quot;;</span>
+<span class="fc" id="L156">    String clientHome = null;</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">    if (clientSubdir == null) {</span>
+<span class="fc" id="L158">      clientHome = wattDepot3Home + &quot;client&quot;;</span>
+    }
+    else {
+<span class="fc" id="L161">      clientHome = wattDepot3Home + clientSubdir;</span>
+    }
+<span class="fc" id="L163">    String propFileName = clientHome + &quot;/wattdepot-client.properties&quot;;</span>
+<span class="fc" id="L164">    String defaultUserName = &quot;root&quot;;</span>
+<span class="fc" id="L165">    String defaultUserPassword = &quot;admin&quot;;</span>
+<span class="fc" id="L166">    String defaultServerHost = &quot;localhost&quot;;</span>
+<span class="fc" id="L167">    String defaultPort = &quot;8192&quot;;</span>
+<span class="fc" id="L168">    String defaultTestPort = &quot;8194&quot;;</span>
+<span class="fc" id="L169">    this.properties = new Properties();</span>
+    // Set default values
+<span class="fc" id="L171">    properties.setProperty(CLIENT_HOME_DIR, clientHome);</span>
+<span class="fc" id="L172">    properties.setProperty(USER_NAME, defaultUserName);</span>
+<span class="fc" id="L173">    properties.setProperty(USER_PASSWORD, defaultUserPassword);</span>
+<span class="fc" id="L174">    properties.setProperty(WATTDEPOT_SERVER_HOST, defaultServerHost);</span>
+<span class="fc" id="L175">    properties.setProperty(PORT_KEY, defaultPort);</span>
+<span class="fc" id="L176">    properties.setProperty(TEST_PORT_KEY, defaultTestPort);</span>
+<span class="fc" id="L177">    properties.setProperty(LOGGING_LEVEL_KEY, &quot;INFO&quot;);</span>
+    // Use properties from file, if they exist.
+<span class="fc" id="L179">    FileInputStream stream = null;</span>
+    try {
+<span class="fc" id="L181">      stream = new FileInputStream(propFileName);</span>
+<span class="fc" id="L182">      properties.load(stream);</span>
+<span class="fc" id="L183">      logger.info(&quot;Loading Client properties from: &quot; + propFileName);</span>
+    }
+<span class="fc" id="L185">    catch (IOException e) {</span>
+<span class="fc" id="L186">      logger.info(propFileName + &quot; not found. Using default client properties.&quot;);</span>
+    }
+    finally {
+<span class="pc bpc" id="L189" title="4 of 6 branches missed.">      if (stream != null) {</span>
+<span class="pc" id="L190">        stream.close();</span>
+      }
+    }
+    // grab all of the properties in the environment
+<span class="fc" id="L194">    Map&lt;String, String&gt; systemProps = System.getenv();</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">    for (Map.Entry&lt;String, String&gt; prop : systemProps.entrySet()) {</span>
+<span class="pc bpc" id="L196" title="1 of 2 branches missed.">      if (prop.getKey().startsWith(&quot;wattdepot-server.&quot;)) {</span>
+<span class="nc" id="L197">        properties.setProperty(prop.getKey(), prop.getValue());</span>
+      }
+<span class="fc" id="L199">    }</span>
+<span class="fc" id="L200">    addClientSystemProperties(this.properties);</span>
+<span class="fc" id="L201">    trimProperties(properties);</span>
+<span class="fc" id="L202">  }</span>
+
+  /**
+   * Finds any System properties whose key begins with &quot;wattdepot-server.&quot;, and
+   * adds those key-value pairs to the passed Properties object.
+   * 
+   * @param properties
+   *          The properties instance to be updated with the WattDepot system
+   *          properties.
+   */
+  private void addClientSystemProperties(Properties properties) {
+<span class="fc" id="L213">    Properties systemProperties = System.getProperties();</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">    for (Map.Entry&lt;Object, Object&gt; entry : systemProperties.entrySet()) {</span>
+<span class="fc" id="L215">      String sysPropName = (String) entry.getKey();</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">      if (sysPropName.startsWith(&quot;wattdepot-client.&quot;)) {</span>
+<span class="fc" id="L217">        String sysPropValue = (String) entry.getValue();</span>
+<span class="fc" id="L218">        properties.setProperty(sysPropName, sysPropValue);</span>
+      }
+<span class="fc" id="L220">    }</span>
+<span class="fc" id="L221">  }</span>
+
+  /**
+   * Ensures that the there is no leading or trailing whitespace in the property
+   * values. The fact that we need to do this indicates a bug in Java's
+   * Properties implementation to me.
+   * 
+   * @param properties
+   *          The properties.
+   */
+  private void trimProperties(Properties properties) {
+    // Have to do this iteration in a Java 5 compatible manner. no
+    // stringPropertyNames().
+<span class="fc bfc" id="L234" title="All 2 branches covered.">    for (Map.Entry&lt;Object, Object&gt; entry : properties.entrySet()) {</span>
+<span class="fc" id="L235">      String propName = (String) entry.getKey();</span>
+<span class="fc" id="L236">      properties.setProperty(propName, properties.getProperty(propName).trim());</span>
+<span class="fc" id="L237">    }</span>
+<span class="fc" id="L238">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>WattDepotServer.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server</a> &gt; <span class="el_source">WattDepotServer.java</span></div><h1>WattDepotServer.java</h1><pre class="source lang-java linenums">/**
+ * WattDepotServer.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2013  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.server;
+
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
+import org.wattdepot.common.util.logger.LoggerUtil;
+import org.wattdepot.server.http.api.WattDepotComponent;
+
+/**
+ * WattDepotServer - The main class that starts up the WattDepotServer
+ * coordinates the different interfaces.
+ * 
+ * @author Cam Moore
+ * 
+ */
+public class WattDepotServer {
+
+  /** Holds the Restlet component for the server. */
+  private WattDepotComponent restletServer;
+  /** Holds the WattDepot persistent store for the server. */
+  private WattDepotPersistence depot;
+  /** Holds the ServerProperties instance associated with this server. */
+  private ServerProperties serverProperties;
+  /** Holds the WattDepotLogger for the server. */
+<span class="fc" id="L50">  private Logger logger = null;</span>
+  /** Holds the hostname associated with this Server. */
+<span class="fc" id="L52">  private String hostName = null;</span>
+
+  /**
+   * Default constructor.
+   * 
+   */
+<span class="fc" id="L58">  public WattDepotServer() {</span>
+<span class="fc" id="L59">  }</span>
+
+  /**
+   * Creates a new instance of the WattDepot server. Using the default server
+   * values.
+   * 
+   * @return The WattDepotServer.
+   * @throws Exception
+   *           if there is a problem starting the server.
+   */
+  public static WattDepotServer newInstance() throws Exception {
+<span class="nc" id="L70">    return newInstance(new ServerProperties());</span>
+  }
+
+  /**
+   * Creates a new instance of the WattDepot server.
+   * 
+   * @param serverSubdir
+   *          The name of the directory containing the server's files.
+   * @return The WattDepotServer.
+   * @throws Exception
+   *           if there is a problem starting the server.
+   */
+  public static WattDepotServer newInstance(String serverSubdir)
+      throws Exception {
+<span class="nc" id="L84">    return newInstance(new ServerProperties(serverSubdir));</span>
+  }
+
+  /**
+   * Creates a new instance of the WattDepot server.
+   * 
+   * @param properties
+   *          The ServerProperties used to initialize this server.
+   * @return The WattDepotServer.
+   * @throws Exception
+   *           if there is a problem starting the server.
+   */
+  public static WattDepotServer newInstance(ServerProperties properties)
+      throws Exception {
+<span class="fc" id="L98">    int port = Integer.parseInt(properties.get(ServerProperties.PORT_KEY));</span>
+<span class="fc" id="L99">    WattDepotServer server = new WattDepotServer();</span>
+    // System.out.println(&quot;WattDepotServer.&quot;);
+//    LoggerUtil.showLoggers();
+<span class="fc" id="L102">    boolean enableLogging = Boolean.parseBoolean(properties</span>
+        .get(ServerProperties.ENABLE_LOGGING_KEY));
+<span class="fc" id="L104">    server.serverProperties = properties;</span>
+<span class="fc" id="L105">    server.hostName = server.serverProperties.getFullHost();</span>
+
+    // Get the WattDepotPersistence implementation.
+<span class="fc" id="L108">    String depotClass = properties.get(ServerProperties.WATT_DEPOT_IMPL_KEY);</span>
+<span class="fc" id="L109">    server.depot = (WattDepotPersistence) Class.forName(depotClass)</span>
+        .getConstructor(ServerProperties.class).newInstance(properties);
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">    if (server.depot.getSessionOpen() != server.depot.getSessionClose()) {</span>
+<span class="nc" id="L112">      throw new RuntimeException(&quot;opens and closed mismatched.&quot;);</span>
+    }
+<span class="fc" id="L114">    server.depot.initializeMeasurementTypes();</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">    if (server.depot.getSessionOpen() != server.depot.getSessionClose()) {</span>
+<span class="nc" id="L116">      throw new RuntimeException(&quot;opens and closed mismatched.&quot;);</span>
+    }
+<span class="fc" id="L118">    server.depot.initializeSensorModels();</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">    if (server.depot.getSessionOpen() != server.depot.getSessionClose()) {</span>
+<span class="nc" id="L120">      throw new RuntimeException(&quot;opens and closed mismatched.&quot;);</span>
+    }
+<span class="fc" id="L122">    server.depot.setServerProperties(properties);</span>
+<span class="fc" id="L123">    server.restletServer = new WattDepotComponent(server.depot, port);</span>
+<span class="fc" id="L124">    server.logger = server.restletServer.getLogger();</span>
+
+    // Set up logging.
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">    if (enableLogging) {</span>
+<span class="fc" id="L128">      LoggerUtil.useConsoleHandler();</span>
+<span class="fc" id="L129">      Logger base = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);</span>
+<span class="fc" id="L130">      base = base.getParent();</span>
+<span class="fc" id="L131">      String level = properties.get(ServerProperties.LOGGING_LEVEL_KEY);</span>
+<span class="fc" id="L132">     LoggerUtil.setLoggingLevel(base, level);</span>
+
+<span class="fc" id="L134">      server.logger.info(&quot;Starting WattDepot server.&quot;);</span>
+<span class="fc" id="L135">      server.logger.info(&quot;Host: &quot; + server.hostName);</span>
+<span class="fc" id="L136">      server.logger.info(server.serverProperties.echoProperties());</span>
+<span class="fc" id="L137">    }</span>
+    else {
+<span class="nc" id="L139">      LoggerUtil.useConsoleHandler();</span>
+<span class="nc" id="L140">      Logger base = LogManager.getLogManager().getLogger(Logger.GLOBAL_LOGGER_NAME);</span>
+<span class="nc" id="L141">      base = base.getParent();</span>
+<span class="nc" id="L142">      LoggerUtil.setLoggingLevel(base, Level.SEVERE.toString());</span>
+    }
+<span class="fc" id="L144">    server.restletServer.start();</span>
+
+<span class="fc" id="L146">    server.logger.info(&quot;WattDepot server now running.&quot;);</span>
+
+//    LoggerUtil.showLoggers();
+<span class="fc" id="L149">    return server;</span>
+  }
+
+  /**
+   * Creates a new WattDepotServer suitable for unit testing.
+   * 
+   * @return A WattDepotServer configured for testing.
+   * @throws Exception
+   *           if there is a problem initializing the server.
+   */
+  public static WattDepotServer newTestInstance() throws Exception {
+<span class="fc" id="L160">    ServerProperties properties = new ServerProperties();</span>
+<span class="fc" id="L161">    properties.setTestProperties();</span>
+<span class="fc" id="L162">    return newInstance(properties);</span>
+  }
+
+  /**
+   * @return the restletServer
+   */
+  public WattDepotComponent getRestletServer() {
+<span class="nc" id="L169">    return restletServer;</span>
+  }
+
+  /**
+   * @return the depot
+   */
+  public WattDepotPersistence getDepot() {
+<span class="nc" id="L176">    return depot;</span>
+  }
+
+  /**
+   * @return the serverProperties
+   */
+  public ServerProperties getServerProperties() {
+<span class="nc" id="L183">    return serverProperties;</span>
+  }
+
+  /**
+   * Stops the WattDepotServer.
+   * 
+   * @throws Exception
+   *           if there is a problem stopping the different servers.
+   */
+  public void stop() throws Exception {
+<span class="fc" id="L193">    this.depot.stop();</span>
+<span class="fc" id="L194">    this.restletServer.stop();</span>
+<span class="fc" id="L195">  }</span>
+
+  /**
+   * @param args
+   *          commandline arguments.
+   * @throws Exception
+   *           if there is a problem starting the components.
+   */
+  public static void main(String[] args) throws Exception {
+<span class="nc" id="L204">    Options options = new Options();</span>
+<span class="nc" id="L205">    options.addOption(&quot;h&quot;, &quot;help&quot;, false, &quot;Print this message&quot;);</span>
+<span class="nc" id="L206">    options</span>
+        .addOption(&quot;d&quot;, &quot;directoryName&quot;, true,
+            &quot;subdirectory under ~/.wattdepot where this server's files are to be kept.&quot;);
+
+<span class="nc" id="L210">    CommandLine cmd = null;</span>
+<span class="nc" id="L211">    String directoryName = null;</span>
+
+<span class="nc" id="L213">    CommandLineParser parser = new PosixParser();</span>
+<span class="nc" id="L214">    HelpFormatter formatter = new HelpFormatter();</span>
+    try {
+<span class="nc" id="L216">      cmd = parser.parse(options, args);</span>
+    }
+<span class="nc" id="L218">    catch (ParseException e) {</span>
+<span class="nc" id="L219">      System.err.println(&quot;Command line parsing failed. Reason: &quot;</span>
+          + e.getMessage() + &quot;. Exiting.&quot;);
+<span class="nc" id="L221">      System.exit(1);</span>
+<span class="nc" id="L222">    }</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">    if (cmd.hasOption(&quot;h&quot;)) {</span>
+<span class="nc" id="L224">      formatter.printHelp(&quot;WattDepotServer&quot;, options);</span>
+<span class="nc" id="L225">      System.exit(0);</span>
+    }
+<span class="nc bnc" id="L227" title="All 2 branches missed.">    if (cmd.hasOption(&quot;d&quot;)) {</span>
+<span class="nc" id="L228">      directoryName = cmd.getOptionValue(&quot;d&quot;);</span>
+    }
+<span class="nc" id="L230">    LoggerUtil.disableLogging();</span>
+<span class="nc bnc" id="L231" title="All 4 branches missed.">    if (directoryName == null || directoryName.length() == 0) {</span>
+<span class="nc" id="L232">      WattDepotServer.newInstance();</span>
+    }
+    else {
+<span class="nc" id="L235">      WattDepotServer.newInstance(directoryName);</span>
+    }
+<span class="nc" id="L237">  }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

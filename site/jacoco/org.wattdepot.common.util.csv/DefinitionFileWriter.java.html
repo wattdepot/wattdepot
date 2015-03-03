@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DefinitionFileWriter.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.util.csv</a> &gt; <span class="el_source">DefinitionFileWriter.java</span></div><h1>DefinitionFileWriter.java</h1><pre class="source lang-java linenums">/**
+ * DefinitionFileWriter.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2014  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.common.util.csv;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
+
+/**
+ * DefinitionFileWriter writes out a WattDepot object definition file from the
+ * domain model instances.
+ * 
+ * @author Cam Moore
+ * 
+ */
+public class DefinitionFileWriter {
+
+  private BufferedWriter writer;
+  private Set&lt;Depository&gt; depositories;
+  private Set&lt;SensorGroup&gt; groups;
+  private Set&lt;Sensor&gt; sensors;
+  private Set&lt;CollectorProcessDefinition&gt; cpds;
+  private Set&lt;MeasurementPruningDefinition&gt; gcds;
+
+  /**
+   * Creates a new DefinitionFileReader.
+   * 
+   * @param fileName The name of the definition file, a CSV file of WattDepot
+   *        object definitions.
+   * @throws IOException if there is a problem reading the file.
+   */
+<span class="nc" id="L56">  public DefinitionFileWriter(String fileName) throws IOException {</span>
+<span class="nc" id="L57">    this.writer = new BufferedWriter(new FileWriter(fileName));</span>
+<span class="nc" id="L58">    this.depositories = new HashSet&lt;Depository&gt;();</span>
+<span class="nc" id="L59">    this.groups = new HashSet&lt;SensorGroup&gt;();</span>
+<span class="nc" id="L60">    this.sensors = new HashSet&lt;Sensor&gt;();</span>
+<span class="nc" id="L61">    this.cpds = new HashSet&lt;CollectorProcessDefinition&gt;();</span>
+<span class="nc" id="L62">    this.gcds = new HashSet&lt;MeasurementPruningDefinition&gt;();</span>
+<span class="nc" id="L63">  }</span>
+
+  /**
+   * @param arg0 The CollectorProcessDefinition to add.
+   * @return true if is added.
+   * @see java.util.Set#add(java.lang.Object)
+   */
+  public boolean add(CollectorProcessDefinition arg0) {
+<span class="nc" id="L71">    return cpds.add(arg0);</span>
+  }
+
+  /**
+   * @param arg0 The Depository to add.
+   * @return true if it is added.
+   * @see java.util.Set#add(java.lang.Object)
+   */
+  public boolean add(Depository arg0) {
+<span class="nc" id="L80">    return depositories.add(arg0);</span>
+  }
+
+  /**
+   * @param arg0 The MeasurementPruningDefinition to add.
+   * @return true if it is added.
+   * @see java.util.Set#add(java.lang.Object)
+   */
+  public boolean add(MeasurementPruningDefinition arg0) {
+<span class="nc" id="L89">    return gcds.add(arg0);</span>
+  }
+
+  /**
+   * @param arg0 The Sensor to add.
+   * @return true if it is added.
+   * @see java.util.Set#add(java.lang.Object)
+   */
+  public boolean add(Sensor arg0) {
+<span class="nc" id="L98">    return sensors.add(arg0);</span>
+  }
+
+  /**
+   * @param arg0 The SensorGroup to add.
+   * @return true if it is added.
+   * @see java.util.Set#add(java.lang.Object)
+   */
+  public boolean add(SensorGroup arg0) {
+<span class="nc" id="L107">    return groups.add(arg0);</span>
+  }
+
+  /**
+   * @return the CollectorProcessDefinitions.
+   */
+  public Set&lt;CollectorProcessDefinition&gt; getCollectorProcessDefinitions() {
+<span class="nc" id="L114">    return cpds;</span>
+  }
+
+  /**
+   * @return the Depositories
+   */
+  public Set&lt;Depository&gt; getDepositories() {
+<span class="nc" id="L121">    return depositories;</span>
+  }
+
+  /**
+   * @return the gcds
+   */
+  public Set&lt;MeasurementPruningDefinition&gt; getMeasurementPruningDefinitions() {
+<span class="nc" id="L128">    return gcds;</span>
+  }
+
+  /**
+   * @return the SensorGroups
+   */
+  public Set&lt;SensorGroup&gt; getSensorGroups() {
+<span class="nc" id="L135">    return groups;</span>
+  }
+
+  /**
+   * @return the Sensors
+   */
+  public Set&lt;Sensor&gt; getSensors() {
+<span class="nc" id="L142">    return sensors;</span>
+  }
+
+  /**
+   * @param cpds the Set of CollectorProcessDefinition to set
+   */
+  public void setCollectorProcessDefinitions(Set&lt;CollectorProcessDefinition&gt; cpds) {
+<span class="nc" id="L149">    this.cpds = cpds;</span>
+<span class="nc" id="L150">  }</span>
+
+  /**
+   * @param depositories the Set of Depositories to set
+   */
+  public void setDepositories(Set&lt;Depository&gt; depositories) {
+<span class="nc" id="L156">    this.depositories = depositories;</span>
+<span class="nc" id="L157">  }</span>
+
+  /**
+   * @param gcds the gcds to set
+   */
+  public void setMeasurementPruningDefinitions(Set&lt;MeasurementPruningDefinition&gt; gcds) {
+<span class="nc" id="L163">    this.gcds = gcds;</span>
+<span class="nc" id="L164">  }</span>
+
+  /**
+   * @param groups the Set of SensorGroups to set
+   */
+  public void setSensorGroups(Set&lt;SensorGroup&gt; groups) {
+<span class="nc" id="L170">    this.groups = groups;</span>
+<span class="nc" id="L171">  }</span>
+
+  /**
+   * @param sensors the Set of Sensors to set
+   */
+  public void setSensors(Set&lt;Sensor&gt; sensors) {
+<span class="nc" id="L177">    this.sensors = sensors;</span>
+<span class="nc" id="L178">  }</span>
+
+  /**
+   * @throws IOException if there is a problem writing the file.
+   */
+  public void writeFile() throws IOException {
+    // Write out the Depositories
+<span class="nc" id="L185">    writer</span>
+        .write(&quot;# Depositories: 'Depository', Name, MeasurementType Name, MeasurementType Unit, OrgId&quot;);
+<span class="nc" id="L187">    writer.newLine();</span>
+<span class="nc bnc" id="L188" title="All 2 branches missed.">    for (Depository d : depositories) {</span>
+<span class="nc" id="L189">      writer.write(CSVObjectFactory.toCSV(d));</span>
+<span class="nc" id="L190">      writer.newLine();</span>
+<span class="nc" id="L191">    }</span>
+    // Sensors
+<span class="nc" id="L193">    writer</span>
+        .write(&quot;# Sensors: 'Sensor', Name, URI, ModelId, OrgId, num properties, prop1.key, prop1,value, ...,&quot;);
+<span class="nc" id="L195">    writer.newLine();</span>
+<span class="nc bnc" id="L196" title="All 2 branches missed.">    for (Sensor s : sensors) {</span>
+<span class="nc" id="L197">      writer.write(CSVObjectFactory.toCSV(s));</span>
+<span class="nc" id="L198">      writer.newLine();</span>
+<span class="nc" id="L199">    }</span>
+    // SensorGroups
+<span class="nc" id="L201">    writer</span>
+        .write(&quot;# SensorGroups: 'SensorGroup', Name, OrgId, num sensors, sensorId1, sensorId2, ...,&quot;);
+<span class="nc" id="L203">    writer.newLine();</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">    for (SensorGroup g : groups) {</span>
+<span class="nc" id="L205">      writer.write(CSVObjectFactory.toCSV(g));</span>
+<span class="nc" id="L206">      writer.newLine();</span>
+<span class="nc" id="L207">    }</span>
+    // CollectorProcessDefinitions
+<span class="nc" id="L209">    writer</span>
+        .write(&quot;# CollectorProcessDefinitions: 'CollectorProcessDefinition', Name, SensorId, Polling, DepositoryId, OrgId, num properties, prop1.key, prop1.value, ...,&quot;);
+<span class="nc" id="L211">    writer.newLine();</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">    for (CollectorProcessDefinition cpd : cpds) {</span>
+<span class="nc" id="L213">      writer.write(CSVObjectFactory.toCSV(cpd));</span>
+<span class="nc" id="L214">      writer.newLine();</span>
+<span class="nc" id="L215">    }</span>
+    // MeasurementPruningDefinitions
+<span class="nc" id="L217">    writer</span>
+        .write(&quot;# MeasurementPruningDefinitions: 'MeasurementPruningDefinition', Name, DepositoryId, SensorId, OrgId, ignore window days, collect window days, minimum gap seconds&quot;);
+<span class="nc" id="L219">    writer.newLine();</span>
+<span class="nc bnc" id="L220" title="All 2 branches missed.">    for (MeasurementPruningDefinition gcd : gcds) {</span>
+<span class="nc" id="L221">      writer.write(CSVObjectFactory.toCSV(gcd));</span>
+<span class="nc" id="L222">      writer.newLine();</span>
+<span class="nc" id="L223">    }</span>
+<span class="nc" id="L224">    writer.flush();</span>
+<span class="nc" id="L225">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

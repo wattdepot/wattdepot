@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>OrgVisualizerServerResource.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">OrgVisualizerServerResource.java</span></div><h1>OrgVisualizerServerResource.java</h1><pre class="source lang-java linenums">/**
+ * OrgVisualizerServerResource.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2014  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.server.http.api;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+
+import org.restlet.data.LocalReference;
+import org.restlet.data.MediaType;
+import org.restlet.data.Status;
+import org.restlet.ext.freemarker.TemplateRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
+import org.restlet.resource.Get;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.InterpolatedValue;
+import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.domainmodel.Organization;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
+import org.wattdepot.common.exception.NoMeasurementException;
+import org.wattdepot.common.http.api.API;
+
+/**
+ * OrgVisualizerServerResource - Summary Web page generator for WattDepot
+ * Organizations. It handles (&quot;/wattdepot/{org-id}/visualize/&quot;).
+ * 
+ * @author Cam Moore
+ * 
+ */
+<span class="nc" id="L53">public class OrgVisualizerServerResource extends WattDepotServerResource {</span>
+
+  /**
+   * @return The Organization summary information as an HTML Representation.
+   */
+  @Get()
+  public Representation toHtml() {
+<span class="nc" id="L60">    getLogger().log(Level.INFO,</span>
+        &quot;GET &quot; + API.BASE_URI + &quot;{&quot; + orgId + &quot;}/&quot; + Labels.VISUALIZE + &quot;/&quot;);
+<span class="nc bnc" id="L62" title="All 4 branches missed.">    if (isInRole(orgId) || isInRole(Organization.ADMIN_GROUP.getId())) {</span>
+<span class="nc" id="L63">      Map&lt;String, Object&gt; dataModel = new HashMap&lt;String, Object&gt;();</span>
+<span class="nc" id="L64">      dataModel.put(&quot;orgId&quot;, orgId);</span>
+<span class="nc" id="L65">      Representation rep = null;</span>
+<span class="nc" id="L66">      TemplateRepresentation template = null;</span>
+      try {
+        // Long startTime = System.nanoTime();
+<span class="nc" id="L69">        depot.getOrganization(orgId, true);</span>
+<span class="nc" id="L70">        List&lt;Depository&gt; depos = depot.getDepositories(orgId, false);</span>
+<span class="nc" id="L71">        List&lt;Sensor&gt; sensors = depot.getSensors(orgId, false);</span>
+<span class="nc" id="L72">        List&lt;SensorGroup&gt; sensorGroups = depot.getSensorGroups(orgId, false);</span>
+        // Long endTime = System.nanoTime();
+        // Long diff = endTime - startTime;
+        // getLogger().log(Level.INFO,
+        // &quot;getDepositories took &quot; + (diff / 1E9) + &quot; seconds&quot;);
+<span class="nc" id="L77">        Map&lt;String, List&lt;Sensor&gt;&gt; depoSensors = new HashMap&lt;String, List&lt;Sensor&gt;&gt;();</span>
+<span class="nc" id="L78">        Map&lt;String, Map&lt;String, List&lt;Date&gt;&gt;&gt; depotSensorInfo = new HashMap&lt;String, Map&lt;String, List&lt;Date&gt;&gt;&gt;();</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        for (Depository d : depos) {</span>
+<span class="nc" id="L80">          Map&lt;String, List&lt;Date&gt;&gt; sensorInfo = new HashMap&lt;String, List&lt;Date&gt;&gt;();</span>
+<span class="nc" id="L81">          depotSensorInfo.put(d.getId(), sensorInfo);</span>
+<span class="nc" id="L82">          List&lt;Sensor&gt; sensorList = new ArrayList&lt;Sensor&gt;();</span>
+<span class="nc" id="L83">          depoSensors.put(d.getId(), sensorList);</span>
+<span class="nc" id="L84">          long startTime = System.nanoTime();</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">          for (String sensorId : depot.listSensors(d.getId(), orgId, false)) {</span>
+//            long startTime2 = System.nanoTime();
+<span class="nc" id="L87">            Sensor s = depot.getSensor(sensorId, orgId, false);</span>
+//            long endTime2 = System.nanoTime();
+//            long diff2 = endTime2 - startTime2;
+//            getLogger().log(Level.SEVERE, &quot;getSensor(&quot; + sensorId + &quot;) took &quot; + (diff2 / 1E9) + &quot; seconds&quot;);
+<span class="nc" id="L91">            sensorList.add(s);</span>
+            try {
+//              startTime2 = System.nanoTime();
+<span class="nc" id="L94">              InterpolatedValue earliest = depot.getEarliestMeasuredValue(</span>
+                  d.getId(), orgId, sensorId, false);
+<span class="nc" id="L96">              InterpolatedValue latest = depot.getLatestMeasuredValue(</span>
+                  d.getId(), orgId, sensorId, false);
+<span class="nc" id="L98">              List&lt;Date&gt; info = new ArrayList&lt;Date&gt;();</span>
+<span class="nc" id="L99">              info.add(earliest.getStart());</span>
+<span class="nc" id="L100">              info.add(latest.getEnd());</span>
+<span class="nc" id="L101">              sensorInfo.put(sensorId, info);</span>
+//              endTime2 = System.nanoTime();
+//              diff2 = endTime2 - startTime2;
+//              getLogger().log(Level.SEVERE, &quot;Sensor earliest and latest for &quot; + sensorId + &quot; took &quot; + (diff2 / 1E9) + &quot; seconds&quot;);
+            }
+<span class="nc" id="L106">            catch (NoMeasurementException e) {</span>
+              // TODO Auto-generated catch block
+<span class="nc" id="L108">              e.printStackTrace();</span>
+<span class="nc" id="L109">            }</span>
+<span class="nc" id="L110">          }</span>
+<span class="nc" id="L111">          long endTime = System.nanoTime();</span>
+<span class="nc" id="L112">          long diff = endTime - startTime;</span>
+<span class="nc" id="L113">          getLogger().log(Level.SEVERE, &quot;Depository &quot; + d.getName() + &quot;: Getting Sensor info took &quot; + (diff / 1E9) + &quot; seconds for &quot; + sensorList.size() + &quot; sensors.&quot;);</span>
+<span class="nc" id="L114">          startTime = System.nanoTime();</span>
+<span class="nc" id="L115">          int groupCount = 0;</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">          for (String groupId : depot.getSensorGroupIds(orgId, false)) {</span>
+<span class="nc" id="L117">            groupCount++;</span>
+<span class="nc" id="L118">            SensorGroup group = depot.getSensorGroup(groupId, orgId, false);</span>
+<span class="nc" id="L119">            List&lt;Date&gt; info = new ArrayList&lt;Date&gt;();</span>
+//            InterpolatedValue earliest = null;
+<span class="nc" id="L121">            Date earliestDate = null;</span>
+//            InterpolatedValue latest = null;
+<span class="nc" id="L123">            Date latestDate = null;</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">            for (String sensorId : group.getSensors()) {</span>
+<span class="nc" id="L125">              List&lt;Date&gt; sensorDates = sensorInfo.get(sensorId);</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">              if (sensorDates != null) {</span>
+<span class="nc" id="L127">                Date temp = sensorDates.get(0);</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">                if (earliestDate == null) {</span>
+<span class="nc" id="L129">                  earliestDate = temp;</span>
+                }
+<span class="nc bnc" id="L131" title="All 2 branches missed.">                else if (temp.before(earliestDate)) {</span>
+<span class="nc" id="L132">                  earliestDate = temp;</span>
+                }
+<span class="nc" id="L134">                temp = sensorDates.get(1);</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">                if (latestDate == null) {</span>
+<span class="nc" id="L136">                  latestDate = temp;</span>
+                }
+<span class="nc bnc" id="L138" title="All 2 branches missed.">                else if (temp.after(latestDate)) {</span>
+<span class="nc" id="L139">                  latestDate = temp;</span>
+                }
+              }
+//              try {
+//                InterpolatedValue temp = depot.getEarliestMeasuredValue(
+//                    d.getId(), orgId, sensorId, false);
+//                if (temp != null) {
+//                  if (earliest == null) {
+//                    earliest = temp;
+//                  }
+//                  else if (earliest.getDate().after(temp.getDate())) {
+//                    earliest = temp;
+//                  }
+//                }
+//                temp = depot.getLatestMeasuredValue(d.getId(), orgId, sensorId,
+//                    false);
+//                if (temp != null) {
+//                  if (latest == null) {
+//                    latest = temp;
+//                  }
+//                  else if (latest.getDate().before(temp.getDate())) {
+//                    latest = temp;
+//                  }
+//                }
+//              }
+//              catch (NoMeasurementException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//              }
+<span class="nc" id="L168">            }</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">            if (earliestDate != null) {</span>
+<span class="nc" id="L170">              info.add(earliestDate);</span>
+            }
+            else {
+              // CAM what is a value we can use for no data?
+<span class="nc" id="L174">              info.add(new Date(0l));</span>
+            }
+<span class="nc bnc" id="L176" title="All 2 branches missed.">            if (latestDate != null) {</span>
+<span class="nc" id="L177">              info.add(latestDate);</span>
+            }
+            else {
+              // CAM what is a value we can use for no data?
+<span class="nc" id="L181">              info.add(new Date(0l));</span>
+            }
+//            if (earliest != null) {
+//              info.add(earliest.getDate());
+//            }
+//            else {
+//              // CAM what is a value we can use for no data?
+//              info.add(new Date(0l));
+//            }
+//            if (latest != null) {
+//              info.add(latest.getDate());
+//            }
+//            else {
+//              // CAM what is a value we can use for no data?
+//              info.add(new Date(0l));
+//            }
+<span class="nc" id="L197">            sensorInfo.put(groupId, info);</span>
+<span class="nc" id="L198">          }</span>
+<span class="nc" id="L199">          endTime = System.nanoTime();</span>
+<span class="nc" id="L200">          diff = endTime - startTime;</span>
+<span class="nc" id="L201">          getLogger().log(Level.SEVERE, &quot;Depository &quot; + d.getName() + &quot;: Getting SensorGroup info took &quot; + (diff / 1E9) + &quot; seconds for &quot; + groupCount + &quot; groups.&quot;);</span>
+<span class="nc" id="L202">        }</span>
+<span class="nc" id="L203">        dataModel.put(&quot;depositories&quot;, depos);</span>
+<span class="nc" id="L204">        dataModel.put(&quot;sensors&quot;, sensors);</span>
+<span class="nc" id="L205">        dataModel.put(&quot;sensorgroups&quot;, sensorGroups);</span>
+<span class="nc" id="L206">        dataModel.put(&quot;depoSensors&quot;, depoSensors);</span>
+<span class="nc" id="L207">        dataModel.put(&quot;depotSensorInfo&quot;, depotSensorInfo);</span>
+<span class="nc" id="L208">        rep = new ClientResource(LocalReference.createClapReference(getClass()</span>
+            .getPackage()) + &quot;/Visualizer.ftl&quot;).get();
+      }
+<span class="nc" id="L211">      catch (IdNotFoundException e) {</span>
+<span class="nc" id="L212">        e.printStackTrace();</span>
+<span class="nc" id="L213">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="nc" id="L214">        return null;</span>
+      }
+<span class="nc" id="L216">      catch (MisMatchedOwnerException e) {</span>
+<span class="nc" id="L217">        e.printStackTrace();</span>
+<span class="nc" id="L218">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="nc" id="L219">        return null;</span>
+<span class="nc" id="L220">      }</span>
+<span class="nc" id="L221">      template = new TemplateRepresentation(rep, dataModel, MediaType.TEXT_HTML);</span>
+<span class="nc" id="L222">      return template;</span>
+    }
+<span class="nc" id="L224">    return null;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

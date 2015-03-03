@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DepositoryAverageValuesServer.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">DepositoryAverageValuesServer.java</span></div><h1>DepositoryAverageValuesServer.java</h1><pre class="source lang-java linenums">/**
+ * DepositoryAverageValuesServer.java This file is part of WattDepot.
+ *
+ * Copyright (C) 2014  Cam Moore
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+package org.wattdepot.server.http.api;
+
+import java.text.ParseException;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.InterpolatedValue;
+import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
+import org.wattdepot.common.exception.NoMeasurementException;
+import org.wattdepot.common.util.DateConvert;
+import org.wattdepot.common.util.tstamp.Tstamp;
+
+/**
+ * DepositoryAverageValuesServer - Base class for handling HTTP API
+ * (&quot;/wattdepot/{org-id}/depository/{depository-id}/values/average/&quot;).
+ * 
+ * @author Cam Moore
+ * 
+ */
+<span class="nc" id="L51">public class DepositoryAverageValuesServer extends WattDepotServerResource {</span>
+  private String depositoryId;
+  private String sensorId;
+  /** The start of the range. */
+  private String start;
+  /** The end of the range. */
+  private String end;
+  /** The interval to calculate the average over. */
+  private String interval;
+  private String dataType;
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.restlet.resource.Resource#doInit()
+   */
+  @Override
+  protected void doInit() throws ResourceException {
+<span class="nc" id="L69">    super.doInit();</span>
+<span class="nc" id="L70">    this.sensorId = getQuery().getValues(Labels.SENSOR);</span>
+<span class="nc" id="L71">    this.start = getQuery().getValues(Labels.START);</span>
+<span class="nc" id="L72">    this.end = getQuery().getValues(Labels.END);</span>
+<span class="nc" id="L73">    this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);</span>
+<span class="nc" id="L74">    this.interval = getQuery().getValues(Labels.INTERVAL);</span>
+<span class="nc" id="L75">    this.dataType = getQuery().getValues(Labels.VALUE_TYPE);</span>
+<span class="nc" id="L76">  }</span>
+
+  /**
+   * retrieve the depository measurement list for a sensor.
+   * 
+   * @return measurement list.
+   */
+  public InterpolatedValueList doRetrieve() {
+<span class="nc" id="L84">    getLogger().log(</span>
+        Level.INFO,
+        &quot;GET /wattdepot/{&quot; + orgId + &quot;}/&quot; + Labels.DEPOSITORY + &quot;/{&quot; + depositoryId + &quot;}/&quot;
+            + Labels.VALUES + &quot;/&quot; + Labels.AVERAGE + &quot;/?&quot; + Labels.SENSOR + &quot;={&quot; + sensorId + &quot;}&amp;&quot;
+            + Labels.START + &quot;={&quot; + start + &quot;}&amp;&quot; + Labels.END + &quot;={&quot; + end + &quot;}&amp;&quot; + Labels.INTERVAL
+            + &quot;={&quot; + interval + &quot;}&amp;&quot; + Labels.VALUE_TYPE + &quot;={&quot; + dataType + &quot;}&quot;);
+<span class="nc bnc" id="L90" title="All 2 branches missed.">    if (isInRole(orgId)) {</span>
+<span class="nc bnc" id="L91" title="All 6 branches missed.">      if (start != null &amp;&amp; end != null &amp;&amp; interval != null) {</span>
+<span class="nc" id="L92">        InterpolatedValueList ret = new InterpolatedValueList();</span>
+        try {
+<span class="nc" id="L94">          Depository depository = depot.getDepository(depositoryId, orgId, true);</span>
+<span class="nc" id="L95">          XMLGregorianCalendar startRange = DateConvert.parseCalString(start);</span>
+<span class="nc" id="L96">          XMLGregorianCalendar endRange = DateConvert.parseCalString(end);</span>
+<span class="nc" id="L97">          int intervalMinutes = Integer.parseInt(interval);</span>
+<span class="nc" id="L98">          List&lt;XMLGregorianCalendar&gt; rangeList = Tstamp.getTimestampList(startRange, endRange,</span>
+              intervalMinutes);
+<span class="nc bnc" id="L100" title="All 2 branches missed.">          if (rangeList != null) {</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">            for (int i = 1; i &lt; rangeList.size(); i++) {</span>
+<span class="nc" id="L102">              Date valueDate = DateConvert.convertXMLCal(rangeList.get(i));</span>
+<span class="nc" id="L103">              XMLGregorianCalendar startInterval = rangeList.get(i - 1);</span>
+<span class="nc" id="L104">              XMLGregorianCalendar endInterval = rangeList.get(i);</span>
+<span class="nc" id="L105">              List&lt;XMLGregorianCalendar&gt; intervalList = Tstamp.getNTimestampList(24, startInterval,</span>
+                  endInterval);
+<span class="nc" id="L107">              DescriptiveStatistics stats = new DescriptiveStatistics();</span>
+<span class="nc" id="L108">              Date previous = null;</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">              for (int j = 0; j &lt; intervalList.size(); j++) {</span>
+<span class="nc" id="L110">                Date timestamp = DateConvert.convertXMLCal(intervalList.get(j));</span>
+<span class="nc" id="L111">                Double value = null;</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">                if (&quot;point&quot;.equals(dataType)) {</span>
+<span class="nc" id="L113">                  value = getValue(depositoryId, orgId, sensorId, timestamp);</span>
+                }
+                else {
+<span class="nc bnc" id="L116" title="All 2 branches missed.">                  if (previous != null) {</span>
+<span class="nc" id="L117">                    value = getValue(depositoryId, orgId, sensorId, previous, timestamp);</span>
+                  }
+<span class="nc" id="L119">                  previous = timestamp;</span>
+                }
+<span class="nc bnc" id="L121" title="All 2 branches missed.">                if (value != null) {</span>
+<span class="nc" id="L122">                  stats.addValue(value);</span>
+                }
+              }
+
+<span class="nc bnc" id="L126" title="All 2 branches missed.">              if (!Double.isNaN(stats.getMean())) {</span>
+<span class="nc" id="L127">                ret.getInterpolatedValues().add(</span>
+                    new InterpolatedValue(sensorId, stats.getMean(), depository
+                        .getMeasurementType(), valueDate));
+              }
+            }
+          }
+        }
+<span class="nc" id="L134">        catch (IdNotFoundException e) {</span>
+          // TODO Auto-generated catch block
+<span class="nc" id="L136">          e.printStackTrace();</span>
+        }
+<span class="nc" id="L138">        catch (ParseException e) {</span>
+          // TODO Auto-generated catch block
+<span class="nc" id="L140">          e.printStackTrace();</span>
+        }
+<span class="nc" id="L142">        catch (DatatypeConfigurationException e) {</span>
+          // TODO Auto-generated catch block
+<span class="nc" id="L144">          e.printStackTrace();</span>
+<span class="nc" id="L145">        }</span>
+<span class="nc" id="L146">        return ret;</span>
+      }
+      else {
+<span class="nc" id="L149">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Missing start and/or end times or interval.&quot;);</span>
+<span class="nc" id="L150">        return null;</span>
+      }
+    }
+    else {
+<span class="nc" id="L154">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Bad credentials.&quot;);</span>
+<span class="nc" id="L155">      return null;</span>
+    }
+  }
+
+  /**
+   * @param depositoryId The depository.
+   * @param orgId The organization.
+   * @param sensorId The sensor.
+   * @param timestamp When to get the value.
+   * @return The value.
+   */
+  private Double getValue(String depositoryId, String orgId, String sensorId, Date timestamp) {
+    try {
+<span class="nc" id="L168">      Sensor sensor = depot.getSensor(sensorId, orgId, false);</span>
+<span class="nc" id="L169">      Double value = 0.0;</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">      if (sensor != null) { // just get sensor value</span>
+        try {
+<span class="nc" id="L172">          value = depot.getValue(depositoryId, orgId, sensor.getId(), timestamp, true);</span>
+        }
+<span class="nc" id="L174">        catch (NoMeasurementException e) {</span>
+<span class="nc" id="L175">          return null;</span>
+<span class="nc" id="L176">        }</span>
+      }
+      else { // check for sensor group
+<span class="nc" id="L179">        SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">        if (group != null) {</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">          for (String s : group.getSensors()) {</span>
+            try {
+<span class="nc" id="L183">              value += depot.getValue(depositoryId, orgId, s, timestamp, true);</span>
+            }
+<span class="nc" id="L185">            catch (NoMeasurementException e) { // NOPMD</span>
+              // add 0 to value so do nothing.
+<span class="nc" id="L187">            }</span>
+<span class="nc" id="L188">          }</span>
+        }
+      }
+<span class="nc" id="L191">      return value;</span>
+    }
+<span class="nc" id="L193">    catch (MisMatchedOwnerException e) {</span>
+<span class="nc" id="L194">      return null;</span>
+    }
+<span class="nc" id="L196">    catch (IdNotFoundException e) {</span>
+<span class="nc" id="L197">      return null;</span>
+    }
+  }
+
+  /**
+   * @param depositoryId The depository.
+   * @param orgId The organization.
+   * @param sensorId The sensor.
+   * @param start The start of the interval.
+   * @param end The end of the interval.
+   * @return The value.
+   */
+  private Double getValue(String depositoryId, String orgId, String sensorId, Date start, Date end) {
+    try {
+<span class="nc" id="L211">      Sensor sensor = depot.getSensor(sensorId, orgId, false);</span>
+<span class="nc" id="L212">      Double value = 0.0;</span>
+<span class="nc bnc" id="L213" title="All 2 branches missed.">      if (sensor != null) { // just get sensor value</span>
+        try {
+<span class="nc" id="L215">          value = depot.getValue(depositoryId, orgId, sensor.getId(), start, end, true);</span>
+        }
+<span class="nc" id="L217">        catch (NoMeasurementException e) {</span>
+<span class="nc" id="L218">          return null;</span>
+<span class="nc" id="L219">        }</span>
+      }
+      else { // check for sensor group
+<span class="nc" id="L222">        SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">        if (group != null) {</span>
+<span class="nc bnc" id="L224" title="All 2 branches missed.">          for (String s : group.getSensors()) {</span>
+            try {
+<span class="nc" id="L226">              value += depot.getValue(depositoryId, orgId, s, start, end, true);</span>
+            }
+<span class="nc" id="L228">            catch (NoMeasurementException e) { // NOPMD</span>
+              // add 0 to value so do nothing.
+<span class="nc" id="L230">            }</span>
+<span class="nc" id="L231">          }</span>
+        }
+      }
+<span class="nc" id="L234">      return value;</span>
+    }
+<span class="nc" id="L236">    catch (MisMatchedOwnerException e) {</span>
+<span class="nc" id="L237">      return null;</span>
+    }
+<span class="nc" id="L239">    catch (IdNotFoundException e) {</span>
+<span class="nc" id="L240">      return null;</span>
+    }
+
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>
