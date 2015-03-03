@@ -27,6 +27,7 @@ import org.wattdepot.common.domainmodel.DepositoryList;
  * @author Cam Moore
  * 
  */
+@SuppressWarnings("PMD.UnusedModifier")
 public interface DepositoriesResource {
 
   /**

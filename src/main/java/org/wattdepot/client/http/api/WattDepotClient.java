@@ -34,12 +34,13 @@ import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.DepositoryList;
-import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
-import org.wattdepot.common.domainmodel.MeasurementPruningDefinitionList;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementList;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinitionList;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.MeasurementTypeList;
 import org.wattdepot.common.domainmodel.Sensor;
@@ -64,6 +65,7 @@ import org.wattdepot.common.http.api.DepositoryPutResource;
 import org.wattdepot.common.http.api.DepositoryResource;
 import org.wattdepot.common.http.api.DepositorySensorsResource;
 import org.wattdepot.common.http.api.DepositoryValueResource;
+import org.wattdepot.common.http.api.DepositoryValuesResource;
 import org.wattdepot.common.http.api.MeasurementPruningDefinitionPutResource;
 import org.wattdepot.common.http.api.MeasurementPruningDefinitionResource;
 import org.wattdepot.common.http.api.MeasurementPruningDefinitionsResource;
@@ -80,6 +82,7 @@ import org.wattdepot.common.http.api.SensorPutResource;
 import org.wattdepot.common.http.api.SensorResource;
 import org.wattdepot.common.http.api.SensorsResource;
 import org.wattdepot.common.util.DateConvert;
+import org.wattdepot.common.util.UnitsHelper;
 import org.wattdepot.common.util.logger.LoggerUtil;
 
 /**
@@ -120,6 +123,8 @@ public class WattDepotClient implements WattDepotInterface {
    */
   public WattDepotClient(String serverUri, String username, String orgId, String password)
       throws BadCredentialException {
+    // ensure that the UnitsHelper class is loaded.
+    new UnitsHelper();
     this.properties = new ClientProperties();
     this.logger = Logger.getLogger("org.wattdepot.client");
     LoggerUtil.setLoggingLevel(this.logger, properties.get(ClientProperties.LOGGING_LEVEL_KEY));
@@ -795,6 +800,11 @@ public class WattDepotClient implements WattDepotInterface {
     catch (DatatypeConfigurationException e) {
       throw new NoMeasurementException(e.getMessage());
     }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
     return null;
   }
 
@@ -821,6 +831,11 @@ public class WattDepotClient implements WattDepotInterface {
     }
     catch (DatatypeConfigurationException e) {
       e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
     }
     return null;
   }
@@ -850,6 +865,11 @@ public class WattDepotClient implements WattDepotInterface {
     catch (DatatypeConfigurationException e) {
       e.printStackTrace();
     }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
     return null;
   }
 
@@ -877,6 +897,11 @@ public class WattDepotClient implements WattDepotInterface {
     catch (DatatypeConfigurationException e) {
       e.printStackTrace();
     }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
     return null;
   }
 
@@ -902,8 +927,16 @@ public class WattDepotClient implements WattDepotInterface {
         return ret.getValue();
       }
     }
+    catch (ResourceException re) {
+      throw new NoMeasurementException(re.getMessage());
+    }
     catch (DatatypeConfigurationException e) {
       throw new NoMeasurementException(e.getMessage());
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
     }
     return null;
   }
@@ -928,8 +961,16 @@ public class WattDepotClient implements WattDepotInterface {
       client.release();
       return ret.getValue();
     }
+    catch (ResourceException re) {
+      throw new  NoMeasurementException(re.getCause());
+    }
     catch (DatatypeConfigurationException e) {
       e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
     }
     return null;
   }
@@ -955,8 +996,16 @@ public class WattDepotClient implements WattDepotInterface {
       client.release();
       return ret.getValue();
     }
+    catch (ResourceException re) {
+      throw new MeasurementGapException(re.getCause());
+    }
     catch (DatatypeConfigurationException e) {
       e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
     }
     return null;
   }
@@ -981,8 +1030,138 @@ public class WattDepotClient implements WattDepotInterface {
       client.release();
       return ret.getValue();
     }
+    catch (ResourceException e1) {
+      throw new MeasurementGapException(e1.getCause());
+    }
     catch (DatatypeConfigurationException e) {
       e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.common.
+   * domainmodel.Depository, org.wattdepot.common.domainmodel.Sensor,
+   * java.util.Date, java.util.Date, java.lang.Integer, java.lang.Boolean)
+   */
+  @Override
+  public InterpolatedValueList getValues(Depository depository, Sensor sensor, Date start, Date end, Integer interval, Boolean usePointValues) throws NoMeasurementException {
+    ClientResource client = null;
+    try {
+      StringBuilder sb = new StringBuilder();
+      sb.append(this.organizationId);
+      sb.append("/");
+      sb.append(Labels.DEPOSITORY);
+      sb.append("/");
+      sb.append(depository.getId());
+      sb.append("/");
+      sb.append(Labels.VALUES);
+      sb.append("/?");
+      sb.append(Labels.SENSOR);
+      sb.append("=");
+      sb.append(sensor.getId());
+      sb.append("&");
+      sb.append(Labels.START);
+      sb.append("=");
+      sb.append(DateConvert.convertDate(start));
+      sb.append("&");
+      sb.append(Labels.END);
+      sb.append("=");
+      sb.append(DateConvert.convertDate(end));
+      sb.append("&");
+      sb.append(Labels.INTERVAL);
+      sb.append("=");
+      sb.append(interval);
+      sb.append("&");
+      sb.append(Labels.VALUE_TYPE);
+      sb.append("=");
+      if (usePointValues) {
+        sb.append(Labels.POINT);
+      }
+      else {
+        sb.append(Labels.DIFFERENCE);
+      }
+      client = makeClient(sb.toString());
+      DepositoryValuesResource resource = client.wrap(DepositoryValuesResource.class);
+      InterpolatedValueList ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.common.
+   * domainmodel.Depository, org.wattdepot.common.domainmodel.SensorGroup,
+   * java.util.Date, java.util.Date, java.lang.Integer, java.lang.Boolean)
+   */
+  @Override
+  public InterpolatedValueList getValues(Depository depository, SensorGroup group, Date start, Date end, Integer interval, Boolean usePointValues) throws NoMeasurementException {
+    ClientResource client = null;
+    try {
+      StringBuilder sb = new StringBuilder();
+      sb.append(this.organizationId);
+      sb.append("/");
+      sb.append(Labels.DEPOSITORY);
+      sb.append("/");
+      sb.append(depository.getId());
+      sb.append("/");
+      sb.append(Labels.VALUES);
+      sb.append("/?");
+      sb.append(Labels.SENSOR);
+      sb.append("=");
+      sb.append(group.getId());
+      sb.append("&");
+      sb.append(Labels.START);
+      sb.append("=");
+      sb.append(DateConvert.convertDate(start));
+      sb.append("&");
+      sb.append(Labels.END);
+      sb.append("=");
+      sb.append(DateConvert.convertDate(end));
+      sb.append("&");
+      sb.append(Labels.INTERVAL);
+      sb.append("=");
+      sb.append(interval);
+      sb.append("&");
+      sb.append(Labels.VALUE_TYPE);
+      sb.append("=");
+      if (usePointValues) {
+        sb.append(Labels.POINT);
+      }
+      else {
+        sb.append(Labels.DIFFERENCE);
+      }
+      client = makeClient(sb.toString());
+      DepositoryValuesResource resource = client.wrap(DepositoryValuesResource.class);
+      InterpolatedValueList ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
     }
     return null;
   }

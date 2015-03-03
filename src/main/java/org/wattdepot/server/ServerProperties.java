@@ -26,6 +26,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
+import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.util.UserHome;
 
 /**
@@ -171,6 +172,7 @@ public class ServerProperties {
     buff.append("Server Properties:").append(cr);
     for (String key : alphaProps.keySet()) {
       if (key.contains("password")) {
+        buff.append(pad).append(key).append(eq).append(get(key)).append(cr);
         buff.append(pad).append(key).append(eq).append("((hidden))").append(cr);
       }
       else {
@@ -237,8 +239,8 @@ public class ServerProperties {
       serverHome = wattDepot3Home + serverSubdir;
     }
     String propFileName = serverHome + "/wattdepot-server.properties";
-    String defaultAdminName = "root";
-    String defaultAdminPassword = "admin";
+    String defaultAdminName = UserInfo.ROOT.getUid();
+    String defaultAdminPassword = UserInfo.ROOT.getPassword();
     String defaultWattDepotImpl = "org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl";
     String defaultPort = "8192";
     String defaultTestPort = "8194";

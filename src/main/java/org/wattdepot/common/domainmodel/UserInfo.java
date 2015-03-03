@@ -70,6 +70,21 @@ public class UserInfo {
         ROOT.setUid(adminName);
       }
     }
+    String adminPassword = System.getenv().get(ServerProperties.ADMIN_USER_PASSWORD_ENV);
+    if (adminPassword != null) {
+      ROOT.setPassword(adminPassword);
+    }
+    else {
+      RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
+      for (String arg : runtimeMxBean.getInputArguments()) {
+        if (arg.startsWith("-Dwattdepot-server.admin.password")) {
+          adminPassword = arg.split("=")[1];
+        }
+      }
+      if (adminPassword != null) {
+        ROOT.setPassword(adminPassword);
+      }
+    }
   }
 
   /**

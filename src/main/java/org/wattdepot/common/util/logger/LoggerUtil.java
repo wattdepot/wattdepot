@@ -77,7 +77,7 @@ public final class LoggerUtil {
       String logName = en.nextElement();
       if ((logName.startsWith("com.noelios")
           || logName.startsWith("org.restlet") || "global".equals(logName))
-          && (logManager.getLogger(logName) != null)) {
+          && logManager.getLogger(logName) != null) {
         // First, get rid of current Handlers
         Logger logger = logManager.getLogger(logName);
         logger.setFilter(new HTTPClientHelperFilter());
@@ -134,7 +134,7 @@ public final class LoggerUtil {
       if ((logName.startsWith("com.noelios")
           || logName.startsWith("org.restlet") || "global".equals(logName) || logName
             .startsWith("org.hibernate"))
-          && (logManager.getLogger(logName) != null)) {
+          && logManager.getLogger(logName) != null) {
         Logger logger = logManager.getLogger(logName);
         logger = logger.getParent();
         Handler[] handlers = logger.getHandlers();
@@ -177,6 +177,7 @@ public final class LoggerUtil {
       Logger logger = logManager.getLogger(logName);
       Logger parent = logger.getParent();
       System.out.print("logger name = '" + logName + "'");
+      System.out.print(" level = '" + logger.getLevel() + "'");
       if (parent != null) {
         System.out.print(" parent = '" + parent.getName() + "'");
       }

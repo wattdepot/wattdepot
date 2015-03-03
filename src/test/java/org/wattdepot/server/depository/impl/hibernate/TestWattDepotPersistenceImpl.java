@@ -26,10 +26,7 @@ import static org.junit.Assert.fail;
 import java.util.HashSet;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
@@ -83,16 +80,6 @@ public class TestWattDepotPersistenceImpl {
     testUser.setOrganizationId(testOrg.getId());
     // prime the MeasurementTypes
     UnitsHelper.quantities.containsKey("W");
-  }
-
-  /**
-   * Sets up the test case by ensuring we have test user, password and
-   * organization.
-   * 
-   * @throws UniqueIdException if there is a big problem with the database.
-   */
-  @Before
-  public void setUp() throws UniqueIdException {
     // 1. define the organization w/o any users.
     try {
       impl.getOrganization(testOrg.getId(), true);
@@ -105,6 +92,9 @@ public class TestWattDepotPersistenceImpl {
         e1.printStackTrace();
       }
       catch (IdNotFoundException e1) {
+        e1.printStackTrace();
+      }
+      catch (UniqueIdException e1) {
         e1.printStackTrace();
       }
     }
@@ -122,6 +112,9 @@ public class TestWattDepotPersistenceImpl {
         // Shouldn't happen!
         e1.printStackTrace();
       }
+      catch (UniqueIdException e1) {
+        e1.printStackTrace();
+      }
     }
     // 3. update the organization
     try {
@@ -136,8 +129,8 @@ public class TestWattDepotPersistenceImpl {
   /**
    * Cleans up the test user, password, and organization.
    */
-  @After
-  public void tearDown() {
+  @AfterClass
+  public static void tearDown() {
     Organization testO;
     try {
       testO = impl.getOrganization(testOrg.getId(), true);
@@ -150,6 +143,12 @@ public class TestWattDepotPersistenceImpl {
     }
     try {
       impl.deleteOrganization(InstanceFactory.getUserInfo2().getOrganizationId());
+    }
+    catch (IdNotFoundException e1) { // NOPMD
+      // not a problem
+    }
+    try {
+      impl.deleteOrganization(InstanceFactory.getUserInfo3().getOrganizationId());
     }
     catch (IdNotFoundException e1) { // NOPMD
       // not a problem
@@ -360,7 +359,7 @@ public class TestWattDepotPersistenceImpl {
     int numDepository = list.size();
     assertTrue(numDepository >= 0);
     // Create a new instance
-    Depository dep = InstanceFactory.getDepository();
+    Depository dep = InstanceFactory.getDepository2();
     try {
       impl.defineDepository(dep.getId(), dep.getName(), dep.getMeasurementType(),
           dep.getOrganizationId());
@@ -643,8 +642,13 @@ public class TestWattDepotPersistenceImpl {
     Depository dep = InstanceFactory.getDepository();
     String sensorId = null;
     try {
-      impl.defineDepository(dep.getId(), dep.getName(), dep.getMeasurementType(),
-          dep.getOrganizationId());
+      try {
+        impl.defineDepository(dep.getId(), dep.getName(), dep.getMeasurementType(),
+            dep.getOrganizationId());
+      }
+      catch (UniqueIdException uie) {
+        // it is already in.
+      }
       Depository d = impl.getDepository(dep.getId(), dep.getOrganizationId(), true);
       MeasurementType type = d.getMeasurementType();
       assertTrue(type.equals(InstanceFactory.getMeasurementType()));
@@ -776,7 +780,7 @@ public class TestWattDepotPersistenceImpl {
         assertTrue(earliest.getSensorId().equals(m1.getSensorId()));
         assertTrue(earliest.getValue().equals(m1.getValue()));
         assertTrue(earliest.getMeasurementType().getUnits().equals(m1.getMeasurementType()));
-        assertTrue(earliest.getDate().equals(m1.getDate()));
+        assertTrue(earliest.getStart().equals(m1.getDate()));
         InterpolatedValue latest = impl.getLatestMeasuredValue(dep.getId(),
             dep.getOrganizationId(), sensorId, true);
         assertNotNull(latest);
@@ -901,7 +905,7 @@ public class TestWattDepotPersistenceImpl {
     List<Organization> list = impl.getOrganizations();
     int numOrgs = list.size();
     assertTrue(numOrgs >= 0);
-    Organization org = InstanceFactory.getOrganization2();
+    Organization org = InstanceFactory.getOrganization3();
     try {
       try {
         impl.defineOrganization(org.getId(), org.getName(), org.getUsers());

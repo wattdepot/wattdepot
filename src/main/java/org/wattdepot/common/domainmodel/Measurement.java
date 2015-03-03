@@ -129,7 +129,7 @@ public class Measurement {
     if (!sensorId.equals(value.getSensorId())) {
       return false;
     }
-    if (!timestamp.equals(value.getDate())) {
+    if (!timestamp.equals(value.getStart())) {
       return false;
     }
     if (Math.abs(this.value - value.getValue()) > 0.0001) {

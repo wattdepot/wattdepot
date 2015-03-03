@@ -4,7 +4,7 @@
   <groupId>org.wattdepot</groupId>
   <artifactId>wattdepot</artifactId>
   <name>WattDepot</name>
-  <version>3.0.0</version>
+  <version>3.0.1</version>
   <description>WattDepot is an open source, RESTful web service that collects electricity data (such as current power utilization or cumulative power utilization) from meters and stores it in a database.</description>
   <url>https://github.com/wattdepot/wattdepot/</url>
   <prerequisites>
@@ -12,8 +12,28 @@
   </prerequisites>
   <issueManagement>
     <system>GitHub Issues</system>
-    <url>https://github.com/csdl/wattdepot/issues</url>
+    <url>https://github.com/wattdepot/wattdepot/issues</url>
   </issueManagement>
+  <licenses>
+    <license>
+      <name>GPL v3.</name>
+      <comments>This program is free software: you can redistribute it and/or modify
+                it under the terms of the GNU General Public License as published by
+                the Free Software Foundation, either version 3 of the License, or
+                (at your option) any later version.
+                This program is distributed in the hope that it will be useful,
+                but WITHOUT ANY WARRANTY; without even the implied warranty of
+                MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+                GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License
+                along with this program.  If not, see http://www.gnu.org/licenses/.</comments>
+    </license>
+  </licenses>
+  <scm>
+    <connection>scm:git:git@github.com:wattdepot/wattdepot.git</connection>
+    <developerConnection>scm:git:git@github.com:wattdepot/wattdepot.git</developerConnection>
+    <url>git@github.com:wattdepot/wattdepot.git</url>
+  </scm>
   <organization>
     <name>Collaborative Software Development Laboratory</name>
     <url>http://csdl.ics.hawaii.edu</url>
@@ -51,7 +71,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.1</version>
+        <version>${compiler.plugin.version}</version>
         <configuration>
           <source>1.7</source>
           <target>1.7</target>
@@ -101,6 +121,7 @@
         <version>${surefire.plugin.version}</version>
         <configuration>
           <argLine>${surefireArgLine}</argLine>
+          <skipTests>${skipTests}</skipTests>
           <excludes>
             <exclude>**/TestDb*.java</exclude>
             <exclude>**/TestMeasurementGarbageCollector.java</exclude>
@@ -121,6 +142,7 @@
         </executions>
         <configuration>
           <excludeFilterFile>${findbugs.filter.file}</excludeFilterFile>
+          <skip>${skip.findbugs}</skip>
         </configuration>
       </plugin>
       <plugin>
@@ -136,6 +158,7 @@
         </executions>
         <configuration>
           <configLocation>${checkstyle.filter.file}</configLocation>
+          <skip>${skip.checkstyle}</skip>
         </configuration>
       </plugin>
       <plugin>
@@ -154,6 +177,7 @@
           <linkXref>false</linkXref>
           <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
           <minimumTokens>100</minimumTokens>
+          <skip>${skip.pmd}</skip>
         </configuration>
       </plugin>
       <plugin>
@@ -217,6 +241,30 @@
               <artifactId>maven-javadoc-plugin</artifactId>
               <version>${javadoc.plugin.version}</version>
             </plugin>
+            <plugin>
+              <groupId>org.jacoco</groupId>
+              <artifactId>jacoco-maven-plugin</artifactId>
+              <version>0.6.3.201306030806</version>
+              <configuration>
+                <propertyName>surefireArgLine</propertyName>
+                <dataFile>${jacoco.ut.execution.data.file}</dataFile>
+                <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+              </configuration>
+            </plugin>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-project-info-reports-plugin</artifactId>
+              <version>2.7</version>
+              <reportSets>
+                <reportSet>
+                  <reports>
+                    <report>issue-tracking</report>
+                    <report>license</report>
+                    <report>scm</report>
+                  </reports>
+                </reportSet>
+              </reportSets>
+            </plugin>
           </reportPlugins>
         </configuration>
       </plugin>
@@ -241,7 +289,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>2.1</version>
+        <version>${shade.plugin.version}</version>
         <executions>
           <execution>
             <phase>package</phase>
@@ -255,6 +303,7 @@
             <filter>
               <artifact>*:*</artifact>
               <excludes>
+                <exclude>LICENSE</exclude>
                 <exclude>META-INF/*.SF</exclude>
                 <exclude>META-INF/*.DSA</exclude>
                 <exclude>META-INF/*.RSA</exclude>
@@ -269,7 +318,27 @@
                 <Build-Number>${project.version}</Build-Number>
               </manifestEntries>
             </transformer>
+            <transformer />
+            <transformer>
+              <addHeader>false</addHeader>
+            </transformer>
           </transformers>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <descriptor>src/assembly/assemble.xml</descriptor>
+          <finalName>WattDepot-${project.version}</finalName>
+          <skipAssembly>${skip.assembly}</skipAssembly>
         </configuration>
       </plugin>
       <plugin>
@@ -296,6 +365,48 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>dev</id>
+      <properties>
+        <skipTests>false</skipTests>
+        <skip.pmd>false</skip.pmd>
+        <skip.findbugs>false</skip.findbugs>
+        <skip.checkstyle>false</skip.checkstyle>
+        <skip.assembly>true</skip.assembly>
+      </properties>
+    </profile>
+    <profile>
+      <id>rel</id>
+      <properties>
+        <skipTests>false</skipTests>
+        <skip.pmd>false</skip.pmd>
+        <skip.findbugs>false</skip.findbugs>
+        <skip.checkstyle>false</skip.checkstyle>
+        <skip.assembly>false</skip.assembly>
+      </properties>
+    </profile>
+    <profile>
+      <id>js</id>
+      <properties>
+        <skipTests>true</skipTests>
+        <skip.pmd>true</skip.pmd>
+        <skip.findbugs>true</skip.findbugs>
+        <skip.checkstyle>true</skip.checkstyle>
+        <skip.assembly>true</skip.assembly>
+      </properties>
+    </profile>
+    <profile>
+      <id>heroku</id>
+      <properties>
+        <skipTests>true</skipTests>
+        <skip.pmd>true</skip.pmd>
+        <skip.findbugs>true</skip.findbugs>
+        <skip.checkstyle>true</skip.checkstyle>
+        <skip.assembly>true</skip.assembly>
+      </properties>
+    </profile>
+  </profiles>
   <repositories>
     <repository>
       <snapshots>
@@ -336,7 +447,7 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>4.12</version>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -345,62 +456,82 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <dependency>
+      <groupId>org.seleniumhq.selenium.client-drivers</groupId>
+      <artifactId>selenium-java-client-driver</artifactId>
+      <version>1.0.1</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <reporting>
     <plugins>
       <plugin>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.7</version>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-report-plugin</artifactId>
+        <version>${surefire.report.plugin.version}</version>
+      </plugin>
+      <plugin>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>2.3</version>
+        <version>${jxr.version}</version>
       </plugin>
     </plugins>
   </reporting>
   <properties>
-    <commons-math.version>3.2</commons-math.version>
-    <appassembler.plugin.version>1.3.1</appassembler.plugin.version>
-    <junit.version>4.11</junit.version>
+    <commons-math.version>3.3</commons-math.version>
+    <appassembler.plugin.version>1.9</appassembler.plugin.version>
+    <junit.version>4.12</junit.version>
     <targetJdk>1.7</targetJdk>
-    <dependency.plugin.version>2.8</dependency.plugin.version>
-    <checkstyle.plugin.version>2.10</checkstyle.plugin.version>
+    <dependency.plugin.version>2.9</dependency.plugin.version>
+    <checkstyle.plugin.version>2.13</checkstyle.plugin.version>
     <assembly.plugin.version>2.4</assembly.plugin.version>
-    <findbugs.plugin.version>2.5.3</findbugs.plugin.version>
-    <javadoc.plugin.version>2.9.1</javadoc.plugin.version>
+    <selenium.version>1.0.1</selenium.version>
+    <findbugs.plugin.version>3.0.0</findbugs.plugin.version>
+    <javadoc.plugin.version>2.10.1</javadoc.plugin.version>
     <checkstyle.filter.file>${config.dir}/checkstyle.xml</checkstyle.filter.file>
+    <compiler.plugin.version>3.2</compiler.plugin.version>
+    <jxr.version>2.5</jxr.version>
     <jackson.version>1.9.11</jackson.version>
     <commons-cli.version>1.2</commons-cli.version>
-    <jasypt.version>1.9.1</jasypt.version>
+    <shade.plugin.version>2.3</shade.plugin.version>
+    <jasypt.version>1.9.2</jasypt.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jcs.version>1.3</jcs.version>
-    <h2.version>1.4.178</h2.version>
+    <surefire.report.plugin.version>2.18</surefire.report.plugin.version>
+    <h2.version>1.4.182</h2.version>
     <pool.version>1.6</pool.version>
     <postgres.version>9.1-901-1.jdbc4</postgres.version>
-    <surefire.plugin.version>2.15</surefire.plugin.version>
-    <jacoco.version>0.6.3.201306030806</jacoco.version>
+    <surefire.plugin.version>2.18</surefire.plugin.version>
+    <jacoco.version>0.7.2.201409121644</jacoco.version>
     <dbcp.version>1.4</dbcp.version>
-    <icu4j.version>53.1</icu4j.version>
+    <icu4j.version>54.1.1</icu4j.version>
     <hibernate-annotations.version>3.3.1.GA</hibernate-annotations.version>
     <opencsv.version>2.3</opencsv.version>
     <jscience.version>4.3.1</jscience.version>
     <restlet.version>2.1.2</restlet.version>
     <config.dir>${basedir}</config.dir>
-    <site.plugin.version>3.3</site.plugin.version>
-    <rabbitmq.version>3.3.1</rabbitmq.version>
+    <site.plugin.version>3.4</site.plugin.version>
+    <rabbitmq.version>3.4.2</rabbitmq.version>
     <tomcat.jdbc.version>7.0.42</tomcat.jdbc.version>
     <google-visualization-java.version>1.1.1</google-visualization-java.version>
     <commons-validator.version>1.4.0</commons-validator.version>
     <hibernate.version>3.2.6.ga</hibernate.version>
     <antrun.plugin.version>1.7</antrun.plugin.version>
     <concurrent.version>1.0</concurrent.version>
-    <google-guava.version>17.0</google-guava.version>
-    <json.version>20140107</json.version>
-    <commons-logging.version>1.1.3</commons-logging.version>
-    <pmd.plugin.version>2.6</pmd.plugin.version>
+    <google-guava.version>18.0</google-guava.version>
+    <json.version>20141113</json.version>
+    <commons-logging.version>1.2</commons-logging.version>
+    <pmd.plugin.version>3.3</pmd.plugin.version>
+    <selenium.plugin.version>2.3</selenium.plugin.version>
     <httpunit.version>1.7</httpunit.version>
     <commons-lang.version>2.6</commons-lang.version>
     <findbugs.filter.file>${config.dir}/findbugs.exclude.xml</findbugs.filter.file>
-    <jacoco.ut.execution.data.file>${project.build.directory}/coverage-reports/jacoco-ut.exec</jacoco.ut.execution.data.file>
+    <jacoco.ut.execution.data.file>${project.build.directory}/jacoco-ut.exec</jacoco.ut.execution.data.file>
     <modbus-jamod.version>1.2</modbus-jamod.version>
     <oro.version>2.0.8</oro.version>
-    <hibernate-core.version>4.2.0.Final</hibernate-core.version>
+    <hibernate-core.version>4.3.7.Final</hibernate-core.version>
   </properties>
 </project>
 

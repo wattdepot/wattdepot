@@ -29,6 +29,7 @@ import org.wattdepot.common.domainmodel.Depository;
  * @author Cam Moore
  * 
  */
+@SuppressWarnings("PMD.UnusedModifier")
 public interface DepositoryResource {
   /**
    * Defines GET /wattdepot/{org-id}/depository/{depository-id} API call.

@@ -197,9 +197,9 @@ public class PutThroughput extends TimerTask {
     else {
       this.timer.cancel();
       this.numChecks++;
-      this.averagePutTime.addValue((sampleTask.getAverageTime() / 1E9));
-      this.averageMinPutTime.addValue((sampleTask.getMinTime() / 1E9));
-      this.averageMaxPutTime.addValue((sampleTask.getMaxTime() / 1E9));
+      this.averagePutTime.addValue(sampleTask.getAverageTime() / 1E9);
+      this.averageMinPutTime.addValue(sampleTask.getMinTime() / 1E9);
+      this.averageMaxPutTime.addValue(sampleTask.getMaxTime() / 1E9);
       this.calculatedMeasPerSec = calculatePutRate(averagePutTime);
       this.measPerSec = calculatedMeasPerSec;
       // System.out.println("Min put time = " + (sampleTask.getMinPutTime() /

@@ -1,5 +1,5 @@
 /**
-xs * WattDepotImpl.java This file is part of WattDepot.
+ * WattDepotImpl.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -74,6 +74,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   private boolean timingp;
   private Logger timingLogger;
   private String padding = "";
+  private PersistenceCache cache;
 
   /**
    * Creates a new WattDepotImpl instance with the given ServerProperties.
@@ -82,6 +83,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    */
   public WattDepotPersistenceImpl(ServerProperties properties) {
     super();
+    this.cache = new PersistenceCache();
     // try {
     // Session validate = Manager.getValidateFactory(properties).openSession();
     // validate.close();
@@ -248,7 +250,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     if (checkSession && getSessionClose() != getSessionOpen()) {
       throw new RuntimeException("opens and closed mismatched.");
     }
+
   }
+
 
   /*
    * (non-Javadoc)
@@ -327,10 +331,12 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     OrganizationImpl org = retrieveOrganization(session, orgId);
     MeasurementTypeImpl type = retrieveMeasurementType(session, measurementType.getId());
     DepositoryImpl impl = new DepositoryImpl(id, name, type, org);
+    d = impl.toDepository();
     session.save(impl);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
+    cache.putDepository(d);
     return d;
   }
 
@@ -424,6 +430,14 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public Organization defineOrganization(String id, String name, Set<String> users)
       throws UniqueIdException, BadSlugException, IdNotFoundException {
+    Long startTime = 0l;
+    Long endTime = 0l;
+    Long diff = 0l;
+    if (timingp) {
+      timingLogger.log(Level.SEVERE, padding + "Start defineOrganizations()");
+      padding += "  ";
+      startTime = System.nanoTime();
+    }
     Organization ret = null;
     if (!Slug.validateSlug(id)) {
       throw new BadSlugException(id + " is not a valid slug.");
@@ -454,6 +468,14 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.getTransaction().commit();
     session.close();
     sessionClose++;
+    cache.putOrganization(ret);
+    if (timingp) {
+      endTime = System.nanoTime();
+      diff = endTime - startTime;
+      padding = padding.substring(0, padding.length() - 2);
+      timingLogger
+          .log(Level.SEVERE, padding + "defineOrganization() took " + (diff / 1E9) + " secs.");
+    }
     return ret;
   }
 
@@ -492,10 +514,12 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       prop.add(new PropertyImpl(p));
     }
     SensorImpl impl = new SensorImpl(id, name, uri, model, prop, org);
+    s = impl.toSensor();
     storeSensor(session, impl);
     session.getTransaction().commit();
     session.close();
     sessionClose++;
+    cache.putSensor(s);
     return s;
   }
 
@@ -651,7 +675,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public void deleteDepository(String id, String orgId) throws IdNotFoundException,
       MisMatchedOwnerException {
-    getDepository(id, orgId, true);
+    Depository d = getDepository(id, orgId, true);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
@@ -663,6 +687,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.getTransaction().commit();
     session.close();
     sessionClose++;
+    if (d != null) {
+      cache.deleteDepository(d);
+    }
   }
 
   /*
@@ -769,7 +796,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    */
   @Override
   public void deleteOrganization(String id) throws IdNotFoundException {
-    getOrganization(id, true);
+    Organization o = getOrganization(id, true);
     // Remove Organization owned CollectorProcessDefinitions
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
@@ -871,6 +898,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.getTransaction().commit();
     session.close();
     sessionClose++;
+    if (o != null) {
+      cache.deleteOrganization(o);
+    }
   }
 
   /*
@@ -882,7 +912,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public void deleteSensor(String id, String orgId) throws IdNotFoundException,
       MisMatchedOwnerException {
-    getSensor(id, orgId, true);
+    Sensor s = getSensor(id, orgId, true);
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
@@ -894,6 +924,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.getTransaction().commit();
     session.close();
     sessionClose++;
+    if (s != null) {
+      cache.deleteSensor(s);
+    }
   }
 
   /*
@@ -1149,7 +1182,13 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     if (check) {
       getOrganization(orgId, check);
     }
-    Depository ret = getDepositoryNoCheck(id, orgId);
+    Depository ret = cache.getDepository(id, orgId);
+    if (ret == null) {
+      ret = getDepositoryNoCheck(id, orgId);
+      if (ret != null) {
+        cache.putDepository(ret);
+      }
+    }
     if (check && ret == null) {
       throw new IdNotFoundException(id + " is not a defined Depository's id.");
     }
@@ -1256,7 +1295,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       getSensor(sensorId, orgId, check);
     }
     InterpolatedValue value = getEarliestMeasuredValueNoCheck(depotId, orgId, sensorId);
-    if (check && value == null) {
+    if (value == null) {
       throw new NoMeasurementException("No " + depotId + " measurements for " + sensorId);
     }
     if (timingp) {
@@ -1455,7 +1494,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       getSensor(sensorId, orgId, check);
     }
     InterpolatedValue value = getLatestMeasuredValueNoCheck(depotId, orgId, sensorId);
-    if (check && value == null) {
+    if (value == null) {
       throw new NoMeasurementException("No " + depotId + " measurements for " + sensorId);
     }
     if (timingp) {
@@ -2035,19 +2074,22 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       timingLogger.log(Level.SEVERE, padding + "Start getOrganization(" + id + ")");
       startTime = System.nanoTime();
     }
-    Organization ret = null;
-    Session session = Manager.getFactory(getServerProperties()).openSession();
-    sessionOpen++;
-    session.beginTransaction();
-    OrganizationImpl org = retrieveOrganization(session, id);
-    if (org != null) {
-      ret = org.toOrganization();
-    }
-    session.getTransaction().commit();
-    session.close();
-    sessionClose++;
+    Organization ret = cache.getOrganization(id);
     if (ret == null) {
-      throw new IdNotFoundException(id + " isn't a defined Organization's id.");
+      Session session = Manager.getFactory(getServerProperties()).openSession();
+      sessionOpen++;
+      session.beginTransaction();
+      OrganizationImpl org = retrieveOrganization(session, id);
+      if (org != null) {
+        ret = org.toOrganization();
+      }
+      session.getTransaction().commit();
+      session.close();
+      sessionClose++;
+      if (ret == null) {
+        throw new IdNotFoundException(id + " isn't a defined Organization's id.");
+      }
+      cache.putOrganization(ret);
     }
     if (timingp) {
       endTime = System.nanoTime();
@@ -2191,7 +2233,13 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     if (check) {
       getOrganization(orgId, check);
     }
-    Sensor ret = getSensorNoCheck(id, orgId);
+    Sensor ret = cache.getSensor(id, orgId);
+    if (ret == null) {
+      ret = getSensorNoCheck(id, orgId);
+      if (ret != null) {
+        cache.putSensor(ret);
+      }
+    }
     if (check && ret == null) {
       throw new IdNotFoundException(id + " is not a defined Sensor id.");
     }
@@ -2916,7 +2964,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       Long t3 = timestamp.getTime();
       Long toDate = t3 - t1;
       Double slope = deltaV / deltaT;
-      ret = val1 + (slope * toDate);
+      ret = val1 + slope * toDate;
     }
     session.getTransaction().commit();
     session.close();
@@ -3015,7 +3063,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       if (justBefore == null) {
         session.getTransaction().commit();
         session.close();
-        throw new NoMeasurementException("Cannot find measurement before " + timestamp);
+        throw new NoMeasurementException("Cannot find measurement before " + timestamp + " in " + depot.getName() + " for " + sensor.getName());
       }
       MeasurementImpl justAfter = null;
       for (MeasurementImpl a : after) {
@@ -3031,7 +3079,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       if (justAfter == null) {
         session.getTransaction().commit();
         session.close();
-        throw new NoMeasurementException("Cannot find measurement after " + timestamp);
+        throw new NoMeasurementException("Cannot find measurement after " + timestamp + " in " + depot.getName() + " for " + sensor.getName());
       }
       Double val1 = justBefore.getValue();
       Double val2 = justAfter.getValue();
@@ -3043,12 +3091,12 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
         session.getTransaction().commit();
         session.close();
         throw new MeasurementGapException("Gap of " + (deltaT / 1000) + "s is longer than "
-            + gapSeconds);
+            + gapSeconds + " for " + sensor.getName() + " in " + depot.getName());
       }
       Long t3 = timestamp.getTime();
       Long toDate = t3 - t1;
       Double slope = deltaV / deltaT;
-      ret = val1 + (slope * toDate);
+      ret = val1 + slope * toDate;
     }
     session.getTransaction().commit();
     session.close();
@@ -3142,6 +3190,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     impl.setTimestamp(meas.getDate());
     impl.setValue(meas.getValue());
     impl.setUnits(meas.getMeasurementType().toString());
+//    InterpolatedValue iv = new InterpolatedValue(sensor.getId(), meas.getValue(), d.getMeasurementType(), meas.getDate());
+//    depotSensorInfo.update(orgId, depotId, meas.getSensorId(), iv);
     session.saveOrUpdate(impl);
     session.getTransaction().commit();
     session.close();
@@ -3630,6 +3680,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public MeasurementPruningDefinition updateMeasurementPruningDefinition(
       MeasurementPruningDefinition gcd) throws IdNotFoundException {
+    getMeasurementPruningDefinition(gcd.getId(), gcd.getOrganizationId(), true);
+    getDepository(gcd.getDepositoryId(), gcd.getOrganizationId(), true);
+    MeasurementPruningDefinition ret = null;
     Session session = Manager.getFactory(getServerProperties()).openSession();
     sessionOpen++;
     session.beginTransaction();
@@ -3645,10 +3698,11 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     impl.setLastCompleted(gcd.getLastCompleted());
     impl.setNumMeasurementsCollected(gcd.getNumMeasurementsCollected());
     session.saveOrUpdate(impl);
+    ret = impl.toMPD();
     session.getTransaction().commit();
     session.close();
     sessionClose++;
-    return null;
+    return ret;
   }
 
   /*
@@ -3705,6 +3759,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.getTransaction().commit();
     session.close();
     sessionClose++;
+    cache.putOrganization(ret);
     return ret;
   }
 
@@ -3738,6 +3793,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.getTransaction().commit();
     session.close();
     sessionClose++;
+    cache.putSensor(ret);
     return ret;
   }
 

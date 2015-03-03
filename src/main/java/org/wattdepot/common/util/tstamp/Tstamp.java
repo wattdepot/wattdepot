@@ -279,7 +279,7 @@ public final class Tstamp {
     long startMillis = start.toGregorianCalendar().getTimeInMillis();
     long endMillis = end.toGregorianCalendar().getTimeInMillis();
     long tstampMillis = tstamp.toGregorianCalendar().getTimeInMillis();
-    return ((tstampMillis >= startMillis) && (tstampMillis <= endMillis));
+    return tstampMillis >= startMillis && tstampMillis <= endMillis;
   }
 
   /**
@@ -292,7 +292,7 @@ public final class Tstamp {
   public static boolean greaterThan(XMLGregorianCalendar time1, XMLGregorianCalendar time2) {
     long time1Millis = time1.toGregorianCalendar().getTimeInMillis();
     long time2Millis = time2.toGregorianCalendar().getTimeInMillis();
-    return (time1Millis > time2Millis);
+    return time1Millis > time2Millis;
   }
 
   /**
@@ -353,7 +353,7 @@ public final class Tstamp {
   public static boolean lessThan(XMLGregorianCalendar time1, XMLGregorianCalendar time2) {
     long time1Millis = time1.toGregorianCalendar().getTimeInMillis();
     long time2Millis = time2.toGregorianCalendar().getTimeInMillis();
-    return (time1Millis < time2Millis);
+    return time1Millis < time2Millis;
   }
 
   /**
@@ -366,7 +366,7 @@ public final class Tstamp {
   public static boolean equal(XMLGregorianCalendar time1, XMLGregorianCalendar time2) {
     long millis1 = time1.toGregorianCalendar().getTimeInMillis();
     long millis2 = time2.toGregorianCalendar().getTimeInMillis();
-    return (millis1 == millis2);
+    return millis1 == millis2;
   }
 
   /**
@@ -391,11 +391,12 @@ public final class Tstamp {
    */
   public static boolean isTodayOrLater(XMLGregorianCalendar timestamp) {
     XMLGregorianCalendar today = Tstamp.makeTimestamp();
-    boolean isToday = (today.getYear() == timestamp.getYear())
-        && (today.getMonth() == timestamp.getMonth()) && (today.getDay() == timestamp.getDay());
+    boolean isToday = today.getYear() == timestamp.getYear()
+        && today.getMonth() == timestamp.getMonth()
+        && today.getDay() == timestamp.getDay();
     boolean afterToday = today.toGregorianCalendar().getTimeInMillis() < timestamp
         .toGregorianCalendar().getTimeInMillis();
-    return (isToday || afterToday);
+    return isToday || afterToday;
   }
 
   /**
@@ -410,12 +411,12 @@ public final class Tstamp {
   public static boolean isYesterdayOrLater(XMLGregorianCalendar timestamp) {
     XMLGregorianCalendar yesterday = Tstamp.incrementDays(Tstamp.makeTimestamp(), -1);
 
-    boolean isYesterday = (yesterday.getYear() == timestamp.getYear())
-        && (yesterday.getMonth() == timestamp.getMonth())
-        && (yesterday.getDay() == timestamp.getDay());
+    boolean isYesterday = yesterday.getYear() == timestamp.getYear()
+        && yesterday.getMonth() == timestamp.getMonth()
+        && yesterday.getDay() == timestamp.getDay();
     boolean afterYesterday = yesterday.toGregorianCalendar().getTimeInMillis() < timestamp
         .toGregorianCalendar().getTimeInMillis();
-    return (isYesterday || afterYesterday);
+    return isYesterday || afterYesterday;
   }
 
   /**

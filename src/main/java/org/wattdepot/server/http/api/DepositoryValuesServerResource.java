@@ -18,7 +18,7 @@
  */
 package org.wattdepot.server.http.api;
 
-import org.wattdepot.common.domainmodel.MeasuredValueList;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.http.api.DepositoryValuesResource;
 
 
@@ -37,7 +37,7 @@ public class DepositoryValuesServerResource extends DepositoryValuesServer imple
    * @see org.wattdepot.restlet.DepositoryValueResource#retrieve()
    */
   @Override
-  public MeasuredValueList retrieve() {
+  public InterpolatedValueList retrieve() {
     return doRetrieve();
   }
 }

@@ -19,7 +19,7 @@
 package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.MeasuredValueList;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
 
 /**
  * DepositoryMinimumValuesResource - HTTP Interface for getting a
@@ -29,6 +29,7 @@ import org.wattdepot.common.domainmodel.MeasuredValueList;
  * @author Cam Moore
  * 
  */
+@SuppressWarnings("PMD.UnusedModifier")
 public interface DepositoryMinimumValuesResource {
 
   /**
@@ -41,6 +42,6 @@ public interface DepositoryMinimumValuesResource {
    */
   @Get("json")
   // Use JSON as transport encoding.
-  public MeasuredValueList retrieve();
+  public InterpolatedValueList retrieve();
 
 }

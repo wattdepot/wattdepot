@@ -81,78 +81,124 @@ public class OrgVisualizerServerResource extends WattDepotServerResource {
           depotSensorInfo.put(d.getId(), sensorInfo);
           List<Sensor> sensorList = new ArrayList<Sensor>();
           depoSensors.put(d.getId(), sensorList);
+          long startTime = System.nanoTime();
           for (String sensorId : depot.listSensors(d.getId(), orgId, false)) {
-            // startTime = System.nanoTime();
+//            long startTime2 = System.nanoTime();
             Sensor s = depot.getSensor(sensorId, orgId, false);
-            // endTime = System.nanoTime();
-            // diff = endTime - startTime;
-            // getLogger().log(Level.INFO,
-            // "getSensor took " + (diff / 1E9) + " seconds");
+//            long endTime2 = System.nanoTime();
+//            long diff2 = endTime2 - startTime2;
+//            getLogger().log(Level.SEVERE, "getSensor(" + sensorId + ") took " + (diff2 / 1E9) + " seconds");
             sensorList.add(s);
             try {
+//              startTime2 = System.nanoTime();
               InterpolatedValue earliest = depot.getEarliestMeasuredValue(
                   d.getId(), orgId, sensorId, false);
               InterpolatedValue latest = depot.getLatestMeasuredValue(
                   d.getId(), orgId, sensorId, false);
               List<Date> info = new ArrayList<Date>();
-              info.add(earliest.getDate());
-              info.add(latest.getDate());
+              info.add(earliest.getStart());
+              info.add(latest.getEnd());
               sensorInfo.put(sensorId, info);
+//              endTime2 = System.nanoTime();
+//              diff2 = endTime2 - startTime2;
+//              getLogger().log(Level.SEVERE, "Sensor earliest and latest for " + sensorId + " took " + (diff2 / 1E9) + " seconds");
             }
             catch (NoMeasurementException e) {
               // TODO Auto-generated catch block
               e.printStackTrace();
             }
           }
+          long endTime = System.nanoTime();
+          long diff = endTime - startTime;
+          getLogger().log(Level.SEVERE, "Depository " + d.getName() + ": Getting Sensor info took " + (diff / 1E9) + " seconds for " + sensorList.size() + " sensors.");
+          startTime = System.nanoTime();
+          int groupCount = 0;
           for (String groupId : depot.getSensorGroupIds(orgId, false)) {
+            groupCount++;
             SensorGroup group = depot.getSensorGroup(groupId, orgId, false);
             List<Date> info = new ArrayList<Date>();
-            InterpolatedValue earliest = null;
-            InterpolatedValue latest = null;
+//            InterpolatedValue earliest = null;
+            Date earliestDate = null;
+//            InterpolatedValue latest = null;
+            Date latestDate = null;
             for (String sensorId : group.getSensors()) {
-              try {
-                InterpolatedValue temp = depot.getEarliestMeasuredValue(
-                    d.getId(), orgId, sensorId, false);
-                if (temp != null) {
-                  if (earliest == null) {
-                    earliest = temp;
-                  }
-                  else if (earliest.getDate().after(temp.getDate())) {
-                    earliest = temp;
-                  }
+              List<Date> sensorDates = sensorInfo.get(sensorId);
+              if (sensorDates != null) {
+                Date temp = sensorDates.get(0);
+                if (earliestDate == null) {
+                  earliestDate = temp;
                 }
-                temp = depot.getLatestMeasuredValue(d.getId(), orgId, sensorId,
-                    false);
-                if (temp != null) {
-                  if (latest == null) {
-                    latest = temp;
-                  }
-                  else if (latest.getDate().before(temp.getDate())) {
-                    latest = temp;
-                  }
+                else if (temp.before(earliestDate)) {
+                  earliestDate = temp;
+                }
+                temp = sensorDates.get(1);
+                if (latestDate == null) {
+                  latestDate = temp;
+                }
+                else if (temp.after(latestDate)) {
+                  latestDate = temp;
                 }
               }
-              catch (NoMeasurementException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-              }
+//              try {
+//                InterpolatedValue temp = depot.getEarliestMeasuredValue(
+//                    d.getId(), orgId, sensorId, false);
+//                if (temp != null) {
+//                  if (earliest == null) {
+//                    earliest = temp;
+//                  }
+//                  else if (earliest.getDate().after(temp.getDate())) {
+//                    earliest = temp;
+//                  }
+//                }
+//                temp = depot.getLatestMeasuredValue(d.getId(), orgId, sensorId,
+//                    false);
+//                if (temp != null) {
+//                  if (latest == null) {
+//                    latest = temp;
+//                  }
+//                  else if (latest.getDate().before(temp.getDate())) {
+//                    latest = temp;
+//                  }
+//                }
+//              }
+//              catch (NoMeasurementException e) {
+//                // TODO Auto-generated catch block
+//                e.printStackTrace();
+//              }
             }
-            if (earliest != null) {
-              info.add(earliest.getDate());
+            if (earliestDate != null) {
+              info.add(earliestDate);
             }
             else {
               // CAM what is a value we can use for no data?
               info.add(new Date(0l));
             }
-            if (latest != null) {
-              info.add(latest.getDate());
+            if (latestDate != null) {
+              info.add(latestDate);
             }
             else {
               // CAM what is a value we can use for no data?
               info.add(new Date(0l));
             }
+//            if (earliest != null) {
+//              info.add(earliest.getDate());
+//            }
+//            else {
+//              // CAM what is a value we can use for no data?
+//              info.add(new Date(0l));
+//            }
+//            if (latest != null) {
+//              info.add(latest.getDate());
+//            }
+//            else {
+//              // CAM what is a value we can use for no data?
+//              info.add(new Date(0l));
+//            }
             sensorInfo.put(groupId, info);
           }
+          endTime = System.nanoTime();
+          diff = endTime - startTime;
+          getLogger().log(Level.SEVERE, "Depository " + d.getName() + ": Getting SensorGroup info took " + (diff / 1E9) + " seconds for " + groupCount + " groups.");
         }
         dataModel.put("depositories", depos);
         dataModel.put("sensors", sensors);

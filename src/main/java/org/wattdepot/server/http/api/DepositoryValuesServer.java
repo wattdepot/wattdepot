@@ -31,7 +31,7 @@ import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
-import org.wattdepot.common.domainmodel.MeasuredValueList;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -76,7 +76,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
    * 
    * @return measurement list.
    */
-  public MeasuredValueList doRetrieve() {
+  public InterpolatedValueList doRetrieve() {
     getLogger().log(
         Level.INFO,
         "GET /wattdepot/{" + orgId + "}/" + Labels.DEPOSITORY + "/{" + depositoryId + "}/"
@@ -85,7 +85,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
             + "}&" + Labels.VALUE_TYPE + "={" + dataType + "}");
     if (isInRole(orgId)) {
       if (start != null && end != null && interval != null) {
-        MeasuredValueList ret = new MeasuredValueList();
+        InterpolatedValueList ret = new InterpolatedValueList();
         try {
           Depository depository = depot.getDepository(depositoryId, orgId, true);
           if (depository != null) {
@@ -104,6 +104,7 @@ public class DepositoryValuesServer extends WattDepotServerResource {
               if (sensor != null) {
                 Date previous = null;
                 for (int i = 0; i < timestampList.size(); i++) {
+                  InterpolatedValue mValue;
                   Date timestamp = DateConvert.convertXMLCal(timestampList.get(i));
                   Double value = new Double(0);
                   if ("point".equals(dataType)) {
@@ -113,25 +114,23 @@ public class DepositoryValuesServer extends WattDepotServerResource {
                     catch (NoMeasurementException e) { // NOPMD
                       // no measurements around the time so return 0?
                     }
+                    mValue = new InterpolatedValue(sensor.getId(), value,
+                        depository.getMeasurementType(), timestamp);
+                    ret.getInterpolatedValues().add(mValue);
                   }
                   else {
                     if (previous != null) {
                       try {
-                        value = depot.getValue(depositoryId, orgId, sensor.getId(), previous,
-                            timestamp, true);
+                        value = depot.getValue(depositoryId, orgId, sensor.getId(), previous, timestamp, true);
                       }
                       catch (NoMeasurementException e) { // NOPMD
                         // No measurements so return 0,
                       }
+                      mValue = new InterpolatedValue(sensor.getId(), value, depository.getMeasurementType(), previous, timestamp);
+                      ret.getInterpolatedValues().add(mValue);
                     }
                     previous = timestamp;
                   }
-                  InterpolatedValue mValue = new InterpolatedValue(sensor.getId(), value,
-                      depository.getMeasurementType(), timestamp);
-
-                  mValue.setDate(timestamp);
-
-                  ret.getMeasuredValues().add(mValue);
                 }
               }
               else {
@@ -166,35 +165,48 @@ public class DepositoryValuesServer extends WattDepotServerResource {
                         }
                       }
                     }
+                    if ("point".equals(dataType)) {
+                      InterpolatedValue mValue = new InterpolatedValue(group.getId(), value,
+                          depository.getMeasurementType(), timestamp);
+                      ret.getInterpolatedValues().add(mValue);
+                    }
+                    else {
+                      if (previous != null) {
+                        InterpolatedValue mValue = new InterpolatedValue(group.getId(), value,
+                            depository.getMeasurementType(), previous, timestamp);
+                        ret.getInterpolatedValues().add(mValue);
+                      }
+                    }
                     previous = timestamp;
-                    InterpolatedValue mValue = new InterpolatedValue(group.getId(), value,
-                        depository.getMeasurementType(), timestamp);
-
-                    mValue.setDate(timestamp);
-                    ret.getMeasuredValues().add(mValue);
                   }
                 }
               }
             }
             else {
               setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad start, end, or interval.");
+              return null;
             }
           }
           else {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " is not defined.");
+            return null;
           }
         }
         catch (MisMatchedOwnerException e) {
           setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          return null;
         }
         catch (ParseException e) {
           setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          return null;
         }
         catch (DatatypeConfigurationException e) {
           setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+          return null;
         }
         catch (IdNotFoundException e) {
           setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          return null;
         }
         getLogger().info(ret.toString());
         return ret;

@@ -32,6 +32,7 @@ import org.wattdepot.common.exception.IdNotFoundException;
  * @author Cam Moore
  * 
  */
+//@SuppressWarnings(PMD)
 public interface WattDepotAdminInterface {
   /**
    * Deletes the given User.
@@ -40,6 +41,7 @@ public interface WattDepotAdminInterface {
    * @param orgId the id of the user's organization.
    * @throws IdNotFoundException if the User's id is not found.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void deleteUser(String id, String orgId) throws IdNotFoundException;
 
   /**
@@ -48,6 +50,7 @@ public interface WattDepotAdminInterface {
    * @param id the unique id of the Organization.
    * @throws IdNotFoundException if the Organization's id is not found.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void deleteOrganization(String id) throws IdNotFoundException;
 
   /**
@@ -55,11 +58,13 @@ public interface WattDepotAdminInterface {
    * @return The Organization with the given id.
    * @throws IdNotFoundException if the id does not exist.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public Organization getOrganization(String id) throws IdNotFoundException;
 
   /**
    * @return All the defined Organizations in an OrganizationList.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public OrganizationList getOrganizations();
 
   /**
@@ -68,6 +73,7 @@ public interface WattDepotAdminInterface {
    * @return The UserInfo with the given id.
    * @throws IdNotFoundException if the id does not exist.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public UserInfo getUser(String id, String orgId) throws IdNotFoundException;
 
   /**
@@ -75,6 +81,7 @@ public interface WattDepotAdminInterface {
    * 
    * @return All the defined Users in a UserInfoList.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public UserInfoList getUsers(String orgId);
 
   /**
@@ -83,6 +90,7 @@ public interface WattDepotAdminInterface {
    * @return The UserPassword with the given id.
    * @throws IdNotFoundException if the id does not exist.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public UserPassword getUserPassword(String id, String orgId)
       throws IdNotFoundException;
 
@@ -91,6 +99,7 @@ public interface WattDepotAdminInterface {
    * 
    * @param user The UserInfo to store.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void putUser(UserInfo user);
 
   /**
@@ -100,6 +109,7 @@ public interface WattDepotAdminInterface {
    * @return true if there is a defined Organization with the given id, false
    *         otherwise.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public boolean isDefinedOrganization(String id);
 
   /**
@@ -110,6 +120,7 @@ public interface WattDepotAdminInterface {
    * @return true if there is a defined UserInfo with the given id and orgId, false
    *         otherwise.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public boolean isDefinedUserInfo(String id, String orgId);
 
   /**
@@ -117,6 +128,7 @@ public interface WattDepotAdminInterface {
    * 
    * @param org the Organization to store.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void putOrganization(Organization org);
 
   /**
@@ -124,6 +136,7 @@ public interface WattDepotAdminInterface {
    * 
    * @param org the Organization to update.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   public void updateOrganization(Organization org);
 
   /**
@@ -131,6 +144,7 @@ public interface WattDepotAdminInterface {
    * 
    * @param user the UserInfo to update.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   void updateUser(UserInfo user);
 
   /**
@@ -140,5 +154,6 @@ public interface WattDepotAdminInterface {
    * @throws IdNotFoundException if the user id or organization ids are not
    *         defined.
    */
+  @SuppressWarnings("PMD.UnusedModifier")
   void updateUserPassword(UserPassword password) throws IdNotFoundException;
 }

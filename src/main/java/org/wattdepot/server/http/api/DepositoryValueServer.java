@@ -126,10 +126,10 @@ public class DepositoryValueServer extends WattDepotServerResource {
                 for (String s : group.getSensors()) {
                   InterpolatedValue v = calculateValue(s, start, end, timestamp, earliest, latest);
                   if (time == null) {
-                    time = v.getDate();
+                    time = v.getStart();
                   }
-                  else if (time.before(v.getDate())) {
-                    time = v.getDate();
+                  else if (time.before(v.getStart())) {
+                    time = v.getStart();
                   }
                 }
                 // have the time get the value at time
@@ -151,10 +151,10 @@ public class DepositoryValueServer extends WattDepotServerResource {
                 for (String s : group.getSensors()) {
                   InterpolatedValue v = calculateValue(s, start, end, timestamp, earliest, latest);
                   if (time == null) {
-                    time = v.getDate();
+                    time = v.getEnd();
                   }
-                  else if (time.after(v.getDate())) {
-                    time = v.getDate();
+                  else if (time.after(v.getEnd())) {
+                    time = v.getEnd();
                   }
                 }
                 // have the time get the value at time
@@ -208,17 +208,16 @@ public class DepositoryValueServer extends WattDepotServerResource {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
       catch (NoMeasurementException e1) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e1.getMessage());
+        setStatus(Status.SERVER_ERROR_INTERNAL, e1.getMessage());
       }
       catch (NumberFormatException e) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
       }
       catch (MeasurementGapException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       }
       catch (ParseException e) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-        e.printStackTrace();
+        setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
       }
       catch (DatatypeConfigurationException e) {
         setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
@@ -229,7 +228,7 @@ public class DepositoryValueServer extends WattDepotServerResource {
       return null;
     }
     else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+      setStatus(Status.CLIENT_ERROR_FORBIDDEN, "Bad credentials.");
       return null;
     }
   }
@@ -281,6 +280,7 @@ public class DepositoryValueServer extends WattDepotServerResource {
       else {
         value = depot.getValue(depositoryId, orgId, sensor.getId(), time, true);
       }
+      val = new InterpolatedValue(sensorId, value, deposit.getMeasurementType(), time);
     }
     else if (start != null && end != null) {
       startDate = DateConvert.parseCalStringToDate(start);
@@ -292,13 +292,7 @@ public class DepositoryValueServer extends WattDepotServerResource {
       else {
         value = depot.getValue(depositoryId, orgId, sensor.getId(), startDate, endDate, true);
       }
-    }
-
-    if (end != null) {
-      val = new InterpolatedValue(sensorId, value, deposit.getMeasurementType(), endDate);
-    }
-    else if (time != null) {
-      val = new InterpolatedValue(sensorId, value, deposit.getMeasurementType(), time);
+      val = new InterpolatedValue(sensorId, value, deposit.getMeasurementType(), startDate, endDate);
     }
     return val;
   }

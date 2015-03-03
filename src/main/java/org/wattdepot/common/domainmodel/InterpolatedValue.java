@@ -38,8 +38,10 @@ public class InterpolatedValue {
   private Double value;
   /** The type of the measurement. */
   private MeasurementType measurementType;
-  /** The time of the interpolated value. */
-  private Date date;
+  /** The start time of the interpolated value. */
+  private Date start;
+  /** The end time of the interpolated value. */
+  private Date end;
 
   /**
    * Hide the default constructor.
@@ -57,12 +59,25 @@ public class InterpolatedValue {
    * @param date the time of the value.
    */
   public InterpolatedValue(String sensorId, Double value, MeasurementType measurementType, Date date) {
+    this(sensorId, value, measurementType, date, date);
+  }
+
+  /**
+   * Creates a new InterpolatedValue.
+   *
+   * @param sensorId The id of the sensor that made the measurement.
+   * @param value The value of the measurement.
+   * @param measurementType The type of the measurement.
+   * @param start the start time of the value.
+   * @param end the end time of the value.
+   */
+  public InterpolatedValue(String sensorId, Double value, MeasurementType measurementType, Date start, Date end) {
     this.sensorId = sensorId;
     this.value = value;
     this.measurementType = measurementType;
-    this.date = new Date(date.getTime());
+    this.start = new Date(start.getTime());
+    this.end = new Date(end.getTime());
   }
-
   /*
    * (non-Javadoc)
    * 
@@ -80,12 +95,20 @@ public class InterpolatedValue {
       return false;
     }
     InterpolatedValue other = (InterpolatedValue) obj;
-    if (date == null) {
-      if (other.date != null) {
+    if (start == null) {
+      if (other.start != null) {
         return false;
       }
     }
-    else if (!date.equals(other.date)) {
+    else if (!start.equals(other.start)) {
+      return false;
+    }
+    if (end == null) {
+      if (other.end != null) {
+        return false;
+      }
+    }
+    else if (!end.equals(other.end)) {
       return false;
     }
     if (measurementType == null) {
@@ -124,7 +147,7 @@ public class InterpolatedValue {
     if (!sensorId.equals(meas.getSensorId())) {
       return false;
     }
-    if (date.getTime() - meas.getDate().getTime() != 0) {
+    if (start.getTime() - meas.getDate().getTime() != 0) {
       return false;
     }
     if (!measurementType.getUnits().equals(meas.getMeasurementType())) {
@@ -137,10 +160,10 @@ public class InterpolatedValue {
   }
 
   /**
-   * @return the date
+   * @return the end time for this interpolated value.
    */
-  public Date getDate() {
-    return new Date(date.getTime());
+  public Date getEnd() {
+    return new Date(end.getTime());
   }
 
   /**
@@ -155,6 +178,13 @@ public class InterpolatedValue {
    */
   public String getSensorId() {
     return sensorId;
+  }
+
+  /**
+   * @return start time of the Interpolated Value.
+   */
+  public Date getStart() {
+    return new Date(start.getTime());
   }
 
   /**
@@ -173,7 +203,8 @@ public class InterpolatedValue {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((date == null) ? 0 : date.hashCode());
+    result = prime * result + ((start == null) ? 0 : start.hashCode());
+    result = prime * result + ((end == null) ? 0 : end.hashCode());
     result = prime * result + ((measurementType == null) ? 0 : measurementType.hashCode());
     result = prime * result + ((sensorId == null) ? 0 : sensorId.hashCode());
     result = prime * result + ((value == null) ? 0 : value.hashCode());
@@ -181,10 +212,10 @@ public class InterpolatedValue {
   }
 
   /**
-   * @param date the date to set
+   * @param end end date to set.
    */
-  public void setDate(Date date) {
-    this.date = new Date(date.getTime());
+  public void setEnd(Date end) {
+    this.end = new Date(end.getTime());
   }
 
   /**
@@ -199,6 +230,13 @@ public class InterpolatedValue {
    */
   public void setSensorId(String sensorId) {
     this.sensorId = sensorId;
+  }
+
+  /**
+   * @param start the start date to set.
+   */
+  public void setStart(Date start) {
+    this.start = new Date(start.getTime());
   }
 
   /**
@@ -217,14 +255,14 @@ public class InterpolatedValue {
   public String toString() {
     try {
       return "InterpolatedValue [sensorId=" + sensorId + ", value=" + value + ", measurementType="
-          + measurementType + ", date=" + DateConvert.convertDate(date) + "]";
+          + measurementType + ", start=" + DateConvert.convertDate(start) + ", end=" + DateConvert.convertDate(end) + "]";
     }
     catch (DatatypeConfigurationException e) {
       // shouldn't happen
       e.printStackTrace();
     }
     return "InterpolatedValue [sensorId=" + sensorId + ", value=" + value + ", measurementType="
-        + measurementType + ", date=" + date + "]";
+        + measurementType + ", start=" + start + ", end= " + end + "]";
   }
 
 }

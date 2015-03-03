@@ -28,6 +28,7 @@ import org.wattdepot.common.domainmodel.Organization;
  * @author Cam Moore
  * 
  */
+@SuppressWarnings("PMD.UnusedModifier")
 public interface OrganizationPutResource {
 
   /**

@@ -14,13 +14,80 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wattdepot</groupId>
     <artifactId>wattdepot</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
     <name>WattDepot</name>
     <url>https://github.com/wattdepot/wattdepot/</url>
     <packaging>jar</packaging>
     <prerequisites>
         <maven>3.0.1</maven>
     </prerequisites>
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <property>
+                    <name>profile</name>
+                    <value>dev</value>
+                </property>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <skip.assembly>true</skip.assembly>
+                <skip.checkstyle>false</skip.checkstyle>
+                <skip.findbugs>false</skip.findbugs>
+                <skip.pmd>false</skip.pmd>
+                <skipTests>false</skipTests>
+            </properties>
+        </profile>
+        <profile>
+            <id>rel</id>
+            <activation>
+                <property>
+                    <name>profile</name>
+                    <value>rel</value>
+                </property>
+            </activation>
+            <properties>
+                <skip.assembly>false</skip.assembly>
+                <skip.checkstyle>false</skip.checkstyle>
+                <skip.findbugs>false</skip.findbugs>
+                <skip.pmd>false</skip.pmd>
+                <skipTests>false</skipTests>
+            </properties>
+        </profile>
+        <profile>
+            <id>js</id>
+            <activation>
+                <property>
+                    <name>profile</name>
+                    <value>js</value>
+                </property>
+            </activation>
+            <properties>
+                <skip.assembly>true</skip.assembly>
+                <skip.checkstyle>true</skip.checkstyle>
+                <skip.findbugs>true</skip.findbugs>
+                <skip.pmd>true</skip.pmd>
+                <skipTests>true</skipTests>
+            </properties>
+        </profile>
+        <profile>
+            <id>heroku</id>
+            <activation>
+                <property>
+                    <name>maven.repo.local</name>
+                    <value>/app/tmp/cache/.m2/repository</value>
+                </property>
+            </activation>
+            <properties>
+                <skip.assembly>true</skip.assembly>
+                <skip.checkstyle>true</skip.checkstyle>
+                <skip.findbugs>true</skip.findbugs>
+                <skip.pmd>true</skip.pmd>
+                <skipTests>true</skipTests>
+            </properties>
+        </profile>
+    </profiles>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <targetJdk>1.7</targetJdk>
@@ -28,48 +95,54 @@
         <!-- Dependency Versions -->
         <commons-cli.version>1.2</commons-cli.version>
         <commons-lang.version>2.6</commons-lang.version>
-        <commons-logging.version>1.1.3</commons-logging.version>
-        <commons-math.version>3.2</commons-math.version>
+        <commons-logging.version>1.2</commons-logging.version>
+        <commons-math.version>3.3</commons-math.version>
         <commons-validator.version>1.4.0</commons-validator.version>
         <concurrent.version>1.0</concurrent.version>
         <dbcp.version>1.4</dbcp.version>
         <tomcat.jdbc.version>7.0.42</tomcat.jdbc.version>
-        <google-guava.version>17.0</google-guava.version>
+        <google-guava.version>18.0</google-guava.version>
         <google-visualization-java.version>1.1.1</google-visualization-java.version>
-        <h2.version>1.4.178</h2.version>
+        <h2.version>1.4.182</h2.version>
         <hibernate.version>3.2.6.ga</hibernate.version>
         <hibernate-annotations.version>3.3.1.GA</hibernate-annotations.version>
-        <hibernate-core.version>4.2.0.Final</hibernate-core.version>
+        <hibernate-core.version>4.3.7.Final</hibernate-core.version>
         <httpunit.version>1.7</httpunit.version>
-        <icu4j.version>53.1</icu4j.version>
+        <icu4j.version>54.1.1</icu4j.version>
         <jackson.version>1.9.11</jackson.version>
-        <jacoco.version>0.6.3.201306030806</jacoco.version>
-        <jasypt.version>1.9.1</jasypt.version>
+        <jacoco.version>0.7.2.201409121644</jacoco.version>
+        <jasypt.version>1.9.2</jasypt.version>
         <jcs.version>1.3</jcs.version>
         <jscience.version>4.3.1</jscience.version>
-        <json.version>20140107</json.version>
-        <junit.version>4.11</junit.version>
+        <json.version>20141113</json.version>
+        <junit.version>4.12</junit.version>
+        <jxr.version>2.5</jxr.version>
         <modbus-jamod.version>1.2</modbus-jamod.version>
         <opencsv.version>2.3</opencsv.version>
         <oro.version>2.0.8</oro.version>
         <pool.version>1.6</pool.version>
         <postgres.version>9.1-901-1.jdbc4</postgres.version>
-        <rabbitmq.version>3.3.1</rabbitmq.version>
+        <rabbitmq.version>3.4.2</rabbitmq.version>
         <restlet.version>2.1.2</restlet.version>
+        <selenium.version>1.0.1</selenium.version>
 
         <!-- Maven Plugin Versions -->
         <antrun.plugin.version>1.7</antrun.plugin.version>
-        <appassembler.plugin.version>1.3.1</appassembler.plugin.version>
+        <appassembler.plugin.version>1.9</appassembler.plugin.version>
         <assembly.plugin.version>2.4</assembly.plugin.version>
-        <checkstyle.plugin.version>2.10</checkstyle.plugin.version>
-        <dependency.plugin.version>2.8</dependency.plugin.version>
-        <findbugs.plugin.version>2.5.3</findbugs.plugin.version>
-        <javadoc.plugin.version>2.9.1</javadoc.plugin.version>
-        <pmd.plugin.version>2.6</pmd.plugin.version>
-        <site.plugin.version>3.3</site.plugin.version>
-        <surefire.plugin.version>2.15</surefire.plugin.version>
+        <checkstyle.plugin.version>2.13</checkstyle.plugin.version>
+        <compiler.plugin.version>3.2</compiler.plugin.version>
+        <dependency.plugin.version>2.9</dependency.plugin.version>
+        <findbugs.plugin.version>3.0.0</findbugs.plugin.version>
+        <javadoc.plugin.version>2.10.1</javadoc.plugin.version>
+        <pmd.plugin.version>3.3</pmd.plugin.version>
+        <selenium.plugin.version>2.3</selenium.plugin.version>
+        <shade.plugin.version>2.3</shade.plugin.version>
+        <site.plugin.version>3.4</site.plugin.version>
+        <surefire.plugin.version>2.18</surefire.plugin.version>
+        <surefire.report.plugin.version>2.18</surefire.report.plugin.version>
 
-        <jacoco.ut.execution.data.file>${project.build.directory}/coverage-reports/jacoco-ut.exec</jacoco.ut.execution.data.file>
+        <jacoco.ut.execution.data.file>${project.build.directory}/jacoco-ut.exec</jacoco.ut.execution.data.file>
 
         <config.dir>${basedir}</config.dir>
         <findbugs.filter.file>${config.dir}/findbugs.exclude.xml</findbugs.filter.file>
@@ -241,6 +314,12 @@
             <version>${restlet.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.seleniumhq.selenium.client-drivers</groupId>
+            <artifactId>selenium-java-client-driver</artifactId>
+            <version>${selenium.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>oro</groupId>
             <artifactId>oro</artifactId>
             <version>${oro.version}</version>
@@ -285,8 +364,18 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>2.7</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>${surefire.report.plugin.version}</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.3</version>
+                <version>${jxr.version}</version>
             </plugin>
         </plugins>
     </reporting>
@@ -296,7 +385,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>${compiler.plugin.version}</version>
                 <configuration>
                     <source>1.7</source>
                     <target>1.7</target>
@@ -357,6 +446,32 @@
                 </executions>
             </plugin>
 
+          <!--
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>selenium-maven-plugin</artifactId>
+                <version>${selenium.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>start-server</goal>
+                        </goals>
+                        <configuration>
+                            <background>true</background>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>shutdown</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop-server</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+          -->
             <!-- Run JUnit tests during "test" phase -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -364,7 +479,8 @@
                 <version>${surefire.plugin.version}</version>
                 <configuration>
                     <!-- Sets the VM argument line used when unit tests are run. -->
-                    <argLine>${surefireArgLine}</argLine>                
+                    <argLine>${surefireArgLine}</argLine>
+                    <skipTests>${skipTests}</skipTests>
                     <excludes>
                         <exclude>**/TestDb*.java</exclude>
                         <exclude>**/TestMeasurementGarbageCollector.java</exclude>
@@ -372,12 +488,14 @@
                 </configuration>
             </plugin>
             <!-- Run QA tools during "test" phase -->
+            <!-- Findbugs -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
                 <version>${findbugs.plugin.version}</version>
                 <configuration>
                     <excludeFilterFile>${findbugs.filter.file}</excludeFilterFile>
+                    <skip>${skip.findbugs}</skip>
                 </configuration>
                 <executions>
                     <execution>
@@ -388,12 +506,14 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Checkstyle -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>${checkstyle.plugin.version}</version>
                 <configuration>
                     <configLocation>${checkstyle.filter.file}</configLocation>
+                    <skip>${skip.checkstyle}</skip>
                 </configuration>
                 <executions>
                     <execution>
@@ -404,6 +524,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- PMD -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
@@ -413,6 +534,7 @@
                     <linkXref>false</linkXref>
                     <sourceEncoding>${project.build.sourceEncoding}</sourceEncoding>
                     <minimumTokens>100</minimumTokens>
+                    <skip>${skip.pmd}</skip>
                 </configuration>
                 <executions>
                     <execution>
@@ -423,6 +545,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- JavaDoc -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -487,22 +610,38 @@
                             <artifactId>maven-javadoc-plugin</artifactId>
                             <version>${javadoc.plugin.version}</version>
                         </plugin>
+                        <plugin>
+                            <groupId>org.jacoco</groupId>
+                            <artifactId>jacoco-maven-plugin</artifactId>
+                            <version>0.6.3.201306030806</version>
+                            <configuration>
+                                <propertyName>surefireArgLine</propertyName>
+                                <!-- Sets the path to the file which contains
+                                    the execution data. -->
+                                <dataFile>${jacoco.ut.execution.data.file}</dataFile>
+                                <!-- Sets the output directory for the code coverage
+                                    report. -->
+                                <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-project-info-reports-plugin</artifactId>
+                            <version>2.7</version>
+                            <reportSets>
+                                <reportSet>
+                                    <reports>
+                                        <report>issue-tracking</report>
+                                        <report>license</report>
+                                        <report>scm</report>
+                                    </reports>
+                                </reportSet>
+                            </reportSets>
+
+                        </plugin>
                     </reportPlugins>
                 </configuration>
             </plugin>
-            <!-- Ant tasks from anttasks.xml. These could be ported to Maven, 
-                but I haven't taken the time to do it. -->
-            <!-- <plugin> <artifactId>maven-antrun-plugin</artifactId> <version>${antrun.plugin.version}</version> 
-                <executions> Create jars during "package" phase <execution> <id>jar</id> 
-                <phase>package</phase> <configuration> <tasks> <ant antfile="${config.dir}/anttasks.build.xml" 
-                target="jar-standalone"/> </tasks> </configuration> <goals> <goal>run</goal> 
-                </goals> </execution> Autogenerate jaxb classes, destroying any custom code 
-                in those classes. This is not part of any phase, but can be called with "mvn 
-                antrun:run execution:jaxb" I haven't tested this, so no guarantees on whether 
-                it works or not. <execution> <id>jaxb</id> <phase/> <configuration> <tasks> 
-                <ant antfile="${config.dir}/anttasks.build.xml" target="jar-standalone"/> 
-                </tasks> </configuration> <goals> <goal>run</goal> </goals> </execution> 
-                </executions> </plugin> -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -527,12 +666,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>2.1</version>
+                <version>${shade.plugin.version}</version>
                 <configuration>
                     <filters>
                         <filter>
                             <artifact>*:*</artifact>
                             <excludes>
+                                <exclude>LICENSE</exclude>
                                 <exclude>META-INF/*.SF</exclude>
                                 <exclude>META-INF/*.DSA</exclude>
                                 <exclude>META-INF/*.RSA</exclude>
@@ -549,6 +689,10 @@
                                 <Build-Number>${project.version}</Build-Number>
                             </manifestEntries>
                         </transformer>
+                        <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheLicenseResourceTransformer"></transformer>
+                      <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
+                        <addHeader>false</addHeader>
+                      </transformer>
                     </transformers>
                 </configuration>
                 <executions>
@@ -560,29 +704,26 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- <plugin> <artifactId>maven-assembly-plugin</artifactId> 
-                <version>${assembly.plugin.version}</version> <executions> <execution> <id>full-jar</id> 
-                <phase>package</phase> <goals><goal>single</goal></goals> <configuration> 
-                <descriptorRefs> <descriptorRef>jar-with-dependencies</descriptorRef> </descriptorRefs> 
-                <archive> <manifest> <addDefaultImplementationEntries>true</addDefaultImplementationEntries> 
-                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries> <addClasspath>true</addClasspath> 
-                </manifest> </archive> </configuration> </execution> zip source <execution> 
-                <id>source</id> <phase>package</phase> <goals><goal>single</goal></goals> 
-                <configuration> <finalName>${project.artifactId}</finalName> <outputDirectory>${project.build.directory}/jar</outputDirectory> 
-                <formats><format>zip</format></formats> <descriptorRefs> <descriptorRef>src</descriptorRef> 
-                </descriptorRefs> </configuration> </execution> zip javadocs <execution> 
-                <id>javadoc</id> <phase>package</phase> <goals><goal>single</goal></goals> 
-                <configuration> <finalName>${project.artifactId}</finalName> <outputDirectory>${project.build.directory}/jar</outputDirectory> 
-                <formats><format>zip</format></formats> <descriptors><descriptor>${config.dir}/javadoc-assembly.xml</descriptor></descriptors> 
-                </configuration> </execution> zip project <execution> <id>dist</id> <phase>package</phase> 
-                <goals><goal>single</goal></goals> <configuration> <finalName>${project.artifactId}-${project.version}</finalName> 
-                <outputDirectory>${project.build.directory}/dist</outputDirectory> <formats><format>zip</format></formats> 
-                <filters> <filter>.git/**</filter> </filters> <descriptors> <descriptor>${config.dir}/distribution-assembly.xml</descriptor> 
-                </descriptors> </configuration> </execution> </executions> </plugin> -->
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-assembly-plugin</artifactId>
+              <configuration>
+                <descriptor>src/assembly/assemble.xml</descriptor>
+                <finalName>WattDepot-${project.version}</finalName>
+                <skipAssembly>${skip.assembly}</skipAssembly>
+              </configuration>
+              <executions>
+                <execution>
+                  <phase>package</phase>
+                  <goals>
+                    <goal>single</goal>
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
             <!-- Package it up for Heroku during "package" phase -->
             <plugin>
-                <groupId>org.codehaus.mojo
-			</groupId>
+                <groupId>org.codehaus.mojo</groupId>
                 <artifactId>appassembler-maven-plugin</artifactId>
                 <version>${appassembler.plugin.version}</version>
                 <executions>
@@ -642,9 +783,30 @@
         <name>Collaborative Software Development Laboratory</name>
         <url>http://csdl.ics.hawaii.edu</url>
     </organization>
+    <scm>
+      <connection>scm:git:git@github.com:wattdepot/wattdepot.git</connection>
+      <developerConnection>scm:git:git@github.com:wattdepot/wattdepot.git</developerConnection>
+      <url>git@github.com:wattdepot/wattdepot.git</url>
+    </scm>
     <issueManagement>
-        <url>https://github.com/csdl/wattdepot/issues</url>
+        <url>https://github.com/wattdepot/wattdepot/issues</url>
         <system>GitHub Issues</system>
     </issueManagement>
     <description>WattDepot is an open source, RESTful web service that collects electricity data (such as current power utilization or cumulative power utilization) from meters and stores it in a database.</description>
+    <licenses>
+        <license>
+            <name>GPL v3.</name>
+            <comments>
+                This program is free software: you can redistribute it and/or modify
+                it under the terms of the GNU General Public License as published by
+                the Free Software Foundation, either version 3 of the License, or
+                (at your option) any later version.
+                This program is distributed in the hope that it will be useful,
+                but WITHOUT ANY WARRANTY; without even the implied warranty of
+                MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+                GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License
+                along with this program.  If not, see http://www.gnu.org/licenses/.</comments>
+        </license>
+    </licenses>
 </project>
