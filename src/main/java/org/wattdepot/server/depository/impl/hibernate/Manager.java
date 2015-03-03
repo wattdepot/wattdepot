@@ -19,9 +19,9 @@
 package org.wattdepot.server.depository.impl.hibernate;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.ServiceRegistryBuilder;
 import org.wattdepot.server.ServerProperties;
 
 /**
@@ -74,8 +74,7 @@ public class Manager {
           .setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect")
           .setProperty("hibernate.show_sql", properties.get(ServerProperties.DB_SHOW_SQL))
           .setProperty("hibernate.hbm2ddl.auto", properties.get(ServerProperties.DB_TABLE_UPDATE));
-      serviceRegistry = new ServiceRegistryBuilder().applySettings(cfg.getProperties())
-          .buildServiceRegistry();
+      serviceRegistry = new StandardServiceRegistryBuilder().applySettings(cfg.getProperties()).build();
       // A SessionFactory is set up once for an application
       sessionFactory = cfg.buildSessionFactory(serviceRegistry);
 
@@ -123,8 +122,7 @@ public class Manager {
           .setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect")
           .setProperty("hibernate.show_sql", properties.get(ServerProperties.DB_SHOW_SQL))
           .setProperty("hibernate.hbm2ddl.auto", "validate");
-      validateRegistry = new ServiceRegistryBuilder().applySettings(cfg.getProperties())
-          .buildServiceRegistry();
+      validateRegistry = new StandardServiceRegistryBuilder().applySettings(cfg.getProperties()).build();
       // A SessionFactory is set up once for an application
       validateFactory = cfg.buildSessionFactory(validateRegistry);
 
