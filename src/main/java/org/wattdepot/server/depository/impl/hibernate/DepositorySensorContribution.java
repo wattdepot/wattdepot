@@ -21,10 +21,11 @@ package org.wattdepot.server.depository.impl.hibernate;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Index;
+//import org.hibernate.annotations.Index;
 
 /**
  * DepositorySensorContribution - Hibernate meta table to store the sensors that
@@ -34,7 +35,7 @@ import org.hibernate.annotations.Index;
  * 
  */
 @Entity
-@Table(name = "SENSOR_CONTRIBUTION")
+@Table(name = "SENSOR_CONTRIBUTION", indexes = {@Index(name = "IDX_CONTRIBUTION", columnList = "DEPOSITORY_PK, SENSOR_PK" ) } )
 public class DepositorySensorContribution {
   /** Database primary key. */
   @Id
@@ -42,11 +43,11 @@ public class DepositorySensorContribution {
   private Long pk;
   /** The sensor that made the measurements stored in the depository. */
   @ManyToOne
-  @Index(name = "IDX_CONTRIBUTION")
+//  @Index(name = "IDX_CONTRIBUTION")
   private SensorImpl sensor;
   /** The Depository storing the measurement from the sensor. */
   @ManyToOne
-  @Index(name = "IDX_CONTRIBUTION")
+//  @Index(name = "IDX_CONTRIBUTION")
   private DepositoryImpl depository;
 
   /**

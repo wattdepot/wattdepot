@@ -25,12 +25,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.hibernate.annotations.Index;
+//import org.hibernate.annotations.Index;
 import org.wattdepot.common.domainmodel.Measurement;
 
 /**
@@ -41,7 +42,7 @@ import org.wattdepot.common.domainmodel.Measurement;
  * 
  */
 @Entity
-@Table(name = "MEASUREMENTS")
+@Table(name = "MEASUREMENTS", indexes = {@Index(name = "IDX_MEASUREMENT", columnList = "DEPOSITORY_PK, SENSOR_PK, TIMESTAMP") })
 public class MeasurementImpl {
   /** Database primary key. */
   @Id
@@ -51,10 +52,10 @@ public class MeasurementImpl {
   private String id;
   /** The sensor that made the measurement. */
   @ManyToOne
-  @Index(name = "IDX_MEASUREMENT")
+//  @Index(name = "IDX_MEASUREMENT")
   private SensorImpl sensor;
   /** The time of the measurement. */
-  @Index(name = "IDX_MEASUREMENT")
+//  @Index(name = "IDX_MEASUREMENT")
   private Date timestamp;
   /** The value of the measurement. */
   private Double value;
@@ -62,7 +63,7 @@ public class MeasurementImpl {
   private String units;
   /** The Depository storing the measurement. */
   @ManyToOne
-  @Index(name = "IDX_MEASUREMENT")
+//  @Index(name = "IDX_MEASUREMENT")
   private DepositoryImpl depository;
 
   /**

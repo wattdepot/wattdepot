@@ -172,6 +172,7 @@ public class ServerProperties {
     buff.append("Server Properties:").append(cr);
     for (String key : alphaProps.keySet()) {
       if (key.contains("password")) {
+        buff.append(pad).append(key).append(eq).append(get(key)).append(cr);
         buff.append(pad).append(key).append(eq).append("((hidden))").append(cr);
       }
       else {
