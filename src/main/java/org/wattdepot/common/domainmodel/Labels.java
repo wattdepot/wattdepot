@@ -129,6 +129,9 @@ public class Labels {
   /** The label for all the Measurements. */
   public static final String MEASUREMENTS = "measurements";
 
+  /** The label for bulk operations. */
+  public static final String BULK = "bulk";
+
   /** The label for the minimum operation. */
   public static final String MINIMUM = "minimum";
 

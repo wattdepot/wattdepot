@@ -272,6 +272,12 @@ public class ServerProperties {
     // grab all of the properties in the environment
     Map<String, String> systemProps = System.getenv();
     for (Map.Entry<String, String> prop : systemProps.entrySet()) {
+      if (prop.getKey().startsWith(ADMIN_USER_NAME_ENV)) {
+        properties.setProperty(ADMIN_USER_NAME, prop.getValue());
+      }
+      if (prop.getKey().startsWith(ADMIN_USER_PASSWORD_ENV)) {
+        properties.setProperty(ADMIN_USER_PASSWORD, prop.getValue());
+      }
       if (prop.getKey().startsWith("wattdepot-server.")) {
         properties.setProperty(prop.getKey(), prop.getValue());
       }
