@@ -67,7 +67,8 @@ public class WattDepotServer {
    *           if there is a problem starting the server.
    */
   public static WattDepotServer newInstance() throws Exception {
-    return newInstance(new ServerProperties());
+    ServerProperties props = new ServerProperties();
+    return newInstance(props);
   }
 
   /**
