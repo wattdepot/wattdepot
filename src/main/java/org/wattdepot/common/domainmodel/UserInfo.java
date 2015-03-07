@@ -18,12 +18,8 @@
  */
 package org.wattdepot.common.domainmodel;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.wattdepot.server.ServerProperties;
 
 /**
  * User - represents a user of WattDepot.
@@ -36,8 +32,8 @@ public class UserInfo {
   public static final String ADMIN_USER_NAME = "wattdepot-server.admin.name";
 
   /** The admin user. */
-  public static final UserInfo ROOT = new UserInfo("root", "root", null, null,
-      Organization.ADMIN_GROUP_NAME, new HashSet<Property>(), "admin");
+  public static final UserInfo ROOT = new UserInfo("root", null, null, null,
+      Organization.ADMIN_GROUP_NAME, new HashSet<Property>(), null);
 
   /** A unique id for the User. */
   private String uid;
@@ -54,38 +50,6 @@ public class UserInfo {
   /** The user's password. */
   private String password;
 
-  static {
-    String adminName = System.getenv().get(ServerProperties.ADMIN_USER_NAME_ENV);
-    if (adminName != null) {
-      ROOT.setUid(adminName);
-    }
-    else {
-      RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
-      for (String arg : runtimeMxBean.getInputArguments()) {
-        if (arg.startsWith("-Dwattdepot-server.admin.name")) {
-          adminName = arg.split("=")[1];
-        }
-      }
-      if (adminName != null) {
-        ROOT.setUid(adminName);
-      }
-    }
-    String adminPassword = System.getenv().get(ServerProperties.ADMIN_USER_PASSWORD_ENV);
-    if (adminPassword != null) {
-      ROOT.setPassword(adminPassword);
-    }
-    else {
-      RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
-      for (String arg : runtimeMxBean.getInputArguments()) {
-        if (arg.startsWith("-Dwattdepot-server.admin.password")) {
-          adminPassword = arg.split("=")[1];
-        }
-      }
-      if (adminPassword != null) {
-        ROOT.setPassword(adminPassword);
-      }
-    }
-  }
 
   /**
    * The default constructor.

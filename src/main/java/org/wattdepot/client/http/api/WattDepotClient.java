@@ -19,6 +19,7 @@
 package org.wattdepot.client.http.api;
 
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Logger;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -52,6 +53,7 @@ import org.wattdepot.common.domainmodel.SensorModelList;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementGapException;
+import org.wattdepot.common.exception.MeasurementListSizeExceededException;
 import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.http.api.CollectorProcessDefinitionPutResource;
@@ -60,6 +62,7 @@ import org.wattdepot.common.http.api.CollectorProcessDefinitionsResource;
 import org.wattdepot.common.http.api.DepositoriesResource;
 import org.wattdepot.common.http.api.DepositoryMeasurementPutResource;
 import org.wattdepot.common.http.api.DepositoryMeasurementResource;
+import org.wattdepot.common.http.api.DepositoryMeasurementsPutResource;
 import org.wattdepot.common.http.api.DepositoryMeasurementsResource;
 import org.wattdepot.common.http.api.DepositoryPutResource;
 import org.wattdepot.common.http.api.DepositoryResource;
@@ -1411,6 +1414,42 @@ public class WattDepotClient implements WattDepotInterface {
     }
     finally {
       client.release();
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.wattdepot.client.WattDepotInterface#putMeasurements(org.wattdepot.
+   * datamodel.Depository, org.wattdepot.datamodel.MeasurementList)
+   */
+  @Override
+  public void putMeasurements(Depository depository, MeasurementList measurementList)
+      throws MeasurementTypeException, MeasurementListSizeExceededException {
+    List<Measurement> measurements = measurementList.getMeasurements();
+
+    if ( measurements.size() <= 10000) {
+      //Running through all the measurements to insure that they fit
+      //with measurementType of the depository.
+      for (Measurement measurement : measurements) {
+        if (!depository.getMeasurementType().getUnits().equals(measurement.getMeasurementType())) {
+          throw new MeasurementTypeException("Depository " + depository.getName() + " stores "
+                  + depository.getMeasurementType() + " not " + measurement.getMeasurementType());
+        }
+      }
+      ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
+              + depository.getId() + "/" + Labels.MEASUREMENTS + "/" + Labels.BULK + "/");
+      DepositoryMeasurementsPutResource resource = client.wrap(DepositoryMeasurementsPutResource.class);
+      try {
+        resource.store(measurementList);
+      }
+      finally {
+        client.release();
+      }
+    }
+    else {
+      throw new MeasurementListSizeExceededException("MeasurementList size of: " + measurements.size() + " exceeds size "
+          + "limit of 10.000");
     }
   }
 

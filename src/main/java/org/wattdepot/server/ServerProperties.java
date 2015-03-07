@@ -21,12 +21,14 @@ package org.wattdepot.server;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.util.UserHome;
 
 /**
@@ -64,6 +66,10 @@ public class ServerProperties {
   public static final String DB_CONNECTION_DRIVER = "wattdepot-server.db.connection.driver";
   /** The database connection driver url. */
   public static final String DB_CONNECTION_URL = "wattdepot-server.db.connection.url";
+  /** The database connection driver url environment variable. */
+  public static final String DB_CONNECTION_URL_ENV = "WATTDEPOT_DATABASE_URL";
+  /** The database url. */
+  public static final String DATABASE_URL = "wattdepot-server.database.url";
   /** The database username. */
   public static final String DB_USER_NAME = "wattdepot-server.db.username";
   /** The database password. */
@@ -110,8 +116,9 @@ public class ServerProperties {
   /**
    * Creates a new ServerProperties instance using the default filename. Prints
    * an error to the console if problems occur on loading.
+   * @throws Exception if errors occur.
    */
-  public ServerProperties() {
+  public ServerProperties() throws Exception {
     this(null);
   }
 
@@ -121,15 +128,10 @@ public class ServerProperties {
    * 
    * @param serverSubdir The name of the subdirectory used to store all files
    *        for this server.
+   * @throws Exception if errors occur.
    */
-  public ServerProperties(String serverSubdir) {
-    try {
-      initializeProperties(serverSubdir);
-    }
-    catch (Exception e) {
-      Logger.getLogger("org.wattdepot.properties").severe(
-          "Error initializing server properties. " + e.getMessage());
-    }
+  public ServerProperties(String serverSubdir) throws Exception {
+    initializeProperties(serverSubdir);
   }
 
   /**
@@ -172,7 +174,6 @@ public class ServerProperties {
     buff.append("Server Properties:").append(cr);
     for (String key : alphaProps.keySet()) {
       if (key.contains("password")) {
-        buff.append(pad).append(key).append(eq).append(get(key)).append(cr);
         buff.append(pad).append(key).append(eq).append("((hidden))").append(cr);
       }
       else {
@@ -239,50 +240,7 @@ public class ServerProperties {
       serverHome = wattDepot3Home + serverSubdir;
     }
     String propFileName = serverHome + "/wattdepot-server.properties";
-    String defaultAdminName = UserInfo.ROOT.getUid();
-    String defaultAdminPassword = UserInfo.ROOT.getPassword();
-    String defaultWattDepotImpl = "org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl";
-    String defaultPort = "8192";
-    String defaultTestPort = "8194";
     this.properties = new Properties();
-    // Set default values
-    properties.setProperty(SERVER_HOME_DIR, serverHome);
-    properties.setProperty(ADMIN_USER_NAME, defaultAdminName);
-    properties.setProperty(ADMIN_USER_PASSWORD, defaultAdminPassword);
-    properties.setProperty(WATT_DEPOT_IMPL_KEY, defaultWattDepotImpl);
-    properties.setProperty(HOSTNAME_KEY, "localhost");
-    properties.setProperty(PORT_KEY, defaultPort);
-    properties.setProperty(DB_CONNECTION_DRIVER, "org.postgresql.Driver");
-    properties.setProperty(DB_CONNECTION_URL, "jdbc:postgresql://localhost:5432/wattdepot");
-    properties.setProperty(DB_USER_NAME, "myuser");
-    properties.setProperty(DB_PASSWORD, "secret");
-    properties.setProperty(DB_SHOW_SQL, FALSE);
-    properties.setProperty(DB_TABLE_UPDATE, "update");
-    properties.setProperty(ENABLE_LOGGING_KEY, TRUE);
-    properties.setProperty(CHECK_SESSIONS, FALSE);
-    properties.setProperty(LOGGING_LEVEL_KEY, "INFO");
-    properties.setProperty(CONTEXT_ROOT_KEY, "wattdepot");
-    properties.setProperty(SERVER_TIMING_KEY, FALSE);
-    properties.setProperty(TEST_PORT_KEY, defaultTestPort);
-    properties.setProperty(TEST_WATT_DEPOT_IMPL_KEY, defaultWattDepotImpl);
-    properties.setProperty(USE_HEROKU_KEY, FALSE);
-    properties.setProperty(TEST_HEROKU_KEY, FALSE);
-
-    logger.finest(echoProperties());
-    // grab all of the properties in the environment
-    Map<String, String> systemProps = System.getenv();
-    for (Map.Entry<String, String> prop : systemProps.entrySet()) {
-      if (prop.getKey().startsWith(ADMIN_USER_NAME_ENV)) {
-        properties.setProperty(ADMIN_USER_NAME, prop.getValue());
-      }
-      if (prop.getKey().startsWith(ADMIN_USER_PASSWORD_ENV)) {
-        properties.setProperty(ADMIN_USER_PASSWORD, prop.getValue());
-      }
-      if (prop.getKey().startsWith("wattdepot-server.")) {
-        properties.setProperty(prop.getKey(), prop.getValue());
-      }
-    }
-    logger.finest(echoProperties());
     // Use properties from file, if they exist.
     FileInputStream stream = null;
     try {
@@ -299,9 +257,97 @@ public class ServerProperties {
         stream.close();
       }
     }
-    addServerSystemProperties(this.properties);
+    processDatabaseURL(properties.getProperty(DATABASE_URL));
+    // grab all of the properties in the environment
+    Map<String, String> systemProps = System.getenv();
+    for (Map.Entry<String, String> prop : systemProps.entrySet()) {
+      if (prop.getKey().startsWith(ADMIN_USER_NAME_ENV)) {
+        properties.setProperty(ADMIN_USER_NAME, prop.getValue());
+      }
+      if (prop.getKey().startsWith(ADMIN_USER_PASSWORD_ENV)) {
+        properties.setProperty(ADMIN_USER_PASSWORD, prop.getValue());
+      }
+      if (prop.getKey().startsWith(DB_CONNECTION_URL_ENV)) {
+        processDatabaseURL(prop.getValue());
+      }
+      if (prop.getKey().startsWith("DATABASE_URL")) {
+        processDatabaseURL(prop.getValue());
+      }
+    }
+    if (!properties.containsKey(ADMIN_USER_NAME) || !properties.containsKey(ADMIN_USER_PASSWORD) || !properties.containsKey(DB_CONNECTION_URL)) {
+      StringBuilder sb = new StringBuilder();
+      if (!properties.containsKey(ADMIN_USER_NAME)) {
+        sb.append("WattDepot Admin name not set. ");
+      }
+      if (!properties.containsKey(ADMIN_USER_PASSWORD)) {
+        sb.append("WattDepot Admin password not set. ");
+      }
+      if (!(properties.containsKey(DB_CONNECTION_URL_ENV) || properties.containsKey("DATABASE_URL"))) {
+        sb.append("WattDepot database url not set. ");
+      }
+      throw new SecurityException(sb.toString());
+    }
+    UserInfo.ROOT.setUid(properties.getProperty(ADMIN_USER_NAME));
+    UserInfo.ROOT.setPassword(properties.getProperty(ADMIN_USER_PASSWORD));
+    UserPassword.ROOT.setUid(properties.getProperty(ADMIN_USER_NAME));
+    UserPassword.ROOT.setPassword(properties.getProperty(ADMIN_USER_PASSWORD));
+    String defaultWattDepotImpl = "org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl";
+    // Set default values if not set
+    if (!properties.containsKey(SERVER_HOME_DIR)) {
+      properties.setProperty(SERVER_HOME_DIR, serverHome);
+    }
+    if (!properties.containsKey(WATT_DEPOT_IMPL_KEY)) {
+      properties.setProperty(WATT_DEPOT_IMPL_KEY, defaultWattDepotImpl);
+    }
+    if (!properties.containsKey(HOSTNAME_KEY)) {
+      properties.setProperty(HOSTNAME_KEY, "localhost");
+    }
+    if (!properties.containsKey(PORT_KEY)) {
+      properties.setProperty(PORT_KEY, "8192");
+    }
+    if (!properties.containsKey(DB_CONNECTION_DRIVER)) {
+      properties.setProperty(DB_CONNECTION_DRIVER, "org.postgresql.Driver");
+    }
+    if (!properties.containsKey(DB_CONNECTION_URL)) {
+      properties.setProperty(DB_CONNECTION_URL, "jdbc:postgresql://localhost:5432/wattdepot");
+    }
+    if (!properties.containsKey(DB_SHOW_SQL)) {
+      properties.setProperty(DB_SHOW_SQL, FALSE);
+    }
+    if (!properties.containsKey(DB_TABLE_UPDATE)) {
+      properties.setProperty(DB_TABLE_UPDATE, "update");
+    }
+    if (!properties.containsKey(ENABLE_LOGGING_KEY)) {
+      properties.setProperty(ENABLE_LOGGING_KEY, TRUE);
+    }
+    if (!properties.containsKey(CHECK_SESSIONS)) {
+      properties.setProperty(CHECK_SESSIONS, FALSE);
+    }
+    if (!properties.containsKey(LOGGING_LEVEL_KEY)) {
+      properties.setProperty(LOGGING_LEVEL_KEY, "INFO");
+    }
+    if (!properties.containsKey(CONTEXT_ROOT_KEY)) {
+      properties.setProperty(CONTEXT_ROOT_KEY, "wattdepot");
+    }
+    if (!properties.containsKey(SERVER_TIMING_KEY)) {
+      properties.setProperty(SERVER_TIMING_KEY, FALSE);
+    }
+    if (!properties.containsKey(TEST_PORT_KEY)) {
+      properties.setProperty(TEST_PORT_KEY, "8194");
+    }
+    if (!properties.containsKey(TEST_WATT_DEPOT_IMPL_KEY)) {
+      properties.setProperty(TEST_WATT_DEPOT_IMPL_KEY, defaultWattDepotImpl);
+    }
+    if (!properties.containsKey(USE_HEROKU_KEY)) {
+      properties.setProperty(USE_HEROKU_KEY, FALSE);
+    }
+    if (!properties.containsKey(TEST_HEROKU_KEY)) {
+      properties.setProperty(TEST_HEROKU_KEY, FALSE);
+    }
+    logger.finest(echoProperties());
     trimProperties(properties);
     logger.finest(echoProperties());
+
     // get PORT and DATABASE_URL for heroku
     String webPort = System.getenv("PORT");
     if (webPort != null && !webPort.isEmpty()) {
@@ -313,7 +359,7 @@ public class ServerProperties {
       URI dbUri = new URI(databaseURL);
       String username = dbUri.getUserInfo().split(":")[0];
       String password = dbUri.getUserInfo().split(":")[1];
-      String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + dbUri.getPath();
+      String dbUrl = "jdbc:postgresql://" + dbUri.getHost() +  dbUri.getPath();
       properties.setProperty(DB_USER_NAME, username);
       properties.setProperty(DB_PASSWORD, password);
       properties.setProperty(DB_CONNECTION_URL, dbUrl);
@@ -322,23 +368,21 @@ public class ServerProperties {
   }
 
   /**
-   * Finds any System properties whose key begins with "wattdepot-server.", and
-   * adds those key-value pairs to the passed Properties object.
-   * 
-   * @param properties The properties instance to be updated with the WattDepot
-   *        system properties.
+   * Parses the given database url to set the database username, password, and connection url.
+   * @param url the database url.
+   * @throws java.net.URISyntaxException if there is a problem with the url.
    */
-  private void addServerSystemProperties(Properties properties) {
-    Properties systemProperties = System.getProperties();
-    for (Map.Entry<Object, Object> entry : systemProperties.entrySet()) {
-      String sysPropName = (String) entry.getKey();
-      if (sysPropName.startsWith("wattdepot-server.")) {
-        String sysPropValue = (String) entry.getValue();
-        if (sysPropValue != null && !sysPropValue.isEmpty()) {
-          properties.setProperty(sysPropName, sysPropValue);
-        }
-      }
+  private void processDatabaseURL(String url) throws URISyntaxException {
+    if (url != null && !url.isEmpty()) {
+      URI dbUri = new URI(url);
+      String username = dbUri.getUserInfo().split(":")[0];
+      String password = dbUri.getUserInfo().split(":")[1];
+      String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ":" + dbUri.getPort() +  dbUri.getPath();
+      properties.setProperty(DB_USER_NAME, username);
+      properties.setProperty(DB_PASSWORD, password);
+      properties.setProperty(DB_CONNECTION_URL, dbUrl);
     }
+
   }
 
   /**

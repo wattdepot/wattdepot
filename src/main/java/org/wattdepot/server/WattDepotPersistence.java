@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.MeasurementList;
 import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Measurement;
@@ -57,11 +58,6 @@ import org.wattdepot.common.util.UnitsHelper;
  * 
  */
 public abstract class WattDepotPersistence {
-
-  /** The name of the Power MeasurementType. */
-  public static final String POWER_TYPE_NAME = "Power";
-  /** The name of the Energy MeasurementType. */
-  public static final String ENERGY_TYPE_NAME = "Energy";
 
   private ServerProperties properties;
 
@@ -838,6 +834,17 @@ public abstract class WattDepotPersistence {
    * @throws IdNotFoundException if there is a problem with the ids.
    */
   public abstract void putMeasurement(String depotId, String orgId, Measurement meas)
+      throws MeasurementTypeException, IdNotFoundException;
+
+  /**
+   * @param depotId the id of the Depository.
+   * @param orgId the Organization's id.
+   * @param measurementList The list of measurements to store.
+   * @throws MeasurementTypeException if the type of one of the measurements doesn't
+   *         match the Depository measurement type.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract void putMeasurementList(String depotId, String orgId, MeasurementList measurementList)
       throws MeasurementTypeException, IdNotFoundException;
 
   /**

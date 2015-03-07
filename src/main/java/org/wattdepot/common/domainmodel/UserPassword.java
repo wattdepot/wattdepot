@@ -18,10 +18,6 @@
  */
 package org.wattdepot.common.domainmodel;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
-
-import org.wattdepot.server.ServerProperties;
 import org.wattdepot.server.StrongAES;
 
 /**
@@ -36,28 +32,10 @@ public class UserPassword {
 
   /** The password for the admin user. */
   public static final UserPassword ROOT = new UserPassword(UserInfo.ROOT.getUid(),
-      UserInfo.ROOT.getOrganizationId(), "admin");
+      UserInfo.ROOT.getOrganizationId(), "(*^$fq3p0495uasd,mn43qt09");
   private String uid;
   private String encryptedPassword;
   private String orgId;
-
-  static {
-    String password = System.getenv().get(ServerProperties.ADMIN_USER_PASSWORD_ENV);
-    if (password != null) {
-      ROOT.setPassword(password);
-    }
-    else {
-      RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();
-      for (String arg : runtimeMxBean.getInputArguments()) {
-        if (arg.startsWith("-D" + ADMIN_USER_PASSWORD)) {
-          password = arg.split("=")[1];
-        }
-      }
-      if (password != null) {
-        ROOT.setPassword(password);
-      }
-    }
-  }
 
   /**
    * Default constructor.

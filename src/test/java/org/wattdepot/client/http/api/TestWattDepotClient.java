@@ -44,6 +44,7 @@ import org.wattdepot.common.domainmodel.*;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementGapException;
+import org.wattdepot.common.exception.MeasurementListSizeExceededException;
 import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.DateConvert;
@@ -75,6 +76,10 @@ public class TestWattDepotClient {
   private static Measurement testMeasurement1 = null;
   private static Measurement testMeasurement2 = null;
   private static Measurement testMeasurement3 = null;
+  private static Measurement testMeasurement4 = null;
+  private static Measurement testMeasurement5 = null;
+  private static Measurement testMeasurement6 = null;
+  private static MeasurementList testMeasurements456 = null;
 
   /** The logger. */
   private static Logger logger = null;
@@ -114,6 +119,9 @@ public class TestWattDepotClient {
       Date measTime1 = DateConvert.parseCalStringToDate("2013-11-20T14:35:27.925-1000");
       Date measTime2 = DateConvert.parseCalStringToDate("2013-11-20T14:35:37.925-1000");
       Date measTime3 = DateConvert.parseCalStringToDate("2013-11-20T14:45:37.925-1000");
+      Date measTime4 = DateConvert.parseCalStringToDate("2013-11-20T14:55:37.925-1000");
+      Date measTime5 = DateConvert.parseCalStringToDate("2013-11-20T15:05:37.925-1000");
+      Date measTime6 = DateConvert.parseCalStringToDate("2013-11-20T15:15:37.925-1000");
       Double value = 100.0;
       testMeasurement1 = new Measurement(testSensor.getId(), measTime1, value,
           testMeasurementType.unit());
@@ -121,6 +129,16 @@ public class TestWattDepotClient {
           testMeasurementType.unit());
       testMeasurement3 = new Measurement(testSensor.getId(), measTime3, value,
           testMeasurementType.unit());
+      testMeasurement4 = new Measurement(testSensor.getId(), measTime4, value,
+              testMeasurementType.unit());
+      testMeasurement5 = new Measurement(testSensor.getId(), measTime5, value,
+              testMeasurementType.unit());
+      testMeasurement6 = new Measurement(testSensor.getId(), measTime6, value,
+              testMeasurementType.unit());
+      testMeasurements456 = new MeasurementList();
+      testMeasurements456.getMeasurements().add(testMeasurement4);
+      testMeasurements456.getMeasurements().add(testMeasurement5);
+      testMeasurements456.getMeasurements().add(testMeasurement6);
     }
     catch (ParseException e) {
       e.printStackTrace();
@@ -145,7 +163,7 @@ public class TestWattDepotClient {
               Organization.ADMIN_GROUP.getId(), UserInfo.ROOT.getPassword());
         }
         catch (Exception e) {
-          System.out.println();
+          e.printStackTrace();
           fail("Cannot create admin client with " + UserInfo.ROOT.getUid() + " and "
               + UserInfo.ROOT.getPassword());
         }
@@ -328,6 +346,17 @@ public class TestWattDepotClient {
     catch (IdNotFoundException e) {
       // this is what we want.
     }
+  }
+
+  /**
+   * Test get measurement type.
+   *
+   * @throws IdNotFoundException the id not found exception
+   */
+  @Test
+  public void testGetPPMMeasurementType() throws IdNotFoundException {
+    MeasurementType mt = test.getMeasurementType("concentration-ppm");
+    assertNotNull(mt);
   }
 
   /**
@@ -783,6 +812,33 @@ public class TestWattDepotClient {
       catch (IdNotFoundException e) {
         fail(m1 + " does exist in the depo");
       }
+
+      Measurement m4 = testMeasurement4;
+      Measurement m5 = testMeasurement5;
+      Measurement m6 = testMeasurement6;
+      MeasurementList m456 = testMeasurements456;
+      m5.setSensorId("non-existing-sensor-id");
+      try {
+        test.putMeasurements(depo, m456);
+        fail("Can't put a measurement with a sensor that isn't defined.");
+      }
+      catch (ResourceException re) {
+        if (re.getStatus().equals(Status.CLIENT_ERROR_BAD_REQUEST)) {
+          m5.setSensorId(m4.getSensorId());
+          test.putMeasurements(depo, m456);
+        }
+      }
+      catch (MeasurementListSizeExceededException e) {
+        fail(e.getMessage());
+      }
+      list = test.getMeasurements(depo, s1, m4.getDate(), m6.getDate());
+      assertNotNull(list);
+
+      assertTrue("expecting " + 3 + " got " + list.getMeasurements().size(), list.getMeasurements()
+          .size() == 3);
+      assertTrue(list.getMeasurements().contains(m4));
+      assertTrue(list.getMeasurements().contains(m5));
+      assertTrue(list.getMeasurements().contains(m6));
     }
     catch (MeasurementTypeException e) {
       fail(e.getMessage());
@@ -795,6 +851,9 @@ public class TestWattDepotClient {
     }
     catch (MeasurementGapException e1) {
       fail(e1.getMessage());
+    }
+    catch (MeasurementListSizeExceededException e) {
+      fail(e.getMessage());
     }
 
     // error conditions

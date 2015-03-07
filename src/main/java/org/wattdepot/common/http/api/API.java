@@ -125,12 +125,19 @@ public class API {
 
   /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/measurement/</b> URI for
-   * putting a measurement into the depsository. Use PUT requests.
+   * putting a measurement into the depository. Use PUT requests.
    */
   public static final String MEASUREMENT_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.MEASUREMENT + "/";
 
   /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/measurements/</b> URI for
+   * putting measurements into the depository. Use PUT requests.
+   */
+  public static final String MEASUREMENTS_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.MEASUREMENTS + "/" + Labels.BULK + "/";
+
+    /**
    * <b>/wattdepot/public/measurement-type/</b> URI for storing new
    * MeasurmentTypes. Use PUT requests.
    */
