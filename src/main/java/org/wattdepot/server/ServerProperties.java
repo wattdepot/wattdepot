@@ -270,8 +270,11 @@ public class ServerProperties {
       if (prop.getKey().startsWith(DB_CONNECTION_URL_ENV)) {
         processDatabaseURL(prop.getValue());
       }
+      if (prop.getKey().startsWith("DATABASE_URL")) {
+        processDatabaseURL(prop.getValue());
+      }
     }
-    if (!properties.containsKey(ADMIN_USER_NAME) || !properties.containsKey(ADMIN_USER_PASSWORD) || !(properties.containsKey(DB_CONNECTION_URL_ENV) || properties.containsKey("DATABASE_URL"))) {
+    if (!properties.containsKey(ADMIN_USER_NAME) || !properties.containsKey(ADMIN_USER_PASSWORD) || !properties.containsKey(DB_CONNECTION_URL)) {
       StringBuilder sb = new StringBuilder();
       if (!properties.containsKey(ADMIN_USER_NAME)) {
         sb.append("WattDepot Admin name not set. ");
