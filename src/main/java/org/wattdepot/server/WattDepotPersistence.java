@@ -59,11 +59,6 @@ import org.wattdepot.common.util.UnitsHelper;
  */
 public abstract class WattDepotPersistence {
 
-  /** The name of the Power MeasurementType. */
-  public static final String POWER_TYPE_NAME = "Power";
-  /** The name of the Energy MeasurementType. */
-  public static final String ENERGY_TYPE_NAME = "Energy";
-
   private ServerProperties properties;
 
   /**

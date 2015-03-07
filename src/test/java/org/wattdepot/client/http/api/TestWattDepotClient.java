@@ -163,7 +163,7 @@ public class TestWattDepotClient {
               Organization.ADMIN_GROUP.getId(), UserInfo.ROOT.getPassword());
         }
         catch (Exception e) {
-          System.out.println();
+          e.printStackTrace();
           fail("Cannot create admin client with " + UserInfo.ROOT.getUid() + " and "
               + UserInfo.ROOT.getPassword());
         }

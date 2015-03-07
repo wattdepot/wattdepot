@@ -26,6 +26,7 @@ import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import org.wattdepot.common.util.UserHome;
+import org.wattdepot.server.ServerProperties;
 
 /**
  * ClientProperties - Provides access to the values stored in the
@@ -161,16 +162,12 @@ public class ClientProperties {
       clientHome = wattDepot3Home + clientSubdir;
     }
     String propFileName = clientHome + "/wattdepot-client.properties";
-    String defaultUserName = "root";
-    String defaultUserPassword = "admin";
     String defaultServerHost = "localhost";
     String defaultPort = "8192";
     String defaultTestPort = "8194";
     this.properties = new Properties();
     // Set default values
     properties.setProperty(CLIENT_HOME_DIR, clientHome);
-    properties.setProperty(USER_NAME, defaultUserName);
-    properties.setProperty(USER_PASSWORD, defaultUserPassword);
     properties.setProperty(WATTDEPOT_SERVER_HOST, defaultServerHost);
     properties.setProperty(PORT_KEY, defaultPort);
     properties.setProperty(TEST_PORT_KEY, defaultTestPort);
@@ -191,10 +188,14 @@ public class ClientProperties {
       }
     }
     // grab all of the properties in the environment
+    // grab all of the properties in the environment
     Map<String, String> systemProps = System.getenv();
     for (Map.Entry<String, String> prop : systemProps.entrySet()) {
-      if (prop.getKey().startsWith("wattdepot-server.")) {
-        properties.setProperty(prop.getKey(), prop.getValue());
+      if (prop.getKey().startsWith(ServerProperties.ADMIN_USER_NAME_ENV)) {
+        properties.setProperty(USER_NAME, prop.getValue());
+      }
+      if (prop.getKey().startsWith(ServerProperties.ADMIN_USER_PASSWORD_ENV)) {
+        properties.setProperty(USER_PASSWORD, prop.getValue());
       }
     }
     addClientSystemProperties(this.properties);

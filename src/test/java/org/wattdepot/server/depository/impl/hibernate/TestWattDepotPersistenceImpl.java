@@ -69,7 +69,7 @@ public class TestWattDepotPersistenceImpl {
    * Sets up the WattDepotPersistenceImpl using test properties.
    */
   @BeforeClass
-  public static void setupImpl() {
+  public static void setupImpl() throws Exception {
     ServerProperties properties = new ServerProperties();
     properties.setTestProperties();
     impl = new WattDepotPersistenceImpl(properties);
