@@ -171,52 +171,53 @@
 <span class="sourceLineNo">163</span>    router.attach(API.MEASUREMENT_PRUNING_DEFINITION_URI, MeasurementPruningDefinitionServerResource.class);<a name="line.163"></a>
 <span class="sourceLineNo">164</span>    router.attach(API.MEASUREMENT_PRUNING_DEFINITIONS_URI, MeasurementPruningDefinitionsServerResource.class);<a name="line.164"></a>
 <span class="sourceLineNo">165</span>    router.attach(API.MEASUREMENT_PUT_URI, DepositoryMeasurementPutServerResource.class);<a name="line.165"></a>
-<span class="sourceLineNo">166</span>    router.attach(API.MEASUREMENT_URI, DepositoryMeasurementServerResource.class);<a name="line.166"></a>
-<span class="sourceLineNo">167</span>    router.attach(API.MEASUREMENTS_URI, DepositoryMeasurementsServerResource.class);<a name="line.167"></a>
-<span class="sourceLineNo">168</span>    router.attach(API.MEASUREMENTS_GVIZ_URI, GvizDepositoryMeasurementsServerResource.class);<a name="line.168"></a>
-<span class="sourceLineNo">169</span>    router.attach(API.VALUE_URI, DepositoryValueServerResource.class);<a name="line.169"></a>
-<span class="sourceLineNo">170</span>    router.attach(API.VALUE_GVIZ_URI, GvizDepositoryValueServerResource.class);<a name="line.170"></a>
-<span class="sourceLineNo">171</span>    router.attach(API.VALUES_URI, DepositoryValuesServerResource.class);<a name="line.171"></a>
-<span class="sourceLineNo">172</span>    router.attach(API.VALUES_GVIZ_URI, GvizDepositoryValuesServerResource.class);<a name="line.172"></a>
-<span class="sourceLineNo">173</span>    router.attach(API.VALUES_AVERAGE_URI, DepositoryAverageValuesServerResource.class);<a name="line.173"></a>
-<span class="sourceLineNo">174</span>    router.attach(API.VALUES_AVERAGE_GVIZ_URI, GvizDepositoryAverageValuesServerResource.class);<a name="line.174"></a>
-<span class="sourceLineNo">175</span>    router.attach(API.VALUES_MAXIMUM_URI, DepositoryMaximumValuesServerResource.class);<a name="line.175"></a>
-<span class="sourceLineNo">176</span>    router.attach(API.VALUES_MINIMUM_URI, DepositoryMinimumValuesServerResource.class);<a name="line.176"></a>
-<span class="sourceLineNo">177</span>    // MeasurementTypes<a name="line.177"></a>
-<span class="sourceLineNo">178</span>    router.attach(API.MEASUREMENT_TYPE_PUT_URI, MeasurementTypePutServerResource.class);<a name="line.178"></a>
-<span class="sourceLineNo">179</span>    router.attach(API.MEASUREMENT_TYPE_URI, MeasurementTypeServerResource.class);<a name="line.179"></a>
-<span class="sourceLineNo">180</span>    router.attach(API.MEASUREMENT_TYPES_URI, MeasurementTypesServerResource.class);<a name="line.180"></a>
-<span class="sourceLineNo">181</span>    // Sensors<a name="line.181"></a>
-<span class="sourceLineNo">182</span>    router.attach(API.SENSOR_PUT_URI, SensorPutServerResource.class);<a name="line.182"></a>
-<span class="sourceLineNo">183</span>    router.attach(API.SENSOR_URI, SensorServerResource.class);<a name="line.183"></a>
-<span class="sourceLineNo">184</span>    router.attach(API.SENSORS_URI, SensorsServerResource.class);<a name="line.184"></a>
-<span class="sourceLineNo">185</span>    // Sensor Measurement Summary<a name="line.185"></a>
-<span class="sourceLineNo">186</span>    router.attach(API.SENSOR_MEASUREMENT_SUMMARY_URI, SensorMeasurementServerResource.class);<a name="line.186"></a>
-<span class="sourceLineNo">187</span>    // SensorGroups<a name="line.187"></a>
-<span class="sourceLineNo">188</span>    router.attach(API.SENSOR_GROUP_PUT_URI, SensorGroupPutServerResource.class);<a name="line.188"></a>
-<span class="sourceLineNo">189</span>    router.attach(API.SENSOR_GROUP_URI, SensorGroupServerResource.class);<a name="line.189"></a>
-<span class="sourceLineNo">190</span>    router.attach(API.SENSOR_GROUPS_URI, SensorGroupsServerResource.class);<a name="line.190"></a>
-<span class="sourceLineNo">191</span>    // SensorModels<a name="line.191"></a>
-<span class="sourceLineNo">192</span>    router.attach(API.SENSOR_MODEL_PUT_URI, SensorModelPutServerResource.class);<a name="line.192"></a>
-<span class="sourceLineNo">193</span>    router.attach(API.SENSOR_MODEL_URI, SensorModelServerResource.class);<a name="line.193"></a>
-<span class="sourceLineNo">194</span>    router.attach(API.SENSOR_MODELS_URI, SensorModelsServerResource.class);<a name="line.194"></a>
-<span class="sourceLineNo">195</span>    // Users, UserGroups, and UserPasswords<a name="line.195"></a>
-<span class="sourceLineNo">196</span>    router.attach(API.USER_PUT_URI, UserInfoPutServerResource.class);<a name="line.196"></a>
-<span class="sourceLineNo">197</span>    router.attach(API.USER_URI, UserInfoServerResource.class);<a name="line.197"></a>
-<span class="sourceLineNo">198</span>    router.attach(API.USERS_URI, UserInfosServerResource.class);<a name="line.198"></a>
-<span class="sourceLineNo">199</span>    router.attach(API.USER_PASSWORD_URI, UserPasswordServerResource.class);<a name="line.199"></a>
-<span class="sourceLineNo">200</span>    router.attach(API.ORGANIZATION_PUT_URI, OrganizationPutServerResource.class);<a name="line.200"></a>
-<span class="sourceLineNo">201</span>    router.attach(API.ORGANIZATION_URI, OrganizationServerResource.class);<a name="line.201"></a>
-<span class="sourceLineNo">202</span>    router.attach(API.ORGANIZATIONS_URI, OrganizationsServerResource.class);<a name="line.202"></a>
-<span class="sourceLineNo">203</span><a name="line.203"></a>
-<span class="sourceLineNo">204</span>    ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(),<a name="line.204"></a>
-<span class="sourceLineNo">205</span>        ChallengeScheme.HTTP_BASIC, "WattDepot Realm");<a name="line.205"></a>
-<span class="sourceLineNo">206</span>    authenticator.setNext(router);<a name="line.206"></a>
-<span class="sourceLineNo">207</span>    return authenticator;<a name="line.207"></a>
-<span class="sourceLineNo">208</span><a name="line.208"></a>
-<span class="sourceLineNo">209</span>    // return router;<a name="line.209"></a>
-<span class="sourceLineNo">210</span>  }<a name="line.210"></a>
-<span class="sourceLineNo">211</span>}<a name="line.211"></a>
+<span class="sourceLineNo">166</span>    router.attach(API.MEASUREMENTS_PUT_URI, DepositoryMeasurementsPutServerResource.class);<a name="line.166"></a>
+<span class="sourceLineNo">167</span>    router.attach(API.MEASUREMENT_URI, DepositoryMeasurementServerResource.class);<a name="line.167"></a>
+<span class="sourceLineNo">168</span>    router.attach(API.MEASUREMENTS_URI, DepositoryMeasurementsServerResource.class);<a name="line.168"></a>
+<span class="sourceLineNo">169</span>    router.attach(API.MEASUREMENTS_GVIZ_URI, GvizDepositoryMeasurementsServerResource.class);<a name="line.169"></a>
+<span class="sourceLineNo">170</span>    router.attach(API.VALUE_URI, DepositoryValueServerResource.class);<a name="line.170"></a>
+<span class="sourceLineNo">171</span>    router.attach(API.VALUE_GVIZ_URI, GvizDepositoryValueServerResource.class);<a name="line.171"></a>
+<span class="sourceLineNo">172</span>    router.attach(API.VALUES_URI, DepositoryValuesServerResource.class);<a name="line.172"></a>
+<span class="sourceLineNo">173</span>    router.attach(API.VALUES_GVIZ_URI, GvizDepositoryValuesServerResource.class);<a name="line.173"></a>
+<span class="sourceLineNo">174</span>    router.attach(API.VALUES_AVERAGE_URI, DepositoryAverageValuesServerResource.class);<a name="line.174"></a>
+<span class="sourceLineNo">175</span>    router.attach(API.VALUES_AVERAGE_GVIZ_URI, GvizDepositoryAverageValuesServerResource.class);<a name="line.175"></a>
+<span class="sourceLineNo">176</span>    router.attach(API.VALUES_MAXIMUM_URI, DepositoryMaximumValuesServerResource.class);<a name="line.176"></a>
+<span class="sourceLineNo">177</span>    router.attach(API.VALUES_MINIMUM_URI, DepositoryMinimumValuesServerResource.class);<a name="line.177"></a>
+<span class="sourceLineNo">178</span>    // MeasurementTypes<a name="line.178"></a>
+<span class="sourceLineNo">179</span>    router.attach(API.MEASUREMENT_TYPE_PUT_URI, MeasurementTypePutServerResource.class);<a name="line.179"></a>
+<span class="sourceLineNo">180</span>    router.attach(API.MEASUREMENT_TYPE_URI, MeasurementTypeServerResource.class);<a name="line.180"></a>
+<span class="sourceLineNo">181</span>    router.attach(API.MEASUREMENT_TYPES_URI, MeasurementTypesServerResource.class);<a name="line.181"></a>
+<span class="sourceLineNo">182</span>    // Sensors<a name="line.182"></a>
+<span class="sourceLineNo">183</span>    router.attach(API.SENSOR_PUT_URI, SensorPutServerResource.class);<a name="line.183"></a>
+<span class="sourceLineNo">184</span>    router.attach(API.SENSOR_URI, SensorServerResource.class);<a name="line.184"></a>
+<span class="sourceLineNo">185</span>    router.attach(API.SENSORS_URI, SensorsServerResource.class);<a name="line.185"></a>
+<span class="sourceLineNo">186</span>    // Sensor Measurement Summary<a name="line.186"></a>
+<span class="sourceLineNo">187</span>    router.attach(API.SENSOR_MEASUREMENT_SUMMARY_URI, SensorMeasurementServerResource.class);<a name="line.187"></a>
+<span class="sourceLineNo">188</span>    // SensorGroups<a name="line.188"></a>
+<span class="sourceLineNo">189</span>    router.attach(API.SENSOR_GROUP_PUT_URI, SensorGroupPutServerResource.class);<a name="line.189"></a>
+<span class="sourceLineNo">190</span>    router.attach(API.SENSOR_GROUP_URI, SensorGroupServerResource.class);<a name="line.190"></a>
+<span class="sourceLineNo">191</span>    router.attach(API.SENSOR_GROUPS_URI, SensorGroupsServerResource.class);<a name="line.191"></a>
+<span class="sourceLineNo">192</span>    // SensorModels<a name="line.192"></a>
+<span class="sourceLineNo">193</span>    router.attach(API.SENSOR_MODEL_PUT_URI, SensorModelPutServerResource.class);<a name="line.193"></a>
+<span class="sourceLineNo">194</span>    router.attach(API.SENSOR_MODEL_URI, SensorModelServerResource.class);<a name="line.194"></a>
+<span class="sourceLineNo">195</span>    router.attach(API.SENSOR_MODELS_URI, SensorModelsServerResource.class);<a name="line.195"></a>
+<span class="sourceLineNo">196</span>    // Users, UserGroups, and UserPasswords<a name="line.196"></a>
+<span class="sourceLineNo">197</span>    router.attach(API.USER_PUT_URI, UserInfoPutServerResource.class);<a name="line.197"></a>
+<span class="sourceLineNo">198</span>    router.attach(API.USER_URI, UserInfoServerResource.class);<a name="line.198"></a>
+<span class="sourceLineNo">199</span>    router.attach(API.USERS_URI, UserInfosServerResource.class);<a name="line.199"></a>
+<span class="sourceLineNo">200</span>    router.attach(API.USER_PASSWORD_URI, UserPasswordServerResource.class);<a name="line.200"></a>
+<span class="sourceLineNo">201</span>    router.attach(API.ORGANIZATION_PUT_URI, OrganizationPutServerResource.class);<a name="line.201"></a>
+<span class="sourceLineNo">202</span>    router.attach(API.ORGANIZATION_URI, OrganizationServerResource.class);<a name="line.202"></a>
+<span class="sourceLineNo">203</span>    router.attach(API.ORGANIZATIONS_URI, OrganizationsServerResource.class);<a name="line.203"></a>
+<span class="sourceLineNo">204</span><a name="line.204"></a>
+<span class="sourceLineNo">205</span>    ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(),<a name="line.205"></a>
+<span class="sourceLineNo">206</span>        ChallengeScheme.HTTP_BASIC, "WattDepot Realm");<a name="line.206"></a>
+<span class="sourceLineNo">207</span>    authenticator.setNext(router);<a name="line.207"></a>
+<span class="sourceLineNo">208</span>    return authenticator;<a name="line.208"></a>
+<span class="sourceLineNo">209</span><a name="line.209"></a>
+<span class="sourceLineNo">210</span>    // return router;<a name="line.210"></a>
+<span class="sourceLineNo">211</span>  }<a name="line.211"></a>
+<span class="sourceLineNo">212</span>}<a name="line.212"></a>
 
 
 

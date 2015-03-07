@@ -45,22 +45,26 @@ import javax.measure.unit.UnitFormat;
 <span class="fc" id="L45">    format.label(SI.MICRO(SI.GRAM.divide(NonSI.LITER)), &quot;ppm&quot;);</span>
 <span class="fc" id="L46">    quantities.put(buildName(&quot;Power&quot;, SI.WATT), SI.WATT);</span>
 <span class="fc" id="L47">    quantities.put(buildName(&quot;Energy&quot;, SI.WATT.times(NonSI.HOUR)), SI.WATT.times(NonSI.HOUR));</span>
-<span class="fc" id="L48">    quantities.put(buildName(&quot;Frequency&quot;, SI.HERTZ), SI.HERTZ);</span>
-<span class="fc" id="L49">    quantities.put(buildName(&quot;Temperature&quot;, NonSI.FAHRENHEIT), NonSI.FAHRENHEIT);</span>
-<span class="fc" id="L50">    quantities.put(buildName(&quot;Temperature&quot;, SI.CELSIUS), SI.CELSIUS);</span>
-<span class="fc" id="L51">    quantities.put(buildName(&quot;Volume&quot;, NonSI.GALLON_LIQUID_US), NonSI.GALLON_LIQUID_US);</span>
-<span class="fc" id="L52">    quantities.put(buildName(&quot;Volume&quot;, NonSI.LITER), NonSI.LITER);</span>
-<span class="fc" id="L53">    quantities.put(buildName(&quot;Flow Rate&quot;, NonSI.GALLON_LIQUID_US.divide(SI.SECOND)),</span>
+<span class="fc" id="L48">    quantities.put(buildName(&quot;Energy&quot;, SI.KILO(SI.WATT).times(NonSI.HOUR)), SI.KILO(SI.WATT).times(NonSI.HOUR));</span>
+<span class="fc" id="L49">    quantities.put(buildName(&quot;Frequency&quot;, SI.HERTZ), SI.HERTZ);</span>
+<span class="fc" id="L50">    quantities.put(buildName(&quot;Temperature&quot;, NonSI.FAHRENHEIT), NonSI.FAHRENHEIT);</span>
+<span class="fc" id="L51">    quantities.put(buildName(&quot;Temperature&quot;, SI.CELSIUS), SI.CELSIUS);</span>
+<span class="fc" id="L52">    quantities.put(buildName(&quot;Volume&quot;, NonSI.GALLON_LIQUID_US), NonSI.GALLON_LIQUID_US);</span>
+<span class="fc" id="L53">    quantities.put(buildName(&quot;Volume&quot;, NonSI.LITER), NonSI.LITER);</span>
+<span class="fc" id="L54">    quantities.put(buildName(&quot;Volume&quot;, SI.CUBIC_METRE), SI.CUBIC_METRE);</span>
+<span class="fc" id="L55">    quantities.put(buildName(&quot;Flow Rate&quot;, NonSI.GALLON_LIQUID_US.divide(SI.SECOND)),</span>
         NonSI.GALLON_LIQUID_US.divide(SI.SECOND));
-<span class="fc" id="L55">    quantities.put(buildName(&quot;Flow Rate&quot;, NonSI.LITER.divide(SI.SECOND)),</span>
+<span class="fc" id="L57">    quantities.put(buildName(&quot;Flow Rate&quot;, NonSI.LITER.divide(SI.SECOND)),</span>
         NonSI.LITER.divide(SI.SECOND));
-<span class="fc" id="L57">    quantities.put(buildName(&quot;Mass&quot;, SI.KILOGRAM), SI.KILOGRAM);</span>
-<span class="fc" id="L58">    quantities.put(buildName(&quot;Mass&quot;, NonSI.POUND), NonSI.POUND);</span>
-<span class="fc" id="L59">    quantities.put(buildName(&quot;Humidity&quot;, NonSI.PERCENT), NonSI.PERCENT);</span>
-<span class="fc" id="L60">    quantities.put(buildName(&quot;Concentration&quot;, SI.MICRO(SI.GRAM.divide(NonSI.LITER))), SI.MICRO(SI.GRAM.divide(NonSI.LITER)));</span>
-<span class="fc" id="L61">    quantities.put(buildName(&quot;Cloud Coverage&quot;, NonSI.PERCENT), NonSI.PERCENT);</span>
+<span class="fc" id="L59">    quantities.put(buildName(&quot;Flow Rate&quot;, NonSI.LITER.divide(NonSI.MINUTE)),</span>
+            NonSI.LITER.divide(NonSI.MINUTE));
+<span class="fc" id="L61">    quantities.put(buildName(&quot;Mass&quot;, SI.KILOGRAM), SI.KILOGRAM);</span>
+<span class="fc" id="L62">    quantities.put(buildName(&quot;Mass&quot;, NonSI.POUND), NonSI.POUND);</span>
+<span class="fc" id="L63">    quantities.put(buildName(&quot;Humidity&quot;, NonSI.PERCENT), NonSI.PERCENT);</span>
+<span class="fc" id="L64">    quantities.put(buildName(&quot;Concentration&quot;, SI.MICRO(SI.GRAM.divide(NonSI.LITER))), SI.MICRO(SI.GRAM.divide(NonSI.LITER)));</span>
+<span class="fc" id="L65">    quantities.put(buildName(&quot;Cloud Coverage&quot;, NonSI.PERCENT), NonSI.PERCENT);</span>
 
-<span class="fc" id="L63">  }</span>
+<span class="fc" id="L67">  }</span>
 
   /**
    * @param type
@@ -70,20 +74,20 @@ import javax.measure.unit.UnitFormat;
    * @return The name.
    */
   public static String buildName(String type, Unit&lt;?&gt; unit) {
-<span class="fc" id="L73">    String s = unit.toString();</span>
-<span class="fc" id="L74">    String s1 = Normalizer.normalize(s, Normalizer.Form.NFKD);</span>
-<span class="fc" id="L75">    String regex = Pattern.quote(&quot;[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+&quot;);</span>
+<span class="fc" id="L77">    String s = unit.toString();</span>
+<span class="fc" id="L78">    String s1 = Normalizer.normalize(s, Normalizer.Form.NFKD);</span>
+<span class="fc" id="L79">    String regex = Pattern.quote(&quot;[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+&quot;);</span>
 
     try {
-<span class="fc" id="L78">      String s2 = new String(s1.replaceAll(regex, &quot;&quot;).getBytes(&quot;ascii&quot;), &quot;ascii&quot;);</span>
-<span class="fc" id="L79">      s2 = s2.replace(&quot;?&quot;, &quot;&quot;);</span>
-<span class="fc" id="L80">      return type + &quot; (&quot; + s2 + &quot;)&quot;;</span>
+<span class="fc" id="L82">      String s2 = new String(s1.replaceAll(regex, &quot;&quot;).getBytes(&quot;ascii&quot;), &quot;ascii&quot;);</span>
+<span class="fc" id="L83">      s2 = s2.replace(&quot;?&quot;, &quot;&quot;);</span>
+<span class="fc" id="L84">      return type + &quot; (&quot; + s2 + &quot;)&quot;;</span>
       
     }
-<span class="nc" id="L83">    catch (UnsupportedEncodingException e) {</span>
-<span class="nc" id="L84">      e.printStackTrace();</span>
+<span class="nc" id="L87">    catch (UnsupportedEncodingException e) {</span>
+<span class="nc" id="L88">      e.printStackTrace();</span>
     }
-<span class="nc" id="L86">    return type + &quot; (&quot; + s1 + &quot;)&quot;;</span>
+<span class="nc" id="L90">    return type + &quot; (&quot; + s1 + &quot;)&quot;;</span>
   }
 
 

@@ -21,12 +21,14 @@ package org.wattdepot.server;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.util.UserHome;
 
 /**
@@ -64,6 +66,10 @@ public class ServerProperties {
   public static final String DB_CONNECTION_DRIVER = &quot;wattdepot-server.db.connection.driver&quot;;
   /** The database connection driver url. */
   public static final String DB_CONNECTION_URL = &quot;wattdepot-server.db.connection.url&quot;;
+  /** The database connection driver url environment variable. */
+  public static final String DB_CONNECTION_URL_ENV = &quot;WATTDEPOT_DATABASE_URL&quot;;
+  /** The database url. */
+  public static final String DATABASE_URL = &quot;wattdepot-server.database.url&quot;;
   /** The database username. */
   public static final String DB_USER_NAME = &quot;wattdepot-server.db.username&quot;;
   /** The database password. */
@@ -110,10 +116,11 @@ public class ServerProperties {
   /**
    * Creates a new ServerProperties instance using the default filename. Prints
    * an error to the console if problems occur on loading.
+   * @throws Exception if errors occur.
    */
-  public ServerProperties() {
-<span class="fc" id="L115">    this(null);</span>
-<span class="fc" id="L116">  }</span>
+  public ServerProperties() throws Exception {
+<span class="fc" id="L122">    this(null);</span>
+<span class="fc" id="L123">  }</span>
 
   /**
    * Creates a new ServerProperties instance loaded from the given filename.
@@ -121,32 +128,27 @@ public class ServerProperties {
    * 
    * @param serverSubdir The name of the subdirectory used to store all files
    *        for this server.
+   * @throws Exception if errors occur.
    */
-<span class="fc" id="L125">  public ServerProperties(String serverSubdir) {</span>
-    try {
-<span class="fc" id="L127">      initializeProperties(serverSubdir);</span>
-    }
-<span class="nc" id="L129">    catch (Exception e) {</span>
-<span class="nc" id="L130">      Logger.getLogger(&quot;org.wattdepot.properties&quot;).severe(</span>
-          &quot;Error initializing server properties. &quot; + e.getMessage());
-<span class="fc" id="L132">    }</span>
-<span class="fc" id="L133">  }</span>
+<span class="fc" id="L133">  public ServerProperties(String serverSubdir) throws Exception {</span>
+<span class="fc" id="L134">    initializeProperties(serverSubdir);</span>
+<span class="fc" id="L135">  }</span>
 
   /**
    * Sets the properties to their &quot;test&quot; equivalents and updates the system
    * properties.
    */
   public void setTestProperties() {
-<span class="fc" id="L140">    properties.setProperty(PORT_KEY, properties.getProperty(TEST_PORT_KEY));</span>
-<span class="fc" id="L141">    properties.setProperty(WATT_DEPOT_IMPL_KEY, properties.getProperty(TEST_WATT_DEPOT_IMPL_KEY));</span>
+<span class="fc" id="L142">    properties.setProperty(PORT_KEY, properties.getProperty(TEST_PORT_KEY));</span>
+<span class="fc" id="L143">    properties.setProperty(WATT_DEPOT_IMPL_KEY, properties.getProperty(TEST_WATT_DEPOT_IMPL_KEY));</span>
     // turn off logging during testing.
-<span class="fc" id="L143">    properties.setProperty(LOGGING_LEVEL_KEY, &quot;SEVERE&quot;);</span>
-<span class="fc" id="L144">    trimProperties(properties);</span>
+<span class="fc" id="L145">    properties.setProperty(LOGGING_LEVEL_KEY, &quot;SEVERE&quot;);</span>
+<span class="fc" id="L146">    trimProperties(properties);</span>
     // update the system properties object to reflect these new values.
-<span class="fc" id="L146">    Properties systemProperties = System.getProperties();</span>
-<span class="fc" id="L147">    systemProperties.putAll(properties);</span>
-<span class="fc" id="L148">    System.setProperties(systemProperties);</span>
-<span class="fc" id="L149">  }</span>
+<span class="fc" id="L148">    Properties systemProperties = System.getProperties();</span>
+<span class="fc" id="L149">    systemProperties.putAll(properties);</span>
+<span class="fc" id="L150">    System.setProperties(systemProperties);</span>
+<span class="fc" id="L151">  }</span>
 
   /**
    * Returns a string containing all current properties in alphabetical order.
@@ -158,28 +160,27 @@ public class ServerProperties {
    * @return A string with the properties.
    */
   public String echoProperties() {
-<span class="fc" id="L161">    String cr = System.getProperty(&quot;line.separator&quot;);</span>
-<span class="fc" id="L162">    String eq = &quot; = &quot;;</span>
-<span class="fc" id="L163">    String pad = &quot;                &quot;;</span>
+<span class="fc" id="L163">    String cr = System.getProperty(&quot;line.separator&quot;);</span>
+<span class="fc" id="L164">    String eq = &quot; = &quot;;</span>
+<span class="fc" id="L165">    String pad = &quot;                &quot;;</span>
     // Adding them to a treemap has the effect of alphabetizing them.
-<span class="fc" id="L165">    TreeMap&lt;String, String&gt; alphaProps = new TreeMap&lt;String, String&gt;();</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">    for (Map.Entry&lt;Object, Object&gt; entry : this.properties.entrySet()) {</span>
-<span class="fc" id="L167">      String propName = (String) entry.getKey();</span>
-<span class="fc" id="L168">      String propValue = (String) entry.getValue();</span>
-<span class="fc" id="L169">      alphaProps.put(propName, propValue);</span>
-<span class="fc" id="L170">    }</span>
-<span class="fc" id="L171">    StringBuffer buff = new StringBuffer(25);</span>
-<span class="fc" id="L172">    buff.append(&quot;Server Properties:&quot;).append(cr);</span>
-<span class="fc bfc" id="L173" title="All 2 branches covered.">    for (String key : alphaProps.keySet()) {</span>
-<span class="fc bfc" id="L174" title="All 2 branches covered.">      if (key.contains(&quot;password&quot;)) {</span>
-<span class="fc" id="L175">        buff.append(pad).append(key).append(eq).append(get(key)).append(cr);</span>
-<span class="fc" id="L176">        buff.append(pad).append(key).append(eq).append(&quot;((hidden))&quot;).append(cr);</span>
+<span class="fc" id="L167">    TreeMap&lt;String, String&gt; alphaProps = new TreeMap&lt;String, String&gt;();</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">    for (Map.Entry&lt;Object, Object&gt; entry : this.properties.entrySet()) {</span>
+<span class="fc" id="L169">      String propName = (String) entry.getKey();</span>
+<span class="fc" id="L170">      String propValue = (String) entry.getValue();</span>
+<span class="fc" id="L171">      alphaProps.put(propName, propValue);</span>
+<span class="fc" id="L172">    }</span>
+<span class="fc" id="L173">    StringBuffer buff = new StringBuffer(25);</span>
+<span class="fc" id="L174">    buff.append(&quot;Server Properties:&quot;).append(cr);</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">    for (String key : alphaProps.keySet()) {</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">      if (key.contains(&quot;password&quot;)) {</span>
+<span class="fc" id="L177">        buff.append(pad).append(key).append(eq).append(&quot;((hidden))&quot;).append(cr);</span>
       }
       else {
-<span class="fc" id="L179">        buff.append(pad).append(key).append(eq).append(get(key)).append(cr);</span>
+<span class="fc" id="L180">        buff.append(pad).append(key).append(eq).append(get(key)).append(cr);</span>
       }
-<span class="fc" id="L181">    }</span>
-<span class="fc" id="L182">    return buff.toString();</span>
+<span class="fc" id="L182">    }</span>
+<span class="fc" id="L183">    return buff.toString();</span>
   }
 
   /**
@@ -189,7 +190,7 @@ public class ServerProperties {
    * @return The value of the key, or null if not found.
    */
   public String get(String key) {
-<span class="fc" id="L192">    return this.properties.getProperty(key);</span>
+<span class="fc" id="L193">    return this.properties.getProperty(key);</span>
   }
 
   /**
@@ -198,8 +199,8 @@ public class ServerProperties {
    * @param value the value
    */
   public void set(String key, String value) {
-<span class="nc" id="L201">    this.properties.setProperty(key, value);</span>
-<span class="nc" id="L202">  }</span>
+<span class="nc" id="L202">    this.properties.setProperty(key, value);</span>
+<span class="nc" id="L203">  }</span>
   
   /**
    * Ensures that the there is no leading or trailing whitespace in the property
@@ -211,11 +212,11 @@ public class ServerProperties {
   private void trimProperties(Properties properties) {
     // Have to do this iteration in a Java 5 compatible manner. no
     // stringPropertyNames().
-<span class="fc bfc" id="L214" title="All 2 branches covered.">    for (Map.Entry&lt;Object, Object&gt; entry : properties.entrySet()) {</span>
-<span class="fc" id="L215">      String propName = (String) entry.getKey();</span>
-<span class="fc" id="L216">      properties.setProperty(propName, properties.getProperty(propName).trim());</span>
-<span class="fc" id="L217">    }</span>
-<span class="fc" id="L218">  }</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">    for (Map.Entry&lt;Object, Object&gt; entry : properties.entrySet()) {</span>
+<span class="fc" id="L216">      String propName = (String) entry.getKey();</span>
+<span class="fc" id="L217">      properties.setProperty(propName, properties.getProperty(propName).trim());</span>
+<span class="fc" id="L218">    }</span>
+<span class="fc" id="L219">  }</span>
 
   /**
    * Reads in the properties in ~/.wattdepot3/server/wattdepot-server.properties
@@ -228,118 +229,161 @@ public class ServerProperties {
    * @throws Exception if errors occur.
    */
   private void initializeProperties(String serverSubdir) throws Exception {
-<span class="fc" id="L231">    Logger logger = Logger.getLogger(&quot;org.wattdepot.properties&quot;);</span>
-<span class="fc" id="L232">    String userHome = UserHome.getHomeString();</span>
-<span class="fc" id="L233">    String wattDepot3Home = userHome + &quot;/.wattdepot3/&quot;;</span>
-<span class="fc" id="L234">    String serverHome = null;</span>
-<span class="pc bpc" id="L235" title="1 of 2 branches missed.">    if (serverSubdir == null) {</span>
-<span class="fc" id="L236">      serverHome = wattDepot3Home + &quot;server&quot;;</span>
+<span class="fc" id="L232">    Logger logger = Logger.getLogger(&quot;org.wattdepot.properties&quot;);</span>
+<span class="fc" id="L233">    String userHome = UserHome.getHomeString();</span>
+<span class="fc" id="L234">    String wattDepot3Home = userHome + &quot;/.wattdepot3/&quot;;</span>
+<span class="fc" id="L235">    String serverHome = null;</span>
+<span class="pc bpc" id="L236" title="1 of 2 branches missed.">    if (serverSubdir == null) {</span>
+<span class="fc" id="L237">      serverHome = wattDepot3Home + &quot;server&quot;;</span>
     }
     else {
-<span class="nc" id="L239">      serverHome = wattDepot3Home + serverSubdir;</span>
+<span class="nc" id="L240">      serverHome = wattDepot3Home + serverSubdir;</span>
     }
-<span class="fc" id="L241">    String propFileName = serverHome + &quot;/wattdepot-server.properties&quot;;</span>
-<span class="fc" id="L242">    String defaultAdminName = UserInfo.ROOT.getUid();</span>
-<span class="fc" id="L243">    String defaultAdminPassword = UserInfo.ROOT.getPassword();</span>
-<span class="fc" id="L244">    String defaultWattDepotImpl = &quot;org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl&quot;;</span>
-<span class="fc" id="L245">    String defaultPort = &quot;8192&quot;;</span>
-<span class="fc" id="L246">    String defaultTestPort = &quot;8194&quot;;</span>
-<span class="fc" id="L247">    this.properties = new Properties();</span>
-    // Set default values
-<span class="fc" id="L249">    properties.setProperty(SERVER_HOME_DIR, serverHome);</span>
-<span class="fc" id="L250">    properties.setProperty(ADMIN_USER_NAME, defaultAdminName);</span>
-<span class="fc" id="L251">    properties.setProperty(ADMIN_USER_PASSWORD, defaultAdminPassword);</span>
-<span class="fc" id="L252">    properties.setProperty(WATT_DEPOT_IMPL_KEY, defaultWattDepotImpl);</span>
-<span class="fc" id="L253">    properties.setProperty(HOSTNAME_KEY, &quot;localhost&quot;);</span>
-<span class="fc" id="L254">    properties.setProperty(PORT_KEY, defaultPort);</span>
-<span class="fc" id="L255">    properties.setProperty(DB_CONNECTION_DRIVER, &quot;org.postgresql.Driver&quot;);</span>
-<span class="fc" id="L256">    properties.setProperty(DB_CONNECTION_URL, &quot;jdbc:postgresql://localhost:5432/wattdepot&quot;);</span>
-<span class="fc" id="L257">    properties.setProperty(DB_USER_NAME, &quot;myuser&quot;);</span>
-<span class="fc" id="L258">    properties.setProperty(DB_PASSWORD, &quot;secret&quot;);</span>
-<span class="fc" id="L259">    properties.setProperty(DB_SHOW_SQL, FALSE);</span>
-<span class="fc" id="L260">    properties.setProperty(DB_TABLE_UPDATE, &quot;update&quot;);</span>
-<span class="fc" id="L261">    properties.setProperty(ENABLE_LOGGING_KEY, TRUE);</span>
-<span class="fc" id="L262">    properties.setProperty(CHECK_SESSIONS, FALSE);</span>
-<span class="fc" id="L263">    properties.setProperty(LOGGING_LEVEL_KEY, &quot;INFO&quot;);</span>
-<span class="fc" id="L264">    properties.setProperty(CONTEXT_ROOT_KEY, &quot;wattdepot&quot;);</span>
-<span class="fc" id="L265">    properties.setProperty(SERVER_TIMING_KEY, FALSE);</span>
-<span class="fc" id="L266">    properties.setProperty(TEST_PORT_KEY, defaultTestPort);</span>
-<span class="fc" id="L267">    properties.setProperty(TEST_WATT_DEPOT_IMPL_KEY, defaultWattDepotImpl);</span>
-<span class="fc" id="L268">    properties.setProperty(USE_HEROKU_KEY, FALSE);</span>
-<span class="fc" id="L269">    properties.setProperty(TEST_HEROKU_KEY, FALSE);</span>
-
-<span class="fc" id="L271">    logger.finest(echoProperties());</span>
-    // grab all of the properties in the environment
-<span class="fc" id="L273">    Map&lt;String, String&gt; systemProps = System.getenv();</span>
-<span class="fc bfc" id="L274" title="All 2 branches covered.">    for (Map.Entry&lt;String, String&gt; prop : systemProps.entrySet()) {</span>
-<span class="pc bpc" id="L275" title="1 of 2 branches missed.">      if (prop.getKey().startsWith(ADMIN_USER_NAME_ENV)) {</span>
-<span class="nc" id="L276">        properties.setProperty(ADMIN_USER_NAME, prop.getValue());</span>
-      }
-<span class="pc bpc" id="L278" title="1 of 2 branches missed.">      if (prop.getKey().startsWith(ADMIN_USER_PASSWORD_ENV)) {</span>
-<span class="nc" id="L279">        properties.setProperty(ADMIN_USER_PASSWORD, prop.getValue());</span>
-      }
-<span class="pc bpc" id="L281" title="1 of 2 branches missed.">      if (prop.getKey().startsWith(&quot;wattdepot-server.&quot;)) {</span>
-<span class="nc" id="L282">        properties.setProperty(prop.getKey(), prop.getValue());</span>
-      }
-<span class="fc" id="L284">    }</span>
-<span class="fc" id="L285">    logger.finest(echoProperties());</span>
+<span class="fc" id="L242">    String propFileName = serverHome + &quot;/wattdepot-server.properties&quot;;</span>
+<span class="fc" id="L243">    this.properties = new Properties();</span>
     // Use properties from file, if they exist.
-<span class="fc" id="L287">    FileInputStream stream = null;</span>
+<span class="fc" id="L245">    FileInputStream stream = null;</span>
     try {
-<span class="fc" id="L289">      stream = new FileInputStream(propFileName);</span>
-<span class="fc" id="L290">      properties.load(stream);</span>
-<span class="fc" id="L291">      logger.info(&quot;Loading Server properties from: &quot; + propFileName);</span>
+<span class="fc" id="L247">      stream = new FileInputStream(propFileName);</span>
+<span class="fc" id="L248">      properties.load(stream);</span>
+<span class="fc" id="L249">      logger.info(&quot;Loading Server properties from: &quot; + propFileName);</span>
 
     }
-<span class="nc" id="L294">    catch (IOException e) {</span>
-<span class="nc" id="L295">      logger.info(propFileName + &quot; not found. Using default server properties.&quot;);</span>
+<span class="nc" id="L252">    catch (IOException e) {</span>
+<span class="nc" id="L253">      logger.info(propFileName + &quot; not found. Using default server properties.&quot;);</span>
     }
     finally {
-<span class="pc bpc" id="L298" title="5 of 6 branches missed.">      if (stream != null) {</span>
-<span class="pc" id="L299">        stream.close();</span>
+<span class="pc bpc" id="L256" title="5 of 6 branches missed.">      if (stream != null) {</span>
+<span class="pc" id="L257">        stream.close();</span>
       }
     }
-<span class="fc" id="L302">    addServerSystemProperties(this.properties);</span>
-<span class="fc" id="L303">    trimProperties(properties);</span>
-<span class="fc" id="L304">    logger.finest(echoProperties());</span>
+<span class="fc" id="L260">    processDatabaseURL(properties.getProperty(DATABASE_URL));</span>
+    // grab all of the properties in the environment
+<span class="fc" id="L262">    Map&lt;String, String&gt; systemProps = System.getenv();</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">    for (Map.Entry&lt;String, String&gt; prop : systemProps.entrySet()) {</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">      if (prop.getKey().startsWith(ADMIN_USER_NAME_ENV)) {</span>
+<span class="fc" id="L265">        properties.setProperty(ADMIN_USER_NAME, prop.getValue());</span>
+      }
+<span class="fc bfc" id="L267" title="All 2 branches covered.">      if (prop.getKey().startsWith(ADMIN_USER_PASSWORD_ENV)) {</span>
+<span class="fc" id="L268">        properties.setProperty(ADMIN_USER_PASSWORD, prop.getValue());</span>
+      }
+<span class="pc bpc" id="L270" title="1 of 2 branches missed.">      if (prop.getKey().startsWith(DB_CONNECTION_URL_ENV)) {</span>
+<span class="nc" id="L271">        processDatabaseURL(prop.getValue());</span>
+      }
+<span class="pc bpc" id="L273" title="1 of 2 branches missed.">      if (prop.getKey().startsWith(&quot;DATABASE_URL&quot;)) {</span>
+<span class="nc" id="L274">        processDatabaseURL(prop.getValue());</span>
+      }
+<span class="fc" id="L276">    }</span>
+<span class="pc bpc" id="L277" title="3 of 6 branches missed.">    if (!properties.containsKey(ADMIN_USER_NAME) || !properties.containsKey(ADMIN_USER_PASSWORD) || !properties.containsKey(DB_CONNECTION_URL)) {</span>
+<span class="nc" id="L278">      StringBuilder sb = new StringBuilder();</span>
+<span class="nc bnc" id="L279" title="All 2 branches missed.">      if (!properties.containsKey(ADMIN_USER_NAME)) {</span>
+<span class="nc" id="L280">        sb.append(&quot;WattDepot Admin name not set. &quot;);</span>
+      }
+<span class="nc bnc" id="L282" title="All 2 branches missed.">      if (!properties.containsKey(ADMIN_USER_PASSWORD)) {</span>
+<span class="nc" id="L283">        sb.append(&quot;WattDepot Admin password not set. &quot;);</span>
+      }
+<span class="nc bnc" id="L285" title="All 4 branches missed.">      if (!(properties.containsKey(DB_CONNECTION_URL_ENV) || properties.containsKey(&quot;DATABASE_URL&quot;))) {</span>
+<span class="nc" id="L286">        sb.append(&quot;WattDepot database url not set. &quot;);</span>
+      }
+<span class="nc" id="L288">      throw new SecurityException(sb.toString());</span>
+    }
+<span class="fc" id="L290">    UserInfo.ROOT.setUid(properties.getProperty(ADMIN_USER_NAME));</span>
+<span class="fc" id="L291">    UserInfo.ROOT.setPassword(properties.getProperty(ADMIN_USER_PASSWORD));</span>
+<span class="fc" id="L292">    UserPassword.ROOT.setUid(properties.getProperty(ADMIN_USER_NAME));</span>
+<span class="fc" id="L293">    UserPassword.ROOT.setPassword(properties.getProperty(ADMIN_USER_PASSWORD));</span>
+<span class="fc" id="L294">    String defaultWattDepotImpl = &quot;org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl&quot;;</span>
+    // Set default values if not set
+<span class="pc bpc" id="L296" title="1 of 2 branches missed.">    if (!properties.containsKey(SERVER_HOME_DIR)) {</span>
+<span class="fc" id="L297">      properties.setProperty(SERVER_HOME_DIR, serverHome);</span>
+    }
+<span class="pc bpc" id="L299" title="1 of 2 branches missed.">    if (!properties.containsKey(WATT_DEPOT_IMPL_KEY)) {</span>
+<span class="nc" id="L300">      properties.setProperty(WATT_DEPOT_IMPL_KEY, defaultWattDepotImpl);</span>
+    }
+<span class="pc bpc" id="L302" title="1 of 2 branches missed.">    if (!properties.containsKey(HOSTNAME_KEY)) {</span>
+<span class="fc" id="L303">      properties.setProperty(HOSTNAME_KEY, &quot;localhost&quot;);</span>
+    }
+<span class="pc bpc" id="L305" title="1 of 2 branches missed.">    if (!properties.containsKey(PORT_KEY)) {</span>
+<span class="fc" id="L306">      properties.setProperty(PORT_KEY, &quot;8192&quot;);</span>
+    }
+<span class="pc bpc" id="L308" title="1 of 2 branches missed.">    if (!properties.containsKey(DB_CONNECTION_DRIVER)) {</span>
+<span class="fc" id="L309">      properties.setProperty(DB_CONNECTION_DRIVER, &quot;org.postgresql.Driver&quot;);</span>
+    }
+<span class="pc bpc" id="L311" title="1 of 2 branches missed.">    if (!properties.containsKey(DB_CONNECTION_URL)) {</span>
+<span class="nc" id="L312">      properties.setProperty(DB_CONNECTION_URL, &quot;jdbc:postgresql://localhost:5432/wattdepot&quot;);</span>
+    }
+<span class="pc bpc" id="L314" title="1 of 2 branches missed.">    if (!properties.containsKey(DB_SHOW_SQL)) {</span>
+<span class="nc" id="L315">      properties.setProperty(DB_SHOW_SQL, FALSE);</span>
+    }
+<span class="pc bpc" id="L317" title="1 of 2 branches missed.">    if (!properties.containsKey(DB_TABLE_UPDATE)) {</span>
+<span class="nc" id="L318">      properties.setProperty(DB_TABLE_UPDATE, &quot;update&quot;);</span>
+    }
+<span class="pc bpc" id="L320" title="1 of 2 branches missed.">    if (!properties.containsKey(ENABLE_LOGGING_KEY)) {</span>
+<span class="nc" id="L321">      properties.setProperty(ENABLE_LOGGING_KEY, TRUE);</span>
+    }
+<span class="pc bpc" id="L323" title="1 of 2 branches missed.">    if (!properties.containsKey(CHECK_SESSIONS)) {</span>
+<span class="fc" id="L324">      properties.setProperty(CHECK_SESSIONS, FALSE);</span>
+    }
+<span class="pc bpc" id="L326" title="1 of 2 branches missed.">    if (!properties.containsKey(LOGGING_LEVEL_KEY)) {</span>
+<span class="nc" id="L327">      properties.setProperty(LOGGING_LEVEL_KEY, &quot;INFO&quot;);</span>
+    }
+<span class="pc bpc" id="L329" title="1 of 2 branches missed.">    if (!properties.containsKey(CONTEXT_ROOT_KEY)) {</span>
+<span class="fc" id="L330">      properties.setProperty(CONTEXT_ROOT_KEY, &quot;wattdepot&quot;);</span>
+    }
+<span class="pc bpc" id="L332" title="1 of 2 branches missed.">    if (!properties.containsKey(SERVER_TIMING_KEY)) {</span>
+<span class="nc" id="L333">      properties.setProperty(SERVER_TIMING_KEY, FALSE);</span>
+    }
+<span class="pc bpc" id="L335" title="1 of 2 branches missed.">    if (!properties.containsKey(TEST_PORT_KEY)) {</span>
+<span class="fc" id="L336">      properties.setProperty(TEST_PORT_KEY, &quot;8194&quot;);</span>
+    }
+<span class="pc bpc" id="L338" title="1 of 2 branches missed.">    if (!properties.containsKey(TEST_WATT_DEPOT_IMPL_KEY)) {</span>
+<span class="fc" id="L339">      properties.setProperty(TEST_WATT_DEPOT_IMPL_KEY, defaultWattDepotImpl);</span>
+    }
+<span class="pc bpc" id="L341" title="1 of 2 branches missed.">    if (!properties.containsKey(USE_HEROKU_KEY)) {</span>
+<span class="fc" id="L342">      properties.setProperty(USE_HEROKU_KEY, FALSE);</span>
+    }
+<span class="pc bpc" id="L344" title="1 of 2 branches missed.">    if (!properties.containsKey(TEST_HEROKU_KEY)) {</span>
+<span class="fc" id="L345">      properties.setProperty(TEST_HEROKU_KEY, FALSE);</span>
+    }
+<span class="fc" id="L347">    logger.finest(echoProperties());</span>
+<span class="fc" id="L348">    trimProperties(properties);</span>
+<span class="fc" id="L349">    logger.finest(echoProperties());</span>
+
     // get PORT and DATABASE_URL for heroku
-<span class="fc" id="L306">    String webPort = System.getenv(&quot;PORT&quot;);</span>
-<span class="pc bpc" id="L307" title="3 of 4 branches missed.">    if (webPort != null &amp;&amp; !webPort.isEmpty()) {</span>
-<span class="nc" id="L308">      properties.setProperty(PORT_KEY, webPort);</span>
+<span class="fc" id="L352">    String webPort = System.getenv(&quot;PORT&quot;);</span>
+<span class="pc bpc" id="L353" title="3 of 4 branches missed.">    if (webPort != null &amp;&amp; !webPort.isEmpty()) {</span>
+<span class="nc" id="L354">      properties.setProperty(PORT_KEY, webPort);</span>
     }
 
-<span class="fc" id="L311">    String databaseURL = System.getenv(&quot;DATABASE_URL&quot;);</span>
-<span class="pc bpc" id="L312" title="3 of 4 branches missed.">    if (databaseURL != null &amp;&amp; !databaseURL.isEmpty()) {</span>
-<span class="nc" id="L313">      URI dbUri = new URI(databaseURL);</span>
-<span class="nc" id="L314">      String username = dbUri.getUserInfo().split(&quot;:&quot;)[0];</span>
-<span class="nc" id="L315">      String password = dbUri.getUserInfo().split(&quot;:&quot;)[1];</span>
-<span class="nc" id="L316">      String dbUrl = &quot;jdbc:postgresql://&quot; + dbUri.getHost() + dbUri.getPath();</span>
-<span class="nc" id="L317">      properties.setProperty(DB_USER_NAME, username);</span>
-<span class="nc" id="L318">      properties.setProperty(DB_PASSWORD, password);</span>
-<span class="nc" id="L319">      properties.setProperty(DB_CONNECTION_URL, dbUrl);</span>
+<span class="fc" id="L357">    String databaseURL = System.getenv(&quot;DATABASE_URL&quot;);</span>
+<span class="pc bpc" id="L358" title="3 of 4 branches missed.">    if (databaseURL != null &amp;&amp; !databaseURL.isEmpty()) {</span>
+<span class="nc" id="L359">      URI dbUri = new URI(databaseURL);</span>
+<span class="nc" id="L360">      String username = dbUri.getUserInfo().split(&quot;:&quot;)[0];</span>
+<span class="nc" id="L361">      String password = dbUri.getUserInfo().split(&quot;:&quot;)[1];</span>
+<span class="nc" id="L362">      String dbUrl = &quot;jdbc:postgresql://&quot; + dbUri.getHost() +  dbUri.getPath();</span>
+<span class="nc" id="L363">      properties.setProperty(DB_USER_NAME, username);</span>
+<span class="nc" id="L364">      properties.setProperty(DB_PASSWORD, password);</span>
+<span class="nc" id="L365">      properties.setProperty(DB_CONNECTION_URL, dbUrl);</span>
     }
 
-<span class="fc" id="L322">  }</span>
+<span class="fc" id="L368">  }</span>
 
   /**
-   * Finds any System properties whose key begins with &quot;wattdepot-server.&quot;, and
-   * adds those key-value pairs to the passed Properties object.
-   * 
-   * @param properties The properties instance to be updated with the WattDepot
-   *        system properties.
+   * Parses the given database url to set the database username, password, and connection url.
+   * @param url the database url.
+   * @throws java.net.URISyntaxException if there is a problem with the url.
    */
-  private void addServerSystemProperties(Properties properties) {
-<span class="fc" id="L332">    Properties systemProperties = System.getProperties();</span>
-<span class="fc bfc" id="L333" title="All 2 branches covered.">    for (Map.Entry&lt;Object, Object&gt; entry : systemProperties.entrySet()) {</span>
-<span class="fc" id="L334">      String sysPropName = (String) entry.getKey();</span>
-<span class="fc bfc" id="L335" title="All 2 branches covered.">      if (sysPropName.startsWith(&quot;wattdepot-server.&quot;)) {</span>
-<span class="fc" id="L336">        String sysPropValue = (String) entry.getValue();</span>
-<span class="pc bpc" id="L337" title="2 of 4 branches missed.">        if (sysPropValue != null &amp;&amp; !sysPropValue.isEmpty()) {</span>
-<span class="fc" id="L338">          properties.setProperty(sysPropName, sysPropValue);</span>
-        }
-      }
-<span class="fc" id="L341">    }</span>
-<span class="fc" id="L342">  }</span>
+  private void processDatabaseURL(String url) throws URISyntaxException {
+<span class="pc bpc" id="L376" title="2 of 4 branches missed.">    if (url != null &amp;&amp; !url.isEmpty()) {</span>
+<span class="fc" id="L377">      URI dbUri = new URI(url);</span>
+<span class="fc" id="L378">      String username = dbUri.getUserInfo().split(&quot;:&quot;)[0];</span>
+<span class="fc" id="L379">      String password = dbUri.getUserInfo().split(&quot;:&quot;)[1];</span>
+<span class="fc" id="L380">      String dbUrl = &quot;jdbc:postgresql://&quot; + dbUri.getHost() + &quot;:&quot; + dbUri.getPort() +  dbUri.getPath();</span>
+<span class="fc" id="L381">      properties.setProperty(DB_USER_NAME, username);</span>
+<span class="fc" id="L382">      properties.setProperty(DB_PASSWORD, password);</span>
+<span class="fc" id="L383">      properties.setProperty(DB_CONNECTION_URL, dbUrl);</span>
+    }
+
+<span class="fc" id="L386">  }</span>
 
   /**
    * Returns the fully qualified host name, such as
@@ -364,12 +408,12 @@ public class ServerProperties {
     // 80), and the URI of parent resources such as a Source in a SensorData
     // resource (should be
     // the public port on Heroku).
-<span class="pc bpc" id="L367" title="2 of 4 branches missed.">    if (properties.getProperty(USE_HEROKU_KEY).equals(TRUE)</span>
+<span class="pc bpc" id="L411" title="2 of 4 branches missed.">    if (properties.getProperty(USE_HEROKU_KEY).equals(TRUE)</span>
         || properties.getProperty(TEST_HEROKU_KEY).equals(TRUE)) {
-<span class="nc" id="L369">      return &quot;http://&quot; + get(HOSTNAME_KEY) + &quot;:80/&quot; + get(CONTEXT_ROOT_KEY) + &quot;/&quot;;</span>
+<span class="nc" id="L413">      return &quot;http://&quot; + get(HOSTNAME_KEY) + &quot;:80/&quot; + get(CONTEXT_ROOT_KEY) + &quot;/&quot;;</span>
     }
     else {
-<span class="fc" id="L372">      return &quot;http://&quot; + get(HOSTNAME_KEY) + &quot;:&quot; + get(PORT_KEY) + &quot;/&quot; + get(CONTEXT_ROOT_KEY)</span>
+<span class="fc" id="L416">      return &quot;http://&quot; + get(HOSTNAME_KEY) + &quot;:&quot; + get(PORT_KEY) + &quot;/&quot; + get(CONTEXT_ROOT_KEY)</span>
           + &quot;/&quot;;
     }
   }

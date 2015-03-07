@@ -18,12 +18,8 @@
  */
 package org.wattdepot.common.domainmodel;
 
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
 import java.util.HashSet;
 import java.util.Set;
-
-import org.wattdepot.server.ServerProperties;
 
 /**
  * User - represents a user of WattDepot.
@@ -36,8 +32,8 @@ public class UserInfo {
   public static final String ADMIN_USER_NAME = &quot;wattdepot-server.admin.name&quot;;
 
   /** The admin user. */
-<span class="fc" id="L39">  public static final UserInfo ROOT = new UserInfo(&quot;root&quot;, &quot;root&quot;, null, null,</span>
-      Organization.ADMIN_GROUP_NAME, new HashSet&lt;Property&gt;(), &quot;admin&quot;);
+<span class="fc" id="L35">  public static final UserInfo ROOT = new UserInfo(&quot;root&quot;, null, null, null,</span>
+      Organization.ADMIN_GROUP_NAME, new HashSet&lt;Property&gt;(), null);
 
   /** A unique id for the User. */
   private String uid;
@@ -54,45 +50,13 @@ public class UserInfo {
   /** The user's password. */
   private String password;
 
-  static {
-<span class="fc" id="L58">    String adminName = System.getenv().get(ServerProperties.ADMIN_USER_NAME_ENV);</span>
-<span class="pc bpc" id="L59" title="1 of 2 branches missed.">    if (adminName != null) {</span>
-<span class="nc" id="L60">      ROOT.setUid(adminName);</span>
-    }
-    else {
-<span class="fc" id="L63">      RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();</span>
-<span class="fc bfc" id="L64" title="All 2 branches covered.">      for (String arg : runtimeMxBean.getInputArguments()) {</span>
-<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        if (arg.startsWith(&quot;-Dwattdepot-server.admin.name&quot;)) {</span>
-<span class="nc" id="L66">          adminName = arg.split(&quot;=&quot;)[1];</span>
-        }
-<span class="fc" id="L68">      }</span>
-<span class="pc bpc" id="L69" title="1 of 2 branches missed.">      if (adminName != null) {</span>
-<span class="nc" id="L70">        ROOT.setUid(adminName);</span>
-      }
-    }
-<span class="fc" id="L73">    String adminPassword = System.getenv().get(ServerProperties.ADMIN_USER_PASSWORD_ENV);</span>
-<span class="pc bpc" id="L74" title="1 of 2 branches missed.">    if (adminPassword != null) {</span>
-<span class="nc" id="L75">      ROOT.setPassword(adminPassword);</span>
-    }
-    else {
-<span class="fc" id="L78">      RuntimeMXBean runtimeMxBean = ManagementFactory.getRuntimeMXBean();</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">      for (String arg : runtimeMxBean.getInputArguments()) {</span>
-<span class="pc bpc" id="L80" title="1 of 2 branches missed.">        if (arg.startsWith(&quot;-Dwattdepot-server.admin.password&quot;)) {</span>
-<span class="nc" id="L81">          adminPassword = arg.split(&quot;=&quot;)[1];</span>
-        }
-<span class="fc" id="L83">      }</span>
-<span class="pc bpc" id="L84" title="1 of 2 branches missed.">      if (adminPassword != null) {</span>
-<span class="nc" id="L85">        ROOT.setPassword(adminPassword);</span>
-      }
-    }
-<span class="fc" id="L88">  }</span>
 
   /**
    * The default constructor.
    */
-<span class="fc" id="L93">  public UserInfo() {</span>
+<span class="fc" id="L57">  public UserInfo() {</span>
 
-<span class="fc" id="L95">  }</span>
+<span class="fc" id="L59">  }</span>
 
   /**
    * Creates a new UserInfo with the given information.
@@ -106,15 +70,15 @@ public class UserInfo {
    * @param password the user's password.
    */
   public UserInfo(String id, String firstName, String lastName, String email, String orgId,
-<span class="fc" id="L109">      Set&lt;Property&gt; properties, String password) {</span>
-<span class="fc" id="L110">    this.uid = id;</span>
-<span class="fc" id="L111">    this.firstName = firstName;</span>
-<span class="fc" id="L112">    this.lastName = lastName;</span>
-<span class="fc" id="L113">    this.email = email;</span>
-<span class="fc" id="L114">    this.organizationId = orgId;</span>
-<span class="fc" id="L115">    this.properties = properties;</span>
-<span class="fc" id="L116">    this.password = password;</span>
-<span class="fc" id="L117">  }</span>
+<span class="fc" id="L73">      Set&lt;Property&gt; properties, String password) {</span>
+<span class="fc" id="L74">    this.uid = id;</span>
+<span class="fc" id="L75">    this.firstName = firstName;</span>
+<span class="fc" id="L76">    this.lastName = lastName;</span>
+<span class="fc" id="L77">    this.email = email;</span>
+<span class="fc" id="L78">    this.organizationId = orgId;</span>
+<span class="fc" id="L79">    this.properties = properties;</span>
+<span class="fc" id="L80">    this.password = password;</span>
+<span class="fc" id="L81">  }</span>
 
   /**
    * @param e The Property to add.
@@ -122,7 +86,7 @@ public class UserInfo {
    * @see java.util.List#add(java.lang.Object)
    */
   public boolean addProperty(Property e) {
-<span class="nc" id="L125">    return properties.add(e);</span>
+<span class="nc" id="L89">    return properties.add(e);</span>
   }
 
   /*
@@ -132,84 +96,84 @@ public class UserInfo {
    */
   @Override
   public boolean equals(Object obj) {
-<span class="pc bpc" id="L135" title="1 of 2 branches missed.">    if (this == obj) {</span>
-<span class="nc" id="L136">      return true;</span>
+<span class="pc bpc" id="L99" title="1 of 2 branches missed.">    if (this == obj) {</span>
+<span class="nc" id="L100">      return true;</span>
     }
-<span class="pc bpc" id="L138" title="1 of 2 branches missed.">    if (obj == null) {</span>
-<span class="nc" id="L139">      return false;</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">    if (obj == null) {</span>
+<span class="nc" id="L103">      return false;</span>
     }
-<span class="pc bpc" id="L141" title="5 of 6 branches missed.">    if (!getClass().isAssignableFrom(obj.getClass())</span>
+<span class="pc bpc" id="L105" title="5 of 6 branches missed.">    if (!getClass().isAssignableFrom(obj.getClass())</span>
         &amp;&amp; !obj.getClass().isAssignableFrom(getClass()) &amp;&amp; getClass() != obj.getClass()) {
-<span class="nc" id="L143">      return false;</span>
+<span class="nc" id="L107">      return false;</span>
     }
-<span class="fc" id="L145">    UserInfo other = (UserInfo) obj;</span>
-<span class="pc bpc" id="L146" title="1 of 2 branches missed.">    if (uid == null) {</span>
-<span class="nc bnc" id="L147" title="All 2 branches missed.">      if (other.uid != null) {</span>
-<span class="nc" id="L148">        return false;</span>
+<span class="fc" id="L109">    UserInfo other = (UserInfo) obj;</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">    if (uid == null) {</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">      if (other.uid != null) {</span>
+<span class="nc" id="L112">        return false;</span>
       }
     }
-<span class="pc bpc" id="L151" title="1 of 2 branches missed.">    else if (!uid.equals(other.uid)) {</span>
-<span class="nc" id="L152">      return false;</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">    else if (!uid.equals(other.uid)) {</span>
+<span class="nc" id="L116">      return false;</span>
     }
-<span class="pc bpc" id="L154" title="1 of 2 branches missed.">    if (firstName == null) {</span>
-<span class="nc bnc" id="L155" title="All 2 branches missed.">      if (other.firstName != null) {</span>
-<span class="nc" id="L156">        return false;</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">    if (firstName == null) {</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">      if (other.firstName != null) {</span>
+<span class="nc" id="L120">        return false;</span>
       }
     }
-<span class="fc bfc" id="L159" title="All 2 branches covered.">    else if (!firstName.equals(other.firstName)) {</span>
-<span class="fc" id="L160">      return false;</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">    else if (!firstName.equals(other.firstName)) {</span>
+<span class="fc" id="L124">      return false;</span>
     }
-<span class="pc bpc" id="L162" title="1 of 2 branches missed.">    if (properties == null) {</span>
-<span class="nc bnc" id="L163" title="All 2 branches missed.">      if (other.properties != null) {</span>
-<span class="nc" id="L164">        return false;</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">    if (properties == null) {</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">      if (other.properties != null) {</span>
+<span class="nc" id="L128">        return false;</span>
       }
     }
-<span class="pc bpc" id="L167" title="1 of 2 branches missed.">    else if (!properties.equals(other.properties)) {</span>
-<span class="nc" id="L168">      return false;</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">    else if (!properties.equals(other.properties)) {</span>
+<span class="nc" id="L132">      return false;</span>
     }
-<span class="fc" id="L170">    return true;</span>
+<span class="fc" id="L134">    return true;</span>
   }
 
   /**
    * @return the email
    */
   public String getEmail() {
-<span class="fc" id="L177">    return email;</span>
+<span class="fc" id="L141">    return email;</span>
   }
 
   /**
    * @return the firstName
    */
   public String getFirstName() {
-<span class="fc" id="L184">    return firstName;</span>
+<span class="fc" id="L148">    return firstName;</span>
   }
 
   /**
    * @return the lastName
    */
   public String getLastName() {
-<span class="fc" id="L191">    return lastName;</span>
+<span class="fc" id="L155">    return lastName;</span>
   }
 
   /**
    * @return the organizationId
    */
   public String getOrganizationId() {
-<span class="fc" id="L198">    return organizationId;</span>
+<span class="fc" id="L162">    return organizationId;</span>
   }
 
   /**
    * @return the password
    */
   public String getPassword() {
-<span class="fc" id="L205">    return password;</span>
+<span class="fc" id="L169">    return password;</span>
   }
 
   /**
    * @return the properties
    */
   public Set&lt;Property&gt; getProperties() {
-<span class="fc" id="L212">    return properties;</span>
+<span class="fc" id="L176">    return properties;</span>
   }
 
   /**
@@ -217,19 +181,19 @@ public class UserInfo {
    * @return The value of associated with the key.
    */
   public Property getProperty(String key) {
-<span class="nc bnc" id="L220" title="All 2 branches missed.">    for (Property p : properties) {</span>
-<span class="nc bnc" id="L221" title="All 2 branches missed.">      if (p.getKey().equals(key)) {</span>
-<span class="nc" id="L222">        return p;</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">    for (Property p : properties) {</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">      if (p.getKey().equals(key)) {</span>
+<span class="nc" id="L186">        return p;</span>
       }
-<span class="nc" id="L224">    }</span>
-<span class="nc" id="L225">    return null;</span>
+<span class="nc" id="L188">    }</span>
+<span class="nc" id="L189">    return null;</span>
   }
 
   /**
    * @return the unique id.
    */
   public String getUid() {
-<span class="fc" id="L232">    return uid;</span>
+<span class="fc" id="L196">    return uid;</span>
   }
 
   /*
@@ -239,12 +203,12 @@ public class UserInfo {
    */
   @Override
   public int hashCode() {
-<span class="fc" id="L242">    final int prime = 31;</span>
-<span class="fc" id="L243">    int result = 1;</span>
-<span class="pc bpc" id="L244" title="1 of 2 branches missed.">    result = prime * result + ((uid == null) ? 0 : uid.hashCode());</span>
-<span class="pc bpc" id="L245" title="1 of 2 branches missed.">    result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());</span>
-<span class="pc bpc" id="L246" title="1 of 2 branches missed.">    result = prime * result + ((properties == null) ? 0 : properties.hashCode());</span>
-<span class="fc" id="L247">    return result;</span>
+<span class="fc" id="L206">    final int prime = 31;</span>
+<span class="fc" id="L207">    int result = 1;</span>
+<span class="pc bpc" id="L208" title="1 of 2 branches missed.">    result = prime * result + ((uid == null) ? 0 : uid.hashCode());</span>
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">    result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());</span>
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">    result = prime * result + ((properties == null) ? 0 : properties.hashCode());</span>
+<span class="fc" id="L211">    return result;</span>
   }
 
   /**
@@ -253,57 +217,57 @@ public class UserInfo {
    * @see java.util.List#remove(java.lang.Object)
    */
   public boolean removeProperty(Object o) {
-<span class="nc" id="L256">    return properties.remove(o);</span>
+<span class="nc" id="L220">    return properties.remove(o);</span>
   }
 
   /**
    * @param email the email to set
    */
   public void setEmail(String email) {
-<span class="fc" id="L263">    this.email = email;</span>
-<span class="fc" id="L264">  }</span>
+<span class="fc" id="L227">    this.email = email;</span>
+<span class="fc" id="L228">  }</span>
 
   /**
    * @param firstName the firstName to set
    */
   public void setFirstName(String firstName) {
-<span class="fc" id="L270">    this.firstName = firstName;</span>
-<span class="fc" id="L271">  }</span>
+<span class="fc" id="L234">    this.firstName = firstName;</span>
+<span class="fc" id="L235">  }</span>
 
   /**
    * @param lastName the lastName to set
    */
   public void setLastName(String lastName) {
-<span class="fc" id="L277">    this.lastName = lastName;</span>
-<span class="fc" id="L278">  }</span>
+<span class="fc" id="L241">    this.lastName = lastName;</span>
+<span class="fc" id="L242">  }</span>
 
   /**
    * @param organizationId the organizationId to set
    */
   public void setOrganizationId(String organizationId) {
-<span class="fc" id="L284">    this.organizationId = organizationId;</span>
-<span class="fc" id="L285">  }</span>
+<span class="fc" id="L248">    this.organizationId = organizationId;</span>
+<span class="fc" id="L249">  }</span>
 
   /**
    * @param password the password to set
    */
   public void setPassword(String password) {
-<span class="fc" id="L291">    this.password = password;</span>
-<span class="fc" id="L292">  }</span>
+<span class="fc" id="L255">    this.password = password;</span>
+<span class="fc" id="L256">  }</span>
 
   /**
    * @param properties the properties to set
    */
   public void setProperties(Set&lt;Property&gt; properties) {
-<span class="fc" id="L298">    this.properties = properties;</span>
-<span class="fc" id="L299">  }</span>
+<span class="fc" id="L262">    this.properties = properties;</span>
+<span class="fc" id="L263">  }</span>
 
   /**
    * @param id the id to set
    */
   public void setUid(String id) {
-<span class="fc" id="L305">    this.uid = id;</span>
-<span class="fc" id="L306">  }</span>
+<span class="fc" id="L269">    this.uid = id;</span>
+<span class="fc" id="L270">  }</span>
 
   /*
    * (non-Javadoc)
@@ -312,7 +276,7 @@ public class UserInfo {
    */
   @Override
   public String toString() {
-<span class="fc" id="L315">    return &quot;User [uid=&quot; + uid + &quot;, firstname=&quot; + firstName + &quot;, lastname=&quot; + lastName + &quot;, email=&quot;</span>
+<span class="fc" id="L279">    return &quot;User [uid=&quot; + uid + &quot;, firstname=&quot; + firstName + &quot;, lastname=&quot; + lastName + &quot;, email=&quot;</span>
         + email + &quot;, properties=&quot; + properties + &quot;]&quot;;
   }
 

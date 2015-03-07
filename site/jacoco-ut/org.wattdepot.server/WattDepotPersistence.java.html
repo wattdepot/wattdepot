@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.MeasurementList;
 import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Measurement;
@@ -56,12 +57,7 @@ import org.wattdepot.common.util.UnitsHelper;
  * @author Cam Moore
  * 
  */
-<span class="fc" id="L59">public abstract class WattDepotPersistence {</span>
-
-  /** The name of the Power MeasurementType. */
-  public static final String POWER_TYPE_NAME = &quot;Power&quot;;
-  /** The name of the Energy MeasurementType. */
-  public static final String ENERGY_TYPE_NAME = &quot;Energy&quot;;
+<span class="fc" id="L60">public abstract class WattDepotPersistence {</span>
 
   private ServerProperties properties;
 
@@ -626,21 +622,21 @@ import org.wattdepot.common.util.UnitsHelper;
    * @return the properties
    */
   public ServerProperties getServerProperties() {
-<span class="fc" id="L629">    return properties;</span>
+<span class="fc" id="L625">    return properties;</span>
   }
 
   /**
    * @return the sessionClose
    */
   public int getSessionClose() {
-<span class="nc" id="L636">    throw new RuntimeException(&quot;Not implemented.&quot;);</span>
+<span class="nc" id="L632">    throw new RuntimeException(&quot;Not implemented.&quot;);</span>
   }
 
   /**
    * @return the sessionOpen
    */
   public int getSessionOpen() {
-<span class="nc" id="L643">    throw new RuntimeException(&quot;Not implemented.&quot;);</span>
+<span class="nc" id="L639">    throw new RuntimeException(&quot;Not implemented.&quot;);</span>
   }
 
   /**
@@ -775,48 +771,48 @@ import org.wattdepot.common.util.UnitsHelper;
    * Ensures the base set of MeasurementTypes are defined in WattDepot.
    */
   public void initializeMeasurementTypes() {
-<span class="fc bfc" id="L778" title="All 2 branches covered.">    for (String key : UnitsHelper.quantities.keySet()) {</span>
+<span class="fc bfc" id="L774" title="All 2 branches covered.">    for (String key : UnitsHelper.quantities.keySet()) {</span>
       try {
-<span class="fc" id="L780">        getMeasurementType(Slug.slugify(key), false);</span>
+<span class="fc" id="L776">        getMeasurementType(Slug.slugify(key), false);</span>
       }
-<span class="nc" id="L782">      catch (IdNotFoundException e1) {</span>
+<span class="nc" id="L778">      catch (IdNotFoundException e1) {</span>
         try {
-<span class="nc" id="L784">          defineMeasurementType(Slug.slugify(key), key, UnitsHelper.quantities.get(key).toString());</span>
+<span class="nc" id="L780">          defineMeasurementType(Slug.slugify(key), key, UnitsHelper.quantities.get(key).toString());</span>
         }
-<span class="nc" id="L786">        catch (UniqueIdException e) {</span>
-<span class="nc" id="L787">          e.printStackTrace();</span>
+<span class="nc" id="L782">        catch (UniqueIdException e) {</span>
+<span class="nc" id="L783">          e.printStackTrace();</span>
         }
-<span class="nc" id="L789">        catch (BadSlugException e) {</span>
-<span class="nc" id="L790">          e.printStackTrace();</span>
-<span class="nc" id="L791">        }</span>
-<span class="fc" id="L792">      }</span>
-<span class="fc" id="L793">    }</span>
-<span class="fc" id="L794">  }</span>
+<span class="nc" id="L785">        catch (BadSlugException e) {</span>
+<span class="nc" id="L786">          e.printStackTrace();</span>
+<span class="nc" id="L787">        }</span>
+<span class="fc" id="L788">      }</span>
+<span class="fc" id="L789">    }</span>
+<span class="fc" id="L790">  }</span>
 
   /**
    * Ensures the base set of SensorModels are defined in WattDepot.
    */
   public void initializeSensorModels() {
-<span class="fc bfc" id="L800" title="All 2 branches covered.">    for (String key : SensorModelHelper.models.keySet()) {</span>
+<span class="fc bfc" id="L796" title="All 2 branches covered.">    for (String key : SensorModelHelper.models.keySet()) {</span>
       try {
-<span class="fc" id="L802">        getSensorModel(Slug.slugify(key), false);</span>
+<span class="fc" id="L798">        getSensorModel(Slug.slugify(key), false);</span>
       }
-<span class="nc" id="L804">      catch (IdNotFoundException e1) {</span>
-<span class="nc" id="L805">        SensorModel model = SensorModelHelper.models.get(key);</span>
+<span class="nc" id="L800">      catch (IdNotFoundException e1) {</span>
+<span class="nc" id="L801">        SensorModel model = SensorModelHelper.models.get(key);</span>
         try {
-<span class="nc" id="L807">          defineSensorModel(Slug.slugify(model.getName()), model.getName(), model.getProtocol(),</span>
+<span class="nc" id="L803">          defineSensorModel(Slug.slugify(model.getName()), model.getName(), model.getProtocol(),</span>
               model.getType(), model.getVersion());
         }
-<span class="nc" id="L810">        catch (UniqueIdException e) {</span>
-<span class="nc" id="L811">          e.printStackTrace();</span>
+<span class="nc" id="L806">        catch (UniqueIdException e) {</span>
+<span class="nc" id="L807">          e.printStackTrace();</span>
         }
-<span class="nc" id="L813">        catch (BadSlugException e) {</span>
-<span class="nc" id="L814">          e.printStackTrace();</span>
-<span class="nc" id="L815">        }</span>
-<span class="fc" id="L816">      }</span>
-<span class="fc" id="L817">    }</span>
+<span class="nc" id="L809">        catch (BadSlugException e) {</span>
+<span class="nc" id="L810">          e.printStackTrace();</span>
+<span class="nc" id="L811">        }</span>
+<span class="fc" id="L812">      }</span>
+<span class="fc" id="L813">    }</span>
 
-<span class="fc" id="L819">  }</span>
+<span class="fc" id="L815">  }</span>
 
   /**
    * @param depotId the id of the depository.
@@ -841,11 +837,22 @@ import org.wattdepot.common.util.UnitsHelper;
       throws MeasurementTypeException, IdNotFoundException;
 
   /**
+   * @param depotId the id of the Depository.
+   * @param orgId the Organization's id.
+   * @param measurementList The list of measurements to store.
+   * @throws MeasurementTypeException if the type of one of the measurements doesn't
+   *         match the Depository measurement type.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract void putMeasurementList(String depotId, String orgId, MeasurementList measurementList)
+      throws MeasurementTypeException, IdNotFoundException;
+
+  /**
    * @param properties the properties to set
    */
   public void setServerProperties(ServerProperties properties) {
-<span class="fc" id="L847">    this.properties = properties;</span>
-<span class="fc" id="L848">  }</span>
+<span class="fc" id="L854">    this.properties = properties;</span>
+<span class="fc" id="L855">  }</span>
 
   /**
    * Cleans up the persistence layer.

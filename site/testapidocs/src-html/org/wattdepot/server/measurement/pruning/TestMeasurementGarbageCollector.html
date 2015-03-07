@@ -88,7 +88,7 @@
 <span class="sourceLineNo">080</span>   * Sets up the WattDepotPersistenceImpl using test properties.<a name="line.80"></a>
 <span class="sourceLineNo">081</span>   */<a name="line.81"></a>
 <span class="sourceLineNo">082</span>  @BeforeClass<a name="line.82"></a>
-<span class="sourceLineNo">083</span>  public static void setupImpl() {<a name="line.83"></a>
+<span class="sourceLineNo">083</span>  public static void setupImpl() throws Exception {<a name="line.83"></a>
 <span class="sourceLineNo">084</span>    properties = new ServerProperties();<a name="line.84"></a>
 <span class="sourceLineNo">085</span>    properties.setTestProperties();<a name="line.85"></a>
 <span class="sourceLineNo">086</span>    impl = new WattDepotPersistenceImpl(properties);<a name="line.86"></a>

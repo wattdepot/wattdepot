@@ -53,49 +53,53 @@
 <span class="sourceLineNo">045</span>    format.label(SI.MICRO(SI.GRAM.divide(NonSI.LITER)), "ppm");<a name="line.45"></a>
 <span class="sourceLineNo">046</span>    quantities.put(buildName("Power", SI.WATT), SI.WATT);<a name="line.46"></a>
 <span class="sourceLineNo">047</span>    quantities.put(buildName("Energy", SI.WATT.times(NonSI.HOUR)), SI.WATT.times(NonSI.HOUR));<a name="line.47"></a>
-<span class="sourceLineNo">048</span>    quantities.put(buildName("Frequency", SI.HERTZ), SI.HERTZ);<a name="line.48"></a>
-<span class="sourceLineNo">049</span>    quantities.put(buildName("Temperature", NonSI.FAHRENHEIT), NonSI.FAHRENHEIT);<a name="line.49"></a>
-<span class="sourceLineNo">050</span>    quantities.put(buildName("Temperature", SI.CELSIUS), SI.CELSIUS);<a name="line.50"></a>
-<span class="sourceLineNo">051</span>    quantities.put(buildName("Volume", NonSI.GALLON_LIQUID_US), NonSI.GALLON_LIQUID_US);<a name="line.51"></a>
-<span class="sourceLineNo">052</span>    quantities.put(buildName("Volume", NonSI.LITER), NonSI.LITER);<a name="line.52"></a>
-<span class="sourceLineNo">053</span>    quantities.put(buildName("Flow Rate", NonSI.GALLON_LIQUID_US.divide(SI.SECOND)),<a name="line.53"></a>
-<span class="sourceLineNo">054</span>        NonSI.GALLON_LIQUID_US.divide(SI.SECOND));<a name="line.54"></a>
-<span class="sourceLineNo">055</span>    quantities.put(buildName("Flow Rate", NonSI.LITER.divide(SI.SECOND)),<a name="line.55"></a>
-<span class="sourceLineNo">056</span>        NonSI.LITER.divide(SI.SECOND));<a name="line.56"></a>
-<span class="sourceLineNo">057</span>    quantities.put(buildName("Mass", SI.KILOGRAM), SI.KILOGRAM);<a name="line.57"></a>
-<span class="sourceLineNo">058</span>    quantities.put(buildName("Mass", NonSI.POUND), NonSI.POUND);<a name="line.58"></a>
-<span class="sourceLineNo">059</span>    quantities.put(buildName("Humidity", NonSI.PERCENT), NonSI.PERCENT);<a name="line.59"></a>
-<span class="sourceLineNo">060</span>    quantities.put(buildName("Concentration", SI.MICRO(SI.GRAM.divide(NonSI.LITER))), SI.MICRO(SI.GRAM.divide(NonSI.LITER)));<a name="line.60"></a>
-<span class="sourceLineNo">061</span>    quantities.put(buildName("Cloud Coverage", NonSI.PERCENT), NonSI.PERCENT);<a name="line.61"></a>
-<span class="sourceLineNo">062</span><a name="line.62"></a>
-<span class="sourceLineNo">063</span>  }<a name="line.63"></a>
-<span class="sourceLineNo">064</span><a name="line.64"></a>
-<span class="sourceLineNo">065</span>  /**<a name="line.65"></a>
-<span class="sourceLineNo">066</span>   * @param type<a name="line.66"></a>
-<span class="sourceLineNo">067</span>   *          The type of the unit, Energy, Power, Mass, etc.<a name="line.67"></a>
-<span class="sourceLineNo">068</span>   * @param unit<a name="line.68"></a>
-<span class="sourceLineNo">069</span>   *          The Unit&lt;?&gt;.<a name="line.69"></a>
-<span class="sourceLineNo">070</span>   * @return The name.<a name="line.70"></a>
-<span class="sourceLineNo">071</span>   */<a name="line.71"></a>
-<span class="sourceLineNo">072</span>  public static String buildName(String type, Unit&lt;?&gt; unit) {<a name="line.72"></a>
-<span class="sourceLineNo">073</span>    String s = unit.toString();<a name="line.73"></a>
-<span class="sourceLineNo">074</span>    String s1 = Normalizer.normalize(s, Normalizer.Form.NFKD);<a name="line.74"></a>
-<span class="sourceLineNo">075</span>    String regex = Pattern.quote("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");<a name="line.75"></a>
-<span class="sourceLineNo">076</span><a name="line.76"></a>
-<span class="sourceLineNo">077</span>    try {<a name="line.77"></a>
-<span class="sourceLineNo">078</span>      String s2 = new String(s1.replaceAll(regex, "").getBytes("ascii"), "ascii");<a name="line.78"></a>
-<span class="sourceLineNo">079</span>      s2 = s2.replace("?", "");<a name="line.79"></a>
-<span class="sourceLineNo">080</span>      return type + " (" + s2 + ")";<a name="line.80"></a>
-<span class="sourceLineNo">081</span>      <a name="line.81"></a>
-<span class="sourceLineNo">082</span>    }<a name="line.82"></a>
-<span class="sourceLineNo">083</span>    catch (UnsupportedEncodingException e) {<a name="line.83"></a>
-<span class="sourceLineNo">084</span>      e.printStackTrace();<a name="line.84"></a>
-<span class="sourceLineNo">085</span>    }<a name="line.85"></a>
-<span class="sourceLineNo">086</span>    return type + " (" + s1 + ")";<a name="line.86"></a>
-<span class="sourceLineNo">087</span>  }<a name="line.87"></a>
-<span class="sourceLineNo">088</span><a name="line.88"></a>
-<span class="sourceLineNo">089</span><a name="line.89"></a>
-<span class="sourceLineNo">090</span>}<a name="line.90"></a>
+<span class="sourceLineNo">048</span>    quantities.put(buildName("Energy", SI.KILO(SI.WATT).times(NonSI.HOUR)), SI.KILO(SI.WATT).times(NonSI.HOUR));<a name="line.48"></a>
+<span class="sourceLineNo">049</span>    quantities.put(buildName("Frequency", SI.HERTZ), SI.HERTZ);<a name="line.49"></a>
+<span class="sourceLineNo">050</span>    quantities.put(buildName("Temperature", NonSI.FAHRENHEIT), NonSI.FAHRENHEIT);<a name="line.50"></a>
+<span class="sourceLineNo">051</span>    quantities.put(buildName("Temperature", SI.CELSIUS), SI.CELSIUS);<a name="line.51"></a>
+<span class="sourceLineNo">052</span>    quantities.put(buildName("Volume", NonSI.GALLON_LIQUID_US), NonSI.GALLON_LIQUID_US);<a name="line.52"></a>
+<span class="sourceLineNo">053</span>    quantities.put(buildName("Volume", NonSI.LITER), NonSI.LITER);<a name="line.53"></a>
+<span class="sourceLineNo">054</span>    quantities.put(buildName("Volume", SI.CUBIC_METRE), SI.CUBIC_METRE);<a name="line.54"></a>
+<span class="sourceLineNo">055</span>    quantities.put(buildName("Flow Rate", NonSI.GALLON_LIQUID_US.divide(SI.SECOND)),<a name="line.55"></a>
+<span class="sourceLineNo">056</span>        NonSI.GALLON_LIQUID_US.divide(SI.SECOND));<a name="line.56"></a>
+<span class="sourceLineNo">057</span>    quantities.put(buildName("Flow Rate", NonSI.LITER.divide(SI.SECOND)),<a name="line.57"></a>
+<span class="sourceLineNo">058</span>        NonSI.LITER.divide(SI.SECOND));<a name="line.58"></a>
+<span class="sourceLineNo">059</span>    quantities.put(buildName("Flow Rate", NonSI.LITER.divide(NonSI.MINUTE)),<a name="line.59"></a>
+<span class="sourceLineNo">060</span>            NonSI.LITER.divide(NonSI.MINUTE));<a name="line.60"></a>
+<span class="sourceLineNo">061</span>    quantities.put(buildName("Mass", SI.KILOGRAM), SI.KILOGRAM);<a name="line.61"></a>
+<span class="sourceLineNo">062</span>    quantities.put(buildName("Mass", NonSI.POUND), NonSI.POUND);<a name="line.62"></a>
+<span class="sourceLineNo">063</span>    quantities.put(buildName("Humidity", NonSI.PERCENT), NonSI.PERCENT);<a name="line.63"></a>
+<span class="sourceLineNo">064</span>    quantities.put(buildName("Concentration", SI.MICRO(SI.GRAM.divide(NonSI.LITER))), SI.MICRO(SI.GRAM.divide(NonSI.LITER)));<a name="line.64"></a>
+<span class="sourceLineNo">065</span>    quantities.put(buildName("Cloud Coverage", NonSI.PERCENT), NonSI.PERCENT);<a name="line.65"></a>
+<span class="sourceLineNo">066</span><a name="line.66"></a>
+<span class="sourceLineNo">067</span>  }<a name="line.67"></a>
+<span class="sourceLineNo">068</span><a name="line.68"></a>
+<span class="sourceLineNo">069</span>  /**<a name="line.69"></a>
+<span class="sourceLineNo">070</span>   * @param type<a name="line.70"></a>
+<span class="sourceLineNo">071</span>   *          The type of the unit, Energy, Power, Mass, etc.<a name="line.71"></a>
+<span class="sourceLineNo">072</span>   * @param unit<a name="line.72"></a>
+<span class="sourceLineNo">073</span>   *          The Unit&lt;?&gt;.<a name="line.73"></a>
+<span class="sourceLineNo">074</span>   * @return The name.<a name="line.74"></a>
+<span class="sourceLineNo">075</span>   */<a name="line.75"></a>
+<span class="sourceLineNo">076</span>  public static String buildName(String type, Unit&lt;?&gt; unit) {<a name="line.76"></a>
+<span class="sourceLineNo">077</span>    String s = unit.toString();<a name="line.77"></a>
+<span class="sourceLineNo">078</span>    String s1 = Normalizer.normalize(s, Normalizer.Form.NFKD);<a name="line.78"></a>
+<span class="sourceLineNo">079</span>    String regex = Pattern.quote("[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+");<a name="line.79"></a>
+<span class="sourceLineNo">080</span><a name="line.80"></a>
+<span class="sourceLineNo">081</span>    try {<a name="line.81"></a>
+<span class="sourceLineNo">082</span>      String s2 = new String(s1.replaceAll(regex, "").getBytes("ascii"), "ascii");<a name="line.82"></a>
+<span class="sourceLineNo">083</span>      s2 = s2.replace("?", "");<a name="line.83"></a>
+<span class="sourceLineNo">084</span>      return type + " (" + s2 + ")";<a name="line.84"></a>
+<span class="sourceLineNo">085</span>      <a name="line.85"></a>
+<span class="sourceLineNo">086</span>    }<a name="line.86"></a>
+<span class="sourceLineNo">087</span>    catch (UnsupportedEncodingException e) {<a name="line.87"></a>
+<span class="sourceLineNo">088</span>      e.printStackTrace();<a name="line.88"></a>
+<span class="sourceLineNo">089</span>    }<a name="line.89"></a>
+<span class="sourceLineNo">090</span>    return type + " (" + s1 + ")";<a name="line.90"></a>
+<span class="sourceLineNo">091</span>  }<a name="line.91"></a>
+<span class="sourceLineNo">092</span><a name="line.92"></a>
+<span class="sourceLineNo">093</span><a name="line.93"></a>
+<span class="sourceLineNo">094</span>}<a name="line.94"></a>
 
 
 

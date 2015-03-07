@@ -25,7 +25,7 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2015 Collaborative Software Development Laboratory</copyright>
     <item>
-      <title>File: 225,
+      <title>File: 228,
              Errors: 0,
              Warnings: 0,
              Infos: 0
@@ -1698,6 +1698,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.exception.MeasurementListSizeExceededException.java">org/wattdepot/common/exception/MeasurementListSizeExceededException.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.SensorGroupServerResource.java">org/wattdepot/server/http/api/SensorGroupServerResource.java</a>
                 </td>
                 <td>
@@ -1923,6 +1937,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.SensorModelsServerResource.java">org/wattdepot/server/http/api/SensorModelsServerResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryMeasurementsPutServerResource.java">org/wattdepot/server/http/api/DepositoryMeasurementsPutServerResource.java</a>
                 </td>
                 <td>
                   0
@@ -2469,6 +2497,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.MeasurementPruningDefinitionList.java">org/wattdepot/common/domainmodel/MeasurementPruningDefinitionList.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositoryMeasurementsPutResource.java">org/wattdepot/common/http/api/DepositoryMeasurementsPutResource.java</a>
                 </td>
                 <td>
                   0
