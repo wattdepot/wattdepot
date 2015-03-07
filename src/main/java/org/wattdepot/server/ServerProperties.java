@@ -271,7 +271,7 @@ public class ServerProperties {
         processDatabaseURL(prop.getValue());
       }
     }
-    if (!properties.containsKey(ADMIN_USER_NAME) || !properties.containsKey(ADMIN_USER_PASSWORD) || !properties.containsKey(DATABASE_URL)) {
+    if (!properties.containsKey(ADMIN_USER_NAME) || !properties.containsKey(ADMIN_USER_PASSWORD) || !(properties.containsKey(DB_CONNECTION_URL_ENV) || properties.containsKey("DATABASE_URL"))) {
       StringBuilder sb = new StringBuilder();
       if (!properties.containsKey(ADMIN_USER_NAME)) {
         sb.append("WattDepot Admin name not set. ");
@@ -279,7 +279,7 @@ public class ServerProperties {
       if (!properties.containsKey(ADMIN_USER_PASSWORD)) {
         sb.append("WattDepot Admin password not set. ");
       }
-      if (!properties.containsKey(DATABASE_URL)) {
+      if (!(properties.containsKey(DB_CONNECTION_URL_ENV) || properties.containsKey("DATABASE_URL"))) {
         sb.append("WattDepot database url not set. ");
       }
       throw new SecurityException(sb.toString());
