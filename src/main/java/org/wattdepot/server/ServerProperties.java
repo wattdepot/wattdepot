@@ -173,7 +173,7 @@ public class ServerProperties {
     StringBuffer buff = new StringBuffer(25);
     buff.append("Server Properties:").append(cr);
     for (String key : alphaProps.keySet()) {
-      if (key.contains("password")) {
+      if (key.contains("password") || key.contains("database.url")) {
         buff.append(pad).append(key).append(eq).append("((hidden))").append(cr);
       }
       else {
