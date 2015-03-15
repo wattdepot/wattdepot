@@ -18,8 +18,10 @@
  */
 package org.wattdepot.server.http.api;
 
+import org.restlet.engine.header.Header;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
+import org.restlet.util.Series;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.server.WattDepotPersistence;
 
@@ -47,5 +49,11 @@ public class WattDepotServerResource extends ServerResource {
     WattDepotApplication app = (WattDepotApplication) getApplication();
     this.depot = app.getDepot();
     this.orgId = getAttribute(Labels.ORGANIZATION_ID);
+    Series<Header> responseHeaders = (Series<Header>) getResponse().getAttributes().get("org.restlet.http.headers");
+    if (responseHeaders == null) {
+      responseHeaders = new Series(Header.class);
+      getResponse().getAttributes().put("org.restlet.http.headers", responseHeaders);
+    }
+    responseHeaders.add(new Header("X-Clacks-Overhead", "GNU Terry Pratchett"));
   }
 }
