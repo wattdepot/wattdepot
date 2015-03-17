@@ -44,6 +44,8 @@ public class TestDepository {
     assertTrue("Test Depository".equals(depo.getName()));
     assertTrue("test-depository".equals(depo.getId()));
     assertTrue("test-user-group".equals(depo.getOrganizationId()));
+    assertTrue(depo.isOwner(InstanceFactory.getOrganization()));
+    assertFalse(depo.isOwner(InstanceFactory.getOrganization2()));
   }
 
   /**
@@ -53,17 +55,25 @@ public class TestDepository {
    */
   @Test
   public void testEqualsObject() {
-    Depository depo1 = new Depository();
-    Depository depo2 = InstanceFactory.getDepository();
-    int hashCode1 = depo1.hashCode();
-    int hashCode2 = depo2.hashCode();
-    assertFalse(hashCode1 == hashCode2);
-    assertFalse(depo1.equals(depo2));
-    assertFalse(depo2.equals(depo1));
+    Depository depo1 = InstanceFactory.getDepository();
     assertFalse(depo1.equals(null));
-    assertFalse(depo1.equals(new Object()));
-    depo1.setName(depo2.getName());
-    assertTrue(depo1.getId().equals("test-depository"));
+    assertFalse(depo1.equals(""));
+    Depository depo2 = new Depository();
+    assertFalse(depo1.hashCode() == depo2.hashCode());
+    assertFalse(depo2.equals(depo1));
+    depo2.setMeasurementType(InstanceFactory.getMeasurementType2());
+    assertFalse(depo2.equals(depo1));
+    assertFalse(depo2.hashCode() == depo1.hashCode());
+    depo2.setMeasurementType(depo1.getMeasurementType());
+    assertFalse(depo2.equals(depo1));
+    assertFalse(depo2.hashCode() == depo1.hashCode());
+    depo2.setName("foo");
+    assertFalse(depo2.equals(depo1));
+    assertFalse(depo2.hashCode() == depo1.hashCode());
+    depo2.setName(depo1.getName());
+    assertTrue(depo2.equals(depo1));
+    assertTrue(depo2.hashCode() == depo1.hashCode());
+
   }
 
 }

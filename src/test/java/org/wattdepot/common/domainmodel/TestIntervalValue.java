@@ -59,6 +59,26 @@ public class TestIntervalValue {
   public void testEquals() throws Exception {
     assertFalse(val2.equals(val1));
     assertTrue(val1.equals(val1));
+    val2.setStart(end);
+    assertFalse(val2.equals(val1));
+    val2.setStart(start);
+    assertFalse(val2.equals(val1));
+    val2.setEnd(start);
+    assertFalse(val2.equals(val1));
+    val2.setEnd(end);
+    assertFalse(val2.equals(val1));
+    val2.setMeasurementType(InstanceFactory.getMeasurementType2());
+    assertFalse(val2.equals(val1));
+    val2.setMeasurementType(InstanceFactory.getMeasurementType());
+    assertFalse(val2.equals(val1));
+    val2.setSensorId("foo");
+    assertFalse(val2.equals(val1));
+    val2.setSensorId(sensorId);
+    assertFalse(val2.equals(val1));
+    val2.setValue(10.0);
+    assertFalse(val2.equals(val1));
+    val2.setValue(dVal);
+    assertTrue(val2.equals(val1));
   }
 
   @Test
