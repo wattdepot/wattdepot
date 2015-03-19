@@ -144,16 +144,36 @@ public class InterpolatedValue {
    *         MeasurementType, and value as the Measurement.
    */
   public boolean equivalent(Measurement meas) {
-    if (!sensorId.equals(meas.getSensorId())) {
+    if (sensorId == null) {
+      if (meas.getSensorId() != null) {
+        return false
+      }
+    }
+    else if (!sensorId.equals(meas.getSensorId())) {
       return false;
     }
-    if (start.getTime() - meas.getDate().getTime() != 0) {
+    if (start == null) {
+      if (meas.getDate() != null) {
+        return false;
+      }
+    }
+    else if (meas.getDate() == null || start.getTime() - meas.getDate().getTime() != 0) {
       return false;
     }
-    if (!measurementType.getUnits().equals(meas.getMeasurementType())) {
+    if (measurementType == null) {
+      if (meas.getMeasurementType() != null) {
+        return false;
+      }
+    }
+    else if (!measurementType.getUnits().equals(meas.getMeasurementType())) {
       return false;
     }
-    if (Math.abs(this.value - meas.getValue()) > 0.0001) {
+    if (this.value == null) {
+      if (meas.getValue() != null) {
+        return false;
+      }
+    }
+    else if (meas.getValue() == null || Math.abs(this.value - meas.getValue()) > 0.0001) {
       return false;
     }
     return true;
@@ -184,7 +204,12 @@ public class InterpolatedValue {
    * @return start time of the Interpolated Value.
    */
   public Date getStart() {
-    return new Date(start.getTime());
+    if (start != null) {
+      return new Date(start.getTime());
+    }
+    else {
+      return null;
+    }
   }
 
   /**

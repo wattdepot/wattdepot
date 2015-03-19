@@ -34,22 +34,6 @@ public class TestDepository {
 
   /**
    * Test method for
-   * {@link org.wattdepot.common.domainmodel.Depository#Depository()}
-   * .
-   */
-  @Test
-  public void testDepository() {
-    Depository depo = InstanceFactory.getDepository();
-    assertNotNull(depo);
-    assertTrue("Test Depository".equals(depo.getName()));
-    assertTrue("test-depository".equals(depo.getId()));
-    assertTrue("test-user-group".equals(depo.getOrganizationId()));
-    assertTrue(depo.isOwner(InstanceFactory.getOrganization()));
-    assertFalse(depo.isOwner(InstanceFactory.getOrganization2()));
-  }
-
-  /**
-   * Test method for
    * {@link org.wattdepot.common.domainmodel.Depository#equals(java.lang.Object)}
    * .
    */
@@ -73,7 +57,6 @@ public class TestDepository {
     depo2.setName(depo1.getName());
     assertTrue(depo2.equals(depo1));
     assertTrue(depo2.hashCode() == depo1.hashCode());
-
   }
 
 }

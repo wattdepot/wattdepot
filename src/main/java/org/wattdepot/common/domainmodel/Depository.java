@@ -157,21 +157,6 @@ public class Depository implements IDomainModel {
   }
 
   /**
-   * Determines if the given group is the owner of this location.
-   * 
-   * @param group the UserGroup to check.
-   * @return True if the group owns the Location or the group is the
-   *         ADMIN_GROUP.
-   */
-  public boolean isOwner(Organization group) {
-    if (organizationId != null
-        && (organizationId.equals(group.getId()) || group.equals(Organization.ADMIN_GROUP))) {
-      return true;
-    }
-    return false;
-  }
-
-  /**
    * @param id the id to set
    */
   public void setId(String id) {

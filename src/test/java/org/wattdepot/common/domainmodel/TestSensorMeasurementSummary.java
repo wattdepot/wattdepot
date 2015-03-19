@@ -41,45 +41,43 @@ public class TestSensorMeasurementSummary {
   }
 
   @Test
-  public void testGetSensorId() throws Exception {
-    assertNotNull(val1);
-    assertNotNull(val2);
-    assertEquals(sensorId, val1.getSensorId());
-  }
-
-  @Test
-  public void testGetDepositoryId() throws Exception {
-    assertNotNull(val1);
-    assertNotNull(val2);
-    assertEquals(depositoryId, val1.getDepositoryId());
-  }
-
-  @Test
-  public void testGetNumMeasurements() throws Exception {
-    assertTrue(100 == val1.getNumMeasurements());
-  }
-
-  @Test
-  public void testGetStart() throws Exception {
-    assertTrue(start.equals(val1.getStart()));
-  }
-
-  @Test
-  public void testGetEnd() throws Exception {
-    assertTrue(end.equals(val1.getEnd()));
-  }
-
-  @Test
   public void testEquals() {
-    assertFalse(val2.equals(val1));
     assertTrue(val1.equals(val1));
-  }
+    assertFalse(val1.equals(null));
+    assertFalse(val1.equals(new Object()));
+    assertFalse(val2.hashCode() == val1.hashCode());
+    assertFalse(val2.equals(val1));
+    val2.setDepositoryId("foo");
+    assertFalse(val2.hashCode() == val1.hashCode());
+    assertFalse(val2.equals(val1));
+    val2.setDepositoryId(val1.getDepositoryId());
+    assertFalse(val2.hashCode() == val1.hashCode());
+    assertFalse(val2.equals(val1));
+    val2.setEnd(new Date());
+    assertFalse(val2.hashCode() == val1.hashCode());
+    assertFalse(val2.equals(val1));
+    val2.setEnd(val1.getEnd());
+    assertFalse(val2.hashCode() == val1.hashCode());
+    assertFalse(val2.equals(val1));
+    val2.setNumMeasurements(-100);
+    assertFalse(val2.hashCode() == val1.hashCode());
+    assertFalse(val2.equals(val1));
+    val2.setNumMeasurements(val1.getNumMeasurements());
+    assertFalse(val2.hashCode() == val1.hashCode());
+    assertFalse(val2.equals(val1));
+    val2.setSensorId("foo");
+    assertFalse(val2.hashCode() == val1.hashCode());
+    assertFalse(val2.equals(val1));
+    val2.setSensorId(val1.getSensorId());
+    assertFalse(val2.hashCode() == val1.hashCode());
+    assertFalse(val2.equals(val1));
+    val2.setStart(new Date());
+    assertFalse(val2.hashCode() == val1.hashCode());
+    assertFalse(val2.equals(val1));
+    val2.setStart(val1.getStart());
+    assertTrue(val2.hashCode() == val1.hashCode());
+    assertTrue(val2.equals(val1));
 
-  @Test
-  public void testHashCode() {
-    int hashCode1 = val1.hashCode();
-    int hashCode2 = val2.hashCode();
-    assertNotEquals(hashCode1, hashCode2);
   }
 
   @Test

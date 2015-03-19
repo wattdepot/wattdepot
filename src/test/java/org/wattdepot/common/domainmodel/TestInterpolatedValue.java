@@ -18,6 +18,7 @@
  */
 package org.wattdepot.common.domainmodel;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -38,15 +39,48 @@ public class TestInterpolatedValue {
    * {@link org.wattdepot.common.domainmodel.InterpolatedValue#InterpolatedValue()}.
    */
   @Test
-  public void testMeasuredValue() {
+  public void testEquals() {
     Date now = new Date();
-    InterpolatedValue val = new InterpolatedValue("sensorId", 10.1,
+    InterpolatedValue i1 = new InterpolatedValue("sensorId", 10.1,
         InstanceFactory.getMeasurementType(), now);
-    assertNotNull(val);
-    assertTrue("sensorId".equals(val.getSensorId()));
-    assertTrue(10.1 == val.getValue());
-    assertTrue(InstanceFactory.getMeasurementType().equals(val.getMeasurementType()));
-    assertTrue(now.equals(val.getStart()));
+    assertTrue(i1.equals(i1));
+    assertFalse(i1.equals(null));
+    assertFalse(i1.equals("foo"));
+    assertFalse(i1.equals(new Object()));
+    InterpolatedValue i2 = new InterpolatedValue();
+    assertFalse(i2.hashCode() == i1.hashCode());
+    assertFalse(i2.equals(i1));
+    Date later = new Date();
+    i2.setStart(later);
+    assertFalse(i2.hashCode() == i1.hashCode());
+    assertFalse(i2.equals(i1));
+    i2.setStart(i1.getStart());
+    assertFalse(i2.hashCode() == i1.hashCode());
+    assertFalse(i2.equals(i1));
+    i2.setEnd(later);
+    assertFalse(i2.hashCode() == i1.hashCode());
+    assertFalse(i2.equals(i1));
+    i2.setEnd(i1.getEnd());
+    assertFalse(i2.hashCode() == i1.hashCode());
+    assertFalse(i2.equals(i1));
+    i2.setMeasurementType(InstanceFactory.getMeasurementType2());
+    assertFalse(i2.hashCode() == i1.hashCode());
+    assertFalse(i2.equals(i1));
+    i2.setMeasurementType(i1.getMeasurementType());
+    assertFalse(i2.hashCode() == i1.hashCode());
+    assertFalse(i2.equals(i1));
+    i2.setSensorId("foo");
+    assertFalse(i2.hashCode() == i1.hashCode());
+    assertFalse(i2.equals(i1));
+    i2.setSensorId(i1.getSensorId());
+    assertFalse(i2.hashCode() == i1.hashCode());
+    assertFalse(i2.equals(i1));
+    i2.setValue(-1.0);
+    assertFalse(i2.hashCode() == i1.hashCode());
+    assertFalse(i2.equals(i1));
+    i2.setValue(i1.getValue());
+    assertTrue(i2.hashCode() == i1.hashCode());
+    assertTrue(i2.equals(i1));
   }
 
 }

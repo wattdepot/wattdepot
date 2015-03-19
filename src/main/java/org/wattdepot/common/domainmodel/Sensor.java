@@ -47,7 +47,7 @@ public class Sensor implements IDomainModel {
    * Default constructor.
    */
   public Sensor() {
-    this("name", "uri", "modelId", "ownerId");
+    // do nothing
   }
 
   /**
@@ -102,6 +102,9 @@ public class Sensor implements IDomainModel {
     }
     if (!getClass().isAssignableFrom(obj.getClass())
         && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
+      return false;
+    }
+    if (!(obj instanceof Sensor)) {
       return false;
     }
     Sensor other = (Sensor) obj;
@@ -227,21 +230,6 @@ public class Sensor implements IDomainModel {
     result = prime * result + ((properties == null) ? 0 : properties.hashCode());
     result = prime * result + ((uri == null) ? 0 : uri.hashCode());
     return result;
-  }
-
-  /**
-   * Determines if the given group is the owner of this location.
-   * 
-   * @param group the UserGroup to check.
-   * @return True if the group owns the Location or the group is the
-   *         ADMIN_GROUP.
-   */
-  public boolean isOwner(Organization group) {
-    if (orgId != null
-        && (orgId.equals(group.getId()) || group.equals(Organization.ADMIN_GROUP))) {
-      return true;
-    }
-    return false;
   }
 
   /**

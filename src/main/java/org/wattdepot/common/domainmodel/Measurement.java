@@ -84,6 +84,9 @@ public class Measurement {
         && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
+    if (!(obj instanceof Measurement)) {
+      return false;
+    }
     Measurement other = (Measurement) obj;
     if (units == null) {
       if (other.units != null) {
@@ -126,16 +129,36 @@ public class Measurement {
    *         MeasurementType, and value as the MeasuredValue.
    */
   public boolean equivalent(InterpolatedValue value) {
-    if (!sensorId.equals(value.getSensorId())) {
+    if (sensorId == null) {
+      if (value.getSensorId() != null) {
+        return false;
+      }
+    }
+    else if (!sensorId.equals(value.getSensorId())) {
       return false;
     }
-    if (!timestamp.equals(value.getStart())) {
+    if (timestamp == null) {
+      if (value.getStart() != null) {
+        return false;
+      }
+    }
+    else if (!timestamp.equals(value.getStart())) {
       return false;
     }
-    if (Math.abs(this.value - value.getValue()) > 0.0001) {
+    if (this.value == null) {
+      if (value.getValue() != null) {
+        return false;
+      }
+    }
+    else if (value.getValue() == null || Math.abs(this.value - value.getValue()) > 0.0001) {
       return false;
     }
-    if (!getMeasurementType().equals(value.getMeasurementType().getUnits())) {
+    if (getMeasurementType() == null) {
+      if (value.getMeasurementType() != null) {
+        return false;
+      }
+    }
+    else if (value.getMeasurementType() == null || !getMeasurementType().equals(value.getMeasurementType().getUnits())) {
       return false;
     }
 
@@ -153,7 +176,10 @@ public class Measurement {
    * @return the measurementType
    */
   public String getMeasurementType() {
-    return amount.getUnit().toString();
+    if (amount != null) {
+      return amount.getUnit().toString();
+    }
+    return null;
   }
 
   /**
@@ -209,7 +235,9 @@ public class Measurement {
    */
   public void setMeasurementType(String measurementType) {
     this.units = Unit.valueOf(measurementType);
-    this.amount = Amount.valueOf(this.value, this.units);
+    if (this.value != null) {
+      this.amount = Amount.valueOf(this.value, this.units);
+    }
   }
 
   /**
@@ -237,6 +265,9 @@ public class Measurement {
    */
   public void setValue(Double value) {
     this.value = value;
+    if (this.amount == null) {
+      this.amount = Amount.valueOf(value, this.units);
+    }
   }
 
   /*

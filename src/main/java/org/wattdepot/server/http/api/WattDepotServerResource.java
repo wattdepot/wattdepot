@@ -44,6 +44,7 @@ public class WattDepotServerResource extends ServerResource {
    * 
    * @see org.restlet.resource.Resource#doInit()
    */
+  @SuppressWarnings("unchecked")
   @Override
   protected void doInit() throws ResourceException {
     WattDepotApplication app = (WattDepotApplication) getApplication();

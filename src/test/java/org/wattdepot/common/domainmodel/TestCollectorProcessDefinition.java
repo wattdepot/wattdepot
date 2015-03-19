@@ -20,9 +20,14 @@ package org.wattdepot.common.domainmodel;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
+import org.wattdepot.common.exception.BadSlugException;
+
+import java.util.HashSet;
 
 /**
  * Tests the CollectorProcessDefinition class.
@@ -56,19 +61,83 @@ public class TestCollectorProcessDefinition {
    * .
    */
   @Test
-  public void testEqualsObject() {
-    CollectorProcessDefinition cpd1 = new CollectorProcessDefinition();
-    CollectorProcessDefinition cpd2 = new CollectorProcessDefinition("Name 1",
-        "sensorId", 10L, "depositoryId", "ownerId");
-    int hashCode1 = cpd1.hashCode();
-    int hashCode2 = cpd2.hashCode();
-    assertFalse(hashCode1 == hashCode2);
-    assertFalse(cpd1.equals(cpd2));
-    assertFalse(cpd2.equals(cpd1));
+  public void testEquals() {
+    CollectorProcessDefinition cpd1 = InstanceFactory.getCollectorProcessDefinition();
+    assertTrue(cpd1.equals(cpd1));
     assertFalse(cpd1.equals(null));
+    assertFalse(cpd1.equals(""));
     assertFalse(cpd1.equals(new Object()));
-    cpd1.setName(cpd2.getName());
-    assertTrue(cpd1.getId().equals("name-1"));
+    CollectorProcessDefinition cpd2 = new CollectorProcessDefinition();
+    assertFalse(cpd2.hashCode() == cpd1.hashCode());
+    assertFalse(cpd2.equals(cpd1));
+    cpd2.setDepositoryId("foo");
+    assertFalse(cpd2.hashCode() == cpd1.hashCode());
+    assertFalse(cpd2.equals(cpd1));
+    cpd2.setDepositoryId(cpd1.getDepositoryId());
+    assertFalse(cpd2.hashCode() == cpd1.hashCode());
+    assertFalse(cpd2.equals(cpd1));
+    try {
+      cpd2.setId("foo");
+    }
+    catch (BadSlugException e) {
+      fail("Should not happen. " + e.getMessage());
+    }
+    assertFalse(cpd2.hashCode() == cpd1.hashCode());
+    assertFalse(cpd2.equals(cpd1));
+    try {
+      cpd2.setId("bogus id $%#@!)");
+      fail("Should not happen. ");
+    }
+    catch (BadSlugException e) {
+      // expected
+    }
+    assertFalse(cpd2.hashCode() == cpd1.hashCode());
+    assertFalse(cpd2.equals(cpd1));
+    try {
+      cpd2.setId(cpd1.getId());
+    }
+    catch (BadSlugException e) {
+      fail("Should not happen. " + e.getMessage());
+    }
+    assertFalse(cpd2.hashCode() == cpd1.hashCode());
+    assertFalse(cpd2.equals(cpd1));
+    cpd2.setOrganizationId("foo");
+    assertFalse(cpd2.hashCode() == cpd1.hashCode());
+    assertFalse(cpd2.equals(cpd1));
+    cpd2.setOrganizationId(cpd1.getOrganizationId());
+    assertFalse(cpd2.hashCode() == cpd1.hashCode());
+    assertFalse(cpd2.equals(cpd1));
+    cpd2.setPollingInterval(-100l);
+    assertFalse(cpd2.hashCode() == cpd1.hashCode());
+    assertFalse(cpd2.equals(cpd1));
+    cpd2.setPollingInterval(cpd1.getPollingInterval());
+    assertFalse(cpd2.hashCode() == cpd1.hashCode());
+    assertFalse(cpd2.equals(cpd1));
+    cpd2.setProperties(new HashSet<Property>());
+    assertFalse(cpd2.hashCode() == cpd1.hashCode());
+    assertFalse(cpd2.equals(cpd1));
+    Property p = new Property("key", "value");
+    cpd2.addProperty(p);
+    assertFalse(cpd2.hashCode() == cpd1.hashCode());
+    assertFalse(cpd2.equals(cpd1));
+    assertNotNull(cpd2.getProperty("key"));
+    cpd2.removeProperty(p);
+    assertNull(cpd2.getProperty("key"));
+    cpd2.setProperties(cpd1.getProperties());
+    assertFalse(cpd2.hashCode() == cpd1.hashCode());
+    assertFalse(cpd2.equals(cpd1));
+    cpd2.setSensorId("foo");
+    assertFalse(cpd2.hashCode() == cpd1.hashCode());
+    assertFalse(cpd2.equals(cpd1));
+    cpd2.setSensorId(cpd1.getSensorId());
+    assertFalse(cpd2.hashCode() == cpd1.hashCode());
+    assertFalse(cpd2.equals(cpd1));
+    cpd2.setName("foo");
+    assertFalse(cpd2.hashCode() == cpd1.hashCode());
+    assertFalse(cpd2.equals(cpd1));
+    cpd2.setName(cpd1.getName());
+    assertTrue(cpd2.hashCode() == cpd1.hashCode());
+    assertTrue(cpd2.equals(cpd1));
   }
 
 }
