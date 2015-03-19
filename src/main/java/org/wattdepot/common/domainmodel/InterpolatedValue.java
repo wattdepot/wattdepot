@@ -146,7 +146,7 @@ public class InterpolatedValue {
   public boolean equivalent(Measurement meas) {
     if (sensorId == null) {
       if (meas.getSensorId() != null) {
-        return false
+        return false;
       }
     }
     else if (!sensorId.equals(meas.getSensorId())) {

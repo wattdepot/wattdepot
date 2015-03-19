@@ -301,7 +301,7 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    */
   @Override
   public void updateUserPassword(UserPassword password) throws IdNotFoundException {
-    ClientResource client = makeClient(password.getOrganizationId() + "/" + Labels.USER_PASSWORD + "/");
+    ClientResource client = makeClient(password.getOrganizationId() + "/" + Labels.USER_PASSWORD + "/" + password.getUid());
     UserPasswordResource resource = client.wrap(UserPasswordResource.class);
     try {
       resource.update(password);

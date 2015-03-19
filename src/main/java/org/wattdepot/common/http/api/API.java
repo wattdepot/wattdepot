@@ -286,7 +286,7 @@ public class API {
       + Labels.SENSORS + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/user/{user-id}</b> URI for manipulating UserInfos.
+   * <b>/wattdepot/{org-id}/user-password/{user-id}</b> URI for manipulating UserPasswords.
    * Supports GET, POST, and DELETE requests.
    */
   public static final String USER_PASSWORD_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"

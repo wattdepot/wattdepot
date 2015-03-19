@@ -38,6 +38,10 @@ import org.wattdepot.server.StrongAES;
 import org.wattdepot.server.WattDepotPersistence;
 import org.wattdepot.server.depository.impl.hibernate.MeasurementImpl;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import java.security.InvalidKeyException;
+
 /**
  * WattDepotComponent - Main class to start the WattDepot Http API component of
  * the WattDepotServer.
@@ -52,8 +56,11 @@ public class WattDepotComponent extends Component {
    * 
    * @param depot The persitent store.
    * @param port the port number on which the restlet server listens.
+   * @throws javax.crypto.BadPaddingException if there is a problem with the encryption.
+   * @throws java.security.InvalidKeyException if there is a problem with the encryption.
+   * @throws javax.crypto.IllegalBlockSizeException if there is a problem with the encryption.
    */
-  public WattDepotComponent(WattDepotPersistence depot, int port) {
+  public WattDepotComponent(WattDepotPersistence depot, int port) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException {
     setName("WattDepot HTTP API Server");
     setDescription("WattDepot RESTful server.");
     setAuthor("Cam Moore");

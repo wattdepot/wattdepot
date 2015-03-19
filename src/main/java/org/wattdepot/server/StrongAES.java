@@ -115,25 +115,14 @@ public class StrongAES {
   /**
    * @param cipherText the encrypted string.
    * @return the decrypted string.
+   * @throws java.security.InvalidKeyException if there is a problem.
+   * @throws javax.crypto.BadPaddingException if there is a problem.
+   * @throws javax.crypto.IllegalBlockSizeException if there is a problem.
    */
-  public String decrypt(String cipherText) {
+  public String decrypt(String cipherText) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
     String plainText = null;
-    try {
-      this.cipher.init(Cipher.DECRYPT_MODE, this.key);
-      plainText = new String(cipher.doFinal(Base64.decodeBase64(cipherText)));
-    }
-    catch (InvalidKeyException e) { // NOPMD
-      // not sure what to do.
-      e.printStackTrace();
-    }
-    catch (IllegalBlockSizeException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    catch (BadPaddingException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    this.cipher.init(Cipher.DECRYPT_MODE, this.key);
+    plainText = new String(cipher.doFinal(Base64.decodeBase64(cipherText)));
     return plainText;
 
   }

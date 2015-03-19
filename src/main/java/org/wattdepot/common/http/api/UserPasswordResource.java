@@ -32,7 +32,7 @@ import org.wattdepot.common.domainmodel.UserPassword;
 public interface UserPasswordResource {
 
   /**
-   * Defines GET /wattdepot/admin/userpassword/{user_id} API call.
+   * Defines GET /wattdepot/admin/user-password/{user_id} API call.
    * 
    * @return The User with the given id. The id is sent in the request.
    */
@@ -40,7 +40,7 @@ public interface UserPasswordResource {
   public UserPassword retrieve();
 
   /**
-   * Defines the POST /wattdepot/admin/userpassword/ API call.
+   * Defines the POST /wattdepot/admin/user-password/ API call.
    * 
    * @param user
    *          The User to store.
