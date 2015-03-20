@@ -1042,6 +1042,7 @@ public class TestWattDepotClient {
       Date measTime2 = DateConvert.parseCalStringToDate("2013-11-20T14:45:27.925-1000");
       Date measTime3 = DateConvert.parseCalStringToDate("2013-11-20T14:55:27.925-1000");
       Date measTime4 = DateConvert.parseCalStringToDate("2013-11-20T15:05:57.925-1000");
+      Date afterAll = DateConvert.parseCalStringToDate("2014-11-20T15:05:57.925-1000");
       Measurement m1 = new Measurement(sensor1.getId(), measTime1, 100.0, testMeasurementType.unit());
       test.putMeasurement(testDepository, m1);
       Measurement m2 = new Measurement(sensor1.getId(), measTime2, 150.0, testMeasurementType.unit());
@@ -1054,6 +1055,7 @@ public class TestWattDepotClient {
       assertNotNull(value);
       assertEquals("Got wrong value expecting 100.0 got " + value, 100.0, value, 0.0001);
       Date between12 = DateConvert.parseCalStringToDate("2013-11-20T14:40:27.925-1000");
+      Date between23 = DateConvert.parseCalStringToDate("2013-11-20T14:50:27.925-1000");
       value = test.getValue(testDepository, sensor1, between12);
       assertNotNull(value);
       assertEquals("Got wrong value expecting 125.0 got " + value, 125.0, value, 0.0001);
@@ -1072,6 +1074,13 @@ public class TestWattDepotClient {
       value = test.getValue(testDepository, group, between12);
       assertEquals("Got wrong value", 1375.0, value, 0.0001);
       try {
+        value = test.getValue(testDepository, group, between12, 1200l);
+        assertEquals("Got wrong value", 1375.0, value, 0.0001);
+      }
+      catch (MeasurementGapException e) {
+        fail("Shouldn't throw gap exception.");
+      }
+      try {
         value = test.getValue(testDepository, group, between12, 5l);
         fail("Should throw MeasurementGapException.");
       } catch (MeasurementGapException e) {
@@ -1079,6 +1088,17 @@ public class TestWattDepotClient {
       }
       value = test.getValue(testDepository, group, measTime1, measTime3);
       assertEquals("Got wrong value", 1100.0, value, 0.0001);
+      try {
+        value = test.getValue(testDepository, group, afterAll);
+        fail("Shouldn't be able to get value after last measurement.");
+      }
+      catch (NoMeasurementException nme) {
+        // expected
+      }
+      // values
+      InterpolatedValueList valueList = test.getValues(testDepository, group, between12, between23, 5, false);
+      assertNotNull(valueList);
+      assertTrue(valueList.getInterpolatedValues().size() == 2);
       try {
         value = test.getValue(testDepository, group, measTime1, measTime3, 5L);
 //        fail("shouldn't get here.");
