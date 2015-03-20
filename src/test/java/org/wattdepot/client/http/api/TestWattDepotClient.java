@@ -19,6 +19,7 @@
 package org.wattdepot.client.http.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -295,6 +296,7 @@ public class TestWattDepotClient {
   @Test
   public void testDepository() {
     Depository depo = new Depository("testDepository",  testMeasurementType, testOrg.getId());
+    assertFalse(test.isDefinedDepository(depo.getId()));
     // Get list
     DepositoryList list = test.getDepositories();
     assertNotNull(list);
@@ -349,22 +351,20 @@ public class TestWattDepotClient {
   }
 
   /**
-   * Test get measurement type.
-   *
-   * @throws IdNotFoundException the id not found exception
-   */
-  @Test
-  public void testGetPPMMeasurementType() throws IdNotFoundException {
-    MeasurementType mt = test.getMeasurementType("concentration-ppm");
-    assertNotNull(mt);
-  }
-
-  /**
    * Test method for MeasurementTypes.
    */
   @Test
   public void testMeasurementType() {
+    MeasurementType mt = null;
+    try {
+      mt = test.getMeasurementType("concentration-ppm");
+      assertNotNull(mt);
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+    }
     MeasurementType type = new MeasurementType("testMeasurementType Client", testMeasurementType.unit());
+    assertFalse(test.isDefinedMeasurementType(type.getId()));
     // Put new instance (CREATE)
     try {
       test.putMeasurementType(type);
@@ -444,6 +444,7 @@ public class TestWattDepotClient {
   @Test
   public void testSensor() {
     Sensor sensor = new Sensor("testSensor Client", "uri", testSensor.getModelId(), testSensor.getOrganizationId());
+    assertFalse(test.isDefinedSensor(sensor.getId()));
     // Get list
     SensorList list = test.getSensors();
     assertNotNull(list);
@@ -508,6 +509,7 @@ public class TestWattDepotClient {
     Sensor sensor = new Sensor("testsensorgroupclient sensor", "uri", testSensor.getModelId(), testSensor.getOrganizationId());
     SensorGroup group = new SensorGroup("TestWattDepotClient Sensor Group", sensors,
         testOrg.getId());
+    assertFalse(test.isDefinedSensorGroup(group.getId()));
     // Get list
     SensorGroupList list = test.getSensorGroups();
     assertNotNull(list);
@@ -572,6 +574,7 @@ public class TestWattDepotClient {
   @Test
   public void testSensorModel() {
     SensorModel model = new SensorModel("testSensorModel", testModel.getProtocol(), testModel.getType(), testModel.getVersion());
+    assertFalse(test.isDefinedSensorModel(model.getId()));
     // Get list
     SensorModelList list = test.getSensorModels();
     assertNotNull(list);
@@ -623,6 +626,7 @@ public class TestWattDepotClient {
   @Test
   public void testCollectorProcessDefinition() {
     CollectorProcessDefinition data = new CollectorProcessDefinition("testCollectorProcessDefinition Client", testCPD.getSensorId(), testCPD.getPollingInterval(), testCPD.getDepositoryId(), testCPD.getOrganizationId());
+    assertFalse(test.isDefinedCollectorProcessDefinition(data.getId()));
     // Get list
     CollectorProcessDefinitionList list = test.getCollectorProcessDefinitions();
     assertNotNull(list);
@@ -654,6 +658,15 @@ public class TestWattDepotClient {
       }
       catch (Exception e) { // NOPMD
         // we expect this
+      }
+      // restore depository id
+      ret.setDepositoryId(data.getDepositoryId());
+      ret.setName("new name");
+      try {
+        test.updateCollectorProcessDefinition(ret);
+      }
+      catch (Exception e) {
+        fail("Should not happen " + e.getMessage());
       }
       list = test.getCollectorProcessDefinitions();
       assertNotNull(list);
@@ -689,6 +702,7 @@ public class TestWattDepotClient {
   @Test
   public void testMeasurementPruningDefinition() {
     MeasurementPruningDefinition data = testMPD;
+    assertFalse(test.isDefinedMeasurementPruningDefinition(data.getId()));
     // Get the list of defined MPDs
     MeasurementPruningDefinitionList list = test.getMeasurementPruningDefinitions();
     assertNotNull(list);
@@ -721,6 +735,15 @@ public class TestWattDepotClient {
       }
       catch (Exception e) { // NOPMD
         // we expect this
+      }
+      // restore depository id
+      ret.setDepositoryId(data.getDepositoryId());
+      ret.setName("new name");
+      try {
+        test.updateMeasurementPruningDefinition(ret);
+      }
+      catch (Exception e) {
+        fail("Should not happen " + e.getMessage());
       }
       // delete instance (DELETE)
       test.deleteMeasurementPruningDefinition(data);
