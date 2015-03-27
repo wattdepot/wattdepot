@@ -96,17 +96,17 @@
         <commons-cli.version>1.2</commons-cli.version>
         <commons-lang.version>2.6</commons-lang.version>
         <commons-logging.version>1.2</commons-logging.version>
-        <commons-math.version>3.3</commons-math.version>
-        <commons-validator.version>1.4.0</commons-validator.version>
+        <commons-math.version>3.4.1</commons-math.version>
+        <commons-validator.version>1.4.1</commons-validator.version>
         <concurrent.version>1.0</concurrent.version>
         <dbcp.version>1.4</dbcp.version>
         <tomcat.jdbc.version>7.0.42</tomcat.jdbc.version>
         <google-guava.version>18.0</google-guava.version>
         <google-visualization-java.version>1.1.1</google-visualization-java.version>
-        <h2.version>1.4.182</h2.version>
+        <h2.version>1.4.186</h2.version>
         <hibernate.version>3.2.6.ga</hibernate.version>
         <hibernate-annotations.version>3.3.1.GA</hibernate-annotations.version>
-        <hibernate-core.version>4.3.7.Final</hibernate-core.version>
+        <hibernate-core.version>4.3.8.Final</hibernate-core.version>
         <httpunit.version>1.7</httpunit.version>
         <icu4j.version>54.1.1</icu4j.version>
         <jackson.version>1.9.11</jackson.version>
@@ -121,8 +121,8 @@
         <opencsv.version>2.3</opencsv.version>
         <oro.version>2.0.8</oro.version>
         <pool.version>1.6</pool.version>
-        <postgres.version>9.1-901-1.jdbc4</postgres.version>
-        <rabbitmq.version>3.4.2</rabbitmq.version>
+        <postgres.version>9.4-1201-jdbc41</postgres.version>
+        <rabbitmq.version>3.5.0</rabbitmq.version>
         <restlet.version>2.1.2</restlet.version>
         <selenium.version>1.0.1</selenium.version>
 
@@ -325,7 +325,7 @@
             <version>${oro.version}</version>
         </dependency>
         <dependency>
-            <groupId>postgresql</groupId>
+            <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgres.version}</version>
         </dependency>
