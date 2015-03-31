@@ -257,8 +257,8 @@ public class ServerProperties {
         stream.close();
       }
     }
-//    processDatabaseURL(properties.getProperty(DATABASE_URL));
-    processDatabaseURL(properties.getProperty(DB_CONNECTION_URL));
+    processDatabaseURL(properties.getProperty(DATABASE_URL));
+//    processDatabaseURL(properties.getProperty(DB_CONNECTION_URL));
     // grab all of the properties in the environment
     Map<String, String> systemProps = System.getenv();
     for (Map.Entry<String, String> prop : systemProps.entrySet()) {
@@ -365,7 +365,7 @@ public class ServerProperties {
       properties.setProperty(DB_PASSWORD, password);
       properties.setProperty(DB_CONNECTION_URL, dbUrl);
     }
-//    logger.severe(echoProperties());
+    logger.severe(echoProperties());
   }
 
   /**
@@ -376,7 +376,7 @@ public class ServerProperties {
   private void processDatabaseURL(String url) throws URISyntaxException {
     if (url != null && !url.isEmpty()) {
       URI dbUri = new URI(url);
-      if (dbUri.getUserInfo().indexOf(":") != -1) {
+      if (dbUri.getUserInfo() != null && dbUri.getUserInfo().indexOf(":") != -1) {
         String username = dbUri.getUserInfo().split(":")[0];
         String password = dbUri.getUserInfo().split(":")[1];
         properties.setProperty(DB_USER_NAME, username);
