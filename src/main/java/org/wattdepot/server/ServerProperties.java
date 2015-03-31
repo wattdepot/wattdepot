@@ -365,7 +365,7 @@ public class ServerProperties {
       properties.setProperty(DB_PASSWORD, password);
       properties.setProperty(DB_CONNECTION_URL, dbUrl);
     }
-    logger.severe(echoProperties());
+//    logger.severe(echoProperties());
   }
 
   /**
