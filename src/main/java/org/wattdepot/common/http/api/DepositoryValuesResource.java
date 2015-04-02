@@ -22,7 +22,7 @@ import org.restlet.resource.Get;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 
 /**
- * DepositoryValuesResource - HTTP Interface for getting the MeasuredValueList. <br>
+ * DepositoryValuesResource - HTTP Interface for getting the InterpolatedValueList. <br>
  * (/wattdepot/{org-id}/depository/{depository-id}/values/)
  * 
  * @author Yongwen Xu
@@ -34,9 +34,10 @@ public interface DepositoryValuesResource {
   /**
    * Defines GET <br/>
    * /wattdepot/{org-id}/depository/{depository-id}/values/?
-   *   sensor={sensor_id}&start={start}&end={end}&interval={interval}.
+   *   sensor={sensor_id}&start={start}&end={end}&interval={interval}
+   *   &value-type={value-type}.
    * 
-   * @return The MeasuredValueList.
+   * @return The InterpolatedValueList.
    */
   @Get("json")
   // Use JSON as transport encoding.

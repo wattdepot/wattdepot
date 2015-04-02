@@ -153,6 +153,16 @@ public class DescriptiveStats {
   }
 
   /**
+   * Returns an estimate for the pth percentile of the values.
+   * @param p the requested percentile scaled from 0 to 100.
+   * @return An estimate for the pth percentile.
+   * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#getPercentile(double)
+   */
+  public double getPercentile(double p) {
+    return data.getPercentile(p);
+  }
+
+  /**
    * @return the population variance of the values.
    * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#getPopulationVariance()
    */

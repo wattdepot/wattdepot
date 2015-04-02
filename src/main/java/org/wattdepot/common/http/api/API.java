@@ -101,6 +101,20 @@ public class API {
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR;
 
   /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/day-hourly/values/</b> URI for
+   * getting a day's hourly samples. Use GET requests.
+   */
+  public static final String DAY_HOURLY_VALUES_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.DAY_HOURLY + "/" + Labels.VALUES + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/hourly/values/</b> URI for
+   * getting hourly samples. Use GET requests.
+   */
+  public static final String HOURLY_VALUES_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.HOURLY + "/" + Labels.VALUES + "/";
+
+  /**
    * <b>/wattdepot/{org-id}/measurement-pruning-definition/</b> URI for putting a
    * MeasurementPruningDefinition. Use PUT requests.
    */
