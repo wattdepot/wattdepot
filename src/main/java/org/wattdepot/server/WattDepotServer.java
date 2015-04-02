@@ -98,7 +98,6 @@ public class WattDepotServer {
       throws Exception {
     int port = Integer.parseInt(properties.get(ServerProperties.PORT_KEY));
     WattDepotServer server = new WattDepotServer();
-    // System.out.println("WattDepotServer.");
 //    LoggerUtil.showLoggers();
     boolean enableLogging = Boolean.parseBoolean(properties
         .get(ServerProperties.ENABLE_LOGGING_KEY));
