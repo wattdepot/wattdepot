@@ -240,4 +240,5 @@ public class Labels {
   /** The base label used for WattDepot. */
   public static final String WATTDEPOT = "wattdepot";
 
+  public static final String CSV = "csv";
 }
