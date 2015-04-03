@@ -29,6 +29,8 @@ import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
 import org.wattdepot.common.http.api.API;
 import org.wattdepot.server.WattDepotPersistence;
+import org.wattdepot.server.http.api.openeis.GvizTimeSeriesLoadProfileServerResource;
+import org.wattdepot.server.http.api.openeis.TimeSeriesLoadProfileServerResource;
 
 /**
  * UserServerApplication Server app.
@@ -203,6 +205,9 @@ public class WattDepotApplication extends Application {
     router.attach(API.ORGANIZATION_PUT_URI, OrganizationPutServerResource.class);
     router.attach(API.ORGANIZATION_URI, OrganizationServerResource.class);
     router.attach(API.ORGANIZATIONS_URI, OrganizationsServerResource.class);
+    // OpenEIS algorithms
+    router.attach(API.OPENEIS_TIME_SERIES_LOAD_DATA_URI, TimeSeriesLoadProfileServerResource.class);
+    router.attach(API.OPENEIS_TIME_SERIES_LOAD_GVIZ_URI, GvizTimeSeriesLoadProfileServerResource.class);
 
     ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(),
         ChallengeScheme.HTTP_BASIC, "WattDepot Realm");

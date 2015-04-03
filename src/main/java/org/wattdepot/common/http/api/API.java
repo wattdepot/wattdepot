@@ -392,4 +392,21 @@ public class API {
   public static final String VALUES_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/";
 
+  /********************* OpenEIS http://eis.lbl.gov/openeis.html API ******************/
+
+  /**
+   * <b>/wattdepot/{org-id}/openeis/time-series-load-profiling/data/</b> URI to get
+   * last month's power data. Use GET requests.
+   */
+  public static final String OPENEIS_TIME_SERIES_LOAD_DATA_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.OPENEIS + "/" + Labels.TIME_SERIES_LOAD_PROFILING + "/" + Labels.DATA + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/openeis/time-series-load-profiling/gviz/</b> URI to get
+   * last month's power data. Use GET requests.
+   */
+  public static final String OPENEIS_TIME_SERIES_LOAD_GVIZ_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.OPENEIS + "/" + Labels.TIME_SERIES_LOAD_PROFILING + "/" + Labels.GVIZ + "/";
+
+
 }
