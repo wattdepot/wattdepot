@@ -2,6 +2,7 @@ package org.wattdepot.common.util.tstamp;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -11,6 +12,7 @@ import java.util.List;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.junit.Test;
+import org.wattdepot.common.util.DateConvert;
 
 /**
  * Tests the Tstamp class.
@@ -197,5 +199,18 @@ public class TestTstamp {
     timestampList.add(Tstamp.makeTimestamp("2009-12-12T00:00:00.000"));
     assertEquals("getTimestampList didn't return expected list", timestampList, Tstamp
         .getTimestampList(startTime, endTime, interval));
+  }
+
+
+  @Test
+  public void testFoo() throws Exception {
+    XMLGregorianCalendar startTime = Tstamp.makeTimestamp("2009-12-11T11:31:48.017");
+    startTime.setTime(0, 0, 0, 0); // beginning of the day
+    XMLGregorianCalendar endTime = Tstamp.makeTimestamp("2009-12-11T01:18:58.817");
+    endTime = Tstamp.incrementDays(endTime, 1);
+    endTime.setTime(0, 0, 0, 0); // end of the day.
+    List<XMLGregorianCalendar> times = Tstamp.getTimestampList(startTime, endTime, 60);
+    assertNotNull(times);
+    assertTrue(times.size() == 25);
   }
 }

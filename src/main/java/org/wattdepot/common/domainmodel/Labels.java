@@ -44,6 +44,9 @@ public class Labels {
   /** The label for all CollectorProcessDefinition. */
   public static final String COLLECTOR_PROCESS_DEFINITIONS = "collector-process-definitions";
 
+  /** The label for getting data. */
+  public static final String DATA = "data";
+
   /** The label for all the Depositories. */
   public static final String DEPOSITORIES = "depositories";
 
@@ -83,6 +86,12 @@ public class Labels {
 
   /** The label for google visualization. */
   public static final String GVIZ = "gviz";
+
+  /** The label for hourly samples for a single data. */
+  public static final String DAY_HOURLY = "day-hourly";
+
+  /** The label for hourly values or samples. */
+  public static final String HOURLY = "hourly";
 
   /** The label for sampling internal or interval values. */
   public static final String INTERVAL = "interval";
@@ -239,5 +248,37 @@ public class Labels {
 
   /** The base label used for WattDepot. */
   public static final String WATTDEPOT = "wattdepot";
+
+  /********************* OpenEIS http://eis.lbl.gov/openeis.html Labels ******************/
+
+  /** The base label used for OpenEIS analyses. */
+  public static final String OPENEIS = "openeis";
+
+  /** The Time Series Load Profiling label. */
+  public static final String TIME_SERIES_LOAD_PROFILING = "time-series-load-profiling";
+
+  /** The Heat Map label. */
+  public static final String HEAT_MAP = "heat-map";
+
+  /** The Energy Signature label. */
+  public static final String ENERGY_SIGNATURE = "energy-signature";
+
+  /** The Weather Sensitivity label. */
+  public static final String WEATHER_SENSITIVITY = "weather-sensitivity";
+
+  /** The Longitudinal Benchmarking label. */
+  public static final String LONGITUDINAL_BENCHMARKING = "longitudinal-benchmarking";
+
+  /** The Peak Load Benchmarking label. */
+  public static final String PEAK_LOAD_BENCHMARKING = "peak-load-benchmarking";
+
+  /** The Base to Peak Load Ratio label. */
+  public static final String BASE_TO_PEAK_LOAD_RATIO = "base-to-peak-load-ratio";
+
+  /** The Load Duration Curve label. */
+  public static final String LOAD_DURATION_CURVE = "load-duration-curve";
+
+  /** The Load Variability label. */
+  public static final String LOAD_VARIABILITY = "load-variability";
 
 }
