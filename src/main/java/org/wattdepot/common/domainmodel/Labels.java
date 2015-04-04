@@ -249,7 +249,9 @@ public class Labels {
   /** The base label used for WattDepot. */
   public static final String WATTDEPOT = "wattdepot";
 
+  /***************************************************************************************/
   /********************* OpenEIS http://eis.lbl.gov/openeis.html Labels ******************/
+  /***************************************************************************************/
 
   /** The base label used for OpenEIS analyses. */
   public static final String OPENEIS = "openeis";
@@ -281,4 +283,15 @@ public class Labels {
   /** The Load Variability label. */
   public static final String LOAD_VARIABILITY = "load-variability";
 
+  /** The Power Depository label. */
+  public static final String POWER_DEPOSITORY = "power-depository";
+
+  /** The Temperature Depository label. */
+  public static final String TEMPERATURE_DEPOSITORY = "temperature-depository";
+
+  /** The Power sensor label. */
+  public static final String POWER_SENSOR = "power-sensor";
+
+  /** The Temperature sensor label. */
+  public static final String TEMPERATURE_SENSOR = "temperature-sensor";
 }

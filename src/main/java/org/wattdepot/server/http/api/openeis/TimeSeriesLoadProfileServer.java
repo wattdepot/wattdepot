@@ -22,17 +22,10 @@ package org.wattdepot.server.http.api.openeis;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.util.tstamp.Tstamp;
-import org.wattdepot.server.http.api.WattDepotServerResource;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -40,7 +33,7 @@ import java.util.logging.Level;
  *
  * @author Cam Moore
  */
-public class TimeSeriesLoadProfileServer extends WattDepotServerResource {
+public class TimeSeriesLoadProfileServer extends OpenEISServer {
   private String depositoryId;
   private String sensorId;
 
@@ -66,46 +59,18 @@ public class TimeSeriesLoadProfileServer extends WattDepotServerResource {
         Level.INFO,
         "GET /wattdepot/{" + orgId + "}/" + Labels.OPENEIS + "/" + Labels.TIME_SERIES_LOAD_PROFILING +
             "/?" + Labels.DEPOSITORY + "={" + depositoryId + "}&" + Labels.SENSOR + "={" + sensorId + "}");
-    if (isInRole(orgId)) {
-      InterpolatedValueList ret = new InterpolatedValueList();
-      try {
-        Depository depository = depot.getDepository(depositoryId, orgId, true);
-        if (depository.getMeasurementType().getName().startsWith("Power")) {
-          XMLGregorianCalendar now = Tstamp.makeTimestamp();
-          XMLGregorianCalendar monthAgo = Tstamp.incrementDays(now, -30);
-          List<XMLGregorianCalendar> times = Tstamp.getTimestampList(monthAgo, now, 60);
-          for (int i = 1; i < times.size(); i++) {
-            XMLGregorianCalendar begin = times.get(i - 1);
-            Date beginDate = begin.toGregorianCalendar().getTime();
-            XMLGregorianCalendar end = times.get(i);
-            Date endDate = end.toGregorianCalendar().getTime();
-            Double val = 0.0;
-            List<Measurement> measurements = depot.getMeasurements(depositoryId, orgId, sensorId, beginDate, endDate, false);
-            if (measurements.size() > 0) {
-              for (Measurement m : measurements) {
-                val += m.getValue();
-              }
-              val = val / measurements.size();
-            }
-            else {
-              val = Double.NaN;
-            }
-            ret.getInterpolatedValues().add(new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate));
-          }
-        }
-        else {
-          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Wrong Measurement type.");
-          return null;
-        }
+    try {
+      Depository depository = depot.getDepository(depositoryId, orgId, true);
+      if (depository.getMeasurementType().getName().startsWith("Power")) {
+        return getHourlyPointDataMonth(depositoryId, sensorId);
       }
-      catch (IdNotFoundException e) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      else {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " is not a Power Depository.");
         return null;
       }
-      return ret;
     }
-    else {
-      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+    catch (IdNotFoundException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       return null;
     }
   }
