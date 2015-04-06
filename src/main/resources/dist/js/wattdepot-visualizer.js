@@ -358,13 +358,13 @@ function insertRowHTML(index) {
               + '">'
               + '    <div id="depositoryDiv'
               + index
-              + '" class="col-xs-3 control-group">'
+              + '" class="col-xs-3 control-group row">'
               + '      <div class="col-xs-2">'
               + '      <label class="checkbox row-checkbox"><input type="checkbox" id="show'
               + index
               + '" value="show"></label>'
               + '      </div>'
-              + '      <div class="col-xs-9">'
+              + '      <div class="col-xs-11 row">'
               + '        <select id="depositorySelect'
               + index
               + '" class="col-xs-12 depository-select" data-placehoder="Choose Depository..." onchange="selectedDepository('
@@ -413,12 +413,12 @@ function insertRowHTML(index) {
               + '        <div class="row">'
               + '            <div class="col-xs-12"><label class="checkbox"><input type="checkbox" id="endTimeNow'
               + index + '" value="now">Now</label></div>' + '        </div>'
-              + '    </div>' + '    <div class="col-xs-2 control-group">'
+              + '    </div>' + '<div class="col-xs-3 row">    <div class="col-xs-6 control-group">'
               + '      <select id="dataType' + index + '">'
               + '        <option value="point">Point Value</option>'
               + '        <option value="interval">Interval Value</option>'
               + '      </select>' + '    </div>'
-              + '    <div class="col-xs-1 control-group">'
+              + '    <div class="col-xs-4 control-group">'
               + '      <select id="frequency' + index + '">'
               + '        <option value="5">5 mins</option>'
               + '        <option value="15">15 mins</option>'
@@ -428,7 +428,15 @@ function insertRowHTML(index) {
               + '        <option value="1400">1 Day</option>'
               + '        <option value="10080">1 Week</option>'
               + '        <option value="43200">1 Month</option>'
-              + '      </select>' + '    </div> ' + '</div>');
+              + '      </select>'
+              + '    </div> '
+              + '    <div class="col-xs-2 control-group">'
+              + '      <button data-toggle="tooltip"  onclick="downloadCsv(' + index + ');" data-placement="left" class="btn btn-primary" title="Download data as CSV">'
+              + '       <span class="glyphicon glyphicon-download">'
+              + '      </button>'
+              + '    </div> '
+              + '  </div>'
+              + '</div>');
 
   $("#show" + index).prop('checked', true);
   // Bind event for when Show checkbox is checked
@@ -937,6 +945,78 @@ function visualizerResponse(response, queryIndex, startQueryTime, queryID) {
 }
 
 /**
+ * Handles validation of input fields.
+ * @param formIndex to validate.
+ * @returns {*|number|error|Function} returns true if no errors are found.
+ */
+function validate(formIndex) {
+    var valid = true;
+    var interval = $('#frequency' + formIndex + ' option:selected').val();
+    var startTime = getDate('start', formIndex)
+    var endTime;
+
+    if ($('#endTimeNow' + formIndex).is(':checked')) {
+        endTime = new Date();
+    } else {
+        endTime = getDate('end', formIndex);
+    }
+    if (startTime == null || endTime == null) {
+        valid = false;
+    } else {
+        // If start is bigger than end, flip the two
+        if (startTime > endTime) {
+            var temp = endTime;
+            endTime = startTime;
+            startTime = temp;
+        }
+    }
+    // Make sure interval is not too big
+    if ((endTime - startTime) / 60000 < interval) {
+        valid = false;
+        $('#frequency' + formIndex).addClass('invalid');
+        $('#frequency' + formIndex).css('border', '3px red solid');
+        $('#frequency' + formIndex)
+            .wrap(
+            '<a href="#" rel="tooltip" data-placement="bottom" title="Error: Interval is larger than the data range.  Please chooose a smaller interval." />');
+    } else if ($('#frequency' + formIndex).hasClass('invalid')) {
+        $('#frequency' + formIndex).unwrap();
+        $('#frequency' + formIndex).css('border', '');
+        $('#frequency' + formIndex).removeClass('invalid');
+    }
+    return valid;
+}
+
+function downloadCsv(formIndex) {
+    if (validate(formIndex)) {
+        var depository = $("#depositorySelect" + formIndex + " option:selected").val();
+        var sensor = $("#sensorSelect" + formIndex + " option:selected").val();
+        var dataType = $("#dataType" + formIndex + " option:selected").val();
+        var startTime = getDate('start', formIndex);
+        var endTime = getDate('end', formIndex);
+        var interval = $('#frequency' + formIndex + ' option:selected').val();
+        if (startTime > endTime) {
+            var temp = endTime;
+            endTime = startTime;
+            startTime = temp;
+        }
+        window.location = server + ORGID + '/depository/' + depository
+            + '/values/csv/?sensor=' + sensor
+            + '&start=' + wdClient.getTimestampFromDate(startTime)
+            + '&end=' + wdClient.getTimestampFromDate(endTime)
+            + '&interval=' + interval
+            + '&value-type=' + dataType;
+        //$.get( server + ORGID + '/depository/' + depository
+        //    + '/values/csv/?sensor=' + sensor
+        //    + '&start=' + wdClient.getTimestampFromDate(startTime)
+        //    + '&end=' + wdClient.getTimestampFromDate(endTime)
+        //    + '&interval=' + interval
+        //    + '&value-type=' + dataType, function() {
+        //    alert('success');
+        //});
+    }
+}
+
+/**
  * Handles the Visualize button clicks.
  */
 function visualize() {
@@ -980,55 +1060,55 @@ function visualize() {
         'sensor' : sensorName,
         'dataType' : dataType,
         'typeString' : DEPOSITORIES[depository]["typeString"]
-      };
+    };
     seriesInfo.push(tempInfo);
-    
+
     startTime = getDate('start', formIndex);
     if ($('#endTimeNow' + formIndex).is(':checked')) {
-      endTime = new Date();
+        endTime = new Date();
     } else {
-      endTime = getDate('end', formIndex);
+        endTime = getDate('end', formIndex);
     }
     if (startTime == null || endTime == null) {
-      error = true;
+        error = true;
     } else {
-      // If start is bigger than end, flip the two
-      if (startTime > endTime) {
-        var temp = endTime;
-        endTime = startTime;
-        startTime = temp;
-      }
+        // If start is bigger than end, flip the two
+        if (startTime > endTime) {
+            var temp = endTime;
+            endTime = startTime;
+            startTime = temp;
+        }
     }
     // Make sure interval is not too big
     if ((endTime - startTime) / 60000 < interval) {
-      error = true;
-      $('#frequency' + formIndex).addClass('invalid');
-      $('#frequency' + formIndex).css('border', '3px red solid');
-      $('#frequency' + formIndex)
-          .wrap(
-              '<a href="#" rel="tooltip" data-placement="bottom" title="Error: Interval is larger than the data range.  Please chooose a smaller interval." />');
+        error = true;
+        $('#frequency' + formIndex).addClass('invalid');
+        $('#frequency' + formIndex).css('border', '3px red solid');
+        $('#frequency' + formIndex)
+            .wrap(
+            '<a href="#" rel="tooltip" data-placement="bottom" title="Error: Interval is larger than the data range.  Please chooose a smaller interval." />');
     } else if ($('#frequency' + formIndex).hasClass('invalid')) {
-      $('#frequency' + formIndex).unwrap();
-      $('#frequency' + formIndex).css('border', '');
-      $('#frequency' + formIndex).removeClass('invalid');
+        $('#frequency' + formIndex).unwrap();
+        $('#frequency' + formIndex).css('border', '');
+        $('#frequency' + formIndex).removeClass('invalid');
     }
     if (!error) {
-      dataQueries.push({
-        'depository' : depository,
-        'sensor' : sensor,
-        'numReturned' : 0,
-        'queries' : splitQuery(server, depository, sensor, startTime, endTime,
-            dataType, interval),
-        'queryResults' : null
-      });
+        dataQueries.push({
+            'depository' : depository,
+            'sensor' : sensor,
+            'numReturned' : 0,
+            'queries' : splitQuery(server, depository, sensor, startTime, endTime,
+                dataType, interval),
+            'queryResults' : null
+        });
     }
 
-  }
+}
 
-  if (error) {
+if (error) {
     $("[rel=tooltip]").tooltip();
     $("[rel=tooltip]").mouseout(function() {
-      $(this).tooltip("hide");
+        $(this).tooltip("hide");
     });
     alert("Error: Inputs are invalid.\nPlease check the fields in red.\nYou may hover overthem to get a tooltip describing the error.");
     $('#visualizeButton').prop("disabled", false);
@@ -1036,7 +1116,7 @@ function visualize() {
     $('#visualizeButton').append("Visualize!");
     $('#progressWindow').modal('hide');
     return;
-  }
+}
 
   // Initialize rest of the globals
   numFinished = 0;
