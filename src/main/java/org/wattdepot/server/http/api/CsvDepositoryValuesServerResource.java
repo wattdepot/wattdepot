@@ -41,7 +41,7 @@ public class CsvDepositoryValuesServerResource extends DepositoryValuesServer im
     }
     StringRepresentation response = new StringRepresentation(sb.toString(), MediaType.TEXT_CSV);
     response.setDisposition(new Disposition(Disposition.TYPE_ATTACHMENT));
-    response.getDisposition().setFilename(sensorId + ".csv");
+    response.getDisposition().setFilename(String.format("%s_%s_%s.csv", depositoryId, sensorId, dataType));
     return response;
   }
 }
