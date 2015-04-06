@@ -62,6 +62,10 @@ public class ServerProperties {
   public static final String PORT_KEY = "wattdepot-server.port";
   /** The context root key. */
   public static final String CONTEXT_ROOT_KEY = "wattdepot-server.context.root";
+  /** The option to enable HTTPS. */
+  public static final String HTTPS = "wattdepot-server.https";
+  /** The path to the SSL certificate. */
+  public static final String SSL_CERTIFICATE = "wattdepot-server.ssl.certificate";
   /** The database connection driver class. */
   public static final String DB_CONNECTION_DRIVER = "wattdepot-server.db.connection.driver";
   /** The database connection driver url. */
@@ -305,6 +309,12 @@ public class ServerProperties {
     }
     if (!properties.containsKey(PORT_KEY)) {
       properties.setProperty(PORT_KEY, "8192");
+    }
+    if (!properties.containsKey(HTTPS)) {
+      properties.setProperty(HTTPS, FALSE);
+    }
+    if (!properties.containsKey(SSL_CERTIFICATE)) {
+      properties.setProperty(SSL_CERTIFICATE, serverHome);
     }
     if (!properties.containsKey(DB_CONNECTION_DRIVER)) {
       properties.setProperty(DB_CONNECTION_DRIVER, "org.postgresql.Driver");
