@@ -6,6 +6,7 @@ import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.tstamp.Tstamp;
 import org.wattdepot.server.http.api.WattDepotServerResource;
 
@@ -26,7 +27,7 @@ public class OpenEISServer extends WattDepotServerResource {
    * @param sensorId The Sensor
    * @return An InterpolatedValueList of the hourly data.
    */
-  InterpolatedValueList getHourlyPointDataMonth(String depositoryId, String sensorId) {
+  public InterpolatedValueList getHourlyPointDataMonth(String depositoryId, String sensorId) {
     if (isInRole(orgId)) {
       InterpolatedValueList ret = new InterpolatedValueList();
       try {
@@ -72,7 +73,7 @@ public class OpenEISServer extends WattDepotServerResource {
    * @param sensorId The Sensor
    * @return An InterpolatedValueList of the hourly data.
    */
-  InterpolatedValueList getHourlyPointDataYear(String depositoryId, String sensorId) {
+  public InterpolatedValueList getHourlyPointDataYear(String depositoryId, String sensorId) {
     if (isInRole(orgId)) {
       InterpolatedValueList ret = new InterpolatedValueList();
       try {
@@ -110,4 +111,51 @@ public class OpenEISServer extends WattDepotServerResource {
       return null;
     }
   }
+
+  /**
+   * Returns the InterpolatedValues one per year starting at the earliest measurement.
+   * @param depositoryId The Depository Id.
+   * @param sensorId The Sensor Id.
+   * @param strict if true method will return null if there isn't enough data.
+   * @return The list of difference values one per year for the given depository and sensor.
+   */
+  public InterpolatedValueList getAnnualDifferenceData(String depositoryId, String sensorId, boolean strict) {
+    if (isInRole(orgId)) {
+      InterpolatedValueList ret = new InterpolatedValueList();
+      try {
+        Depository depository = depot.getDepository(depositoryId, orgId, true);
+        InterpolatedValue earliest = depot.getEarliestMeasuredValue(depositoryId, orgId, sensorId, true);
+        InterpolatedValue latest = depot.getLatestMeasuredValue(depositoryId, orgId, sensorId, true);
+        XMLGregorianCalendar first = Tstamp.makeTimestamp(earliest.getEnd().getTime());
+        XMLGregorianCalendar last = Tstamp.makeTimestamp(latest.getEnd().getTime());
+        if (strict && Tstamp.daysBetween(first, last) < 365) {
+          setStatus(Status.SERVER_ERROR_INTERNAL, "Not enough measurements for " + sensorId + " need at least 1 years worth of measurements.");
+          return null;
+        }
+        List<XMLGregorianCalendar> times = Tstamp.getTimestampList(first, last, 60 * 24 * 365);
+        for (int i = 1; i < times.size(); i++) {
+          XMLGregorianCalendar begin = times.get(i - 1);
+          Date beginDate = begin.toGregorianCalendar().getTime();
+          XMLGregorianCalendar end = times.get(i);
+          Date endDate = end.toGregorianCalendar().getTime();
+          Double val = depot.getValue(depositoryId, orgId, sensorId, beginDate, endDate, false);
+          ret.getInterpolatedValues().add(new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate));
+        }
+        return ret;
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        return null;
+      }
+      catch (NoMeasurementException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        return null;
+      }
+    }
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+      return null;
+    }
+  }
+
 }

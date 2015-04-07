@@ -22,10 +22,14 @@ package org.wattdepot.server.http.api.openeis;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.domainmodel.openeis.XYInterpolatedValue;
+import org.wattdepot.common.domainmodel.openeis.XYInterpolatedValueList;
 import org.wattdepot.common.exception.IdNotFoundException;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 /**
@@ -58,7 +62,7 @@ public class EnergySignatureServer extends OpenEISServer {
    *
    * @return An InterpolatedValueList of the hourly power data.
    */
-  public InterpolatedValueList doRetrieve() {
+  public XYInterpolatedValueList doRetrieve() {
     getLogger().log(
       Level.INFO,
       "GET /wattdepot/{" + orgId + "}/" + Labels.OPENEIS + "/" + Labels.HEAT_MAP +
@@ -66,7 +70,7 @@ public class EnergySignatureServer extends OpenEISServer {
         + Labels.TEMPERATURE_DEPOSITORY + "={" + temperatureDepositoryId + "}&" + Labels.TEMPERATURE_SENSOR + "={"
         + temperatureSensorId + "}");
     if (isInRole(orgId)) {
-      InterpolatedValueList ret = new InterpolatedValueList();
+      XYInterpolatedValueList ret = new XYInterpolatedValueList();
       try {
         Depository powerDepository = depot.getDepository(powerDepositoryId, orgId, true);
         if (powerDepository.getMeasurementType().getName().startsWith("Power")) {
@@ -74,6 +78,11 @@ public class EnergySignatureServer extends OpenEISServer {
           Depository temperatureDepository = depot.getDepository(temperatureDepositoryId, orgId, true);
           if (temperatureDepository.getMeasurementType().getName().startsWith("Temperature")) {
             InterpolatedValueList temperatureValues = getHourlyPointDataYear(temperatureDepositoryId, temperatureSensorId);
+            ArrayList<InterpolatedValue> powerData = powerValues.getInterpolatedValues();
+            ArrayList<InterpolatedValue> temperatureData = temperatureValues.getInterpolatedValues();
+            for (int i = 0; i < powerData.size(); i++) {
+              ret.getValues().add(new XYInterpolatedValue(powerData.get(i), temperatureData.get(i)));
+            }
           }
           else {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST, temperatureDepositoryId + " is not a temperature depository.");
