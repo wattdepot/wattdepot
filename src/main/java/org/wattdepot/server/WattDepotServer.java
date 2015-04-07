@@ -28,6 +28,9 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.restlet.data.Parameter;
+import org.restlet.data.Protocol;
+import org.restlet.util.Series;
 import org.wattdepot.common.util.logger.LoggerUtil;
 import org.wattdepot.server.http.api.WattDepotComponent;
 
@@ -122,6 +125,21 @@ public class WattDepotServer {
     }
     server.depot.setServerProperties(properties);
     server.restletServer = new WattDepotComponent(server.depot, port);
+
+    // Adds a HTTP or HTTPS server connector
+    if (properties.get(ServerProperties.SSL).equals(ServerProperties.TRUE)) {
+      server.restletServer.getServers().add(Protocol.HTTPS, port);
+      Series<Parameter> parameters = server.restletServer.getServers().getContext().getParameters();
+      parameters.add("sslContextFactory", "org.restlet.engine.ssl.DefaultSslContextFactory");
+      parameters.add("keyStorePath", properties.get(ServerProperties.SSL_KEYSTORE_PATH));
+      parameters.add("keyStorePassword", properties.get(ServerProperties.SSL_KEYSTORE_PASSWORD));
+      parameters.add("keyPassword", properties.get(ServerProperties.SSL_KEYSTORE_KEY_PASSWORD));
+      parameters.add("keyStoreType", properties.get(ServerProperties.SSL_KEYSTORE_TYPE));
+    }
+    else {
+      server.restletServer.getServers().add(Protocol.HTTP, port);
+    }
+
     server.logger = server.restletServer.getLogger();
 
     // Set up logging.

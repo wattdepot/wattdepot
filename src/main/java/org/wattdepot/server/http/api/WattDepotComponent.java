@@ -66,13 +66,12 @@ public class WattDepotComponent extends Component {
     setAuthor("Cam Moore");
     getLogService().setLoggerName("org.wattdepot.server");
     // Add a CLAP client connector
+
     getClients().add(Protocol.CLAP);
     getClients().add(Protocol.FILE);
     getClients().add(Protocol.HTTP);
 
-    // Adds a HTTP server connector
-    Server server = getServers().add(Protocol.HTTP, port);
-    server.getContext().getParameters().set("tracing", "true");
+    getServers().getContext().getParameters().set("tracing", "true");
 
     WattDepotApplication app = new WattDepotApplication();
     app.setDepot(depot);

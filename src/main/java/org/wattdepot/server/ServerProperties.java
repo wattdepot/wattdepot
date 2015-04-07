@@ -308,7 +308,9 @@ public class ServerProperties {
       if (!properties.containsKey(SSL_KEYSTORE_KEY_PASSWORD)) {
         sb.append("Keystore key password is not set. ");
       }
-      throw new SecurityException(sb.toString());
+      if (sb.length() != 0) {
+        throw new SecurityException(sb.toString());
+      }
     }
 
     UserInfo.ROOT.setUid(properties.getProperty(ADMIN_USER_NAME));
@@ -333,7 +335,7 @@ public class ServerProperties {
       properties.setProperty(SSL, FALSE);
     }
     if (!properties.containsKey(SSL_KEYSTORE_PATH)) {
-      properties.setProperty(SSL_KEYSTORE_PATH, serverHome + "wattdepot.jks");
+      properties.setProperty(SSL_KEYSTORE_PATH, serverHome + "/wattdepot.jks");
     }
     if (!properties.containsKey(SSL_KEYSTORE_TYPE)) {
       properties.setProperty(SSL_KEYSTORE_TYPE, "JKS");
