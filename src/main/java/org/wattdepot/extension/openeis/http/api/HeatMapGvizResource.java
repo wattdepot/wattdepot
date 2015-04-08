@@ -17,26 +17,24 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.wattdepot.common.http.api.openeis;
+package org.wattdepot.extension.openeis.http.api;
 
 import org.restlet.resource.Get;
 
 /**
- * EnergySignatureDataResource - HTTP interface for getting the last year's energy signature data.
- * See OpenEIS Energy Signature.
+ * HeatMapGvizResource - HTTP interface for getting the last year's load heat map data as a Google Visualization String.
+ * See OpenEIS Heat Map.
  * @author Cam Moore
  */
-
-public interface EnergySignatureGvizResource {
+public interface HeatMapGvizResource {
   /**
    * Defines GET <br/>
-   * /wattdepot/{org-id}/openeis/energy-signature/gviz/?power-depository={depository_id}&power-sensor={sensor_id}
-   * &temperature-depository={depository_id}&temperature-sensor={sensor_id}.
+   * /wattdepot/{org-id}/openeis/heat-map/gviz/?power-depository={power_depository_id}&power-sensor={power_sensor_id}
+   * &temp-depository={temp_depository_id}&temp-sensor={temp_sensor_id}.
    *
    * @return The Google Visualization String.
    */
   @Get("json")
   String retrieve();
-
 
 }

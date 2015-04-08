@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.wattdepot.server.http.api.openeis;
+package org.wattdepot.extension.openeis.server;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
@@ -25,8 +25,8 @@ import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.openeis.XYInterpolatedValue;
-import org.wattdepot.common.domainmodel.openeis.XYInterpolatedValueList;
+import org.wattdepot.common.domainmodel.XYInterpolatedValue;
+import org.wattdepot.common.domainmodel.XYInterpolatedValueList;
 import org.wattdepot.common.exception.IdNotFoundException;
 
 import java.util.ArrayList;

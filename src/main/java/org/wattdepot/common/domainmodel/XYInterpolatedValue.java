@@ -1,7 +1,4 @@
-package org.wattdepot.common.domainmodel.openeis;
-
-import org.wattdepot.common.domainmodel.InterpolatedValue;
-import org.wattdepot.common.domainmodel.MeasurementType;
+package org.wattdepot.common.domainmodel;
 
 import java.util.Date;
 

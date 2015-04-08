@@ -17,18 +17,24 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.wattdepot.server.http.api.openeis;
+package org.wattdepot.extension.openeis.http.api;
 
+import org.restlet.resource.Get;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
-import org.wattdepot.common.http.api.openeis.TimeSeriesLoadProfileDataResource;
 
 /**
- * TimeSeriesLoadProfileServerResource - ServerResource that handles GET requests for OpenEIS Time Series Load Profiles.
+ * TimeSeriesLoadProfileDataResource - HTTP interface for getting the last month's load time series data.
+ * See OpenEIS Time Series Load Profiling.
  * @author Cam Moore
  */
-public class TimeSeriesLoadProfileServerResource extends TimeSeriesLoadProfileServer implements TimeSeriesLoadProfileDataResource {
-  @Override
-  public InterpolatedValueList retrieve() {
-    return doRetrieve();
-  }
+public interface TimeSeriesLoadProfileDataResource {
+  /**
+   * Defines GET <br/>
+   * /wattdepot/{org-id}/openeis/time-series-load-profiling/data/?depository={depository_id}&sensor={sensor_id}.
+   *
+   * @return The InterpolatedValueList.
+   */
+  @Get("json")
+  InterpolatedValueList retrieve();
+
 }

@@ -393,47 +393,4 @@ public class API {
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/";
 
 
-  /************************************************************************************/
-  /********************* OpenEIS http://eis.lbl.gov/openeis.html API ******************/
-  /************************************************************************************/
-
-  /**
-   * <b>/wattdepot/{org-id}/openeis/time-series-load-profiling/data/</b> URI to get
-   * last month's power data. Use GET requests.
-   */
-  public static final String OPENEIS_TIME_SERIES_LOAD_DATA_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.OPENEIS + "/" + Labels.TIME_SERIES_LOAD_PROFILING + "/" + Labels.DATA + "/";
-
-  /**
-   * <b>/wattdepot/{org-id}/openeis/time-series-load-profiling/gviz/</b> URI to get
-   * last month's power data. Use GET requests.
-   */
-  public static final String OPENEIS_TIME_SERIES_LOAD_GVIZ_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.OPENEIS + "/" + Labels.TIME_SERIES_LOAD_PROFILING + "/" + Labels.GVIZ + "/";
-
-  /**
-   * <b>/wattdepot/{org-id}/openeis/heat-map/data/</b> URI to get the last year's hourly power data. Use GET requests.
-   */
-  public static final String OPENEIS_HEAT_MAP_DATA_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.OPENEIS + "/" + Labels.HEAT_MAP + "/" + Labels.DATA + "/";
-
-  /**
-   * <b>/wattdepot/{org-id}/openeis/heat-map/gviz/</b> URI to get the last year's hourly power data. Use GET requests.
-   */
-  public static final String OPENEIS_HEAT_MAP_GVIS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.OPENEIS + "/" + Labels.HEAT_MAP + "/" + Labels.GVIZ + "/";
-
-  /**
-   * <b>/wattdepot/{org-id}/openeis/energy-signature/data/</b> URI to get the last year's hourly power data. Use GET requests.
-   */
-  public static final String OPENEIS_ENERGY_SIGNATURE_DATA_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.OPENEIS + "/" + Labels.ENERGY_SIGNATURE + "/" + Labels.DATA + "/";
-
-  /**
-   * <b>/wattdepot/{org-id}/openeis/energy-signature/gviz/</b> URI to get the last year's hourly power data. Use GET requests.
-   */
-  public static final String OPENEIS_ENERGY_SIGNATURE_GVIZ_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.OPENEIS + "/" + Labels.ENERGY_SIGNATURE + "/" + Labels.DATA + "/";
-
-
-}
+  }

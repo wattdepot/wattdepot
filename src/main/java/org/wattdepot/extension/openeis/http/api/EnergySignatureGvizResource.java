@@ -17,19 +17,26 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.wattdepot.server.http.api.openeis;
+package org.wattdepot.extension.openeis.http.api;
 
-import org.wattdepot.common.domainmodel.InterpolatedValueList;
-import org.wattdepot.common.http.api.openeis.HeatMapDataResource;
+import org.restlet.resource.Get;
 
 /**
- * TimeSeriesLoadProfileServerResource - ServerResource that handles GET requests for OpenEIS Time Series Load Profiles.
- *
+ * EnergySignatureDataResource - HTTP interface for getting the last year's energy signature data.
+ * See OpenEIS Energy Signature.
  * @author Cam Moore
  */
-public class HeatMapServerResource extends HeatMapServer implements HeatMapDataResource {
-  @Override
-  public InterpolatedValueList retrieve() {
-    return doRetrieve();
-  }
+
+public interface EnergySignatureGvizResource {
+  /**
+   * Defines GET <br/>
+   * /wattdepot/{org-id}/openeis/energy-signature/gviz/?power-depository={depository_id}&power-sensor={sensor_id}
+   * &temperature-depository={depository_id}&temperature-sensor={sensor_id}.
+   *
+   * @return The Google Visualization String.
+   */
+  @Get("json")
+  String retrieve();
+
+
 }

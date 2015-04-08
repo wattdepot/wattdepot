@@ -29,10 +29,10 @@ import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
 import org.wattdepot.common.http.api.API;
 import org.wattdepot.server.WattDepotPersistence;
-import org.wattdepot.server.http.api.openeis.GvizHeatMapServerResource;
-import org.wattdepot.server.http.api.openeis.GvizTimeSeriesLoadProfileServerResource;
-import org.wattdepot.server.http.api.openeis.HeatMapServerResource;
-import org.wattdepot.server.http.api.openeis.TimeSeriesLoadProfileServerResource;
+import org.wattdepot.extension.openeis.server.GvizHeatMapServerResource;
+import org.wattdepot.extension.openeis.server.GvizTimeSeriesLoadProfileServerResource;
+import org.wattdepot.extension.openeis.server.HeatMapServerResource;
+import org.wattdepot.extension.openeis.server.TimeSeriesLoadProfileServerResource;
 
 /**
  * UserServerApplication Server app.
@@ -208,10 +208,10 @@ public class WattDepotApplication extends Application {
     router.attach(API.ORGANIZATION_URI, OrganizationServerResource.class);
     router.attach(API.ORGANIZATIONS_URI, OrganizationsServerResource.class);
     // OpenEIS algorithms
-    router.attach(API.OPENEIS_TIME_SERIES_LOAD_DATA_URI, TimeSeriesLoadProfileServerResource.class);
-    router.attach(API.OPENEIS_TIME_SERIES_LOAD_GVIZ_URI, GvizTimeSeriesLoadProfileServerResource.class);
-    router.attach(API.OPENEIS_HEAT_MAP_DATA_URI, HeatMapServerResource.class);
-    router.attach(API.OPENEIS_HEAT_MAP_GVIS_URI, GvizHeatMapServerResource.class);
+    router.attach(org.wattdepot.extension.openeis.http.api.API.OPENEIS_TIME_SERIES_LOAD_DATA_URI, TimeSeriesLoadProfileServerResource.class);
+    router.attach(org.wattdepot.extension.openeis.http.api.API.OPENEIS_TIME_SERIES_LOAD_GVIZ_URI, GvizTimeSeriesLoadProfileServerResource.class);
+    router.attach(org.wattdepot.extension.openeis.http.api.API.OPENEIS_HEAT_MAP_DATA_URI, HeatMapServerResource.class);
+    router.attach(org.wattdepot.extension.openeis.http.api.API.OPENEIS_HEAT_MAP_GVIS_URI, GvizHeatMapServerResource.class);
 
     ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(),
         ChallengeScheme.HTTP_BASIC, "WattDepot Realm");

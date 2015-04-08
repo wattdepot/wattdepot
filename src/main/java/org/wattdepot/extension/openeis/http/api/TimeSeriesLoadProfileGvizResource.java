@@ -17,27 +17,23 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.wattdepot.common.http.api.openeis;
+package org.wattdepot.extension.openeis.http.api;
 
 import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.openeis.XYInterpolatedValueList;
 
 /**
- * EnergySignatureDataResource - HTTP interface for getting the last year's energy signature data.
- * See OpenEIS Energy Signature.
+ * TimeSeriesLoadProfileGvizResource - HTTP interface for getting the last month's load time series data.
+ * See OpenEIS Time Series Load Profiling.
  * @author Cam Moore
  */
-
-public interface EnergySignatureDataResource {
+public interface TimeSeriesLoadProfileGvizResource {
   /**
    * Defines GET <br/>
-   * /wattdepot/{org-id}/openeis/energy-signature/data/?power-depository={depository_id}&power-sensor={sensor_id}
-   * &temperature-depository={depository_id}&temperature-sensor={sensor_id}.
+   * /wattdepot/{org-id}/openeis/time-series-load-profiling/gviz/?depository={depository_id}&sensor={sensor_id}.
    *
-   * @return The XYInterpolatedValueList.
+   * @return The Google Visualization data source.
    */
   @Get("json")
-  XYInterpolatedValueList retrieve();
-
+  String retrieve();
 
 }

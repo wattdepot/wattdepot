@@ -17,7 +17,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.wattdepot.server.http.api.openeis;
+package org.wattdepot.extension.openeis.server;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
@@ -29,11 +29,11 @@ import org.wattdepot.common.exception.IdNotFoundException;
 import java.util.logging.Level;
 
 /**
- * HeatMapServer - Base class for handling Heat Map requests.
+ * TimeSeriesLoadProfileServer - Base class for handling Time Series Load Profile requests.
  *
  * @author Cam Moore
  */
-public class HeatMapServer extends OpenEISServer {
+public class TimeSeriesLoadProfileServer extends OpenEISServer {
   private String depositoryId;
   private String sensorId;
 
@@ -51,18 +51,18 @@ public class HeatMapServer extends OpenEISServer {
   }
 
   /**
-   * Retrieves the last year's hourly power data for the given depository and sensor.
+   * Retrieves the last month's hourly power data for the given depository and sensor.
    * @return An InterpolatedValueList of the hourly power data.
    */
   public InterpolatedValueList doRetrieve() {
     getLogger().log(
         Level.INFO,
-        "GET /wattdepot/{" + orgId + "}/" + Labels.OPENEIS + "/" + Labels.HEAT_MAP +
+        "GET /wattdepot/{" + orgId + "}/" + Labels.OPENEIS + "/" + Labels.TIME_SERIES_LOAD_PROFILING +
             "/?" + Labels.DEPOSITORY + "={" + depositoryId + "}&" + Labels.SENSOR + "={" + sensorId + "}");
     try {
       Depository depository = depot.getDepository(depositoryId, orgId, true);
       if (depository.getMeasurementType().getName().startsWith("Power")) {
-        return getHourlyPointDataYear(depositoryId, sensorId);
+        return getHourlyPointDataMonth(depositoryId, sensorId);
       }
       else {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " is not a Power Depository.");

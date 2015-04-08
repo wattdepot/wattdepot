@@ -41,8 +41,8 @@ import com.google.visualization.datasource.datatable.TableRow;
 import com.google.visualization.datasource.datatable.value.DateTimeValue;
 import com.google.visualization.datasource.datatable.value.ValueType;
 import com.google.visualization.datasource.render.JsonRenderer;
-import org.wattdepot.common.domainmodel.openeis.XYInterpolatedValue;
-import org.wattdepot.common.domainmodel.openeis.XYInterpolatedValueList;
+import org.wattdepot.common.domainmodel.XYInterpolatedValue;
+import org.wattdepot.common.domainmodel.XYInterpolatedValueList;
 
 /**
  * GvizHelper - Utility class that handles Google Visualization using the Google Visualization

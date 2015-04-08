@@ -1,4 +1,4 @@
-package org.wattdepot.server.http.api.openeis;
+package org.wattdepot.extension.openeis.server;
 
 import org.restlet.data.Status;
 import org.wattdepot.common.domainmodel.Depository;

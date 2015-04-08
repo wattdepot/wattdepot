@@ -17,24 +17,24 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.wattdepot.common.http.api.openeis;
+package org.wattdepot.extension.openeis.http.api;
 
 import org.restlet.resource.Get;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
 
 /**
- * HeatMapGvizResource - HTTP interface for getting the last year's load heat map data as a Google Visualization String.
+ * HeatMapDataResource - HTTP interface for getting the last year's load heat map data.
  * See OpenEIS Heat Map.
  * @author Cam Moore
  */
-public interface HeatMapGvizResource {
+public interface HeatMapDataResource {
   /**
    * Defines GET <br/>
-   * /wattdepot/{org-id}/openeis/heat-map/gviz/?power-depository={power_depository_id}&power-sensor={power_sensor_id}
-   * &temp-depository={temp_depository_id}&temp-sensor={temp_sensor_id}.
+   * /wattdepot/{org-id}/openeis/heat-map/data/?depository={depository_id}&sensor={sensor_id}.
    *
-   * @return The Google Visualization String.
+   * @return The InterpolatedValueList.
    */
   @Get("json")
-  String retrieve();
+  InterpolatedValueList retrieve();
 
 }

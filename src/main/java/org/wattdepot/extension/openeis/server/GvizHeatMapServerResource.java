@@ -17,10 +17,10 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.wattdepot.server.http.api.openeis;
+package org.wattdepot.extension.openeis.server;
 
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
-import org.wattdepot.common.http.api.openeis.HeatMapGvizResource;
+import org.wattdepot.extension.openeis.http.api.HeatMapGvizResource;
 import org.wattdepot.common.util.GvizHelper;
 
 /**

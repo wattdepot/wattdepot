@@ -17,24 +17,19 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.wattdepot.common.http.api.openeis;
+package org.wattdepot.extension.openeis.server;
 
-import org.restlet.resource.Get;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
+import org.wattdepot.extension.openeis.http.api.HeatMapDataResource;
 
 /**
- * HeatMapDataResource - HTTP interface for getting the last year's load heat map data.
- * See OpenEIS Heat Map.
+ * TimeSeriesLoadProfileServerResource - ServerResource that handles GET requests for OpenEIS Time Series Load Profiles.
+ *
  * @author Cam Moore
  */
-public interface HeatMapDataResource {
-  /**
-   * Defines GET <br/>
-   * /wattdepot/{org-id}/openeis/heat-map/data/?depository={depository_id}&sensor={sensor_id}.
-   *
-   * @return The InterpolatedValueList.
-   */
-  @Get("json")
-  InterpolatedValueList retrieve();
-
+public class HeatMapServerResource extends HeatMapServer implements HeatMapDataResource {
+  @Override
+  public InterpolatedValueList retrieve() {
+    return doRetrieve();
+  }
 }
