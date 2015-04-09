@@ -17,19 +17,18 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.wattdepot.extension.openeis.server;
-
-import org.wattdepot.common.domainmodel.InterpolatedValueList;
-import org.wattdepot.extension.openeis.http.api.HeatMapDataResource;
+package org.wattdepot.extension.openeis.util;
 
 /**
- * HeatMapServerResource - ServerResource that handles GET requests for OpenEIS Heat Maps.
+ * GvizHelper - Utility class that handles Google Visualization using the Google Visualization
+ * Datasource library.
+ *
+ * * @see <a
+ * href="http://code.google.com/apis/chart/interactive/docs/dev/implementing_data_source.html">Google
+ * Visualization Datasource API</a>
  *
  * @author Cam Moore
+ *
  */
-public class HeatMapServerResource extends HeatMapServer implements HeatMapDataResource {
-  @Override
-  public InterpolatedValueList retrieve() {
-    return doRetrieve();
-  }
+public class GvizHelper extends org.wattdepot.common.util.GvizHelper {
 }

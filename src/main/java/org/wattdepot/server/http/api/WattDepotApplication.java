@@ -29,8 +29,8 @@ import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
 import org.wattdepot.common.http.api.API;
 import org.wattdepot.server.WattDepotPersistence;
-import org.wattdepot.extension.openeis.server.GvizHeatMapServerResource;
-import org.wattdepot.extension.openeis.server.GvizTimeSeriesLoadProfileServerResource;
+import org.wattdepot.extension.openeis.server.HeatMapGivzServerResource;
+import org.wattdepot.extension.openeis.server.TimeSeriesLoadProfileGvizServerResource;
 import org.wattdepot.extension.openeis.server.HeatMapServerResource;
 import org.wattdepot.extension.openeis.server.TimeSeriesLoadProfileServerResource;
 
@@ -209,9 +209,9 @@ public class WattDepotApplication extends Application {
     router.attach(API.ORGANIZATIONS_URI, OrganizationsServerResource.class);
     // OpenEIS algorithms
     router.attach(org.wattdepot.extension.openeis.http.api.API.OPENEIS_TIME_SERIES_LOAD_DATA_URI, TimeSeriesLoadProfileServerResource.class);
-    router.attach(org.wattdepot.extension.openeis.http.api.API.OPENEIS_TIME_SERIES_LOAD_GVIZ_URI, GvizTimeSeriesLoadProfileServerResource.class);
+    router.attach(org.wattdepot.extension.openeis.http.api.API.OPENEIS_TIME_SERIES_LOAD_GVIZ_URI, TimeSeriesLoadProfileGvizServerResource.class);
     router.attach(org.wattdepot.extension.openeis.http.api.API.OPENEIS_HEAT_MAP_DATA_URI, HeatMapServerResource.class);
-    router.attach(org.wattdepot.extension.openeis.http.api.API.OPENEIS_HEAT_MAP_GVIS_URI, GvizHeatMapServerResource.class);
+    router.attach(org.wattdepot.extension.openeis.http.api.API.OPENEIS_HEAT_MAP_GVIS_URI, HeatMapGivzServerResource.class);
 
     ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(),
         ChallengeScheme.HTTP_BASIC, "WattDepot Realm");

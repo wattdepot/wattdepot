@@ -20,14 +20,15 @@
 package org.wattdepot.extension.openeis.server;
 
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
-import org.wattdepot.extension.openeis.http.api.TimeSeriesLoadProfileGvizResource;
+import org.wattdepot.common.domainmodel.XYInterpolatedValueList;
+import org.wattdepot.extension.openeis.http.api.HeatMapGvizResource;
 import org.wattdepot.common.util.GvizHelper;
 
 /**
- * TimeSeriesLoadProfileServerResource - ServerResource that handles GET requests for OpenEIS Time Series Load Profiles.
+ * HeatMapGvizServerResource - ServerResource that handles GET requests for Google Visualizations of OpenEIS Heat Maps.
  * @author Cam Moore
  */
-public class GvizTimeSeriesLoadProfileServerResource extends TimeSeriesLoadProfileServer implements TimeSeriesLoadProfileGvizResource {
+public class HeatMapGivzServerResource extends HeatMapServer implements HeatMapGvizResource {
   /** The GViz tqx query string. */
   private String tqxString = null;
 

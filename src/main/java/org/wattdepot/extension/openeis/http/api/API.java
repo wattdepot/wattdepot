@@ -22,7 +22,9 @@ package org.wattdepot.extension.openeis.http.api;
 import org.wattdepot.common.domainmodel.Labels;
 
 /**
- * Created by carletonmoore on 4/8/15.
+ * API - Defines the Strings that make up the WattDepot OPENEIS HTTP API.
+ *
+ * @author Cam Moore
  */
 public class API {
 
@@ -31,11 +33,9 @@ public class API {
 /************************************************************************************/
 
   /**
-  * <b>/wattdepot/</b> URI for seeing if the server is alive. Supports GET
-  * requests.
-  */
-  public static final String BASE_URI = "/" + Labels.WATTDEPOT + "/";
-
+   * <b>/wattdepot/</b> Base URI.
+   */
+  public static final String BASE_URI = org.wattdepot.common.http.api.API.BASE_URI;
 
   /**
    * <b>/wattdepot/{org-id}/openeis/time-series-load-profiling/data/</b> URI to get

@@ -19,17 +19,17 @@
 
 package org.wattdepot.extension.openeis.server;
 
-import org.wattdepot.common.domainmodel.InterpolatedValueList;
-import org.wattdepot.extension.openeis.http.api.HeatMapDataResource;
+import org.wattdepot.common.domainmodel.XYInterpolatedValueList;
+import org.wattdepot.extension.openeis.http.api.EnergySignatureDataResource;
 
 /**
- * HeatMapServerResource - ServerResource that handles GET requests for OpenEIS Heat Maps.
+ * EnergySignatureServerResource - ServerResource that handles GET requests for OpenEIS Energy Signatures.
  *
  * @author Cam Moore
  */
-public class HeatMapServerResource extends HeatMapServer implements HeatMapDataResource {
+public class EnergySignatureServerResource extends EnergySignatureServer implements EnergySignatureDataResource {
   @Override
-  public InterpolatedValueList retrieve() {
+  public XYInterpolatedValueList retrieve() {
     return doRetrieve();
   }
 }
