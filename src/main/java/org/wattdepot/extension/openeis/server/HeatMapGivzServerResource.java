@@ -20,9 +20,9 @@
 package org.wattdepot.extension.openeis.server;
 
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
-import org.wattdepot.common.domainmodel.XYInterpolatedValueList;
-import org.wattdepot.extension.openeis.http.api.HeatMapGvizResource;
 import org.wattdepot.common.util.GvizHelper;
+import org.wattdepot.extension.openeis.http.api.HeatMapGvizResource;
+import org.wattdepot.extension.openeis.util.OpenEISGvizHelper;
 
 /**
  * HeatMapGvizServerResource - ServerResource that handles GET requests for Google Visualizations of OpenEIS Heat Maps.
@@ -50,7 +50,7 @@ public class HeatMapGivzServerResource extends HeatMapServer implements HeatMapG
   public String retrieve() {
     InterpolatedValueList mList = doRetrieve();
     if (mList != null) {
-      return GvizHelper.getGvizResponse(mList, tqxString, tqString);
+      return OpenEISGvizHelper.getDailyGvizResponse(mList, tqxString, tqString);
     }
     return null;
   }

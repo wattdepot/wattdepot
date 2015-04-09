@@ -274,7 +274,7 @@ public class GvizHelper {
    *          gviz query string
    * @return the gviz json response
    */
-  private static String getGvizResponseFromDataTable(DataTable table, String tqxString/*, String tqString*/) {
+  protected static String getGvizResponseFromDataTable(DataTable table, String tqxString/*, String tqString*/) {
     String response = "google.visualization.Query.setResponse";
 
     String reqId = null;

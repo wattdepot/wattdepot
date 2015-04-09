@@ -17,18 +17,26 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.wattdepot.extension.openeis.util;
+package org.wattdepot.extension;
+
+import org.wattdepot.server.http.api.WattDepotServerResource;
+
+import java.util.Map;
 
 /**
- * GvizHelper - Utility class that handles Google Visualization using the Google Visualization
- * Datasource library.
- *
- * * @see <a
- * href="http://code.google.com/apis/chart/interactive/docs/dev/implementing_data_source.html">Google
- * Visualization Datasource API</a>
- *
- * @author Cam Moore
- *
+ * WattDepotExtension - Interface for all WattDepot extensions.
+ * Created by carletonmoore on 4/9/15.
  */
-public class GvizHelper extends org.wattdepot.common.util.GvizHelper {
+public interface WattDepotExtension {
+  /**
+   * Returns the Base URI for this extension. Base URIs must be unique.
+   * @return The Base URI as a String.
+   */
+  String getBaseURI();
+
+  /**
+   * Returns the mapping of URIs to WattDepotServerResources.
+   * @return The Map of URIs to WattDepotServerResources.
+   */
+  Map<String, Class<? extends WattDepotServerResource>> getServerResourceMapping();
 }
