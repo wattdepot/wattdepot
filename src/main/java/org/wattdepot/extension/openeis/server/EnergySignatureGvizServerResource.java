@@ -24,6 +24,8 @@ import org.wattdepot.extension.openeis.util.OpenEISGvizHelper;
 import org.wattdepot.extension.openeis.http.api.EnergySignatureGvizResource;
 
 /**
+ * EnergySignatureGvizServerResource - Handles the Get requests for Gviz Energy Singatures.
+ * @author Cam Moore
  * Created by carletonmoore on 4/8/15.
  */
 public class EnergySignatureGvizServerResource extends EnergySignatureServer implements EnergySignatureGvizResource {

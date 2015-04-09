@@ -25,6 +25,7 @@ import java.util.Map;
 
 /**
  * WattDepotExtension - Interface for all WattDepot extensions.
+ * @author Cam Moore
  * Created by carletonmoore on 4/9/15.
  */
 public interface WattDepotExtension {

@@ -215,8 +215,8 @@ public class WattDepotApplication extends Application {
       if (!extensionMap.containsKey(baseURI)) {
         extensionMap.put(baseURI, extension);
         Map<String, Class<? extends WattDepotServerResource>> resourceMap = extension.getServerResourceMapping();
-        for (String uri : resourceMap.keySet()) {
-          router.attach(uri, resourceMap.get(uri));
+        for (Map.Entry<String, Class<? extends WattDepotServerResource>> entry : resourceMap.entrySet()) {
+          router.attach(entry.getKey(), entry.getValue());
         }
       }
     }

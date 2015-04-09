@@ -452,7 +452,7 @@ public class ServerProperties {
   /**
    * Consolidates all the WattDepotServer extensions.
    *
-   * @param properties
+   * @param properties The ServerProperties.
    */
   private void processWattDepotExtensions(Properties properties) {
     ArrayList<WattDepotExtension> extensions = new ArrayList<WattDepotExtension>();

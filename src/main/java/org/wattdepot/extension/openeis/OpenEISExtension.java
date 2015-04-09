@@ -31,7 +31,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * OpenEISExtension - A WattDepot
+ * OpenEISExtension - A WattDepot extension that supports several of the OpenEIS algorithms.
+ * @author Cam Moore
  * Created by carletonmoore on 4/9/15.
  */
 public class OpenEISExtension implements WattDepotExtension {

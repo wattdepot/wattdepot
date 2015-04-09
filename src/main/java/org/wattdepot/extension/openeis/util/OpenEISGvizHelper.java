@@ -19,8 +19,6 @@
 
 package org.wattdepot.extension.openeis.util;
 
-import com.google.visualization.datasource.base.DataSourceException;
-import com.google.visualization.datasource.base.ReasonType;
 import com.google.visualization.datasource.base.TypeMismatchException;
 import com.google.visualization.datasource.datatable.ColumnDescription;
 import com.google.visualization.datasource.datatable.DataTable;
@@ -29,7 +27,6 @@ import com.google.visualization.datasource.datatable.value.ValueType;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 
-import javax.xml.datatype.DatatypeConfigurationException;
 import java.util.ArrayList;
 
 /**
@@ -44,6 +41,12 @@ import java.util.ArrayList;
  */
 public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {
 
+  /**
+   * Returns the daily DataTable based upon one value per hour.
+   *
+   * @param valueList The hourly values.
+   * @return The DataTable with a row per day an 24 hourly entries.
+   */
   public static DataTable getRow24HourPerDayDataTable(InterpolatedValueList valueList) {
     DataTable data = new DataTable();
 
