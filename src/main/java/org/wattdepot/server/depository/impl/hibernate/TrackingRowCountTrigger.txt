@@ -1,20 +1,25 @@
 CREATE OR REPLACE FUNCTION count_rows()
-RETURNS TRIGGER AS
-'
+  RETURNS trigger AS
+$BODY$
    BEGIN
-      IF TG_OP = ''INSERT'' THEN
+      IF TG_OP = 'INSERT' THEN
          UPDATE rowcount
             SET totalrows = totalrows + 1
-            WHERE tablename = TG_RELNAME;
-      ELSIF TG_OP = ''DELETE'' THEN
+            WHERE tablename = (select o.id from organizations o, depositories d
+				where o.pk = d.org_pk
+				  and d.pk = NEW.depository_pk);
+      ELSIF TG_OP = 'DELETE' THEN
          UPDATE rowcount
             SET totalrows = totalrows - 1
-            WHERE tablename = TG_RELNAME;
+            WHERE tablename = (select o.id from organizations o, depositories d
+				where o.pk = d.org_pk
+				  and d.pk = OLD.depository_pk);
       END IF;
       RETURN NULL;
    END;
-' LANGUAGE plpgsql;
-
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;   
 
 Need to initialize the trigger on the measurements table.
 
@@ -27,9 +32,14 @@ BEGIN;
       FOR EACH ROW EXECUTE PROCEDURE count_rows();
 
    -- Initialise the row count record
-   DELETE FROM rowcount WHERE tablename = 'measurements';
+   DELETE FROM rowcount WHERE tablename in (select id from organizations);
 
    INSERT INTO rowcount (pk, tablename, totalrows)
-   VALUES  (1, 'measurements',  (SELECT COUNT(*) FROM measurements));
+   select pk, id, 0 from organizations;
+   
+   -- you can manually update the totalrows for each organization by:
+   -- SELECT o.id, COUNT(1) FROM measurements m, depositories d, organizations o 
+   --    where m.depository_pk = d.pk and d.org_pk = o.pk
+   --    group by o.id;
 
 COMMIT;
