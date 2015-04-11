@@ -20,6 +20,7 @@
 package org.wattdepot.extension.openeis.http.api;
 
 import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.extension.openeis.OpenEISLabels;
 
 /**
  * API - Defines the Strings that make up the WattDepot OPENEIS HTTP API.
@@ -36,7 +37,7 @@ public class OpenEISAPI {
    * <b>/wattdepot/</b> Base URI.
    */
   public static final String BASE_URI = org.wattdepot.common.http.api.API.BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.OPENEIS + "/";
+      + OpenEISLabels.OPENEIS + "/";
 
   /**
    * <b>/wattdepot/{org-id}/openeis/ui/</b> URI for the OpenEIS user interface.
@@ -47,33 +48,33 @@ public class OpenEISAPI {
    * <b>/wattdepot/{org-id}/openeis/time-series-load-profiling/data/</b> URI to get
    * last month's power data. Use GET requests.
    */
-  public static final String OPENEIS_TIME_SERIES_LOAD_DATA_URI = BASE_URI + Labels.TIME_SERIES_LOAD_PROFILING + "/" + Labels.DATA + "/";
+  public static final String OPENEIS_TIME_SERIES_LOAD_DATA_URI = BASE_URI + OpenEISLabels.TIME_SERIES_LOAD_PROFILING + "/" + Labels.DATA + "/";
 
   /**
    * <b>/wattdepot/{org-id}/openeis/time-series-load-profiling/gviz/</b> URI to get
    * last month's power data. Use GET requests.
    */
-  public static final String OPENEIS_TIME_SERIES_LOAD_GVIZ_URI = BASE_URI + Labels.TIME_SERIES_LOAD_PROFILING + "/" + Labels.GVIZ + "/";
+  public static final String OPENEIS_TIME_SERIES_LOAD_GVIZ_URI = BASE_URI + OpenEISLabels.TIME_SERIES_LOAD_PROFILING + "/" + Labels.GVIZ + "/";
 
   /**
    * <b>/wattdepot/{org-id}/openeis/heat-map/data/</b> URI to get the last year's hourly power data. Use GET requests.
    */
-  public static final String OPENEIS_HEAT_MAP_DATA_URI = BASE_URI + Labels.HEAT_MAP + "/" + Labels.DATA + "/";
+  public static final String OPENEIS_HEAT_MAP_DATA_URI = BASE_URI + OpenEISLabels.HEAT_MAP + "/" + Labels.DATA + "/";
 
   /**
    * <b>/wattdepot/{org-id}/openeis/heat-map/gviz/</b> URI to get the last year's hourly power data. Use GET requests.
    */
-  public static final String OPENEIS_HEAT_MAP_GVIS_URI = BASE_URI + Labels.HEAT_MAP + "/" + Labels.GVIZ + "/";
+  public static final String OPENEIS_HEAT_MAP_GVIS_URI = BASE_URI + OpenEISLabels.HEAT_MAP + "/" + Labels.GVIZ + "/";
 
   /**
    * <b>/wattdepot/{org-id}/openeis/energy-signature/data/</b> URI to get the last year's hourly power data. Use GET requests.
    */
-  public static final String OPENEIS_ENERGY_SIGNATURE_DATA_URI = BASE_URI + Labels.ENERGY_SIGNATURE + "/" + Labels.DATA + "/";
+  public static final String OPENEIS_ENERGY_SIGNATURE_DATA_URI = BASE_URI + OpenEISLabels.ENERGY_SIGNATURE + "/" + Labels.DATA + "/";
 
   /**
    * <b>/wattdepot/{org-id}/openeis/energy-signature/gviz/</b> URI to get the last year's hourly power data. Use GET requests.
    */
-  public static final String OPENEIS_ENERGY_SIGNATURE_GVIZ_URI = BASE_URI + Labels.ENERGY_SIGNATURE + "/" + Labels.DATA + "/";
+  public static final String OPENEIS_ENERGY_SIGNATURE_GVIZ_URI = BASE_URI + OpenEISLabels.ENERGY_SIGNATURE + "/" + Labels.DATA + "/";
 
 
 }

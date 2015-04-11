@@ -25,6 +25,7 @@ import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.extension.openeis.OpenEISLabels;
 
 import java.util.logging.Level;
 
@@ -57,7 +58,7 @@ public class TimeSeriesLoadProfileServer extends OpenEISServer {
   public InterpolatedValueList doRetrieve() {
     getLogger().log(
         Level.INFO,
-        "GET /wattdepot/{" + orgId + "}/" + Labels.OPENEIS + "/" + Labels.TIME_SERIES_LOAD_PROFILING +
+        "GET /wattdepot/{" + orgId + "}/" + OpenEISLabels.OPENEIS + "/" + OpenEISLabels.TIME_SERIES_LOAD_PROFILING +
             "/?" + Labels.DEPOSITORY + "={" + depositoryId + "}&" + Labels.SENSOR + "={" + sensorId + "}");
     try {
       Depository depository = depot.getDepository(depositoryId, orgId, true);

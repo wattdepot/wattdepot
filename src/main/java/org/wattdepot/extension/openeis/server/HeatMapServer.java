@@ -25,6 +25,7 @@ import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.extension.openeis.OpenEISLabels;
 
 import java.util.logging.Level;
 
@@ -57,7 +58,7 @@ public class HeatMapServer extends OpenEISServer {
   public InterpolatedValueList doRetrieve() {
     getLogger().log(
         Level.INFO,
-        "GET /wattdepot/{" + orgId + "}/" + Labels.OPENEIS + "/" + Labels.HEAT_MAP +
+        "GET /wattdepot/{" + orgId + "}/" + OpenEISLabels.OPENEIS + "/" + OpenEISLabels.HEAT_MAP +
             "/?" + Labels.DEPOSITORY + "={" + depositoryId + "}&" + Labels.SENSOR + "={" + sensorId + "}");
     try {
       Depository depository = depot.getDepository(depositoryId, orgId, true);

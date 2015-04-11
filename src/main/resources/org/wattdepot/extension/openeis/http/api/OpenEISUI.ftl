@@ -98,7 +98,11 @@
       </div>
       <div class="row form">
         <div class="col-xs-2"><select id="foobar" class="col-xs-12 sensor-select"
-                                      onchange="selectedSensor(1)"></select></div>
+                                      onchange="selectedSensor(1)">
+          <#list power_sensors as s>
+          <option value="${s.id}">${s.name}</option>
+          </#list>
+         </select></div>
         <div id="tslpContainer" class="col-xs-8"></div>
         <div class="col-xs-2">
           <button class="btn btn-primary btn-sm add-button">Show Time Series Load Profile</button>

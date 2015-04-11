@@ -28,6 +28,7 @@ import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.XYInterpolatedValue;
 import org.wattdepot.common.domainmodel.XYInterpolatedValueList;
 import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.extension.openeis.OpenEISLabels;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -51,10 +52,10 @@ public class EnergySignatureServer extends OpenEISServer {
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
-    this.powerDepositoryId = getQuery().getValues(Labels.POWER_DEPOSITORY);
-    this.powerSensorId = getQuery().getValues(Labels.POWER_SENSOR);
-    this.temperatureDepositoryId = getQuery().getValues(Labels.TEMPERATURE_DEPOSITORY);
-    this.temperatureSensorId = getQuery().getValues(Labels.TEMPERATURE_SENSOR);
+    this.powerDepositoryId = getQuery().getValues(OpenEISLabels.POWER_DEPOSITORY);
+    this.powerSensorId = getQuery().getValues(OpenEISLabels.POWER_SENSOR);
+    this.temperatureDepositoryId = getQuery().getValues(OpenEISLabels.TEMPERATURE_DEPOSITORY);
+    this.temperatureSensorId = getQuery().getValues(OpenEISLabels.TEMPERATURE_SENSOR);
   }
 
   /**
@@ -65,9 +66,9 @@ public class EnergySignatureServer extends OpenEISServer {
   public XYInterpolatedValueList doRetrieve() {
     getLogger().log(
       Level.INFO,
-      "GET /wattdepot/{" + orgId + "}/" + Labels.OPENEIS + "/" + Labels.HEAT_MAP +
-        "/?" + Labels.POWER_DEPOSITORY + "={" + powerDepositoryId + "}&" + Labels.POWER_SENSOR + "={" + powerSensorId + "}&"
-        + Labels.TEMPERATURE_DEPOSITORY + "={" + temperatureDepositoryId + "}&" + Labels.TEMPERATURE_SENSOR + "={"
+      "GET /wattdepot/{" + orgId + "}/" + OpenEISLabels.OPENEIS + "/" + OpenEISLabels.HEAT_MAP +
+        "/?" + OpenEISLabels.POWER_DEPOSITORY + "={" + powerDepositoryId + "}&" + OpenEISLabels.POWER_SENSOR + "={" + powerSensorId + "}&"
+        + OpenEISLabels.TEMPERATURE_DEPOSITORY + "={" + temperatureDepositoryId + "}&" + OpenEISLabels.TEMPERATURE_SENSOR + "={"
         + temperatureSensorId + "}");
     if (isInRole(orgId)) {
       XYInterpolatedValueList ret = new XYInterpolatedValueList();

@@ -35,6 +35,7 @@ import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.http.api.API;
+import org.wattdepot.extension.openeis.OpenEISLabels;
 import org.wattdepot.server.http.api.WattDepotServerResource;
 
 import java.util.ArrayList;
@@ -58,7 +59,7 @@ public class OpenEISUIServerResource extends WattDepotServerResource {
   @Get()
   public Representation toHtml() {
     getLogger().log(Level.INFO,
-        "GET " + API.BASE_URI + "{" + orgId + "}/" + Labels.OPENEIS + "/ui/");
+        "GET " + API.BASE_URI + "{" + orgId + "}/" + OpenEISLabels.OPENEIS + "/ui/");
     if (isInRole(orgId)) {
       Map<String, Object> dataModel = new HashMap<String, Object>();
       dataModel.put("orgId", orgId);
