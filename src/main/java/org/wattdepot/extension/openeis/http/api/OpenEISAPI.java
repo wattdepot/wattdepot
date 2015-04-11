@@ -39,6 +39,11 @@ public class OpenEISAPI {
       + Labels.OPENEIS + "/";
 
   /**
+   * <b>/wattdepot/{org-id}/openeis/ui/</b> URI for the OpenEIS user interface.
+   */
+  public static final String OPENEIS_UI_URI = BASE_URI + "ui" + "/";
+
+  /**
    * <b>/wattdepot/{org-id}/openeis/time-series-load-profiling/data/</b> URI to get
    * last month's power data. Use GET requests.
    */

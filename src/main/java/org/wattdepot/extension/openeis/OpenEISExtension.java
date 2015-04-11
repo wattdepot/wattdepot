@@ -21,6 +21,7 @@ package org.wattdepot.extension.openeis;
 
 import org.wattdepot.extension.WattDepotExtension;
 import org.wattdepot.extension.openeis.http.api.OpenEISAPI;
+import org.wattdepot.extension.openeis.http.api.OpenEISUIServerResource;
 import org.wattdepot.extension.openeis.server.HeatMapGivzServerResource;
 import org.wattdepot.extension.openeis.server.HeatMapServerResource;
 import org.wattdepot.extension.openeis.server.TimeSeriesLoadProfileGvizServerResource;
@@ -45,6 +46,7 @@ public class OpenEISExtension implements WattDepotExtension {
   public Map<String, Class<? extends WattDepotServerResource>> getServerResourceMapping() {
     HashMap<String, Class<? extends WattDepotServerResource>> mapping = new HashMap<String, Class<? extends WattDepotServerResource>>();
     // OpenEIS algorithms
+    mapping.put(OpenEISAPI.OPENEIS_UI_URI, OpenEISUIServerResource.class);
     mapping.put(OpenEISAPI.OPENEIS_TIME_SERIES_LOAD_DATA_URI, TimeSeriesLoadProfileServerResource.class);
     mapping.put(OpenEISAPI.OPENEIS_TIME_SERIES_LOAD_GVIZ_URI, TimeSeriesLoadProfileGvizServerResource.class);
     mapping.put(OpenEISAPI.OPENEIS_HEAT_MAP_DATA_URI, HeatMapServerResource.class);

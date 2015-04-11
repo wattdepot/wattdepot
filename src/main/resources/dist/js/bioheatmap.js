@@ -16,16 +16,23 @@
 **    License along with this library; if not, write to the Free Software
 **    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 *
-*     Modified by Cam Moore to add pass through white.
+*     Modified by Cam Moore to add pass through white and changed the namespace
+*     to work with org.WattDepot.
 */
 
 // setup namespace if not already defined
-if(!org) {
-    var org = {};
-    if(!org.systemsbiology)
-        org.systemsbiology = {};
-    if(!org.systemsbiology.visualization)
-        org.systemsbiology.visualization = {};
+if (!org) {
+    var org = {
+        systemsbiology : {
+            visualization : {}
+        }
+    };
+} else if (!org.systemsbiology) {
+    org.systemsbiology = {
+        visualization : {}
+    }
+} else if (!org.systemsbiology.visualization) {
+    org.systemsbiology.visualization = {}
 }
 
 
