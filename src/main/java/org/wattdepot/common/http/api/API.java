@@ -354,6 +354,14 @@ public class API {
       + Labels.GVIZ + "/";
 
   /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/csv/</b> URI to
+   * get all the measured value. Use GET requests.
+   */
+  public static final String VALUES_CSV_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/"
+      + Labels.CSV + "/";
+
+  /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/values/average/</b> URI
    * to get all the average value for an interval of measurements. Use GET
    * requests.
