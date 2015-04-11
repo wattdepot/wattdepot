@@ -30,11 +30,9 @@ public class CsvDepositoryValuesServerResource extends DepositoryValuesServer im
     //RFC4180 CSV http://tools.ietf.org/html/rfc4180
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
     StringBuilder sb = new StringBuilder();
-    sb.append("Start,End,Value\r\n");
+    sb.append("Start,Value\r\n");
     for (InterpolatedValue interpolatedValue : mList.getInterpolatedValues()) {
       sb.append(sdf.format(interpolatedValue.getStart()));
-      sb.append(",");
-      sb.append(sdf.format(interpolatedValue.getEnd()));
       sb.append(",");
       sb.append(interpolatedValue.getValue());
       sb.append("\r\n");
