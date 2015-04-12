@@ -126,7 +126,7 @@ public class WattDepotServer {
       throw new RuntimeException("opens and closed mismatched.");
     }
     wattDepotServer.depot.setServerProperties(properties);
-    wattDepotServer.restletServer = new WattDepotComponent(wattDepotServer.depot, port);
+    wattDepotServer.restletServer = new WattDepotComponent(wattDepotServer.depot);
 
     // Adds a HTTP or HTTPS server connector
     if (properties.get(ServerProperties.SSL).equals(ServerProperties.TRUE)) {

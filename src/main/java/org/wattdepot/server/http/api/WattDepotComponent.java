@@ -23,7 +23,6 @@ import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.restlet.Component;
-import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
@@ -55,12 +54,11 @@ public class WattDepotComponent extends Component {
    * Sets up the WattDepotComponent with the given WattDepot.
    * 
    * @param depot The persitent store.
-   * @param port the port number on which the restlet server listens.
    * @throws javax.crypto.BadPaddingException if there is a problem with the encryption.
    * @throws java.security.InvalidKeyException if there is a problem with the encryption.
    * @throws javax.crypto.IllegalBlockSizeException if there is a problem with the encryption.
    */
-  public WattDepotComponent(WattDepotPersistence depot, int port) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException {
+  public WattDepotComponent(WattDepotPersistence depot) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException {
     setName("WattDepot HTTP API Server");
     setDescription("WattDepot RESTful server.");
     setAuthor("Cam Moore");
@@ -70,6 +68,7 @@ public class WattDepotComponent extends Component {
     getClients().add(Protocol.CLAP);
     getClients().add(Protocol.FILE);
     getClients().add(Protocol.HTTP);
+
 
     getServers().getContext().getParameters().set("tracing", "true");
 
