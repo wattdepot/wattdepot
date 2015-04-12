@@ -66,12 +66,12 @@ public class ServerProperties {
   /** The option to enable SSL. */
   public static final String SSL = "wattdepot-server.ssl";
   /** The path to the keystore holding the certificate. */
-  public static final String SSL_KEYSTORE_PATH= "wattdepot-server.ssl.keystore.path";
-  /** The password for the keystore */
+  public static final String SSL_KEYSTORE_PATH = "wattdepot-server.ssl.keystore.path";
+  /** The password for the keystore. */
   public static final String SSL_KEYSTORE_PASSWORD = "wattdepot-server.ssl.keystore.password";
-  /** The password for the key */
+  /** The password for the key. */
   public static final String SSL_KEYSTORE_KEY_PASSWORD = "wattdepot-server.ssl.keystore.key.password";
-  /** The type of keystore */
+  /** The type of keystore. */
   public static final String SSL_KEYSTORE_TYPE = "wattdepot-server.ssl.keystore.type";
 
   /** The database connection driver class. */
@@ -155,7 +155,7 @@ public class ServerProperties {
     properties.setProperty(WATT_DEPOT_IMPL_KEY, properties.getProperty(TEST_WATT_DEPOT_IMPL_KEY));
     // turn off logging during testing.
     properties.setProperty(LOGGING_LEVEL_KEY, "SEVERE");
-    trimProperties(properties);
+    trimProperties();
     // update the system properties object to reflect these new values.
     Properties systemProperties = System.getProperties();
     systemProperties.putAll(properties);
@@ -218,10 +218,9 @@ public class ServerProperties {
    * Ensures that the there is no leading or trailing whitespace in the property
    * values. The fact that we need to do this indicates a bug in Java's
    * Properties implementation to me.
-   * 
-   * @param properties The properties.
+   *
    */
-  private void trimProperties(Properties properties) {
+  public void trimProperties() {
     // Have to do this iteration in a Java 5 compatible manner. no
     // stringPropertyNames().
     for (Map.Entry<Object, Object> entry : properties.entrySet()) {
@@ -380,7 +379,7 @@ public class ServerProperties {
       properties.setProperty(TEST_HEROKU_KEY, FALSE);
     }
     logger.finest(echoProperties());
-    trimProperties(properties);
+    trimProperties();
     logger.finest(echoProperties());
 
     // get PORT and DATABASE_URL for heroku
