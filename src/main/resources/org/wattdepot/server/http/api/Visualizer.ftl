@@ -67,11 +67,15 @@
     <!-- Visualizer Control Panel -->
     <div id="visualizerControlPanel">
       <div id="formLabels" class="row">
-        <div class="col-xs-3">Depository:</div>
-        <div class="col-xs-2">Sensor:</div>
-        <div class="col-xs-3">Start Time:</div>
-        <div class="col-xs-2">End Time:</div>
-        <div class="col-xs-2">Sample Frequency:</div>
+          <div class="col-xs-3 row">Depository:</div>
+          <div class="col-xs-2">Sensor:</div>
+          <div class="col-xs-2">Start Time:</div>
+          <div class="col-xs-2">End Time:</div>
+          <div class="col-xs-3 row">
+              <div class="col-xs-5">Type:</div>
+              <div class="col-xs-5">Frequency:</div>
+              <div class="col-xs-2">CSV:</div>
+          </div>
       </div>
       <div id="visualizerFormsDiv">
       </div>
