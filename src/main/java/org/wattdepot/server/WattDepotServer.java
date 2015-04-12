@@ -133,7 +133,7 @@ public class WattDepotServer {
 
       Server server = new Server(new Context(), Protocol.HTTPS, port, wattDepotServer.restletServer);
       Series<Parameter> parameters = server.getContext().getParameters();
-      parameters.add("sslContextFactory", "org.restlet.engine.ssl.DefaultSslContextFactory");
+      parameters.add("sslContextFactory", "org.restlet.ext.ssl.DefaultSslContextFactory");
       parameters.add("keyStorePath", properties.get(ServerProperties.SSL_KEYSTORE_PATH));
       parameters.add("keyStorePassword", properties.get(ServerProperties.SSL_KEYSTORE_PASSWORD));
       parameters.add("keyPassword", properties.get(ServerProperties.SSL_KEYSTORE_KEY_PASSWORD));
