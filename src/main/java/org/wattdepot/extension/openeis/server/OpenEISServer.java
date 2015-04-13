@@ -50,7 +50,8 @@ public class OpenEISServer extends WattDepotServerResource {
             val = val / measurements.size();
           }
           else {
-            val = Double.NaN;
+//            val = Double.NaN;
+            val = null;
           }
           ret.getInterpolatedValues().add(new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate));
         }
@@ -79,6 +80,7 @@ public class OpenEISServer extends WattDepotServerResource {
       try {
         Depository depository = depot.getDepository(depositoryId, orgId, true);
         XMLGregorianCalendar now = Tstamp.makeTimestamp();
+        now.setTime(0, 0, 0, 0);  // got to beginning of day
         XMLGregorianCalendar yearAgo = Tstamp.incrementDays(now, -365);
         List<XMLGregorianCalendar> times = Tstamp.getTimestampList(yearAgo, now, 60);
         for (int i = 1; i < times.size(); i++) {
@@ -95,7 +97,8 @@ public class OpenEISServer extends WattDepotServerResource {
             val = val / measurements.size();
           }
           else {
-            val = Double.NaN;
+//            val = Double.NaN;
+            val = null;
           }
           ret.getInterpolatedValues().add(new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate));
         }

@@ -78,8 +78,11 @@ public class OpenEISUIServerResource extends WattDepotServerResource {
         Map<String, List<Sensor>> depoSensors = new HashMap<String, List<Sensor>>();
         List<Sensor> sensors = new ArrayList<Sensor>();
         List<Sensor> powerSensors = new ArrayList<Sensor>();
+        List<Depository> powerDepositories = new ArrayList<Depository>();
         List<Sensor> temperatureSensors = new ArrayList<Sensor>();
+        List<Depository> temperatureDepositories = new ArrayList<Depository>();
         List<Sensor> energySensors = new ArrayList<Sensor>();
+        List<Depository> energyDepositories = new ArrayList<Depository>();
         for (Depository d : depos) {
           Map<String, List<Date>> sensorInfo = new HashMap<String, List<Date>>();
           List<Sensor> sensorList = new ArrayList<Sensor>();
@@ -92,12 +95,15 @@ public class OpenEISUIServerResource extends WattDepotServerResource {
             }
             if (d.getMeasurementType().getName().startsWith("Power") && !powerSensors.contains(s)) {
               powerSensors.add(s);
+              powerDepositories.add(d);
             }
             else if (d.getMeasurementType().getName().startsWith("Energy") && !energySensors.contains(s)) {
               energySensors.add(s);
+              energyDepositories.add(d);
             }
             else if (d.getMeasurementType().getName().startsWith("Temperature") && !temperatureSensors.contains(s)) {
               temperatureSensors.add(s);
+              temperatureDepositories.add(d);
             }
             try {
               InterpolatedValue earliest = depot.getEarliestMeasuredValue(
@@ -119,8 +125,11 @@ public class OpenEISUIServerResource extends WattDepotServerResource {
         dataModel.put("depoSensors", depoSensors);
         dataModel.put("sensors", sensors);
         dataModel.put("power_sensors", powerSensors);
+        dataModel.put("power_depositories", powerDepositories);
         dataModel.put("energy_sensors", energySensors);
+        dataModel.put("energy_depositories", energyDepositories);
         dataModel.put("temperature_sensors", temperatureSensors);
+        dataModel.put("temperature_depositories", temperatureDepositories);
       }
       catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());

@@ -18,6 +18,7 @@
  */
 
 /**
+ *
  * Created by carletonmoore on 4/10/15.
  */
 
@@ -32,10 +33,132 @@ function loadPage() {
   wdClient = org.WattDepot.Client(server);
 }
 
-function setUpTimeSeries() {
-  var sel = $("#foobar");
-  for (var key in POWER_SENSORS) {
-    sel.append("<option value=\"" + key + "\">" + POWER_SENSORS[key]['name'] + "</option>");
+function timeSeriesPlot() {
+  var depositoryId = $("#timeSeriesDepository").val();
+  var sensorId = $('#timeSeriesSensor').val();
+  var uri = server + ORGID + '/openeis/time-series-load-profiling/gviz/?depository='
+      + depositoryId + '&sensor=' + sensorId;
+  //console.log(uri);
+  var query = new google.visualization.Query(uri);
+  query.send(function (response) {
+    timeSeriesResponse(response);
+  });
+}
+
+function timeSeriesResponse(response) {
+  if (response.isError()) {
+    alert('Error in query: ' + response.getMessage() + ' '
+    + response.getDetailedMessage());
+    return;
   }
+  var table = response.getDataTable();
+  $('#tslpChart').show();
+  var chart = new google.visualization.ComboChart(document.getElementById('tslpChart'));
+  chart.draw(table, {});
+
+}
+
+/**
+ * Gets the currently selected depository for the given row. Then updates the
+ * choices of sensors.
+ *
+ * @param index
+ *          the row number.
+ */
+function selectedPowerDepository() {
+  var depoId = $("#timeSeriesDepository option:selected").val();
+  var depoName = $("#timeSeriesDepository option:selected").text();
+  var sensors = DEPO_SENSORS[depoId];
+  updatePowerSensorSelection(sensors);
+};
+
+/**
+ * Updates the Sensor selection options of the visualization at the given row.
+ *
+ * @param sensors
+ *          the list of sensors.
+ */
+function updatePowerSensorSelection(sensors) {
+  var select = $("#timeSeriesSensor");
+  select.empty();
+  var i = 0;
+  var length = sensors.length;
+  for (i = 0; i < length; i++) {
+    select.append($("<option></option>").attr("value", sensors[i]).text(
+        SENSORS[sensors[i]].name));
+  }
+};
+
+function selectedHMPowerDepository() {
+  var depoId = $("#heatMapDepository option:selected").val();
+  var depoName = $("#heatMapDepository option:selected").text();
+  var sensors = DEPO_SENSORS[depoId];
+  updateHMPowerSensorSelection(sensors);
+};
+
+function updateHMPowerSensorSelection(sensors) {
+  var select = $("#heatMapSensor");
+  select.empty();
+  var i = 0;
+  var length = sensors.length;
+  for (i = 0; i < length; i++) {
+    select.append($("<option></option>").attr("value", sensors[i]).text(
+        SENSORS[sensors[i]].name));
+  }
+};
+
+function heatMapPlot() {
+  var depositoryId = $("#heatMapDepository").val();
+  var sensorId = $('#heatMapSensor').val();
+  var uri = server + ORGID + '/openeis/heat-map/gviz/?depository='
+      + depositoryId + '&sensor=' + sensorId;
+  //console.log(uri);
+  var query = new google.visualization.Query(uri);
+  query.send(function (response) {
+    heatMapResponse(response);
+  });
+}
+
+function heatMapResponse(response) {
+  if (response.isError()) {
+    alert('Error in query: ' + response.getMessage() + ' '
+    + response.getDetailedMessage());
+    return;
+  }
+  var table = response.getDataTable();
+  $('#heatChart').show();
+  var chart = new org.systemsbiology.visualization.BioHeatMap(document.getElementById('heatChart'));
+  chart.draw(table, {startColor: {r: 0, g: 0, b: 255, a: 1},
+    endColor: {r: 255, g: 0, b: 0, a: 1},
+    passThroughWhite: true,
+  });
+
+}
+
+function energySigPlot() {
+  var powerDepoId = $("#sigPowerDepository").val();
+  var powerSensorId = $('#sigPowerSensor').val();
+  var tempDepoId = $('#sigTempDepository').val();
+  var tempSensorId = $('#sigTempSensor').val();
+  var uri = server + ORGID + '/openeis/energy-signature/gviz/?power-depository='
+      + powerDepoId + '&power-sensor=' + powerSensorId + "&temperature-depository="
+      + tempDepoId + '&temperature-sensor=' + tempSensorId;
+  //console.log(uri);
+  var query = new google.visualization.Query(uri);
+  query.send(function (response) {
+    energySigResponse(response);
+  });
+}
+
+function energySigResponse(response) {
+  if (response.isError()) {
+    alert('Error in query: ' + response.getMessage() + ' '
+    + response.getDetailedMessage());
+    return;
+  }
+  var table = response.getDataTable();
+  $('#energySigChart').show();
+  var chart = new google.visualization.ScatterChart(document.getElementById('energySigChart'));
+  chart.draw(table, {});
 
 }

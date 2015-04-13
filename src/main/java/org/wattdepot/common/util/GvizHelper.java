@@ -207,7 +207,9 @@ public class GvizHelper {
           TableRow row = new TableRow();
           XMLGregorianCalendar xgcal = DateConvert.convertDate(value.getStart());
           row.addCell(new DateTimeValue(convertTimestamp(xgcal)));
-          row.addCell(value.getValue());
+          if (value.getValue() != null) {
+            row.addCell(value.getValue());
+          }
           data.addRow(row);
         }
       }
@@ -240,8 +242,10 @@ public class GvizHelper {
 
         for (XYInterpolatedValue value : values) {
           TableRow row = new TableRow();
-          row.addCell(value.getXValue());
-          row.addCell(value.getYValue());
+          if (value.getXValue() != null && value.getYValue() != null) {
+            row.addCell(value.getXValue());
+            row.addCell(value.getYValue());
+          }
           data.addRow(row);
         }
 

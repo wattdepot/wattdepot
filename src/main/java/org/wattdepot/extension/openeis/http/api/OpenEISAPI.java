@@ -74,7 +74,7 @@ public class OpenEISAPI {
   /**
    * <b>/wattdepot/{org-id}/openeis/energy-signature/gviz/</b> URI to get the last year's hourly power data. Use GET requests.
    */
-  public static final String OPENEIS_ENERGY_SIGNATURE_GVIZ_URI = BASE_URI + OpenEISLabels.ENERGY_SIGNATURE + "/" + Labels.DATA + "/";
+  public static final String OPENEIS_ENERGY_SIGNATURE_GVIZ_URI = BASE_URI + OpenEISLabels.ENERGY_SIGNATURE + "/" + Labels.GVIZ + "/";
 
 
 }

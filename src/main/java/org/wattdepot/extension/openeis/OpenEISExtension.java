@@ -22,6 +22,8 @@ package org.wattdepot.extension.openeis;
 import org.wattdepot.extension.WattDepotExtension;
 import org.wattdepot.extension.openeis.http.api.OpenEISAPI;
 import org.wattdepot.extension.openeis.http.api.OpenEISUIServerResource;
+import org.wattdepot.extension.openeis.server.EnergySignatureGvizServerResource;
+import org.wattdepot.extension.openeis.server.EnergySignatureServerResource;
 import org.wattdepot.extension.openeis.server.HeatMapGivzServerResource;
 import org.wattdepot.extension.openeis.server.HeatMapServerResource;
 import org.wattdepot.extension.openeis.server.TimeSeriesLoadProfileGvizServerResource;
@@ -33,8 +35,9 @@ import java.util.Map;
 
 /**
  * OpenEISExtension - A WattDepot extension that supports several of the OpenEIS algorithms.
+ *
  * @author Cam Moore
- * Created by carletonmoore on 4/9/15.
+ *         Created by carletonmoore on 4/9/15.
  */
 public class OpenEISExtension implements WattDepotExtension {
   @Override
@@ -51,7 +54,8 @@ public class OpenEISExtension implements WattDepotExtension {
     mapping.put(OpenEISAPI.OPENEIS_TIME_SERIES_LOAD_GVIZ_URI, TimeSeriesLoadProfileGvizServerResource.class);
     mapping.put(OpenEISAPI.OPENEIS_HEAT_MAP_DATA_URI, HeatMapServerResource.class);
     mapping.put(OpenEISAPI.OPENEIS_HEAT_MAP_GVIS_URI, HeatMapGivzServerResource.class);
-
+    mapping.put(OpenEISAPI.OPENEIS_ENERGY_SIGNATURE_DATA_URI, EnergySignatureServerResource.class);
+    mapping.put(OpenEISAPI.OPENEIS_ENERGY_SIGNATURE_GVIZ_URI, EnergySignatureGvizServerResource.class);
     return mapping;
   }
 }

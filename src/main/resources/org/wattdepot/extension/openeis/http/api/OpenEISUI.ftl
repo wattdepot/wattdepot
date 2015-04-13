@@ -6,38 +6,28 @@
   <!-- Bootstrap -->
   <link rel="stylesheet" href="/webroot/dist/css/bootstrap.min.css">
   <!-- Optional theme -->
-  <link rel="stylesheet" href="/webroot/dist/css/bootstrap-theme.min.css">
   <link rel="stylesheet"
-        href="/webroot/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
-  <link rel="stylesheet" href="/webroot/dist/css/normalize.css">
+        href="/webroot/dist/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" href="/webroot/dist/css/themes/blue/style.css">
   <link rel="stylesheet/less" type="text/css" href="/webroot/dist/css/style.less">
+  <link rel="stylesheet" type="text/css" href="/webroot/dist/css/parsley.css">
   <script src="/webroot/dist/js/less-1.3.0.min.js"></script>
 
-  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-  <script src="/webroot/bower_components/jquery/dist/jquery.js"></script>
-  <script src="/webroot/bower_components/moment/min/moment.min.js"></script>
-  <script src="/webroot/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-  <script
-      src="/webroot/bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
-<#--<script src="/webroot/dist/js/wattdepot-permalink.js"></script>-->
-  <script src="/webroot/dist/js/wattdepot-openeis.js"></script>
-  <script src="/webroot/dist/js/org.wattdepot.client.js"></script>
-  <!--Load the Google AJAX API-->
   <script type="text/javascript" src="http://www.google.com/jsapi"></script>
   <script type="text/javascript">
-    google.load("visualization", "1", {});
+    google.load("visualization", "1", {packages: ["corechart"]});
     google.load("prototype", "1.6");
-
-    // Set a callback to run when the API is loaded.
-    google.setOnLoadCallback(function () {
-      loaded = true;
-    });
   </script>
-
   <script type="text/javascript" src="/webroot/dist/js/bioheatmap.js"></script>
-
+  <script src="/webroot/dist/js/wattdepot-openeis.js"></script>
+  <script src="/webroot/dist/js/org.wattdepot.client.js"></script>
+  <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+  <script src="/webroot/dist/js/jquery.js"></script>
+  <script src="/webroot/dist/js/jquery.tablesorter.js"></script>
+  <script src="/webroot/dist/js/bootstrap.min.js"></script>
+  <script src="/webroot/dist/js/parsley.js"></script>
 </head>
-<body onload="loadPage()">
+<body>
 <nav class="navbar navbar-default" role="navigation">
   <!-- Brand and toggle get grouped for better mobile display -->
   <div class="navbar-header">
@@ -69,7 +59,7 @@
   <!-- Nav tabs -->
   <ul class="nav nav-tabs" id="tabs">
     <li><a id="tslp_tab_link" href="#tslp" data-toggle="tab" name="tslp">Time Series Load Profile</a></li>
-    <li><a id="heat_map_tab_link" href="#heat_map" data-toggle="tab" name="heat-map">Heat Map</a></li>
+    <li><a id="heat_map_tab_link" href="#heat_map" data-toggle="tab" name="heat_map">Heat Map</a></li>
     <li><a id="energy_signature_tab_link" href="#energy_signature" data-toggle="tab" name="energy_signature">Energy
       Signature</a></li>
   </ul>
@@ -92,21 +82,31 @@
         </div>
       </div>
       <div class="row">
+        <div class="col-xs-2"><h3>Depository</h3></div>
         <div class="col-xs-2"><h3>Sensor</h3></div>
-        <div class="col-xs-8"></div>
+        <div class="col-xs-6"></div>
         <div class="col-xs-2"></div>
       </div>
       <div class="row form">
-        <div class="col-xs-2"><select id="foobar" class="col-xs-12 sensor-select"
-                                      onchange="selectedSensor(1)">
-          <#list power_sensors as s>
+        <div class="col-xs-2"><select id="timeSeriesDepository" class="col-xs-12 sensor-select"
+                                      onchange="selectedPowerDepository()">
+        <#list power_depositories as d>
+          <option value="${d.id}">${d.name}</option>
+        </#list>
+        </select></div>
+        <div class="col-xs-2"><select id="timeSeriesSensor" class="col-xs-12 sensor-select">
+        <#list power_sensors as s>
           <option value="${s.id}">${s.name}</option>
-          </#list>
-         </select></div>
-        <div id="tslpContainer" class="col-xs-8"></div>
+        </#list>
+        </select></div>
+        <div id="tslpContainer" class="col-xs-6"></div>
         <div class="col-xs-2">
-          <button class="btn btn-primary btn-sm add-button">Show Time Series Load Profile</button>
+          <button class="btn btn-primary btn-sm add-button" onclick="timeSeriesPlot()">Show Time Series Load Profile
+          </button>
         </div>
+      </div>
+      <div class="row">
+        <div id="tslpChart" class="col-xs-12" style="height: 500px;"></div>
       </div>
     </div>
     <div class="tab-pane" id="heat_map">
@@ -118,63 +118,40 @@
           </div>
           <div id="heatMapCollapseHelp" class="panel-collapse collapse">
             <div class="panel-body">
-              <p><i>Heat maps</i> are a means of visualizing and presenting the information
-                that
-                is
-                contained
-                in
-                a
-                time
-                series
-                load
-                profile.
-                The
-                maps
-                color-­‐code
-                the
-                size
-                of
-                the
-                load
-                so
-                that
-                “hot
-                spots”
-                and
-                patterns
-                are
-                easily
-                identified.
-                Time
-                of
-                day
-                is
-                plotted
-                on
-                the
-                x-­‐
-                axis,
-                and
-                day
-                or
-                date
-                is
-                indicated
-                on
-                the
-                y-­‐axis</p>
+              <p><i>Heat maps</i> are a means of visualizing and presenting the information that is contained in a
+                time series load profile. The maps color-code the size of the load so that “hot spots” and patterns
+                are easily identified. Time of day is plotted on the x- axis, and day or date is indicated on the
+                y-axis</p>
             </div>
           </div>
         </div>
       </div>
       <div class="row">
-        <div class="col-xs-5"><h3>Heat Map</h3></div>
+        <div class="col-xs-2"><h3>Depository</h3></div>
+        <div class="col-xs-2"><h3>Sensor</h3></div>
         <div class="col-xs-6"></div>
-        <div class="col-xs-1">
-          <button class="btn btn-primary btn-sm add-button"><span
-              class="glyphicon glyphicon-plus"></span>Show Heat Map
+        <div class="col-xs-2"></div>
+      </div>
+      <div class="row form">
+        <div class="col-xs-2"><select id="heatMapDepository" class="col-xs-12 sensor-select"
+                                      onchange="selectedHMPowerDepository()">
+        <#list power_depositories as d>
+          <option value="${d.id}">${d.name}</option>
+        </#list>
+        </select></div>
+        <div class="col-xs-2"><select id="heatMapSensor" class="col-xs-12 sensor-select">
+        <#list power_sensors as s>
+          <option value="${s.id}">${s.name}</option>
+        </#list>
+        </select></div>
+        <div class="col-xs-6"></div>
+        <div class="col-xs-2">
+          <button class="btn btn-primary btn-sm add-button" onclick="heatMapPlot();">Show Heat Map
           </button>
         </div>
+      </div>
+      <div class="row">
+        <div id="heatChart" class="col-xs-12" style="height: 500px;"></div>
       </div>
     </div>
     <div class="tab-pane" id="energy_signature">
@@ -186,58 +163,53 @@
           </div>
           <div id="energySignatureCollapseHelp" class="panel-collapse collapse">
             <div class="panel-body">
-              <p>Energy
-                signatures
-                are
-                used
-                to
-                monitor
-                and
-                maintain
-                the
-                performance
-                of
-                temperature-­‐
-                dependent
-                loads
-                such
-                as
-                whole-­‐building
-                electric
-                or
-                gas
-                use,
-                or
-                heating
-                and
-                cooling
-                systems
-                or
-                components.
-                They
-                can
-                reveal
-                problems
-                with
-                insulation,
-                outside
-                air
-                intake,
-                or
-                system
+              <p>Energy signatures are used to monitor and maintain the performance of temperature‐dependent
+                loads such as whole‐building electric or gas use, or heating and cooling systems or
+                components. They can reveal problems with insulation, outside air intake, or system
                 efficiency.</p>
             </div>
           </div>
         </div>
       </div>
       <div class="row">
-        <div class="col-xs-5"><h3>Energy Signature</h3></div>
-        <div class="col-xs-6"></div>
-        <div class="col-xs-1">
-          <button class="btn btn-primary btn-sm add-button"><span
-              class="glyphicon glyphicon-plus"></span>View Energy Signature
+        <div class="col-xs-2"><h3>Power Depository</h3></div>
+        <div class="col-xs-2"><h3>Power Sensor</h3></div>
+        <div class="col-xs-2"><h3>Temp. Depository</h3></div>
+        <div class="col-xs-2"><h3>Temp. Sensor</h3></div>
+        <div class="col-xs-2"></div>
+        <div class="col-xs-2"></div>
+      </div>
+      <div class="row form">
+        <div class="col-xs-2"><select id="sigPowerDepository" class="col-xs-12 sensor-select"
+                                      onchange="selectedSigPowerDepository()">
+        <#list power_depositories as d>
+          <option value="${d.id}">${d.name}</option>
+        </#list>
+        </select></div>
+        <div class="col-xs-2"><select id="sigPowerSensor" class="col-xs-12 sensor-select">
+        <#list power_sensors as s>
+          <option value="${s.id}">${s.name}</option>
+        </#list>
+        </select></div>
+        <div class="col-xs-2"><select id="sigTempDepository" class="col-xs-12 sensor-select"
+                                      onchange="selectedSigTempDepository()">
+        <#list temperature_depositories as d>
+          <option value="${d.id}">${d.name}</option>
+        </#list>
+        </select></div>
+        <div class="col-xs-2"><select id="sigTempSensor" class="col-xs-12 sensor-select">
+        <#list temperature_sensors as s>
+          <option value="${s.id}">${s.name}</option>
+        </#list>
+        </select></div>
+        <div class="col-xs-2"></div>
+        <div class="col-xs-2">
+          <button class="btn btn-primary btn-sm add-button" onclick="energySigPlot();">View Energy Signature
           </button>
         </div>
+      </div>
+      <div class="row">
+        <div id="energySigChart" class="col-xs-12" style="height: 500px;"></div>
       </div>
     </div>
   </div>
@@ -301,17 +273,36 @@
 </div>
 -->
 <script>
-
+  // A $( document ).ready() block.
+  $(document).ready(function () {
+    console.log("ready!");
+  });
   var server = window.location.protocol + "//" + window.location.host + "/wattdepot/";
-
-  var testing = $('#tslp');
-
-
 
   var ORGID = "${orgId}";
   var DEPOSITORIES = {};
   <#list depositories as d>
   DEPOSITORIES["${d.id}"] = {
+    "id": "${d.id}",
+    "name": "${d.name}",
+    "measurementType": "${d.measurementType.id}",
+    "typeString": "${d.measurementType.units}",
+    "organizationId": "${d.organizationId}"
+  };
+  </#list>
+  var POWER_DEPOSITORIES = {};
+  <#list power_depositories as d>
+  POWER_DEPOSITORIES["${d.id}"] = {
+    "id": "${d.id}",
+    "name": "${d.name}",
+    "measurementType": "${d.measurementType.id}",
+    "typeString": "${d.measurementType.units}",
+    "organizationId": "${d.organizationId}"
+  };
+  </#list>
+  var ENERGY_DEPOSITORIES = {};
+  <#list energy_depositories as d>
+  ENERGY_DEPOSITORIES["${d.id}"] = {
     "id": "${d.id}",
     "name": "${d.name}",
     "measurementType": "${d.measurementType.id}",
@@ -411,13 +402,6 @@
 
   <#--</#list>-->
   <#--</#list>-->
-</script>
-<script>
-
-  var foo = $("#foobar");
-  console.log("This is foo= " + foo);
-  // set up the depository options.
-  setUpTimeSeries();
 </script>
 </body>
 </html>

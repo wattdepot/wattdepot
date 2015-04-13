@@ -65,7 +65,10 @@ public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {
         TableRow row = new TableRow();
         row.addCell(j); // hour
         for (int k = 0; k < 24; k++) {
-          row.addCell(values.get(j * 24 + k).getValue());
+          Double value = values.get(j * 24 + k).getValue();
+          if (value != null) {
+            row.addCell(value);
+          }
         }
         try {
           data.addRow(row);
