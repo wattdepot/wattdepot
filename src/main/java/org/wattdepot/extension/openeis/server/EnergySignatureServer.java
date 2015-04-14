@@ -21,6 +21,7 @@ package org.wattdepot.extension.openeis.server;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import org.wattdepot.common.analysis.DescriptiveStats;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
@@ -42,6 +43,7 @@ public class EnergySignatureServer extends OpenEISServer {
   private String powerSensorId;
   private String temperatureDepositoryId;
   private String temperatureSensorId;
+  private Double weatherSensitivity;
 
 
   /*
@@ -56,6 +58,7 @@ public class EnergySignatureServer extends OpenEISServer {
     this.powerSensorId = getQuery().getValues(OpenEISLabels.POWER_SENSOR);
     this.temperatureDepositoryId = getQuery().getValues(OpenEISLabels.TEMPERATURE_DEPOSITORY);
     this.temperatureSensorId = getQuery().getValues(OpenEISLabels.TEMPERATURE_SENSOR);
+    this.weatherSensitivity = 0.0;
   }
 
   /**
@@ -77,11 +80,27 @@ public class EnergySignatureServer extends OpenEISServer {
         if (powerDepository.getMeasurementType().getName().startsWith("Power")) {
           InterpolatedValueList powerValues = getHourlyPointDataYear(powerDepositoryId, powerSensorId);
           Depository temperatureDepository = depot.getDepository(temperatureDepositoryId, orgId, true);
+          DescriptiveStats powerStats = new DescriptiveStats(powerValues);
           if (temperatureDepository.getMeasurementType().getName().startsWith("Temperature")) {
             InterpolatedValueList temperatureValues = getHourlyPointDataYear(temperatureDepositoryId, temperatureSensorId);
+            DescriptiveStats temperatureStats = new DescriptiveStats(temperatureValues);
             ArrayList<InterpolatedValue> powerData = powerValues.getInterpolatedValues();
             ArrayList<InterpolatedValue> temperatureData = temperatureValues.getInterpolatedValues();
+            Double xMean = powerStats.getMean();
+            Double xNumeratorSum = 0.0;
+            Double xDenomSum = 0.0;
+            Double yMean = temperatureStats.getMean();
+            Double yNumeratorSum = 0.0;
+            Double yDenomSum = 0.0;
             for (int i = 0; i < powerData.size(); i++) {
+              Double xVal = powerData.get(i).getValue();
+              Double yVal = temperatureData.get(i).getValue();
+              if (xVal != null && yVal != null) {
+                xNumeratorSum += xVal - xMean;
+                yNumeratorSum += yVal - yMean;
+                xDenomSum += Math.pow(xVal - xMean, 2.0);
+                yDenomSum += Math.pow(yVal - yMean, 2.0);
+              }
               ret.getValues().add(new XYInterpolatedValue(powerData.get(i), temperatureData.get(i)));
             }
           }
