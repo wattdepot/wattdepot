@@ -51,43 +51,7 @@ public class TimeSeriesLoadProfileServer extends OpenEISServer {
     super.doInit();
     this.depositoryId = getQuery().getValues(Labels.DEPOSITORY);
     this.sensorId = getQuery().getValues(Labels.SENSOR);
-    switch (getQuery().getValues("duration")) {
-      case "1w":
-        interval = TimeInterval.ONE_WEEK;
-        break;
-      case "2w":
-        interval = TimeInterval.TWO_WEEKS;
-        break;
-      case "3w":
-        interval = TimeInterval.THREE_WEEKS;
-        break;
-      case "4w":
-        interval = TimeInterval.FOUR_WEEKS;
-        break;
-      case "1m":
-        interval = TimeInterval.ONE_MONTH;
-        break;
-      case "2m":
-        interval = TimeInterval.TWO_MONTHS;
-        break;
-      case "3m":
-        interval = TimeInterval.THREE_MONTHS;
-        break;
-      case "4m":
-        interval = TimeInterval.FOUR_MONTHS;
-        break;
-      case "5m":
-        interval = TimeInterval.FIVE_MONTHS;
-        break;
-      case "6m":
-        interval = TimeInterval.SIX_MONTHS;
-        break;
-      case "1y":
-        interval = TimeInterval.ONE_YEAR;
-        break;
-      default:
-        interval = TimeInterval.ONE_MONTH;
-    }
+    this.interval = TimeInterval.fromParameter(getQuery().getValues(OpenEISLabels.DURATION));
   }
 
   /**
@@ -98,14 +62,15 @@ public class TimeSeriesLoadProfileServer extends OpenEISServer {
     getLogger().log(
         Level.INFO,
         "GET /wattdepot/{" + orgId + "}/" + OpenEISLabels.OPENEIS + "/" + OpenEISLabels.TIME_SERIES_LOAD_PROFILING +
-            "/?" + Labels.DEPOSITORY + "={" + depositoryId + "}&" + Labels.SENSOR + "={" + sensorId + "}&duration={" + interval + "}");
+            "/?" + Labels.DEPOSITORY + "={" + depositoryId + "}&" + Labels.SENSOR + "={" + sensorId + "}&" +
+          OpenEISLabels.DURATION + "={" + interval + "}");
     try {
       Depository depository = depot.getDepository(depositoryId, orgId, true);
       if (depository.getMeasurementType().getName().startsWith("Power")) {
         return getHourlyPointData(depositoryId, sensorId, interval);
       }
       else if ( depository.getMeasurementType().getName().startsWith("Energy")) {
-        return getDifferenceData(depositoryId, sensorId, interval);
+        return getHourlyDifferenceData(depositoryId, sensorId, interval);
       }
       else {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " is not a Power/Energy Depository.");

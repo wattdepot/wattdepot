@@ -25,27 +25,29 @@ package org.wattdepot.extension.openeis.domainmodel;
  * Created by carletonmoore on 4/16/15.
  */
 public enum TimeInterval {
-  ONE_WEEK (7),
-  TWO_WEEKS (14),
-  THREE_WEEKS (21),
-  FOUR_WEEKS (28),
-  ONE_MONTH (31),
-  TWO_MONTHS (62),
-  THREE_MONTHS (93),
-  FOUR_MONTHS (124),
-  FIVE_MONTHS (155),
-  SIX_MONTHS (186),
-  ONE_YEAR (365);
+  ONE_WEEK (7, "1w"),
+  TWO_WEEKS (14, "2w"),
+  THREE_WEEKS (21, "3w"),
+  FOUR_WEEKS (28, "4w"),
+  ONE_MONTH (31, "1m"),
+  TWO_MONTHS (62, "2m"),
+  THREE_MONTHS (93, "3m"),
+  FOUR_MONTHS (124, "4m"),
+  FIVE_MONTHS (155, "5m"),
+  SIX_MONTHS (186, "6m"),
+  ONE_YEAR (365, "1y");
 
 
   private final int numDays;
+  private final String parameter;
 
   /**
    * Creates a TimeInterval with a given number of days.
    * @param days the number of days.
    */
-  TimeInterval(int days) {
+  TimeInterval(int days, String param) {
     this.numDays = days;
+    this.parameter = param;
   }
 
   /**
@@ -53,5 +55,61 @@ public enum TimeInterval {
    */
   public int getNumDays() {
     return numDays;
+  }
+
+  /**
+   * @return the string parameter associated with this TimeInterval.
+   */
+  public String getParameter() {
+    return parameter;
+  }
+
+  /**
+   * Returns the defined TimeInterval for the given parameter, defaults to ONE_MONTH for
+   * unknown strings.
+   * @param parameter the pramamter.
+   * @return the defined TimeInterval for the given parameter, defaults to ONE_MONTH for
+   * unknown strings.
+   */
+  public static TimeInterval fromParameter(String parameter) {
+    TimeInterval interval = null;
+    switch (parameter) {
+      case "1w":
+        interval = TimeInterval.ONE_WEEK;
+        break;
+      case "2w":
+        interval = TimeInterval.TWO_WEEKS;
+        break;
+      case "3w":
+        interval = TimeInterval.THREE_WEEKS;
+        break;
+      case "4w":
+        interval = TimeInterval.FOUR_WEEKS;
+        break;
+      case "1m":
+        interval = TimeInterval.ONE_MONTH;
+        break;
+      case "2m":
+        interval = TimeInterval.TWO_MONTHS;
+        break;
+      case "3m":
+        interval = TimeInterval.THREE_MONTHS;
+        break;
+      case "4m":
+        interval = TimeInterval.FOUR_MONTHS;
+        break;
+      case "5m":
+        interval = TimeInterval.FIVE_MONTHS;
+        break;
+      case "6m":
+        interval = TimeInterval.SIX_MONTHS;
+        break;
+      case "1y":
+        interval = TimeInterval.ONE_YEAR;
+        break;
+      default:
+        interval = TimeInterval.ONE_MONTH;
+    }
+    return interval;
   }
 }

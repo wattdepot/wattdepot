@@ -38,7 +38,7 @@ function timeSeriesPlot() {
   var depositoryId = $("#timeSeriesDepository").val();
   var sensorId = $('#timeSeriesSensor').val();
   var uri = server + ORGID + '/openeis/time-series-load-profiling/gviz/?depository='
-      + depositoryId + '&sensor=' + sensorId + "&duration=" + timeInterval;
+    + depositoryId + '&sensor=' + sensorId + "&duration=" + timeInterval;
   console.log(uri);
   document.getElementById("tslp").style.cursor = "wait";
   var query = new google.visualization.Query(uri);
@@ -88,7 +88,7 @@ function updatePowerSensorSelection(sensors) {
   var length = sensors.length;
   for (i = 0; i < length; i++) {
     select.append($("<option></option>").attr("value", sensors[i]).text(
-        SENSORS[sensors[i]].name));
+      SENSORS[sensors[i]].name));
   }
 };
 
@@ -106,15 +106,16 @@ function updateHMPowerSensorSelection(sensors) {
   var length = sensors.length;
   for (i = 0; i < length; i++) {
     select.append($("<option></option>").attr("value", sensors[i]).text(
-        SENSORS[sensors[i]].name));
+      SENSORS[sensors[i]].name));
   }
 };
 
 function heatMapPlot() {
+  var duration = $("#heatMapDuration").val();
   var depositoryId = $("#heatMapDepository").val();
   var sensorId = $('#heatMapSensor').val();
   var uri = server + ORGID + '/openeis/heat-map/gviz/?depository='
-      + depositoryId + '&sensor=' + sensorId;
+    + depositoryId + '&sensor=' + sensorId + '&duration=' + duration;
   document.getElementById("heat_map").style.cursor = "wait";
   //console.log(uri);
   var query = new google.visualization.Query(uri);
@@ -133,7 +134,8 @@ function heatMapResponse(response) {
   var table = response.getDataTable();
   $('#heatChart').show();
   var chart = new org.systemsbiology.visualization.BioHeatMap(document.getElementById('heatChart'));
-  chart.draw(table, {startColor: {r: 0, g: 0, b: 255, a: 1},
+  chart.draw(table, {
+    startColor: {r: 0, g: 0, b: 255, a: 1},
     endColor: {r: 255, g: 0, b: 0, a: 1},
     passThroughWhite: true,
   });
@@ -141,13 +143,14 @@ function heatMapResponse(response) {
 }
 
 function energySigPlot() {
+  var sigDuration = $("#energySigDuration").val();
   var powerDepoId = $("#sigPowerDepository").val();
   var powerSensorId = $('#sigPowerSensor').val();
   var tempDepoId = $('#sigTempDepository').val();
   var tempSensorId = $('#sigTempSensor').val();
   var uri = server + ORGID + '/openeis/energy-signature/gviz/?power-depository='
-      + powerDepoId + '&power-sensor=' + powerSensorId + "&temperature-depository="
-      + tempDepoId + '&temperature-sensor=' + tempSensorId;
+    + powerDepoId + '&power-sensor=' + powerSensorId + "&temperature-depository="
+    + tempDepoId + '&temperature-sensor=' + tempSensorId + "&duration=" + sigDuration;
   document.getElementById("energy_signature").style.cursor = "wait";
   //console.log(uri);
   var query = new google.visualization.Query(uri);

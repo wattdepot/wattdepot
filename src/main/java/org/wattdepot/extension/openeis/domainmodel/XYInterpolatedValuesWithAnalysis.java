@@ -39,6 +39,7 @@ public class XYInterpolatedValuesWithAnalysis {
 
   /**
    * Sets the data points.
+   *
    * @param dataPoints The new data points.
    */
   public void setDataPoints(XYInterpolatedValueList dataPoints) {
@@ -54,6 +55,7 @@ public class XYInterpolatedValuesWithAnalysis {
 
   /**
    * Sets the map of analyses.
+   *
    * @param analysis the new map of analyses.
    */
   public void setAnalysis(Map<String, Double> analysis) {

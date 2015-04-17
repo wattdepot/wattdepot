@@ -211,6 +211,7 @@ public class WattDepotApplication extends Application {
     ServerProperties properties = depot.getServerProperties();
     List<WattDepotExtension> extensions = (List<WattDepotExtension>) properties.getPropertyInstance(ServerProperties.WATTDEPOT_EXTENSIONS);
     for (WattDepotExtension extension : extensions) {
+      getLogger().info("Loading extension " + extension.getBaseURI());
       String baseURI = extension.getBaseURI();
       if (!extensionMap.containsKey(baseURI)) {
         extensionMap.put(baseURI, extension);

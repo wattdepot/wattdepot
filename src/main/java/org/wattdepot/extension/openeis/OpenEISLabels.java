@@ -68,4 +68,6 @@ public class OpenEISLabels {
   /** The Temperature sensor label. */
   public static final String TEMPERATURE_SENSOR = "temperature-sensor";
 
+  /** The duration label. */
+  public static final String DURATION = "duration";
 }

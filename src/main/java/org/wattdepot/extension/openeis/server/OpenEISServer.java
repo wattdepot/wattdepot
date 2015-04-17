@@ -98,7 +98,7 @@ public class OpenEISServer extends WattDepotServerResource {
    * @param howLong The length of time.
    * @return An InterpolatedValueList of the hourly data.
    */
-  public InterpolatedValueList getDifferenceData(String depositoryId, String sensorId, TimeInterval howLong) {
+  public InterpolatedValueList getHourlyDifferenceData(String depositoryId, String sensorId, TimeInterval howLong) {
     if (isInRole(orgId)) {
       InterpolatedValueList ret = new InterpolatedValueList();
       try {

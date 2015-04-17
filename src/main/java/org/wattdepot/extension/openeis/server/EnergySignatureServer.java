@@ -22,14 +22,10 @@ package org.wattdepot.extension.openeis.server;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.analysis.DescriptiveStats;
-import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.InterpolatedValue;
-import org.wattdepot.common.domainmodel.InterpolatedValueList;
-import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.XYInterpolatedValue;
-import org.wattdepot.common.domainmodel.XYInterpolatedValueList;
+import org.wattdepot.common.domainmodel.*;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.extension.openeis.OpenEISLabels;
+import org.wattdepot.extension.openeis.domainmodel.TimeInterval;
 import org.wattdepot.extension.openeis.domainmodel.XYInterpolatedValuesWithAnalysis;
 
 import java.util.ArrayList;
@@ -46,6 +42,7 @@ public class EnergySignatureServer extends OpenEISServer {
   private String temperatureDepositoryId;
   private String temperatureSensorId;
   private Double weatherSensitivity;
+  private TimeInterval interval;
 
 
   /*
@@ -61,6 +58,7 @@ public class EnergySignatureServer extends OpenEISServer {
     this.temperatureDepositoryId = getQuery().getValues(OpenEISLabels.TEMPERATURE_DEPOSITORY);
     this.temperatureSensorId = getQuery().getValues(OpenEISLabels.TEMPERATURE_SENSOR);
     this.weatherSensitivity = 0.0;
+    this.interval = TimeInterval.fromParameter(getQuery().getValues(OpenEISLabels.DURATION));
   }
 
   /**
@@ -74,20 +72,26 @@ public class EnergySignatureServer extends OpenEISServer {
       "GET /wattdepot/{" + orgId + "}/" + OpenEISLabels.OPENEIS + "/" + OpenEISLabels.HEAT_MAP +
         "/?" + OpenEISLabels.POWER_DEPOSITORY + "={" + powerDepositoryId + "}&" + OpenEISLabels.POWER_SENSOR + "={" + powerSensorId + "}&"
         + OpenEISLabels.TEMPERATURE_DEPOSITORY + "={" + temperatureDepositoryId + "}&" + OpenEISLabels.TEMPERATURE_SENSOR + "={"
-        + temperatureSensorId + "}");
+        + temperatureSensorId + "}&" + OpenEISLabels.DURATION + "={" + interval + "}");
     if (isInRole(orgId)) {
       XYInterpolatedValueList ret = new XYInterpolatedValueList();
       Double r = 0.0;
       try {
         Depository powerDepository = depot.getDepository(powerDepositoryId, orgId, true);
+        InterpolatedValueList pOrEValues = null;
         if (powerDepository.getMeasurementType().getName().startsWith("Power")) {
-          InterpolatedValueList powerValues = getHourlyPointDataYear(powerDepositoryId, powerSensorId);
+          pOrEValues = getHourlyPointData(powerDepositoryId, powerSensorId, interval);
+        }
+          else if (powerDepository.getMeasurementType().getName().startsWith("Energy")) {
+          pOrEValues = getHourlyDifferenceData(powerDepositoryId, powerSensorId, interval);
+        }
+        if (pOrEValues != null) {
           Depository temperatureDepository = depot.getDepository(temperatureDepositoryId, orgId, true);
-          DescriptiveStats powerStats = new DescriptiveStats(powerValues);
+          DescriptiveStats powerStats = new DescriptiveStats(pOrEValues);
           if (temperatureDepository.getMeasurementType().getName().startsWith("Temperature")) {
             InterpolatedValueList temperatureValues = getHourlyPointDataYear(temperatureDepositoryId, temperatureSensorId);
             DescriptiveStats temperatureStats = new DescriptiveStats(temperatureValues);
-            ArrayList<InterpolatedValue> powerData = powerValues.getInterpolatedValues();
+            ArrayList<InterpolatedValue> powerData = pOrEValues.getInterpolatedValues();
             ArrayList<InterpolatedValue> temperatureData = temperatureValues.getInterpolatedValues();
             Double xMean = powerStats.getMean();
             Double numeratorSum = 0.0;

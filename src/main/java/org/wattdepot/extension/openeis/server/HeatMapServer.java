@@ -26,6 +26,7 @@ import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.extension.openeis.OpenEISLabels;
+import org.wattdepot.extension.openeis.domainmodel.TimeInterval;
 
 import java.util.logging.Level;
 
@@ -37,7 +38,7 @@ import java.util.logging.Level;
 public class HeatMapServer extends OpenEISServer {
   private String depositoryId;
   private String sensorId;
-
+  private TimeInterval interval;
 
   /*
    * (non-Javadoc)
@@ -49,28 +50,31 @@ public class HeatMapServer extends OpenEISServer {
     super.doInit();
     this.depositoryId = getQuery().getValues(Labels.DEPOSITORY);
     this.sensorId = getQuery().getValues(Labels.SENSOR);
+    this.interval = TimeInterval.fromParameter(getQuery().getValues(OpenEISLabels.DURATION));
   }
 
   /**
    * Retrieves the last year's hourly power data for the given depository and sensor.
+   *
    * @return An InterpolatedValueList of the hourly power data.
    */
   public InterpolatedValueList doRetrieve() {
     getLogger().log(
-        Level.INFO,
-        "GET /wattdepot/{" + orgId + "}/" + OpenEISLabels.OPENEIS + "/" + OpenEISLabels.HEAT_MAP +
-            "/?" + Labels.DEPOSITORY + "={" + depositoryId + "}&" + Labels.SENSOR + "={" + sensorId + "}");
+      Level.INFO,
+      "GET /wattdepot/{" + orgId + "}/" + OpenEISLabels.OPENEIS + "/" + OpenEISLabels.HEAT_MAP +
+        "/?" + Labels.DEPOSITORY + "={" + depositoryId + "}&" + Labels.SENSOR + "={" + sensorId + "}&" +
+        OpenEISLabels.DURATION + "={" + interval + "}");
     try {
       Depository depository = depot.getDepository(depositoryId, orgId, true);
       if (depository.getMeasurementType().getName().startsWith("Power")) {
-        return getHourlyPointDataYear(depositoryId, sensorId);
-      }
-      else {
+        return getHourlyPointData(depositoryId, sensorId, interval);
+      } else if (depository.getMeasurementType().getName().startsWith("Energy")) {
+        return getHourlyDifferenceData(depositoryId, sensorId, interval);
+      } else {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " is not a Power Depository.");
         return null;
       }
-    }
-    catch (IdNotFoundException e) {
+    } catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       return null;
     }

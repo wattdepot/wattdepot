@@ -62,6 +62,7 @@
     <li><a id="heat_map_tab_link" href="#heat_map" data-toggle="tab" name="heat_map">Heat Map</a></li>
     <li><a id="energy_signature_tab_link" href="#energy_signature" data-toggle="tab" name="energy_signature">Energy
       Signature</a></li>
+    <li><a id="longitude_baseline_link" href="#longitude_baseline" data-toggle="tab" name="longitude_baseline">Longitude Baseline</a></li>
   </ul>
 
   <!-- Tab panes -->
@@ -89,7 +90,7 @@
         <div class="col-xs-2"></div>
       </div>
       <div class="row form">
-        <div class="col-xs-2"><select id="timeSeriesDuration" class="col-xs-12 sensor-select">
+        <div class="col-xs-2"><select id="timeSeriesDuration" class="col-xs-10 sensor-select">
           <option value="1w">1 week</option>
           <option value="2w">2 weeks</option>
           <option value="3w">3 weeks</option>
@@ -102,7 +103,7 @@
           <option value="6m">6 months</option>
           <option value="1y">1 year</option>
         </select></div>
-        <div class="col-xs-2"><select id="timeSeriesDepository" class="col-xs-12 sensor-select"
+        <div class="col-xs-2"><select id="timeSeriesDepository" class="col-xs-10 sensor-select"
                                       onchange="selectedPowerDepository()">
         <#list power_depositories as d>
           <option value="${d.id}">${d.name}</option>
@@ -111,7 +112,7 @@
           <option value="${d.id}">${d.name}</option>
         </#list>
         </select></div>
-        <div class="col-xs-2"><select id="timeSeriesSensor" class="col-xs-12 sensor-select">
+        <div class="col-xs-2"><select id="timeSeriesSensor" class="col-xs-10 sensor-select">
         <#list power_sensors as s>
           <option value="${s.id}">${s.name}</option>
         </#list>
@@ -151,7 +152,7 @@
         <div class="col-xs-2"></div>
       </div>
       <div class="row form">
-        <div class="col-xs-2"><select id="heatMapDuration" class="col-xs-12 sensor-select">
+        <div class="col-xs-2"><select id="heatMapDuration" class="col-xs-10 sensor-select">
           <option value="1w">1 week</option>
           <option value="2w">2 weeks</option>
           <option value="3w">3 weeks</option>
@@ -164,7 +165,7 @@
           <option value="6m">6 months</option>
           <option value="1y">1 year</option>
         </select></div>
-        <div class="col-xs-2"><select id="heatMapDepository" class="col-xs-12 sensor-select"
+        <div class="col-xs-2"><select id="heatMapDepository" class="col-xs-10 sensor-select"
                                       onchange="selectedHMPowerDepository()">
         <#list power_depositories as d>
           <option value="${d.id}">${d.name}</option>
@@ -173,12 +174,12 @@
           <option value="${d.id}">${d.name}</option>
         </#list>
         </select></div>
-        <div class="col-xs-2"><select id="heatMapSensor" class="col-xs-12 sensor-select">
+        <div class="col-xs-2"><select id="heatMapSensor" class="col-xs-10 sensor-select">
         <#list power_sensors as s>
           <option value="${s.id}">${s.name}</option>
         </#list>
         </select></div>
-        <div class="col-xs-6"></div>
+        <div class="col-xs-4"></div>
         <div class="col-xs-2">
           <button class="btn btn-primary btn-sm add-button" onclick="heatMapPlot();">Show Heat Map
           </button>
@@ -206,32 +207,48 @@
         </div>
       </div>
       <div class="row">
+        <div class="col-xs-2"><h3>Time Window</h3></div>
         <div class="col-xs-2"><h3>Power Depository</h3></div>
         <div class="col-xs-2"><h3>Power Sensor</h3></div>
         <div class="col-xs-2"><h3>Temp. Depository</h3></div>
         <div class="col-xs-2"><h3>Temp. Sensor</h3></div>
         <div class="col-xs-2"></div>
-        <div class="col-xs-2"></div>
       </div>
       <div class="row form">
-        <div class="col-xs-2"><select id="sigPowerDepository" class="col-xs-12 sensor-select"
+        <div class="col-xs-2"><select id="energySigDuration" class="col-xs-10 sensor-select">
+          <option value="1w">1 week</option>
+          <option value="2w">2 weeks</option>
+          <option value="3w">3 weeks</option>
+          <option value="4w">4 weeks</option>
+          <option value="1m" selected="true">1 month</option>
+          <option value="2m">2 months</option>
+          <option value="3m">3 months</option>
+          <option value="4m">4 months</option>
+          <option value="5m">5 months</option>
+          <option value="6m">6 months</option>
+          <option value="1y">1 year</option>
+        </select></div>
+        <div class="col-xs-2"><select id="sigPowerDepository" class="col-xs-10 sensor-select"
                                       onchange="selectedSigPowerDepository()">
         <#list power_depositories as d>
           <option value="${d.id}">${d.name}</option>
         </#list>
+        <#list energy_depositories as d>
+          <option value="${d.id}">${d.name}</option>
+        </#list>
         </select></div>
-        <div class="col-xs-2"><select id="sigPowerSensor" class="col-xs-12 sensor-select">
+        <div class="col-xs-2"><select id="sigPowerSensor" class="col-xs-10 sensor-select">
         <#list power_sensors as s>
           <option value="${s.id}">${s.name}</option>
         </#list>
         </select></div>
-        <div class="col-xs-2"><select id="sigTempDepository" class="col-xs-12 sensor-select"
+        <div class="col-xs-2"><select id="sigTempDepository" class="col-xs-10 sensor-select"
                                       onchange="selectedSigTempDepository()">
         <#list temperature_depositories as d>
           <option value="${d.id}">${d.name}</option>
         </#list>
         </select></div>
-        <div class="col-xs-2"><select id="sigTempSensor" class="col-xs-12 sensor-select">
+        <div class="col-xs-2"><select id="sigTempSensor" class="col-xs-10 sensor-select">
         <#list temperature_sensors as s>
           <option value="${s.id}">${s.name}</option>
         </#list>
@@ -247,6 +264,68 @@
       </div>
       <div class="row">
         <div id="energySigChart" class="col-xs-12" style="height: 500px;"></div>
+      </div>
+    </div>
+    <div class="tab-pane" id="longitude_baseline">
+      <div class="panel-group" id="help">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a class="panel-title text-right accordion-toggle collapsed" data-toggle="collapse" data-parent="#help"
+               href="#longitudeBaselineCollapseHelp">Help </a>
+          </div>
+          <div id="longitudeBaselineCollapseHelp" class="panel-collapse collapse">
+            <div class="panel-body">
+              <p><i>Longitudinal benchmarking</i> compares the energy usage in a fixed period for a building, system,
+                or component to that in a comparable “baseline” or “base” period of the same length, to determine if
+                performance has deteriorated or improved, to set goals for a building or system, or to monitor for
+                unexpectedly high usage.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-2"><h3>Baseline Window</h3></div>
+        <div class="col-xs-2"><h3>Depository</h3></div>
+        <div class="col-xs-2"><h3>Sensor</h3></div>
+        <div class="col-xs-4"></div>
+        <div class="col-xs-2"></div>
+      </div>
+      <div class="row form">
+        <div class="col-xs-2"><select id="longitudeDuration" class="col-xs-10 sensor-select">
+          <option value="1w">1 week</option>
+          <option value="2w">2 weeks</option>
+          <option value="3w">3 weeks</option>
+          <option value="4w">4 weeks</option>
+          <option value="1m" selected="true">1 month</option>
+          <option value="2m">2 months</option>
+          <option value="3m">3 months</option>
+          <option value="4m">4 months</option>
+          <option value="5m">5 months</option>
+          <option value="6m">6 months</option>
+          <option value="1y">1 year</option>
+        </select></div>
+        <div class="col-xs-2"><select id="longitudeDepository" class="col-xs-10 sensor-select"
+                                      onchange="selectedLongitudeDepository()">
+        <#list power_depositories as d>
+          <option value="${d.id}">${d.name}</option>
+        </#list>
+        <#list energy_depositories as d>
+          <option value="${d.id}">${d.name}</option>
+        </#list>
+        </select></div>
+        <div class="col-xs-2"><select id="longitudeSensor" class="col-xs-10 sensor-select">
+        <#list power_sensors as s>
+          <option value="${s.id}">${s.name}</option>
+        </#list>
+        </select></div>
+        <div class="col-xs-4"></div>
+        <div class="col-xs-2">
+          <button class="btn btn-primary btn-sm add-button" onclick="longitudePlot();">View Longitude Baseline
+          </button>
+        </div>
+      </div>
+      <div class="row">
+        <div id="longitudeChart" class="col-xs-12" style="height: 500px;"></div>
       </div>
     </div>
   </div>
