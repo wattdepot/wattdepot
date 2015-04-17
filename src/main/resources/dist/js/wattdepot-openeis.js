@@ -34,11 +34,13 @@ function loadPage() {
 }
 
 function timeSeriesPlot() {
+  var timeInterval = $("#timeSeriesDuration").val();
   var depositoryId = $("#timeSeriesDepository").val();
   var sensorId = $('#timeSeriesSensor').val();
   var uri = server + ORGID + '/openeis/time-series-load-profiling/gviz/?depository='
-      + depositoryId + '&sensor=' + sensorId;
-  //console.log(uri);
+      + depositoryId + '&sensor=' + sensorId + "&duration=" + timeInterval;
+  console.log(uri);
+  document.getElementById("tslp").style.cursor = "wait";
   var query = new google.visualization.Query(uri);
   query.send(function (response) {
     timeSeriesResponse(response);
@@ -46,6 +48,7 @@ function timeSeriesPlot() {
 }
 
 function timeSeriesResponse(response) {
+  document.getElementById("tslp").style.cursor = "auto";
   if (response.isError()) {
     alert('Error in query: ' + response.getMessage() + ' '
     + response.getDetailedMessage());
@@ -112,6 +115,7 @@ function heatMapPlot() {
   var sensorId = $('#heatMapSensor').val();
   var uri = server + ORGID + '/openeis/heat-map/gviz/?depository='
       + depositoryId + '&sensor=' + sensorId;
+  document.getElementById("heat_map").style.cursor = "wait";
   //console.log(uri);
   var query = new google.visualization.Query(uri);
   query.send(function (response) {
@@ -120,6 +124,7 @@ function heatMapPlot() {
 }
 
 function heatMapResponse(response) {
+  document.getElementById("heat_map").style.cursor = "auto";
   if (response.isError()) {
     alert('Error in query: ' + response.getMessage() + ' '
     + response.getDetailedMessage());
@@ -143,6 +148,7 @@ function energySigPlot() {
   var uri = server + ORGID + '/openeis/energy-signature/gviz/?power-depository='
       + powerDepoId + '&power-sensor=' + powerSensorId + "&temperature-depository="
       + tempDepoId + '&temperature-sensor=' + tempSensorId;
+  document.getElementById("energy_signature").style.cursor = "wait";
   //console.log(uri);
   var query = new google.visualization.Query(uri);
   query.send(function (response) {
@@ -151,10 +157,16 @@ function energySigPlot() {
 }
 
 function energySigResponse(response) {
+  document.getElementById("energy_signature").style.cursor = "auto";
   if (response.isError()) {
     alert('Error in query: ' + response.getMessage() + ' '
     + response.getDetailedMessage());
     return;
+  }
+  var analyses = response.getReasons();
+  $('#energySigAnalyses').empty();
+  for (i = 0; i < analyses.length; i++) {
+    $('#energySigAnalyses').append('<h4>' + analyses[i] + '</h4>');
   }
   var table = response.getDataTable();
   $('#energySigChart').show();

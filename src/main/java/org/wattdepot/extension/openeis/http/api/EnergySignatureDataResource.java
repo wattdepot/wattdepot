@@ -21,6 +21,7 @@ package org.wattdepot.extension.openeis.http.api;
 
 import org.restlet.resource.Get;
 import org.wattdepot.common.domainmodel.XYInterpolatedValueList;
+import org.wattdepot.extension.openeis.domainmodel.XYInterpolatedValuesWithAnalysis;
 
 /**
  * EnergySignatureDataResource - HTTP interface for getting the last year's energy signature data.
@@ -34,10 +35,10 @@ public interface EnergySignatureDataResource {
    * /wattdepot/{org-id}/openeis/energy-signature/data/?power-depository={depository_id}&power-sensor={sensor_id}
    * &temperature-depository={depository_id}&temperature-sensor={sensor_id}.
    *
-   * @return The XYInterpolatedValueList.
+   * @return The XYInterpolatedValuesWithAnalysis.
    */
   @Get("json")
-  XYInterpolatedValueList retrieve();
+  XYInterpolatedValuesWithAnalysis retrieve();
 
 
 }

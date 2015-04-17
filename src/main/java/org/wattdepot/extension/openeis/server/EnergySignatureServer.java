@@ -30,8 +30,10 @@ import org.wattdepot.common.domainmodel.XYInterpolatedValue;
 import org.wattdepot.common.domainmodel.XYInterpolatedValueList;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.extension.openeis.OpenEISLabels;
+import org.wattdepot.extension.openeis.domainmodel.XYInterpolatedValuesWithAnalysis;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 
 /**
@@ -66,7 +68,7 @@ public class EnergySignatureServer extends OpenEISServer {
    *
    * @return An InterpolatedValueList of the hourly power data.
    */
-  public XYInterpolatedValueList doRetrieve() {
+  public XYInterpolatedValuesWithAnalysis doRetrieve() {
     getLogger().log(
       Level.INFO,
       "GET /wattdepot/{" + orgId + "}/" + OpenEISLabels.OPENEIS + "/" + OpenEISLabels.HEAT_MAP +
@@ -75,6 +77,7 @@ public class EnergySignatureServer extends OpenEISServer {
         + temperatureSensorId + "}");
     if (isInRole(orgId)) {
       XYInterpolatedValueList ret = new XYInterpolatedValueList();
+      Double r = 0.0;
       try {
         Depository powerDepository = depot.getDepository(powerDepositoryId, orgId, true);
         if (powerDepository.getMeasurementType().getName().startsWith("Power")) {
@@ -87,22 +90,23 @@ public class EnergySignatureServer extends OpenEISServer {
             ArrayList<InterpolatedValue> powerData = powerValues.getInterpolatedValues();
             ArrayList<InterpolatedValue> temperatureData = temperatureValues.getInterpolatedValues();
             Double xMean = powerStats.getMean();
-            Double xNumeratorSum = 0.0;
+            Double numeratorSum = 0.0;
             Double xDenomSum = 0.0;
             Double yMean = temperatureStats.getMean();
-            Double yNumeratorSum = 0.0;
             Double yDenomSum = 0.0;
             for (int i = 0; i < powerData.size(); i++) {
               Double xVal = powerData.get(i).getValue();
               Double yVal = temperatureData.get(i).getValue();
               if (xVal != null && yVal != null) {
-                xNumeratorSum += xVal - xMean;
-                yNumeratorSum += yVal - yMean;
-                xDenomSum += Math.pow(xVal - xMean, 2.0);
-                yDenomSum += Math.pow(yVal - yMean, 2.0);
+                Double xTerm =  xVal - xMean;
+                Double yTerm =  yVal - yMean;
+                numeratorSum += xTerm * yTerm;
+                xDenomSum += Math.pow(xTerm, 2.0);
+                yDenomSum += Math.pow(yTerm, 2.0);
               }
               ret.getValues().add(new XYInterpolatedValue(powerData.get(i), temperatureData.get(i)));
             }
+            r = numeratorSum / (Math.sqrt(xDenomSum) * Math.sqrt(yDenomSum));
           }
           else {
             setStatus(Status.CLIENT_ERROR_BAD_REQUEST, temperatureDepositoryId + " is not a temperature depository.");
@@ -118,7 +122,12 @@ public class EnergySignatureServer extends OpenEISServer {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         return null;
       }
-      return ret;
+      XYInterpolatedValuesWithAnalysis analysis = new XYInterpolatedValuesWithAnalysis();
+      analysis.setDataPoints(ret);
+      HashMap<String, Double> regression = new HashMap<>();
+      regression.put("Weather Sensitivity", r);
+      analysis.setAnalysis(regression);
+      return analysis;
     }
     else {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");

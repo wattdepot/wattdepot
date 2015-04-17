@@ -229,7 +229,7 @@ public class GvizHelper {
    * @return The gviz data table.
    * @throws DataSourceException if there is a data source problem.
    */
-  private static DataTable getDataTable(XYInterpolatedValueList list) throws DataSourceException {
+  protected static DataTable getDataTable(XYInterpolatedValueList list) throws DataSourceException {
     DataTable data = new DataTable();
 
     ArrayList<XYInterpolatedValue> values = list.getValues();
@@ -266,7 +266,7 @@ public class GvizHelper {
    *          DataSourceException
    * @return the error message
    */
-  private static String getGvizDataErrorResponse(DataSourceException e) {
+  protected static String getGvizDataErrorResponse(DataSourceException e) {
     return "({status:'error',errors:[{reason:'"
         + e.getReasonType().toString() + "',message:'" + e.getMessageToUser() + "'}]});";
   }

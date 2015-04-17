@@ -75,7 +75,9 @@ public class DescriptiveStats {
   public DescriptiveStats(InterpolatedValueList meas) {
     this.data = new DescriptiveStatistics();
     for (InterpolatedValue v : meas.getInterpolatedValues()) {
-      data.addValue(v.getValue());
+      if (v.getValue() != null) {
+        data.addValue(v.getValue());
+      }
     }
   }
 

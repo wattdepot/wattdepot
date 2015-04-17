@@ -19,15 +19,27 @@
 
 package org.wattdepot.extension.openeis.util;
 
+import com.google.visualization.datasource.base.DataSourceException;
+import com.google.visualization.datasource.base.ReasonType;
 import com.google.visualization.datasource.base.TypeMismatchException;
 import com.google.visualization.datasource.datatable.ColumnDescription;
 import com.google.visualization.datasource.datatable.DataTable;
 import com.google.visualization.datasource.datatable.TableRow;
 import com.google.visualization.datasource.datatable.value.ValueType;
+import com.google.visualization.datasource.render.JsonRenderer;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
+import org.wattdepot.common.domainmodel.XYInterpolatedValue;
+import org.wattdepot.extension.openeis.domainmodel.XYInterpolatedValuesWithAnalysis;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Map;
+
+import static com.google.visualization.datasource.base.ReasonType.*;
 
 /**
  * GvizHelper - Utility class that handles Google Visualization using the Google Visualization
@@ -49,21 +61,20 @@ public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {
    */
   public static DataTable getRow24HourPerDayDataTable(InterpolatedValueList valueList) {
     DataTable data = new DataTable();
-
+    DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
     // Sets up the columns requested by any SELECT in the datasource query
     ArrayList<InterpolatedValue> values = valueList.getInterpolatedValues();
     if (!values.isEmpty()) {
       int numDays = values.size() / 24;
-      String type = values.get(0).getMeasurementType().getUnits();
       data.addColumn(
-          new ColumnDescription("Hour", ValueType.NUMBER, "Hour"));
+          new ColumnDescription("Date", ValueType.TEXT, "Date"));
       for (int i = 0; i < 24; i++) {
         data.addColumn(
-            new ColumnDescription(type + i, ValueType.NUMBER, type));
+            new ColumnDescription("Hour" + i, ValueType.NUMBER, "" + i));
       }
       for (int j = 0; j < numDays; j++) {
         TableRow row = new TableRow();
-        row.addCell(j); // hour
+        row.addCell(df.format(values.get(j * 24).getStart())); // hour
         for (int k = 0; k < 24; k++) {
           Double value = values.get(j * 24 + k).getValue();
           if (value != null) {
@@ -93,5 +104,62 @@ public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {
       table = getRow24HourPerDayDataTable((InterpolatedValueList) resource);
     }
     return getGvizResponseFromDataTable(table, tqxString/*, tqString*/);
+  }
+
+  /**
+   * @param resource  server resource object
+   * @param tqxString gviz tqx query string, i.e., request id
+   * @param tqString  gviz tq query string, selectable fields
+   * @return gviz response
+   */
+  public static String getGvizResponse(Object resource, String tqxString, String tqString) {
+    if (resource instanceof XYInterpolatedValuesWithAnalysis) {
+      XYInterpolatedValuesWithAnalysis analysis = (XYInterpolatedValuesWithAnalysis) resource;
+      try {
+        DataTable table = getDataTable(analysis.getDataPoints());
+        String response = "google.visualization.Query.setResponse";
+
+        String reqId = null;
+        if (tqxString != null) {
+          String[] tqxArray = tqxString.split(";");
+          for (String s : tqxArray) {
+            if (s.contains("reqId")) {
+              reqId = s.substring(s.indexOf(":") + 1, s.length());
+            }
+          }
+        }
+
+        String tableString = JsonRenderer.renderDataTable(table, true, true, true).toString();
+
+        if (analysis.getAnalysis().entrySet().size() > 0) {
+          response += "({status:'warning',";
+        }
+        else {
+          response += "({status:'ok',";
+        }
+
+
+        if (reqId != null) {
+          response += "reqId:'" + reqId + "',";
+        }
+        response += "warnings:[";
+        DecimalFormat df = new DecimalFormat("0.00");
+        for (Map.Entry e : analysis.getAnalysis().entrySet()) {
+          response += "{reason:'" + e.getKey() + ": " + df.format(e.getValue()) + "'},";
+        }
+        response = response.substring(0, response.length() - 1);
+        response += "],";
+
+        response += "table:" + tableString + "});";
+
+        return response;
+      }
+      catch (DataSourceException e) {
+        return getGvizDataErrorResponse(e);
+      }
+    }
+    else {
+      return org.wattdepot.common.util.GvizHelper.getGvizResponse(resource, tqxString, tqString);
+    }
   }
 }

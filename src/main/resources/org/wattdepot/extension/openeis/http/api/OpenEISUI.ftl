@@ -82,15 +82,32 @@
         </div>
       </div>
       <div class="row">
+        <div class="col-xs-2"><h3>Time Window</h3></div>
         <div class="col-xs-2"><h3>Depository</h3></div>
         <div class="col-xs-2"><h3>Sensor</h3></div>
-        <div class="col-xs-6"></div>
+        <div class="col-xs-4"></div>
         <div class="col-xs-2"></div>
       </div>
       <div class="row form">
+        <div class="col-xs-2"><select id="timeSeriesDuration" class="col-xs-12 sensor-select">
+          <option value="1w">1 week</option>
+          <option value="2w">2 weeks</option>
+          <option value="3w">3 weeks</option>
+          <option value="4w">4 weeks</option>
+          <option value="1m" selected="true">1 month</option>
+          <option value="2m">2 months</option>
+          <option value="3m">3 months</option>
+          <option value="4m">4 months</option>
+          <option value="5m">5 months</option>
+          <option value="6m">6 months</option>
+          <option value="1y">1 year</option>
+        </select></div>
         <div class="col-xs-2"><select id="timeSeriesDepository" class="col-xs-12 sensor-select"
                                       onchange="selectedPowerDepository()">
         <#list power_depositories as d>
+          <option value="${d.id}">${d.name}</option>
+        </#list>
+        <#list energy_depositories as d>
           <option value="${d.id}">${d.name}</option>
         </#list>
         </select></div>
@@ -99,7 +116,7 @@
           <option value="${s.id}">${s.name}</option>
         </#list>
         </select></div>
-        <div id="tslpContainer" class="col-xs-6"></div>
+        <div class="col-xs-4"></div>
         <div class="col-xs-2">
           <button class="btn btn-primary btn-sm add-button" onclick="timeSeriesPlot()">Show Time Series Load Profile
           </button>
@@ -127,15 +144,32 @@
         </div>
       </div>
       <div class="row">
+        <div class="col-xs-2"><h3>Time Window</h3></div>
         <div class="col-xs-2"><h3>Depository</h3></div>
         <div class="col-xs-2"><h3>Sensor</h3></div>
-        <div class="col-xs-6"></div>
+        <div class="col-xs-4"></div>
         <div class="col-xs-2"></div>
       </div>
       <div class="row form">
+        <div class="col-xs-2"><select id="heatMapDuration" class="col-xs-12 sensor-select">
+          <option value="1w">1 week</option>
+          <option value="2w">2 weeks</option>
+          <option value="3w">3 weeks</option>
+          <option value="4w">4 weeks</option>
+          <option value="1m" selected="true">1 month</option>
+          <option value="2m">2 months</option>
+          <option value="3m">3 months</option>
+          <option value="4m">4 months</option>
+          <option value="5m">5 months</option>
+          <option value="6m">6 months</option>
+          <option value="1y">1 year</option>
+        </select></div>
         <div class="col-xs-2"><select id="heatMapDepository" class="col-xs-12 sensor-select"
                                       onchange="selectedHMPowerDepository()">
         <#list power_depositories as d>
+          <option value="${d.id}">${d.name}</option>
+        </#list>
+        <#list energy_depositories as d>
           <option value="${d.id}">${d.name}</option>
         </#list>
         </select></div>
@@ -207,6 +241,9 @@
           <button class="btn btn-primary btn-sm add-button" onclick="energySigPlot();">View Energy Signature
           </button>
         </div>
+      </div>
+      <div class="row">
+        <div id="energySigAnalyses" class="col-xs-12"></div>
       </div>
       <div class="row">
         <div id="energySigChart" class="col-xs-12" style="height: 500px;"></div>

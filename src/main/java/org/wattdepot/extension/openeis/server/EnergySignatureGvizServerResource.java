@@ -20,6 +20,7 @@
 package org.wattdepot.extension.openeis.server;
 
 import org.wattdepot.common.domainmodel.XYInterpolatedValueList;
+import org.wattdepot.extension.openeis.domainmodel.XYInterpolatedValuesWithAnalysis;
 import org.wattdepot.extension.openeis.util.OpenEISGvizHelper;
 import org.wattdepot.extension.openeis.http.api.EnergySignatureGvizResource;
 
@@ -48,9 +49,9 @@ public class EnergySignatureGvizServerResource extends EnergySignatureServer imp
 
   @Override
   public String retrieve() {
-    XYInterpolatedValueList mList = doRetrieve();
-    if (mList != null) {
-      return OpenEISGvizHelper.getGvizResponse(mList, tqxString, tqString);
+    XYInterpolatedValuesWithAnalysis analysis = doRetrieve();
+    if (analysis != null) {
+      return OpenEISGvizHelper.getGvizResponse(analysis, tqxString, tqString);
     }
     return null;
   }

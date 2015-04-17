@@ -8,9 +8,11 @@ import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.tstamp.Tstamp;
+import org.wattdepot.extension.openeis.domainmodel.TimeInterval;
 import org.wattdepot.server.http.api.WattDepotServerResource;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -22,21 +24,23 @@ import java.util.List;
 public class OpenEISServer extends WattDepotServerResource {
 
   /**
-   * Returns the average point data for the last month.
+   * Returns the hourly point data for the given depositoryId, sensorId, and for the time interval.
    * @param depositoryId The Depository.
-   * @param sensorId The Sensor
+   * @param sensorId The Sensor collecting the data.
+   * @param howLong The length of time.
    * @return An InterpolatedValueList of the hourly data.
    */
-  public InterpolatedValueList getHourlyPointDataMonth(String depositoryId, String sensorId) {
+  public InterpolatedValueList getHourlyPointData(String depositoryId, String sensorId, TimeInterval howLong) {
     if (isInRole(orgId)) {
       InterpolatedValueList ret = new InterpolatedValueList();
       try {
         Depository depository = depot.getDepository(depositoryId, orgId, true);
         XMLGregorianCalendar now = Tstamp.makeTimestamp();
         now.setTime(0,0,0,0); // set now to midnight
-        XMLGregorianCalendar monthAgo = Tstamp.incrementDays(now, -30);
-        List<XMLGregorianCalendar> times = Tstamp.getTimestampList(monthAgo, now, 60);
-        for (int i = 1; i < times.size(); i++) {
+        XMLGregorianCalendar past = Tstamp.incrementDays(now, howLong.getNumDays() * -1);
+        List<XMLGregorianCalendar> times = Tstamp.getTimestampList(past, now, 60);
+//        for (int i = 1; i < times.size(); i++) {
+        for (int i = times.size() - 1; i > 0; i--) {
           XMLGregorianCalendar begin = times.get(i - 1);
           Date beginDate = begin.toGregorianCalendar().getTime();
           XMLGregorianCalendar end = times.get(i);
@@ -50,7 +54,6 @@ public class OpenEISServer extends WattDepotServerResource {
             val = val / measurements.size();
           }
           else {
-//            val = Double.NaN;
             val = null;
           }
           ret.getInterpolatedValues().add(new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate));
@@ -69,35 +72,51 @@ public class OpenEISServer extends WattDepotServerResource {
   }
 
   /**
+   * Returns the average point data for the last month.
+   * @param depositoryId The Depository.
+   * @param sensorId The Sensor
+   * @return An InterpolatedValueList of the hourly data.
+   */
+  public InterpolatedValueList getHourlyPointDataMonth(String depositoryId, String sensorId) {
+    return getHourlyPointData(depositoryId, sensorId, TimeInterval.ONE_MONTH);
+  }
+
+  /**
    * Returns the average point data for the last year.
    * @param depositoryId The Depository.
    * @param sensorId The Sensor
    * @return An InterpolatedValueList of the hourly data.
    */
   public InterpolatedValueList getHourlyPointDataYear(String depositoryId, String sensorId) {
+    return getHourlyPointData(depositoryId, sensorId, TimeInterval.ONE_YEAR);
+  }
+
+  /**
+   * Returns the hourly difference data for the given depositoryId, sensorId, and for the time interval.
+   * @param depositoryId The Depository.
+   * @param sensorId The Sensor collecting the data.
+   * @param howLong The length of time.
+   * @return An InterpolatedValueList of the hourly data.
+   */
+  public InterpolatedValueList getDifferenceData(String depositoryId, String sensorId, TimeInterval howLong) {
     if (isInRole(orgId)) {
       InterpolatedValueList ret = new InterpolatedValueList();
       try {
         Depository depository = depot.getDepository(depositoryId, orgId, true);
         XMLGregorianCalendar now = Tstamp.makeTimestamp();
-        now.setTime(0, 0, 0, 0);  // got to beginning of day
-        XMLGregorianCalendar yearAgo = Tstamp.incrementDays(now, -365);
-        List<XMLGregorianCalendar> times = Tstamp.getTimestampList(yearAgo, now, 60);
+        now.setTime(0,0,0,0); // set now to midnight
+        XMLGregorianCalendar past = Tstamp.incrementDays(now, howLong.getNumDays() * -1);
+        List<XMLGregorianCalendar> times = Tstamp.getTimestampList(past, now, 60);
         for (int i = 1; i < times.size(); i++) {
           XMLGregorianCalendar begin = times.get(i - 1);
           Date beginDate = begin.toGregorianCalendar().getTime();
           XMLGregorianCalendar end = times.get(i);
           Date endDate = end.toGregorianCalendar().getTime();
-          Double val = 0.0;
-          List<Measurement> measurements = depot.getMeasurements(depositoryId, orgId, sensorId, beginDate, endDate, false);
-          if (measurements.size() > 0) {
-            for (Measurement m : measurements) {
-              val += m.getValue();
-            }
-            val = val / measurements.size();
+          Double val = null;
+          try {
+            val = depot.getValue(depositoryId, orgId, sensorId, beginDate, endDate, false);
           }
-          else {
-//            val = Double.NaN;
+          catch (NoMeasurementException e) { // if there are no measurements just add null
             val = null;
           }
           ret.getInterpolatedValues().add(new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate));
@@ -108,13 +127,13 @@ public class OpenEISServer extends WattDepotServerResource {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         return null;
       }
+
     }
     else {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
       return null;
     }
   }
-
   /**
    * Returns the InterpolatedValues one per year starting at the earliest measurement.
    * @param depositoryId The Depository Id.
@@ -160,5 +179,4 @@ public class OpenEISServer extends WattDepotServerResource {
       return null;
     }
   }
-
 }
