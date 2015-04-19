@@ -12,22 +12,23 @@ import org.wattdepot.extension.openeis.domainmodel.TimeInterval;
 import org.wattdepot.server.http.api.WattDepotServerResource;
 
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 /**
  * OpenEISServer - Base class that provides functionality for getting Hourly average values for point data and
  * Hourly difference values.
+ *
  * @author Cam Moore
  */
 public class OpenEISServer extends WattDepotServerResource {
 
   /**
    * Returns the hourly point data for the given depositoryId, sensorId, and for the time interval.
+   *
    * @param depositoryId The Depository.
-   * @param sensorId The Sensor collecting the data.
-   * @param howLong The length of time.
+   * @param sensorId     The Sensor collecting the data.
+   * @param howLong      The length of time.
    * @return An InterpolatedValueList of the hourly data.
    */
   public InterpolatedValueList getHourlyPointData(String depositoryId, String sensorId, TimeInterval howLong) {
@@ -36,7 +37,7 @@ public class OpenEISServer extends WattDepotServerResource {
       try {
         Depository depository = depot.getDepository(depositoryId, orgId, true);
         XMLGregorianCalendar now = Tstamp.makeTimestamp();
-        now.setTime(0,0,0,0); // set now to midnight
+        now.setTime(0, 0, 0, 0); // set now to midnight
         XMLGregorianCalendar past = Tstamp.incrementDays(now, howLong.getNumDays() * -1);
         List<XMLGregorianCalendar> times = Tstamp.getTimestampList(past, now, 60);
 //        for (int i = 1; i < times.size(); i++) {
@@ -73,8 +74,9 @@ public class OpenEISServer extends WattDepotServerResource {
 
   /**
    * Returns the average point data for the last month.
+   *
    * @param depositoryId The Depository.
-   * @param sensorId The Sensor
+   * @param sensorId     The Sensor
    * @return An InterpolatedValueList of the hourly data.
    */
   public InterpolatedValueList getHourlyPointDataMonth(String depositoryId, String sensorId) {
@@ -83,8 +85,9 @@ public class OpenEISServer extends WattDepotServerResource {
 
   /**
    * Returns the average point data for the last year.
+   *
    * @param depositoryId The Depository.
-   * @param sensorId The Sensor
+   * @param sensorId     The Sensor
    * @return An InterpolatedValueList of the hourly data.
    */
   public InterpolatedValueList getHourlyPointDataYear(String depositoryId, String sensorId) {
@@ -93,9 +96,10 @@ public class OpenEISServer extends WattDepotServerResource {
 
   /**
    * Returns the hourly difference data for the given depositoryId, sensorId, and for the time interval.
+   *
    * @param depositoryId The Depository.
-   * @param sensorId The Sensor collecting the data.
-   * @param howLong The length of time.
+   * @param sensorId     The Sensor collecting the data.
+   * @param howLong      The length of time.
    * @return An InterpolatedValueList of the hourly data.
    */
   public InterpolatedValueList getHourlyDifferenceData(String depositoryId, String sensorId, TimeInterval howLong) {
@@ -104,7 +108,7 @@ public class OpenEISServer extends WattDepotServerResource {
       try {
         Depository depository = depot.getDepository(depositoryId, orgId, true);
         XMLGregorianCalendar now = Tstamp.makeTimestamp();
-        now.setTime(0,0,0,0); // set now to midnight
+        now.setTime(0, 0, 0, 0); // set now to midnight
         XMLGregorianCalendar past = Tstamp.incrementDays(now, howLong.getNumDays() * -1);
         List<XMLGregorianCalendar> times = Tstamp.getTimestampList(past, now, 60);
         for (int i = 1; i < times.size(); i++) {
@@ -134,11 +138,58 @@ public class OpenEISServer extends WattDepotServerResource {
       return null;
     }
   }
+
+  /**
+   * Returns an InterpolatedValueList of the values starting at start with an interval of howLong.
+   *
+   * @param depositoryId The Depository.
+   * @param sensorId     The Sensor.
+   * @param start        The start date.
+   * @param howLong      The period to calculate the difference.
+   * @param numIntervals How many values to calculate.
+   * @return an InterpolatedValueList of the values.
+   */
+  public InterpolatedValueList getDifferenceValues(String depositoryId, String sensorId, Date start, TimeInterval howLong, int numIntervals) {
+    if (isInRole(orgId)) {
+      InterpolatedValueList ret = new InterpolatedValueList();
+      try {
+        Depository depository = depot.getDepository(depositoryId, orgId, true);
+        XMLGregorianCalendar startCal = Tstamp.makeTimestamp(start.getTime());
+        startCal.setTime(0, 0, 0, 0); // start at the beginning of the day.
+        XMLGregorianCalendar endCal = Tstamp.incrementDays(startCal, howLong.getNumDays());
+        for (int i = 0; i < numIntervals; i++) {
+          Date begin = startCal.toGregorianCalendar().getTime();
+          Date end = endCal.toGregorianCalendar().getTime();
+          Double val = null;
+          try {
+            val = depot.getValue(depositoryId, orgId, sensorId, begin, end, false);
+          }
+          catch (NoMeasurementException e) {
+            val = null;
+          }
+          ret.getInterpolatedValues().add(new InterpolatedValue(sensorId, val, depository.getMeasurementType(), begin, end));
+          startCal = Tstamp.incrementDays(startCal, howLong.getNumDays());
+          endCal = Tstamp.incrementDays(endCal, howLong.getNumDays());
+        }
+        return ret;
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        return null;
+      }
+    }
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+      return null;
+    }
+  }
+
   /**
    * Returns the InterpolatedValues one per year starting at the earliest measurement.
+   *
    * @param depositoryId The Depository Id.
-   * @param sensorId The Sensor Id.
-   * @param strict if true method will return null if there isn't enough data.
+   * @param sensorId     The Sensor Id.
+   * @param strict       if true method will return null if there isn't enough data.
    * @return The list of difference values one per year for the given depository and sensor.
    */
   public InterpolatedValueList getAnnualDifferenceData(String depositoryId, String sensorId, boolean strict) {

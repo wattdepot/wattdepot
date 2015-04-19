@@ -26,6 +26,8 @@ import org.wattdepot.extension.openeis.server.EnergySignatureGvizServerResource;
 import org.wattdepot.extension.openeis.server.EnergySignatureServerResource;
 import org.wattdepot.extension.openeis.server.HeatMapGivzServerResource;
 import org.wattdepot.extension.openeis.server.HeatMapServerResource;
+import org.wattdepot.extension.openeis.server.LongitudinalBenchmarkingGvisServerResource;
+import org.wattdepot.extension.openeis.server.LongitudinalBenchmarkingServerResource;
 import org.wattdepot.extension.openeis.server.TimeSeriesLoadProfileGvizServerResource;
 import org.wattdepot.extension.openeis.server.TimeSeriesLoadProfileServerResource;
 import org.wattdepot.server.http.api.WattDepotServerResource;
@@ -56,6 +58,8 @@ public class OpenEISExtension implements WattDepotExtension {
     mapping.put(OpenEISAPI.OPENEIS_HEAT_MAP_GVIS_URI, HeatMapGivzServerResource.class);
     mapping.put(OpenEISAPI.OPENEIS_ENERGY_SIGNATURE_DATA_URI, EnergySignatureServerResource.class);
     mapping.put(OpenEISAPI.OPENEIS_ENERGY_SIGNATURE_GVIZ_URI, EnergySignatureGvizServerResource.class);
+    mapping.put(OpenEISAPI.OPENEIS_LONGITUDINAL_BASELINE_DATA_URI, LongitudinalBenchmarkingServerResource.class);
+    mapping.put(OpenEISAPI.OPENEIS_LONGITUDINAL_BASELINE_GVIZ_URI, LongitudinalBenchmarkingGvisServerResource.class);
     return mapping;
   }
 }

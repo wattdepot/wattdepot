@@ -60,21 +60,24 @@ public class HeatMapServer extends OpenEISServer {
    */
   public InterpolatedValueList doRetrieve() {
     getLogger().log(
-      Level.INFO,
-      "GET /wattdepot/{" + orgId + "}/" + OpenEISLabels.OPENEIS + "/" + OpenEISLabels.HEAT_MAP +
-        "/?" + Labels.DEPOSITORY + "={" + depositoryId + "}&" + Labels.SENSOR + "={" + sensorId + "}&" +
-        OpenEISLabels.DURATION + "={" + interval + "}");
+        Level.INFO,
+        "GET /wattdepot/{" + orgId + "}/" + OpenEISLabels.OPENEIS + "/" + OpenEISLabels.HEAT_MAP +
+            "/?" + Labels.DEPOSITORY + "={" + depositoryId + "}&" + Labels.SENSOR + "={" + sensorId + "}&" +
+            OpenEISLabels.DURATION + "={" + interval + "}");
     try {
       Depository depository = depot.getDepository(depositoryId, orgId, true);
       if (depository.getMeasurementType().getName().startsWith("Power")) {
         return getHourlyPointData(depositoryId, sensorId, interval);
-      } else if (depository.getMeasurementType().getName().startsWith("Energy")) {
+      }
+      else if (depository.getMeasurementType().getName().startsWith("Energy")) {
         return getHourlyDifferenceData(depositoryId, sensorId, interval);
-      } else {
+      }
+      else {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " is not a Power Depository.");
         return null;
       }
-    } catch (IdNotFoundException e) {
+    }
+    catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
       return null;
     }

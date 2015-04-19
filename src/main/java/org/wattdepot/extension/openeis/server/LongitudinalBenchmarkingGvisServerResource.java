@@ -19,20 +19,24 @@
 
 package org.wattdepot.extension.openeis.server;
 
-import org.wattdepot.extension.openeis.domainmodel.XYInterpolatedValuesWithAnalysis;
-import org.wattdepot.extension.openeis.http.api.EnergySignatureGvizResource;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
+import org.wattdepot.common.util.GvizHelper;
+import org.wattdepot.extension.openeis.http.api.LongitudinalBenchmarkingGvizResource;
 import org.wattdepot.extension.openeis.util.OpenEISGvizHelper;
 
 /**
- * EnergySignatureGvizServerResource - Handles the Get requests for Gviz Energy Singatures.
- * @author Cam Moore
- * Created by carletonmoore on 4/8/15.
+ * LongitudinalBenchmarkingGvisServerResource - ServerResource that handles GET requests for OpenEIS Longitudinal Benchmarks.
+ * Created by carletonmoore on 4/18/15.
  */
-public class EnergySignatureGvizServerResource extends EnergySignatureServer implements EnergySignatureGvizResource {
-  /** The GViz tqx query string. */
+public class LongitudinalBenchmarkingGvisServerResource extends LongitudinalBenchmarkingServer implements LongitudinalBenchmarkingGvizResource {
+  /**
+   * The GViz tqx query string.
+   */
   private String tqxString = null;
 
-  /** The GViz tq query string. */
+  /**
+   * The GViz tq query string.
+   */
   private String tqString = null;
 
   /**
@@ -42,15 +46,15 @@ public class EnergySignatureGvizServerResource extends EnergySignatureServer imp
   protected void doInit() {
     super.doInit();
 
-    this.tqxString = OpenEISGvizHelper.getGvizQueryString(this, "tqx");
-    this.tqString = OpenEISGvizHelper.getGvizQueryString(this, "tq");
+    this.tqxString = GvizHelper.getGvizQueryString(this, "tqx");
+    this.tqString = GvizHelper.getGvizQueryString(this, "tq");
   }
 
   @Override
   public String retrieve() {
-    XYInterpolatedValuesWithAnalysis analysis = doRetrieve();
-    if (analysis != null) {
-      return OpenEISGvizHelper.getGvizResponse(analysis, tqxString, tqString);
+    InterpolatedValueList mList = doRetrieve();
+    if (mList != null) {
+      return OpenEISGvizHelper.getBenchmarkGvizResponse(mList, tqxString, tqString);
     }
     return null;
   }

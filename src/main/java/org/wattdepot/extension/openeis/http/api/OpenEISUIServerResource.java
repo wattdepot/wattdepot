@@ -28,8 +28,6 @@ import org.restlet.resource.ClientResource;
 import org.restlet.resource.Get;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
-import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.Organization;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
@@ -83,6 +81,7 @@ public class OpenEISUIServerResource extends WattDepotServerResource {
         List<Depository> temperatureDepositories = new ArrayList<Depository>();
         List<Sensor> energySensors = new ArrayList<Sensor>();
         List<Depository> energyDepositories = new ArrayList<Depository>();
+        Map<String, Map<String, List<Date>>> depsitorySensorInfo = new HashMap<>();
         for (Depository d : depos) {
           Map<String, List<Date>> sensorInfo = new HashMap<String, List<Date>>();
           List<Sensor> sensorList = new ArrayList<Sensor>();
@@ -114,6 +113,7 @@ public class OpenEISUIServerResource extends WattDepotServerResource {
               info.add(earliest.getStart());
               info.add(latest.getEnd());
               sensorInfo.put(sensorId, info);
+              depsitorySensorInfo.put(d.getId(), sensorInfo);
             }
             catch (NoMeasurementException e) {
               // TODO Auto-generated catch block
@@ -130,6 +130,7 @@ public class OpenEISUIServerResource extends WattDepotServerResource {
         dataModel.put("energy_depositories", energyDepositories);
         dataModel.put("temperature_sensors", temperatureSensors);
         dataModel.put("temperature_depositories", temperatureDepositories);
+        dataModel.put("depository_sensor_info", depsitorySensorInfo);
       }
       catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());

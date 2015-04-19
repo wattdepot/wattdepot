@@ -20,54 +20,105 @@
 package org.wattdepot.extension.openeis;
 
 /**
- * OpenEISLables - Labels for OpenEIS http://eis.lbl.gov/openeis.html
+ * OpenEISLables - Labels for OpenEIS http://eis.lbl.gov/openeis.html.
+ *
  * @author Cam Moore
- * Created by carletonmoore on 4/11/15.
+ *         Created by carletonmoore on 4/11/15.
  */
 public class OpenEISLabels {
 
-  /** The base label used for OpenEIS analyses. */
+  /**
+   * The base label used for OpenEIS analyses.
+   */
   public static final String OPENEIS = "openeis";
 
-  /** The Time Series Load Profiling label. */
+  /**
+   * The Time Series Load Profiling label.
+   */
   public static final String TIME_SERIES_LOAD_PROFILING = "time-series-load-profiling";
 
-  /** The Heat Map label. */
+  /**
+   * The Heat Map label.
+   */
   public static final String HEAT_MAP = "heat-map";
 
-  /** The Energy Signature label. */
+  /**
+   * The Energy Signature label.
+   */
   public static final String ENERGY_SIGNATURE = "energy-signature";
 
-  /** The Weather Sensitivity label. */
+  /**
+   * The Weather Sensitivity label.
+   */
   public static final String WEATHER_SENSITIVITY = "weather-sensitivity";
 
-  /** The Longitudinal Benchmarking label. */
+  /**
+   * The Longitudinal Benchmarking label.
+   */
   public static final String LONGITUDINAL_BENCHMARKING = "longitudinal-benchmarking";
 
-  /** The Peak Load Benchmarking label. */
+  /**
+   * The Peak Load Benchmarking label.
+   */
   public static final String PEAK_LOAD_BENCHMARKING = "peak-load-benchmarking";
 
-  /** The Base to Peak Load Ratio label. */
+  /**
+   * The Base to Peak Load Ratio label.
+   */
   public static final String BASE_TO_PEAK_LOAD_RATIO = "base-to-peak-load-ratio";
 
-  /** The Load Duration Curve label. */
+  /**
+   * The Load Duration Curve label.
+   */
   public static final String LOAD_DURATION_CURVE = "load-duration-curve";
 
-  /** The Load Variability label. */
+  /**
+   * The Load Variability label.
+   */
   public static final String LOAD_VARIABILITY = "load-variability";
 
-  /** The Power Depository label. */
+  /**
+   * The Power Depository label.
+   */
   public static final String POWER_DEPOSITORY = "power-depository";
 
-  /** The Temperature Depository label. */
+  /**
+   * The Temperature Depository label.
+   */
   public static final String TEMPERATURE_DEPOSITORY = "temperature-depository";
 
-  /** The Power sensor label. */
+  /**
+   * The Power sensor label.
+   */
   public static final String POWER_SENSOR = "power-sensor";
 
-  /** The Temperature sensor label. */
+  /**
+   * The Temperature sensor label.
+   */
   public static final String TEMPERATURE_SENSOR = "temperature-sensor";
 
-  /** The duration label. */
+  /**
+   * The duration label.
+   */
   public static final String DURATION = "duration";
+
+  /**
+   * The label for baseline start date.
+   */
+  public static final String BASELINE_START = "baseline-start";
+
+  /**
+   * The label for baseline duration.
+   */
+  public static final String BASELINE_DURATION = "baseline-duration";
+
+  /**
+   * The label for comparison start date.
+   */
+  public static final String COMPARISON_START = "comparison-start";
+
+  /**
+   * The label for number of intervals.
+   */
+  public static final String NUM_INTERVALS = "num-intervals";
 }

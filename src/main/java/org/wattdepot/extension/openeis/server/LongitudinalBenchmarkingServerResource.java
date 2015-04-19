@@ -19,17 +19,18 @@
 
 package org.wattdepot.extension.openeis.server;
 
-import org.wattdepot.extension.openeis.domainmodel.XYInterpolatedValuesWithAnalysis;
-import org.wattdepot.extension.openeis.http.api.EnergySignatureDataResource;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
+import org.wattdepot.extension.openeis.http.api.LongitudinalBenchmarkingDataResource;
 
 /**
- * EnergySignatureServerResource - ServerResource that handles GET requests for OpenEIS Energy Signatures.
+ * LongitudinalBenchmarkingServerResource - ServerResource that handles GET requests for OpenEIS Longitudinal Benchmarks.
  *
  * @author Cam Moore
+ *         Created by carletonmoore on 4/18/15.
  */
-public class EnergySignatureServerResource extends EnergySignatureServer implements EnergySignatureDataResource {
+public class LongitudinalBenchmarkingServerResource extends LongitudinalBenchmarkingServer implements LongitudinalBenchmarkingDataResource {
   @Override
-  public XYInterpolatedValuesWithAnalysis retrieve() {
+  public InterpolatedValueList retrieve() {
     return doRetrieve();
   }
 }

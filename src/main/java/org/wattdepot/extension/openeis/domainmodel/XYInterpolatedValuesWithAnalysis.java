@@ -24,7 +24,10 @@ import org.wattdepot.common.domainmodel.XYInterpolatedValueList;
 import java.util.Map;
 
 /**
- * Created by carletonmoore on 4/15/15.
+ * XYInterpolatedValuesWithAnalysis - Combination of the data and a map of analyses on the data.
+ *
+ * @author Cam Moore
+ *         Created by carletonmoore on 4/15/15.
  */
 public class XYInterpolatedValuesWithAnalysis {
   private XYInterpolatedValueList dataPoints;

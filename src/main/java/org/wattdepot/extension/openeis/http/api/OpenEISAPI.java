@@ -77,4 +77,17 @@ public class OpenEISAPI {
   public static final String OPENEIS_ENERGY_SIGNATURE_GVIZ_URI = BASE_URI + OpenEISLabels.ENERGY_SIGNATURE + "/" + Labels.GVIZ + "/";
 
 
+  /**
+   * <b>/wattdepot/{org-id}/openeis/longitudinal-benchmarking/data/</b> URI to get a longitudinal benchmark comparison data.
+   * Use GET requests.
+   */
+  public static final String OPENEIS_LONGITUDINAL_BASELINE_DATA_URI = BASE_URI + OpenEISLabels.LONGITUDINAL_BENCHMARKING + "/"
+      + Labels.DATA + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/openeis/longitudinal-benchmarking/gviz/</b> URI to get a longitudinal benchmark comparison data for google
+   * visualization. Use GET requests.
+   */
+  public static final String OPENEIS_LONGITUDINAL_BASELINE_GVIZ_URI = BASE_URI + OpenEISLabels.LONGITUDINAL_BENCHMARKING + "/"
+      + Labels.GVIZ + "/";
 }

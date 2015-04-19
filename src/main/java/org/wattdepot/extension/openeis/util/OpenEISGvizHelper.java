@@ -20,7 +20,6 @@
 package org.wattdepot.extension.openeis.util;
 
 import com.google.visualization.datasource.base.DataSourceException;
-import com.google.visualization.datasource.base.ReasonType;
 import com.google.visualization.datasource.base.TypeMismatchException;
 import com.google.visualization.datasource.datatable.ColumnDescription;
 import com.google.visualization.datasource.datatable.DataTable;
@@ -29,17 +28,13 @@ import com.google.visualization.datasource.datatable.value.ValueType;
 import com.google.visualization.datasource.render.JsonRenderer;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
-import org.wattdepot.common.domainmodel.XYInterpolatedValue;
 import org.wattdepot.extension.openeis.domainmodel.XYInterpolatedValuesWithAnalysis;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Map;
-
-import static com.google.visualization.datasource.base.ReasonType.*;
 
 /**
  * GvizHelper - Utility class that handles Google Visualization using the Google Visualization
@@ -161,5 +156,43 @@ public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {
     else {
       return org.wattdepot.common.util.GvizHelper.getGvizResponse(resource, tqxString, tqString);
     }
+  }
+
+  public static String getBenchmarkGvizResponse(InterpolatedValueList mList, String tqxString, String tqString) {
+    try {
+      return getGvizResponseFromDataTable(getColumnDataTable(mList), tqxString);
+    }
+    catch (DataSourceException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  private static DataTable getColumnDataTable(InterpolatedValueList mList) throws DataSourceException {
+    DataTable table = new DataTable();
+    // Sets up the columns requested by any SELECT in the datasource query
+    ArrayList<InterpolatedValue> values = mList.getInterpolatedValues();
+    if (!values.isEmpty()) {
+      String type = values.get(0).getMeasurementType().getUnits();
+      table.addColumn(new ColumnDescription("Value", ValueType.TEXT, "Interval"));
+      table.addColumn(new ColumnDescription(type, ValueType.NUMBER, type));
+      boolean once = true;
+      SimpleDateFormat format = new SimpleDateFormat("MM/dd/YY");
+
+      for (InterpolatedValue value : values) {
+        TableRow row = new TableRow();
+        String label = "";
+        if (once) {
+          label = "Baseline: ";
+          once = false;
+        }
+        row.addCell(label + format.format(value.getStart()) + " - " + format.format(value.getEnd()));
+        if (value.getValue() != null) {
+          row.addCell(value.getValue());
+        }
+        table.addRow(row);
+      }
+    }
+    return table;
   }
 }

@@ -21,21 +21,55 @@ package org.wattdepot.extension.openeis.domainmodel;
 
 /**
  * TimeInterval - Standard time intervals for doing OpenEIS analyses.
+ *
  * @author Cam Moore
- * Created by carletonmoore on 4/16/15.
+ *         Created by carletonmoore on 4/16/15.
  */
 public enum TimeInterval {
-  ONE_WEEK (7, "1w"),
-  TWO_WEEKS (14, "2w"),
-  THREE_WEEKS (21, "3w"),
-  FOUR_WEEKS (28, "4w"),
-  ONE_MONTH (31, "1m"),
-  TWO_MONTHS (62, "2m"),
-  THREE_MONTHS (93, "3m"),
-  FOUR_MONTHS (124, "4m"),
-  FIVE_MONTHS (155, "5m"),
-  SIX_MONTHS (186, "6m"),
-  ONE_YEAR (365, "1y");
+  /**
+   * One week.
+   */
+  ONE_WEEK(7, "1w"),
+  /**
+   * Two weeks.
+   */
+  TWO_WEEKS(14, "2w"),
+  /**
+   * Three weeks.
+   */
+  THREE_WEEKS(21, "3w"),
+  /**
+   * Four weeks.
+   */
+  FOUR_WEEKS(28, "4w"),
+  /**
+   * One month .
+   */
+  ONE_MONTH(31, "1m"),
+  /**
+   * Two months.
+   */
+  TWO_MONTHS(62, "2m"),
+  /**
+   * Three months.
+   */
+  THREE_MONTHS(93, "3m"),
+  /**
+   * Four months.
+   */
+  FOUR_MONTHS(124, "4m"),
+  /**
+   * Five months.
+   */
+  FIVE_MONTHS(155, "5m"),
+  /**
+   * Six months.
+   */
+  SIX_MONTHS(186, "6m"),
+  /**
+   * One year.
+   */
+  ONE_YEAR(365, "1y");
 
 
   private final int numDays;
@@ -43,7 +77,9 @@ public enum TimeInterval {
 
   /**
    * Creates a TimeInterval with a given number of days.
-   * @param days the number of days.
+   *
+   * @param days  the number of days.
+   * @param param the String encoding for this TimeInterval.
    */
   TimeInterval(int days, String param) {
     this.numDays = days;
@@ -67,6 +103,7 @@ public enum TimeInterval {
   /**
    * Returns the defined TimeInterval for the given parameter, defaults to ONE_MONTH for
    * unknown strings.
+   *
    * @param parameter the pramamter.
    * @return the defined TimeInterval for the given parameter, defaults to ONE_MONTH for
    * unknown strings.

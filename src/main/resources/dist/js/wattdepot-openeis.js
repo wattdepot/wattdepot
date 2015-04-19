@@ -33,12 +33,92 @@ function loadPage() {
   wdClient = org.WattDepot.Client(server);
 }
 
+/**
+ * Gets the currently selected depository for the given row. Then updates the
+ * choices of sensors.
+ *
+ * @param index
+ *          the row number.
+ */
+function selectedPowerDepository() {
+  var depoId = $("#timeSeriesDepository option:selected").val();
+  var depoName = $("#timeSeriesDepository option:selected").text();
+  var sensors = DEPO_SENSORS[depoId];
+  var select = $("#timeSeriesSensor");
+  select.empty();
+  var i = 0;
+  var length = sensors.length;
+  for (i = 0; i < length; i++) {
+    select.append($("<option></option>").attr("value", sensors[i]).text(
+        SENSORS[sensors[i]].name));
+  }
+
+};
+/**
+ * Updates the Sensor selection options of the heat map visualization when the depository changes.
+ *
+ * @param sensors
+ *          the list of sensors.
+ */
+function selectedHMPowerDepository() {
+  var depoId = $("#heatMapDepository option:selected").val();
+  var depoName = $("#heatMapDepository option:selected").text();
+  var sensors = DEPO_SENSORS[depoId];
+  var select = $("#heatMapSensor");
+  select.empty();
+  var i = 0;
+  var length = sensors.length;
+  for (i = 0; i < length; i++) {
+    select.append($("<option></option>").attr("value", sensors[i]).text(
+        SENSORS[sensors[i]].name));
+  }
+};
+
+/**
+ * Updates the Sensor selection options of the energy signature visualization.
+ *
+ * @param sensors
+ *          the list of sensors.
+ */
+function selectedSigPowerDepository() {
+  var depoId = $("#sigPowerDepository option:selected").val();
+  var sensors = DEPO_SENSORS[depoId];
+  var select = $("#sigPowerSensor");
+  select.empty();
+  var i = 0;
+  var length = sensors.length;
+  for (i = 0; i < length; i++) {
+    select.append($("<option></option>").attr("value", sensors[i]).text(
+        SENSORS[sensors[i]].name));
+  }
+};
+
+/**
+ * Updates the temperature Sensor selection options of the energy signature visualization.
+ *
+ * @param sensors
+ *          the list of sensors.
+ */
+function selectedSigTempDepository() {
+  var depoId = $("#sigTempDepository option:selected").val();
+  var sensors = DEPO_SENSORS[depoId];
+  var select = $("#sigTempSensor");
+  select.empty();
+  var i = 0;
+  var length = sensors.length;
+  for (i = 0; i < length; i++) {
+    select.append($("<option></option>").attr("value", sensors[i]).text(
+        SENSORS[sensors[i]].name));
+  }
+};
+
+
 function timeSeriesPlot() {
   var timeInterval = $("#timeSeriesDuration").val();
   var depositoryId = $("#timeSeriesDepository").val();
   var sensorId = $('#timeSeriesSensor').val();
   var uri = server + ORGID + '/openeis/time-series-load-profiling/gviz/?depository='
-    + depositoryId + '&sensor=' + sensorId + "&duration=" + timeInterval;
+      + depositoryId + '&sensor=' + sensorId + "&duration=" + timeInterval;
   console.log(uri);
   document.getElementById("tslp").style.cursor = "wait";
   var query = new google.visualization.Query(uri);
@@ -61,61 +141,12 @@ function timeSeriesResponse(response) {
 
 }
 
-/**
- * Gets the currently selected depository for the given row. Then updates the
- * choices of sensors.
- *
- * @param index
- *          the row number.
- */
-function selectedPowerDepository() {
-  var depoId = $("#timeSeriesDepository option:selected").val();
-  var depoName = $("#timeSeriesDepository option:selected").text();
-  var sensors = DEPO_SENSORS[depoId];
-  updatePowerSensorSelection(sensors);
-};
-
-/**
- * Updates the Sensor selection options of the visualization at the given row.
- *
- * @param sensors
- *          the list of sensors.
- */
-function updatePowerSensorSelection(sensors) {
-  var select = $("#timeSeriesSensor");
-  select.empty();
-  var i = 0;
-  var length = sensors.length;
-  for (i = 0; i < length; i++) {
-    select.append($("<option></option>").attr("value", sensors[i]).text(
-      SENSORS[sensors[i]].name));
-  }
-};
-
-function selectedHMPowerDepository() {
-  var depoId = $("#heatMapDepository option:selected").val();
-  var depoName = $("#heatMapDepository option:selected").text();
-  var sensors = DEPO_SENSORS[depoId];
-  updateHMPowerSensorSelection(sensors);
-};
-
-function updateHMPowerSensorSelection(sensors) {
-  var select = $("#heatMapSensor");
-  select.empty();
-  var i = 0;
-  var length = sensors.length;
-  for (i = 0; i < length; i++) {
-    select.append($("<option></option>").attr("value", sensors[i]).text(
-      SENSORS[sensors[i]].name));
-  }
-};
-
 function heatMapPlot() {
   var duration = $("#heatMapDuration").val();
   var depositoryId = $("#heatMapDepository").val();
   var sensorId = $('#heatMapSensor').val();
   var uri = server + ORGID + '/openeis/heat-map/gviz/?depository='
-    + depositoryId + '&sensor=' + sensorId + '&duration=' + duration;
+      + depositoryId + '&sensor=' + sensorId + '&duration=' + duration;
   document.getElementById("heat_map").style.cursor = "wait";
   //console.log(uri);
   var query = new google.visualization.Query(uri);
@@ -149,8 +180,8 @@ function energySigPlot() {
   var tempDepoId = $('#sigTempDepository').val();
   var tempSensorId = $('#sigTempSensor').val();
   var uri = server + ORGID + '/openeis/energy-signature/gviz/?power-depository='
-    + powerDepoId + '&power-sensor=' + powerSensorId + "&temperature-depository="
-    + tempDepoId + '&temperature-sensor=' + tempSensorId + "&duration=" + sigDuration;
+      + powerDepoId + '&power-sensor=' + powerSensorId + "&temperature-depository="
+      + tempDepoId + '&temperature-sensor=' + tempSensorId + "&duration=" + sigDuration;
   document.getElementById("energy_signature").style.cursor = "wait";
   //console.log(uri);
   var query = new google.visualization.Query(uri);
@@ -176,4 +207,71 @@ function energySigResponse(response) {
   var chart = new google.visualization.ScatterChart(document.getElementById('energySigChart'));
   chart.draw(table, {});
 
+}
+
+function longitudePlot() {
+  var longDepository = $('#longitudeDepository').val();
+  var longSensor = $('#longitudeSensor').val();
+  var baselineStart = getDate('startdatetimepicker');
+  var baselineDuration = $('#longitudeDuration').val();
+  var comparisonStart = getDate('comparisonstartdatetimepicker');
+  var numIntervals = $('#numIntervals').val();
+  var uri = server + ORGID + '/openeis/longitudinal-benchmarking/gviz/?depository='
+      + longDepository + '&sensor=' + longSensor + '&baseline-start=' + wdClient.getTimestampFromDate(baselineStart)
+      + '&baseline-duration=' + baselineDuration + '&comparison-start=' + wdClient.getTimestampFromDate(comparisonStart)
+      + '&num-intervals=' + numIntervals;
+  document.getElementById("energy_signature").style.cursor = "wait";
+  console.log(uri);
+  var query = new google.visualization.Query(uri);
+  query.send(function (response) {
+    longitudeResponse(response);
+  });
+}
+
+function longitudeResponse(response) {
+  document.getElementById("energy_signature").style.cursor = "auto";
+  if (response.isError()) {
+    alert('Error in query: ' + response.getMessage() + ' '
+    + response.getDetailedMessage());
+    return;
+  }
+  var table = response.getDataTable();
+  $('#longitudeChart').show();
+  var chart = new google.visualization.ColumnChart(document.getElementById('longitudeChart'));
+  chart.draw(table, {});
+
+}
+
+/**
+ * Gets the Date for the specified time field.
+ *
+ * @param id
+ *          The id prefix of the time field to get (i.e. 'start' or 'comparison').
+ * @param index
+ *          The index of the time field form to get.
+ *
+ * @return A Date representing the fields of the given form.
+ */
+function getDate(id) {
+  var picker = $('#' + id );
+  var data = picker.data("DateTimePicker");
+  var time = data.date();
+  var error = false;
+  if (time == null) {
+    error = true;
+    $('#' + id ).addClass('invalid');
+    $('#' + id ).css('border', '3px red solid');
+    $('#' + id )
+        .wrap(
+        '<a href="#" rel="tooltip" data-placement="top" title="Error: Time must be selected.">');
+  }
+  if (error) {
+    return null;
+  }
+  if ($('#' + id ).hasClass('invalid')) {
+    $('#' + id ).css('border', '');
+    $('#' + id ).unwrap();
+    $('#' + id ).removeClass('invalid');
+  }
+  return time.toDate();
 }

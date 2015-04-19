@@ -20,7 +20,6 @@
 package org.wattdepot.extension.openeis.http.api;
 
 import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.XYInterpolatedValueList;
 import org.wattdepot.extension.openeis.domainmodel.XYInterpolatedValuesWithAnalysis;
 
 /**
