@@ -158,6 +158,13 @@ public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {
     }
   }
 
+  /**
+   * Returns the google visualization query string to create a benchmark column chart.
+   * @param mList The list of values, the first value is the benchmark.
+   * @param tqxString gviz tqx query string, i.e., request id
+   * @param tqString  gviz tq query string, selectable fields
+   * @return gviz response
+   */
   public static String getBenchmarkGvizResponse(InterpolatedValueList mList, String tqxString, String tqString) {
     try {
       return getGvizResponseFromDataTable(getColumnDataTable(mList), tqxString);
@@ -168,6 +175,12 @@ public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {
     return null;
   }
 
+  /**
+   * Returns the DataTable suitable for a Column chart.
+   * @param mList The data.
+   * @return The DataTable for a column chart.
+   * @throws DataSourceException if there is a problem.
+   */
   private static DataTable getColumnDataTable(InterpolatedValueList mList) throws DataSourceException {
     DataTable table = new DataTable();
     // Sets up the columns requested by any SELECT in the datasource query

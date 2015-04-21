@@ -26,6 +26,7 @@ import org.wattdepot.extension.openeis.util.OpenEISGvizHelper;
 
 /**
  * LongitudinalBenchmarkingGvisServerResource - ServerResource that handles GET requests for OpenEIS Longitudinal Benchmarks.
+ * @author Cam Moore
  * Created by carletonmoore on 4/18/15.
  */
 public class LongitudinalBenchmarkingGvisServerResource extends LongitudinalBenchmarkingServer implements LongitudinalBenchmarkingGvizResource {

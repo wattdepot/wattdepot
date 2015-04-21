@@ -90,4 +90,9 @@ public class OpenEISAPI {
    */
   public static final String OPENEIS_LONGITUDINAL_BASELINE_GVIZ_URI = BASE_URI + OpenEISLabels.LONGITUDINAL_BENCHMARKING + "/"
       + Labels.GVIZ + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/openeis/load-analysis/</b> URI to get a load analysis. Use GET requests.
+   */
+  public static final String OPENEIS_LOAD_ANALYSIS = BASE_URI + OpenEISLabels.LOAD_ANALYSIS + "/";
 }

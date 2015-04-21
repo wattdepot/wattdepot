@@ -121,4 +121,10 @@ public class OpenEISLabels {
    * The label for number of intervals.
    */
   public static final String NUM_INTERVALS = "num-intervals";
+
+  /**
+   * The label for load analysis.
+   */
+  public static final String LOAD_ANALYSIS = "load-analysis";
+
 }
