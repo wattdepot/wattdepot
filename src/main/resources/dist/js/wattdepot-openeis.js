@@ -113,6 +113,55 @@ function selectedSigTempDepository() {
 };
 
 
+function selectedLongitudeDepository() {
+  var depoId = $("#longitudeDepository option:selected").val();
+  var sensors = DEPO_SENSORS[depoId];
+  var select = $("#longitudeSensor");
+  select.empty();
+  var i = 0;
+  var length = sensors.length;
+  for (i = 0; i < length; i++) {
+    select.append($("<option></option>").attr("value", sensors[i]).text(
+        SENSORS[sensors[i]].name));
+  }
+
+};
+
+function selectedLongitudeSensor() {
+  var depoId = $("#longitudeDepository option:selected").val();
+  var sensorId = $("#longitudeSensor option:selected").val();
+  $("#startInfo").remove();
+  $("#startdatetimepicker").parent().append(
+      "<div id=\"startInfo\"><small>Earliest: "
+      + DEPO_SENSOR_INFO[depoId][sensorId]['earliest'] + "</small></div>");
+};
+
+function selectedLoadDepository() {
+  var depoId = $("#loadDepository option:selected").val();
+  var sensors = DEPO_SENSORS[depoId];
+  var select = $("#loadSensor");
+  select.empty();
+  var i = 0;
+  var length = sensors.length;
+  for (i = 0; i < length; i++) {
+    select.append($("<option></option>").attr("value", sensors[i]).text(
+        SENSORS[sensors[i]].name));
+  }
+};
+
+function selectedLoadSensor() {
+  var depoId = $("#loadDepository option:selected").val();
+  var sensorId = $("#loadSensor option:selected").val();
+  $("#loadStartInfo").remove();
+  $("#startLoadDateTimePicker").parent().append(
+      "<div id=\"loadStartInfo\"><small>Earliest: "
+      + DEPO_SENSOR_INFO[depoId][sensorId]['earliest'] + "</small></div>");
+  $("#loadEndInfo").remove();
+  $("#endLoadDateTimePicker").parent().append(
+      "<div id=\"loadEndInfo\"><small>Latest: "
+      + DEPO_SENSOR_INFO[depoId][sensorId]['latest'] + "</small></div>");
+};
+
 function timeSeriesPlot() {
   var timeInterval = $("#timeSeriesDuration").val();
   var depositoryId = $("#timeSeriesDepository").val();
@@ -242,6 +291,97 @@ function longitudeResponse(response) {
 
 }
 
+function loadPlot() {
+  var loadDepository = $('#loadDepository').val();
+  var loadSensor = $('#loadSensor').val();
+  var startDate = getDate('startLoadDateTimePicker');
+  var endDate = getDate('endLoadDateTimePicker');
+  var uri = server + ORGID + '/openeis/load-analysis/?depository='
+      + loadDepository + '&sensor=' + loadSensor + '&start=' + wdClient.getTimestampFromDate(startDate)
+      + '&end=' + wdClient.getTimestampFromDate(endDate);
+  console.log(uri);
+  document.getElementById("load_analysis").style.cursor = "wait";
+  var request = $.ajax({
+    url: uri,
+    method: "GET"
+  });
+  request.done(function (data) {
+    document.getElementById("load_analysis").style.cursor = "auto";
+    //console.log(data);
+    $('#loadAnalysisDiv').empty();
+    var table = document.createElement('table');
+    table.setAttribute("class", "table");
+    var thead = document.createElement("thead");
+    var tr = document.createElement("tr");
+    var th = document.createElement("th");
+    th.setAttribute("class", "header");
+    th.appendChild(document.createTextNode("Metric"));
+    tr.appendChild(th);
+    th = document.createElement("th");
+    th.setAttribute("class", "header");
+    th.appendChild(document.createTextNode("Value"));
+    tr.appendChild(th);
+    thead.appendChild(tr);
+    table.appendChild(thead);
+    var tbody = document.createElement("tbody");
+    tr = document.createElement("tr");
+    var td = document.createElement("td");
+    td.appendChild(document.createTextNode("Peak Load Benchmark [W]"));
+    tr.appendChild(td);
+    td = document.createElement("td");
+    td.appendChild(document.createTextNode(data["peak"].toFixed(2)));
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+    tr = document.createElement("tr");
+    td = document.createElement("td");
+    td.appendChild(document.createTextNode("Average Daily Max [W]"));
+    tr.appendChild(td);
+    td = document.createElement("td");
+    td.appendChild(document.createTextNode(data["aveDailyMax"].toFixed(2)));
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+    tr = document.createElement("tr");
+    td = document.createElement("td");
+    td.appendChild(document.createTextNode("Average Daily Min [W]"));
+    tr.appendChild(td);
+    td = document.createElement("td");
+    td.appendChild(document.createTextNode(data["aveDailyMin"].toFixed(2)));
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+    tr = document.createElement("tr");
+    td = document.createElement("td");
+    td.appendChild(document.createTextNode("Average Daily Range [W]"));
+    tr.appendChild(td);
+    td = document.createElement("td");
+    td.appendChild(document.createTextNode(data["aveDailyRange"].toFixed(2)));
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+    tr = document.createElement("tr");
+    td = document.createElement("td");
+    td.appendChild(document.createTextNode("Peak-to-Base load ratio"));
+    tr.appendChild(td);
+    td = document.createElement("td");
+    td.appendChild(document.createTextNode(data["aveBaseToPeakRatio"].toFixed(2)));
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+    table.appendChild(tbody);
+
+    //for (var i = 0; i < data.length; i++) {
+    //  var tr = document.createElement('tr');
+    //  for (var j = 0; j < data[i].length; j++) {
+    //    var td = document.createElement('td');
+    //    td.appendChild(document.createTextNode(data[i][j]));
+    //    tr.appendChild(td);
+    //  }
+    //  table.appendChild(tr);
+    //}
+    $('#loadAnalysisDiv').append(table);
+  });
+  request.fail(function (jqXHR, textStatus) {
+    alert("Request failed: " + textStatus);
+  });
+}
+
 /**
  * Gets the Date for the specified time field.
  *
@@ -253,25 +393,25 @@ function longitudeResponse(response) {
  * @return A Date representing the fields of the given form.
  */
 function getDate(id) {
-  var picker = $('#' + id );
+  var picker = $('#' + id);
   var data = picker.data("DateTimePicker");
   var time = data.date();
   var error = false;
   if (time == null) {
     error = true;
-    $('#' + id ).addClass('invalid');
-    $('#' + id ).css('border', '3px red solid');
-    $('#' + id )
+    $('#' + id).addClass('invalid');
+    $('#' + id).css('border', '3px red solid');
+    $('#' + id)
         .wrap(
         '<a href="#" rel="tooltip" data-placement="top" title="Error: Time must be selected.">');
   }
   if (error) {
     return null;
   }
-  if ($('#' + id ).hasClass('invalid')) {
-    $('#' + id ).css('border', '');
-    $('#' + id ).unwrap();
-    $('#' + id ).removeClass('invalid');
+  if ($('#' + id).hasClass('invalid')) {
+    $('#' + id).css('border', '');
+    $('#' + id).unwrap();
+    $('#' + id).removeClass('invalid');
   }
   return time.toDate();
 }

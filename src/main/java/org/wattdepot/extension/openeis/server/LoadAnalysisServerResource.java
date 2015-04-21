@@ -80,7 +80,7 @@ public class LoadAnalysisServerResource extends OpenEISServer implements LoadAna
       Date end = Tstamp.makeTimestamp(endString).toGregorianCalendar().getTime();
       InterpolatedValueList values;
       if (depository.getMeasurementType().getName().startsWith("Power")) {
-        values = getHourlyPointData(depositoryId, sensorId, start, end);
+        values = getHourlyPointData(depositoryId, sensorId, start, end, false);
       }
       else if (depository.getMeasurementType().getName().startsWith("Energy")) {
         values = getHourlyDifferenceData(depositoryId, sensorId, start, end);
@@ -92,7 +92,7 @@ public class LoadAnalysisServerResource extends OpenEISServer implements LoadAna
       InterpolatedValueValueComparator c = new InterpolatedValueValueComparator();
       Double peak = Collections.max(values.getInterpolatedValues(), c).getValue();
       int numValues = values.getInterpolatedValues().size();
-      int numDays =  numValues / 24;
+      int numDays = numValues / 24;
       int hour = 0;
       Double dailyMax = Double.MIN_VALUE;
       Double dailyMin = Double.MAX_VALUE;
@@ -126,7 +126,7 @@ public class LoadAnalysisServerResource extends OpenEISServer implements LoadAna
       int nintyFifthPercentileIndex = (int) Math.round(numValues * 0.95);
       Double fifth = list.get(fifthPercentileIndex).getValue();
       Double nintyFifth = list.get(nintyFifthPercentileIndex).getValue();
-      LoadAnalysis analysis = new LoadAnalysis(start, end, peak, aveDailyMax, aveDailyMin, aveDailyRange, fifth/nintyFifth);
+      LoadAnalysis analysis = new LoadAnalysis(start, end, peak, aveDailyMax, aveDailyMin, aveDailyRange, fifth / nintyFifth);
       return analysis;
     }
     catch (IdNotFoundException e) {
@@ -193,9 +193,10 @@ public class LoadAnalysisServerResource extends OpenEISServer implements LoadAna
    * @param sensorId     The Sensor.
    * @param start        The start of the period.
    * @param end          The end of the period.
+   * @param keepNulls    if true insert InterpolatedValues with a null value.
    * @return An InterpolatedValueList of the hourly averages.
    */
-  private InterpolatedValueList getHourlyPointData(String depositoryId, String sensorId, Date start, Date end) {
+  private InterpolatedValueList getHourlyPointData(String depositoryId, String sensorId, Date start, Date end, boolean keepNulls) {
     if (isInRole(orgId)) {
       InterpolatedValueList ret = new InterpolatedValueList();
       try {
@@ -222,7 +223,14 @@ public class LoadAnalysisServerResource extends OpenEISServer implements LoadAna
           else {
             val = null;
           }
-          ret.getInterpolatedValues().add(new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate));
+          if (!keepNulls) {
+            if (val != null) {
+              ret.getInterpolatedValues().add(new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate));
+            }
+          }
+          else {
+            ret.getInterpolatedValues().add(new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate));
+          }
         }
         return ret;
       }

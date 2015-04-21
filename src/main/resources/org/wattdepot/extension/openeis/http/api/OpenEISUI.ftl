@@ -6,10 +6,10 @@
   <!-- Bootstrap -->
   <link rel="stylesheet" href="/webroot/dist/css/bootstrap.min.css">
   <!-- Optional theme -->
-  <link rel="stylesheet"
-        href="/webroot/dist/css/bootstrap-theme.min.css">
+  <link rel="stylesheet" href="/webroot/dist/css/bootstrap-theme.min.css">
   <link rel="stylesheet" href="/webroot/dist/css/themes/blue/style.css">
   <link rel="stylesheet/less" type="text/css" href="/webroot/dist/css/style.less">
+  <link rel="stylesheet" type="text/css" href="/webroot/dist/css/parsley.css">
   <link rel="stylesheet"
         href="/webroot/bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css">
   <link rel="stylesheet" type="text/css" href="/webroot/dist/css/parsley.css">
@@ -71,6 +71,7 @@
       Signature</a></li>
     <li><a id="longitude_baseline_link" href="#longitude_baseline" data-toggle="tab" name="longitude_baseline">Longitude
       Baseline</a></li>
+    <li><a id="load_analysis_link" href="#load_analysis" data-toggle="tab" name="load_analysis">Load Analysis</a></li>
   </ul>
 
   <!-- Tab panes -->
@@ -351,7 +352,7 @@
         <div class="form-group">
           <div class="col-xs-2">
             <label class="control-label" for="longitudeSensor">Sensor</label>
-            <select id="longitudeSensor" class="col-xs-10 sensor-select">
+            <select id="longitudeSensor" class="col-xs-10 sensor-select" onchange="selectedLongitudeSensor()">
             <#list energy_sensors as s>
               <option value="${s.id}">${s.name}</option>
             </#list>
@@ -361,11 +362,12 @@
         <div class="form-group">
           <div class="col-xs-2">
             <label class="control-label" for="startdatetimepicker">Baseline Start Date</label>
+
             <div class="input-group date" id="startdatetimepicker">
               <input id="baselineStart" type="text" class="form-control" data-format="MM/DD/YY HH:mm"/>
               <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
             </div>
-            <div id="startInfo"></div>
+            <div id="startLongitudeInfo"></div>
           </div>
         </div>
         <div class="form-group">
@@ -389,6 +391,7 @@
         <div class="form-group">
           <div class="col-xs-2">
             <label class="control-label" for="comparisonstartdatetimepicker">Comparison Start Date</label>
+
             <div class="input-group date" id="comparisonstartdatetimepicker">
               <input id="comparisonStart" type="text" class="form-control" data-format="MM/DD/YY HH:mm"/>
               <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
@@ -399,8 +402,10 @@
         <div class="form-group">
           <div class="col-xs-2">
             <label class="control-label" for="longitudeSpinner"># Intervals</label>
+
             <div id="longitudeSpinner" class="input-append spinner" data-trigger="spinner">
               <input id="numIntervals" type="text" value="1" data-rule="quantity">
+
               <div class="input-group-addon">
                 <a href="javascript:;" class="spin-up" data-spin="up"><span class="glyphicon glyphicon-plus"></span></a>
                 <a href="javascript:;" class="spin-down" data-spin="down"><span
@@ -420,6 +425,90 @@
       </div>
       <div class="row">
         <div id="longitudeChart" class="col-xs-12" style="height: 500px;"></div>
+      </div>
+    </div>
+    <div class="tab-pane" id="load_analysis">
+      <div class="panel-group" id="load_analysis_help">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a class="panel-title text-right accordion-toggle collapsed" data-toggle="collapse" data-parent="#help"
+               href="#loadAnalysisCollapseHelp">Help </a>
+          </div>
+          <div id="loadAnalysisCollapseHelp" class="panel-collapse collapse">
+            <div class="panel-body">
+              <p><i>Peak load benchmarking</i> is used to compare a building’s peak electric load to a peer group.
+                High peak loads can have a significant impact on utility costs in cases where demand charges are
+                assessed, and are also a critical contributor to electrical reliability during times of extreme
+                demand on the grid.</p>
+
+              <p><i>Base‐to‐peak load ratios</i> compare the minimum building load to the maximum building load,
+                to judge whether the building is “shut down” after hours. A ratio closer to zero indicates a
+                large difference between the smallest and largest building loads, whereas a ratio closer to one
+                indicates a near‐static, non‐fluctuating load, and therefore an opportunity to improve efficiency.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row form">
+        <div class="form-group"> <!-- why do I need this? -->
+          <div class="col-xs-2"></div>
+        </div>
+        <div class="form-group">
+          <div class="col-xs-2">
+            <label class="control-label" for="loadDepository">Depository</label>
+            <select id="loadDepository" class="col-xs-10 sensor-select"
+                    onchange="selectedLoadDepository()">
+            <#list power_depositories as d>
+              <option value="${d.id}">${d.name}</option>
+            </#list>
+            <#list energy_depositories as d>
+              <option value="${d.id}">${d.name}</option>
+            </#list>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-xs-2">
+            <label class="control-label" for="loadSensor">Sensor</label>
+            <select id="loadSensor" class="col-xs-10 sensor-select" onchange="selectedLoadSensor()">
+            <#list power_sensors as s>
+              <option value="${s.id}">${s.name}</option>
+            </#list>
+            <#list energy_sensors as s>
+              <option value="${s.id}">${s.name}</option>
+            </#list>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-xs-2">
+            <label class="control-label" for="startLoadDateTimePicker">Start Date</label>
+
+            <div class="input-group date" id="startLoadDateTimePicker">
+              <input id="loadStart" type="text" class="form-control" data-format="MM/DD/YY HH:mm"/>
+              <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+            </div>
+            <div id="loadStartInfo"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-xs-2">
+            <label class="control-label" for="endLoadDateTimePicker">Start Date</label>
+
+            <div class="input-group date" id="endLoadDateTimePicker">
+              <input id="loadEnd" type="text" class="form-control" data-format="MM/DD/YY HH:mm"/>
+              <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+            </div>
+            <div id="loadEndInfo"></div>
+          </div>
+        </div>
+        <div class="col-xs-2"></div>
+        <div class="col-xs-2">
+          <button class="btn btn-primary btn-sm add-button" onclick="loadPlot();">View Load Analysis</button>
+        </div>
+      </div>
+      <div class="row">
+        <div id="loadAnalysisDiv"></div>
       </div>
     </div>
   </div>
@@ -460,14 +549,12 @@
   // A $( document ).ready() block.
   $(document).ready(function () {
     console.log("ready!");
-    var depoId = $("#longitudeDepository option:selected").val();
-    var sensorId = $("#longitudeSensor option:selected").val();
-    $("#startInfo").remove();
-    $("#startdatetimepicker").parent().append(
-        "<div id=\"startInfo\"><small>Earliest: "
-        + DEPO_SENSOR_INFO[depoId][sensorId]['earliest'] + "</small></div>");
+    selectedLongitudeSensor();
+    selectedLoadSensor();
     $('#startdatetimepicker').datetimepicker();
     $('#comparisonstartdatetimepicker').datetimepicker();
+    $('#startLoadDateTimePicker').datetimepicker();
+    $('#endLoadDateTimePicker').datetimepicker();
   });
   var server = window.location.protocol + "//" + window.location.host + "/wattdepot/";
 
