@@ -95,4 +95,15 @@ public class OpenEISAPI {
    * <b>/wattdepot/{org-id}/openeis/load-analysis/</b> URI to get a load analysis. Use GET requests.
    */
   public static final String OPENEIS_LOAD_ANALYSIS = BASE_URI + OpenEISLabels.LOAD_ANALYSIS + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/openeis/load-duration-curve/data/</b> URI to get a load analysis. Use GET requests.
+   */
+  public static final String OPENEIS_LOAD_DURATION_CURVE_DATA_URI = BASE_URI + OpenEISLabels.LOAD_DURATION_CURVE + "/" + Labels.DATA + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/openeis/load-duration-curve/gviz/</b> URI to get a load analysis. Use GET requests.
+   */
+  public static final String OPENEIS_LOAD_DURATION_CURVE_GVIZ_URI = BASE_URI + OpenEISLabels.LOAD_DURATION_CURVE + "/" + Labels.GVIZ + "/";
+
 }

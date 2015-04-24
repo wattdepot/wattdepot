@@ -28,6 +28,7 @@ import com.google.visualization.datasource.datatable.value.ValueType;
 import com.google.visualization.datasource.render.JsonRenderer;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
+import org.wattdepot.common.util.tstamp.Tstamp;
 import org.wattdepot.extension.openeis.domainmodel.XYInterpolatedValuesWithAnalysis;
 
 import java.text.DateFormat;
@@ -88,6 +89,35 @@ public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {
   }
 
   /**
+   * Returns a DataTable representing a line graph who's x values are the percentage.
+   *
+   * @param valueList The values.
+   * @return The DataTable suitable for a line graph.
+   */
+  public static DataTable getPercentageDataTable(InterpolatedValueList valueList) {
+    DataTable data = new DataTable();
+    ArrayList<InterpolatedValue> values = valueList.getInterpolatedValues();
+    if (!values.isEmpty()) {
+      data.addColumn(new ColumnDescription("Percent", ValueType.NUMBER, "Percent"));
+      data.addColumn(new ColumnDescription("Power", ValueType.NUMBER, "W"));
+      int count = 0;
+      int size = values.size();
+      for (InterpolatedValue v : values) {
+        TableRow row = new TableRow();
+        row.addCell((100.0 * count++) / size);
+        row.addCell(v.getValue());
+        try {
+          data.addRow(row);
+        }
+        catch (TypeMismatchException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+    return data;
+  }
+
+  /**
    * @param resource  server resource object
    * @param tqxString gviz tqx query string, i.e., request id
    * @param tqString  gviz tq query string, selectable fields
@@ -96,9 +126,93 @@ public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {
   public static String getDailyGvizResponse(Object resource, String tqxString, String tqString) {
     DataTable table = null;
     if (resource instanceof InterpolatedValueList) {
-      table = getRow24HourPerDayDataTable((InterpolatedValueList) resource);
+      InterpolatedValueList list = (InterpolatedValueList) resource;
+      table = getRow24HourPerDayDataTable(list);
+      String response = "google.visualization.Query.setResponse";
+
+      String reqId = null;
+      if (tqxString != null) {
+        String[] tqxArray = tqxString.split(";");
+        for (String s : tqxArray) {
+          if (s.contains("reqId")) {
+            reqId = s.substring(s.indexOf(":") + 1, s.length());
+          }
+        }
+      }
+
+      String tableString = JsonRenderer.renderDataTable(table, true, true, true).toString();
+      if (list.getMissingData().size() > 0) {
+        response += "({status:'warning',";
+      }
+      else {
+        response += "({status:'ok',";
+      }
+      if (reqId != null) {
+        response += "reqId:'" + reqId + "',";
+      }
+      if (list.getMissingData().size() > 0) {
+        response += "warnings:[";
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        for (InterpolatedValue v : list.getMissingData()) {
+          response += "{reason: 'missing data " + df.format(v.getStart()) + " to " + df.format(v.getEnd()) + "'},";
+        }
+        if (response.length() > 0) {
+          response = response.substring(0, response.length() - 1);
+        }
+        response += "],";
+      }
+      response += "table:" + tableString + "});";
+
+      return response;
     }
     return getGvizResponseFromDataTable(table, tqxString/*, tqString*/);
+  }
+
+  /**
+   * @param resource  server resource object
+   * @param tqxString gviz tqx query string, i.e., request id
+   * @param tqString  gviz tq query string, selectable fields
+   * @return gviz response
+   */
+  public static String getPercentageGvizResponse(Object resource, String tqxString, String tqString) {
+    DataTable table = null;
+    if (resource instanceof InterpolatedValueList) {
+      InterpolatedValueList list = (InterpolatedValueList) resource;
+      table = getPercentageDataTable(list);
+      String response = "google.visualization.Query.setResponse";
+
+      String reqId = null;
+      if (tqxString != null) {
+        String[] tqxArray = tqxString.split(";");
+        for (String s : tqxArray) {
+          if (s.contains("reqId")) {
+            reqId = s.substring(s.indexOf(":") + 1, s.length());
+          }
+        }
+      }
+
+      String tableString = JsonRenderer.renderDataTable(table, true, true, true).toString();
+      if (list.getMissingData().size() > 0) {
+        response += "({status:'warning',";
+      }
+      else {
+        response += "({status:'ok',";
+      }
+      if (reqId != null) {
+        response += "reqId:'" + reqId + "',";
+      }
+      response += "warnings:[";
+      SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+      for (InterpolatedValue v : list.getMissingData()) {
+        response += "{reason: 'missing data " + df.format(v.getStart()) + " to " + df.format(v.getEnd()) + "'},";
+      }
+      response = response.substring(0, response.length() - 1);
+      response += "],";
+      response += "table:" + tableString + "});";
+
+      return response;
+    }
+    return null;
   }
 
   /**
@@ -142,6 +256,10 @@ public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {
         for (Map.Entry e : analysis.getAnalysis().entrySet()) {
           response += "{reason:'" + e.getKey() + ": " + df.format(e.getValue()) + "'},";
         }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        for (InterpolatedValue v : analysis.getDataPoints().getMissingData()) {
+          response += "{reason: 'missing data " + dateFormat.format(v.getStart()) + " to " + dateFormat.format(v.getEnd()) + "'},";
+        }
         response = response.substring(0, response.length() - 1);
         response += "],";
 
@@ -160,7 +278,8 @@ public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {
 
   /**
    * Returns the google visualization query string to create a benchmark column chart.
-   * @param mList The list of values, the first value is the benchmark.
+   *
+   * @param mList     The list of values, the first value is the benchmark.
    * @param tqxString gviz tqx query string, i.e., request id
    * @param tqString  gviz tq query string, selectable fields
    * @return gviz response
@@ -177,6 +296,7 @@ public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {
 
   /**
    * Returns the DataTable suitable for a Column chart.
+   *
    * @param mList The data.
    * @return The DataTable for a column chart.
    * @throws DataSourceException if there is a problem.

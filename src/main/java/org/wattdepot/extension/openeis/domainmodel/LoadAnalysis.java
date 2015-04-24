@@ -19,6 +19,9 @@
 
 package org.wattdepot.extension.openeis.domainmodel;
 
+import org.wattdepot.common.domainmodel.InterpolatedValue;
+
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -56,6 +59,11 @@ public class LoadAnalysis {
    * 5th percentile to 95th percentile ratio.
    */
   private Double aveBaseToPeakRatio;
+
+  /**
+   * Any missing data.
+   */
+  private ArrayList<InterpolatedValue> missingData;
 
   /**
    * Constructs a new LoadAnalysis with the given data.
@@ -189,4 +197,22 @@ public class LoadAnalysis {
   public void setAveBaseToPeakRatio(Double aveBaseToPeakRatio) {
     this.aveBaseToPeakRatio = aveBaseToPeakRatio;
   }
+
+  /**
+   * @return Any missing data in the Analysis period.
+   */
+  public ArrayList<InterpolatedValue> getMissingData() {
+    return missingData;
+  }
+
+  /**
+   * Sets the missing data for the analysis period.
+   *
+   * @param missingData The missing data.
+   */
+  public void setMissingData(ArrayList<InterpolatedValue> missingData) {
+    this.missingData = missingData;
+  }
+
+
 }

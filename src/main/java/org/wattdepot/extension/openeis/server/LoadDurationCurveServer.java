@@ -26,28 +26,22 @@ import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.InterpolatedValueValueComparator;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.tstamp.Tstamp;
 import org.wattdepot.extension.openeis.OpenEISLabels;
-import org.wattdepot.extension.openeis.domainmodel.LoadAnalysis;
-import org.wattdepot.extension.openeis.http.api.LoadAnalysisResource;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 
 /**
- * LoadAnalysisServerResource - Handles LoadAnalysis request.
+ * LoadDurationCurveServer - Base class for handling Load Duration Curve requests.
  *
  * @author Cam Moore
- *         Created by carletonmoore on 4/20/15.
+ *         Created by carletonmoore on 4/22/15.
  */
-public class LoadAnalysisServerResource extends OpenEISServer implements LoadAnalysisResource {
+public class LoadDurationCurveServer extends OpenEISServer {
   private String depositoryId;
   private String sensorId;
   private String startString;
@@ -67,11 +61,15 @@ public class LoadAnalysisServerResource extends OpenEISServer implements LoadAna
     this.endString = getQuery().getValues(Labels.END);
   }
 
-  @Override
-  public LoadAnalysis retrieve() {
+  /**
+   * Retrieves the hourly power data for the given depository, sensor, start and end dates.
+   *
+   * @return An InterpolatedValueList of the hourly power data.
+   */
+  public InterpolatedValueList doRetrieve() {
     getLogger().log(
         Level.INFO,
-        "GET /wattdepot/{" + orgId + "}/" + OpenEISLabels.OPENEIS + "/" + OpenEISLabels.LOAD_ANALYSIS +
+        "GET /wattdepot/{" + orgId + "}/" + OpenEISLabels.OPENEIS + "/" + OpenEISLabels.LOAD_DURATION_CURVE +
             "/?" + Labels.DEPOSITORY + "={" + depositoryId + "}&" + Labels.SENSOR + "={" + sensorId + "}&" +
             Labels.START + "={" + startString + "}&" + Labels.END + "={" + endString + "}");
     try {
@@ -90,46 +88,11 @@ public class LoadAnalysisServerResource extends OpenEISServer implements LoadAna
         return null;
       }
       InterpolatedValueValueComparator c = new InterpolatedValueValueComparator();
-      Double peak = Collections.max(values.getInterpolatedValues(), c).getValue();
-      int numValues = values.getInterpolatedValues().size();
-      int numDays = numValues / 24;
-      int hour = 0;
-      Double dailyMax = Double.MIN_VALUE;
-      Double dailyMin = Double.MAX_VALUE;
-      Double aveDailyMax = 0.0;
-      Double aveDailyMin = 0.0;
-      Double aveDailyRange = 0.0;
-      for (InterpolatedValue val : values.getInterpolatedValues()) {
-        Double v = val.getValue();
-        if (dailyMax < v) {
-          dailyMax = v;
-        }
-        if (dailyMin > v) {
-          dailyMin = v;
-        }
-        if (hour == 23) {
-          aveDailyMax += dailyMax;
-          aveDailyMin += dailyMin;
-          aveDailyRange += dailyMax - dailyMin;
-          dailyMax = Double.MIN_VALUE;
-          dailyMin = Double.MAX_VALUE;
-          hour = 0;
-        }
-        hour++;
-      }
-      aveDailyMax = aveDailyMax / numDays;
-      aveDailyMin = aveDailyMin / numDays;
-      aveDailyRange = aveDailyRange / numDays;
       ArrayList<InterpolatedValue> list = values.getInterpolatedValues();
       Collections.sort(list, c);
-      int fifthPercentileIndex = (int) Math.round(numValues * 0.05);
-      int nintyFifthPercentileIndex = (int) Math.round(numValues * 0.95);
-      Double fifth = list.get(fifthPercentileIndex).getValue();
-      Double nintyFifth = list.get(nintyFifthPercentileIndex).getValue();
-      LoadAnalysis analysis = new LoadAnalysis(start, end, peak, aveDailyMax, aveDailyMin, aveDailyRange, fifth / nintyFifth);
-      values.collapseMissingData();
-      analysis.setMissingData(values.getMissingData());
-      return analysis;
+      Collections.reverse(list);
+      values.setInterpolatedValues(list);
+      return values;
     }
     catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());

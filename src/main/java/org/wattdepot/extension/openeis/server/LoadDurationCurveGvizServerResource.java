@@ -21,14 +21,14 @@ package org.wattdepot.extension.openeis.server;
 
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.util.GvizHelper;
-import org.wattdepot.extension.openeis.http.api.HeatMapGvizResource;
+import org.wattdepot.extension.openeis.http.api.LoadDurationCurveGvizResource;
 import org.wattdepot.extension.openeis.util.OpenEISGvizHelper;
 
 /**
- * HeatMapGvizServerResource - ServerResource that handles GET requests for Google Visualizations of OpenEIS Heat Maps.
- * @author Cam Moore
+ * LoadDurationCurveGvizServerResource - Handles Load Duration Curve Gviz requests.
+ * Created by carletonmoore on 4/22/15.
  */
-public class HeatMapGivzServerResource extends HeatMapServer implements HeatMapGvizResource {
+public class LoadDurationCurveGvizServerResource extends LoadDurationCurveServer implements LoadDurationCurveGvizResource {
   /** The GViz tqx query string. */
   private String tqxString = null;
 
@@ -49,9 +49,9 @@ public class HeatMapGivzServerResource extends HeatMapServer implements HeatMapG
   @Override
   public String retrieve() {
     InterpolatedValueList mList = doRetrieve();
-    mList.collapseMissingDataNowToPast();
+    mList.collapseMissingData();
     if (mList != null) {
-      return OpenEISGvizHelper.getDailyGvizResponse(mList, tqxString, tqString);
+      return OpenEISGvizHelper.getPercentageGvizResponse(mList, tqxString, tqString);
     }
     return null;
   }

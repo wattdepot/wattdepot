@@ -72,6 +72,8 @@
     <li><a id="longitude_baseline_link" href="#longitude_baseline" data-toggle="tab" name="longitude_baseline">Longitude
       Baseline</a></li>
     <li><a id="load_analysis_link" href="#load_analysis" data-toggle="tab" name="load_analysis">Load Analysis</a></li>
+    <li><a id="load_duration_curve_link" href="#load_duration_curve" data-toggle="tab" name="load_duration_curve">Load
+      Duration Curve</a></li>
   </ul>
 
   <!-- Tab panes -->
@@ -146,6 +148,9 @@
       <div class="row">
         <div id="tslpChart" class="col-xs-12" style="height: 500px;"></div>
       </div>
+      <div class="row">
+        <div id="tslpWarnings" class="col-xs-12"></div>
+      </div>
     </div>
     <div class="tab-pane" id="heat_map">
       <div class="panel-group" id="help">
@@ -218,6 +223,9 @@
       </div>
       <div class="row">
         <div id="heatChart" class="col-xs-12" style="height: 500px;"></div>
+      </div>
+      <div class="row">
+        <div id="heatWarnings" class="col-xs-12"></div>
       </div>
     </div>
     <div class="tab-pane" id="energy_signature">
@@ -315,6 +323,9 @@
       </div>
       <div class="row">
         <div id="energySigChart" class="col-xs-12" style="height: 500px;"></div>
+      </div>
+      <div class="row">
+        <div id="energySigWarnings" class="col-xs-12"></div>
       </div>
     </div>
     <div class="tab-pane" id="longitude_baseline">
@@ -426,6 +437,9 @@
       <div class="row">
         <div id="longitudeChart" class="col-xs-12" style="height: 500px;"></div>
       </div>
+      <div class="row">
+        <div id="longitudeWarnings" class="col-xs-12"></div>
+      </div>
     </div>
     <div class="tab-pane" id="load_analysis">
       <div class="panel-group" id="load_analysis_help">
@@ -510,6 +524,90 @@
       <div class="row">
         <div id="loadAnalysisDiv"></div>
       </div>
+      <div class="row">
+        <div id="loadAnalysisWarnings"></div>
+      </div>
+    </div>
+    <div class="tab-pane" id="load_duration_curve">
+      <div class="panel-group" id="load_duration_curve_help">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <a class="panel-title text-right accordion-toggle collapsed" data-toggle="collapse" data-parent="#help"
+               href="#loadDurationCurveCollapseHelp">Help </a>
+          </div>
+          <div id="loadDurationCurveCollapseHelp" class="panel-collapse collapse">
+            <div class="panel-body">
+              <p><i>Load duration curves</i> are used to understand the number of hours or percentage of time during which
+                the building load is at or below a certain value. Ideally, the highest loads should occur for a smaller
+                fraction of the time.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row form">
+        <div class="form-group"> <!-- why do I need this? -->
+          <div class="col-xs-2"></div>
+        </div>
+        <div class="form-group">
+          <div class="col-xs-2">
+            <label class="control-label" for="loadCurveDepository">Depository</label>
+            <select id="loadCurveDepository" class="col-xs-10 sensor-select"
+                    onchange="selectedLoadCurveDepository()">
+            <#list power_depositories as d>
+              <option value="${d.id}">${d.name}</option>
+            </#list>
+            <#list energy_depositories as d>
+              <option value="${d.id}">${d.name}</option>
+            </#list>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-xs-2">
+            <label class="control-label" for="loadCurveSensor">Sensor</label>
+            <select id="loadCurveSensor" class="col-xs-10 sensor-select" onchange="selectedLoadCurveSensor()">
+            <#list power_sensors as s>
+              <option value="${s.id}">${s.name}</option>
+            </#list>
+            <#list energy_sensors as s>
+              <option value="${s.id}">${s.name}</option>
+            </#list>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-xs-2">
+            <label class="control-label" for="startLoadCurveDateTimePicker">Start Date</label>
+
+            <div class="input-group date" id="startLoadCurveDateTimePicker">
+              <input id="loadStart" type="text" class="form-control" data-format="MM/DD/YY HH:mm"/>
+              <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+            </div>
+            <div id="loadCurveStartInfo"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="col-xs-2">
+            <label class="control-label" for="endLoadCurveDateTimePicker">Start Date</label>
+
+            <div class="input-group date" id="endLoadCurveDateTimePicker">
+              <input id="loadEnd" type="text" class="form-control" data-format="MM/DD/YY HH:mm"/>
+              <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+            </div>
+            <div id="loadCurveEndInfo"></div>
+          </div>
+        </div>
+        <div class="col-xs-2"></div>
+        <div class="col-xs-2">
+          <button class="btn btn-primary btn-sm add-button" onclick="loadCurvePlot();">View Load Curve Plot</button>
+        </div>
+      </div>
+      <div class="row">
+        <div id="loadDurationCurveChart"></div>
+      </div>
+      <div class="row">
+        <div id="loadDurationCurveWarnings"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -548,13 +646,16 @@
 <script>
   // A $( document ).ready() block.
   $(document).ready(function () {
-    console.log("ready!");
+//    console.log("ready!");
     selectedLongitudeSensor();
     selectedLoadSensor();
+    selectedLoadCurveSensor();
     $('#startdatetimepicker').datetimepicker();
     $('#comparisonstartdatetimepicker').datetimepicker();
     $('#startLoadDateTimePicker').datetimepicker();
     $('#endLoadDateTimePicker').datetimepicker();
+    $('#startLoadCurveDateTimePicker').datetimepicker();
+    $('#endLoadCurveDateTimePicker').datetimepicker();
   });
   var server = window.location.protocol + "//" + window.location.host + "/wattdepot/";
 

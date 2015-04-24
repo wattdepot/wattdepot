@@ -112,6 +112,9 @@ public class EnergySignatureServer extends OpenEISServer {
                 xDenomSum += Math.pow(xTerm, 2.0);
                 yDenomSum += Math.pow(yTerm, 2.0);
               }
+              else {
+                ret.getMissingData().add(new XYInterpolatedValue(powerData.get(i), temperatureData.get(i)));
+              }
               ret.getValues().add(new XYInterpolatedValue(powerData.get(i), temperatureData.get(i)));
             }
             r = numeratorSum / (Math.sqrt(xDenomSum) * Math.sqrt(yDenomSum));

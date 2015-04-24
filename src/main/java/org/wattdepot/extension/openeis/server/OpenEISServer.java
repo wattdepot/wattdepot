@@ -57,7 +57,12 @@ public class OpenEISServer extends WattDepotServerResource {
           else {
             val = null;
           }
-          ret.getInterpolatedValues().add(new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate));
+          InterpolatedValue v = new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate);
+          ret.getInterpolatedValues().add(v);
+          if (val == null) {
+            ret.getMissingData().add(v);
+          }
+
         }
         return ret;
       }
@@ -221,6 +226,132 @@ public class OpenEISServer extends WattDepotServerResource {
         return null;
       }
       catch (NoMeasurementException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        return null;
+      }
+    }
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+      return null;
+    }
+  }
+  /**
+   * Returns the hourly difference data as an InterpolatedValueList.
+   *
+   * @param depositoryId The Depository.
+   * @param sensorId     The Sensor.
+   * @param start        The start of the period.
+   * @param end          The end of the period.
+   * @return An InterpolatedValueList of the hourly differences.
+   */
+  public InterpolatedValueList getHourlyDifferenceData(String depositoryId, String sensorId, Date start, Date end, boolean keepNulls) {
+    if (isInRole(orgId)) {
+      try {
+        Depository depository = depot.getDepository(depositoryId, orgId, true);
+        XMLGregorianCalendar startCal = Tstamp.makeTimestamp(start.getTime());
+        startCal.setTime(0, 0, 0, 0);
+        XMLGregorianCalendar endCal = Tstamp.makeTimestamp(end.getTime());
+        endCal.setTime(0, 0, 0, 0);
+        endCal = Tstamp.incrementDays(endCal, 1);
+        List<XMLGregorianCalendar> times = Tstamp.getTimestampList(startCal, endCal, 60);
+        InterpolatedValueList ret = new InterpolatedValueList();
+        for (int i = 1; i < times.size(); i++) {
+          XMLGregorianCalendar begin = times.get(i - 1);
+          Date beginDate = begin.toGregorianCalendar().getTime();
+          XMLGregorianCalendar stop = times.get(i);
+          Date endDate = stop.toGregorianCalendar().getTime();
+          Double val = null;
+          try {
+            val = depot.getValue(depositoryId, orgId, sensorId, beginDate, endDate, false);
+          }
+          catch (NoMeasurementException e) { // if there are no measurements just add null
+            val = null;
+          }
+          InterpolatedValue iv = new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate);
+          if (!keepNulls) {
+            if (val != null) {
+              ret.getInterpolatedValues().add(iv);
+            }
+            else {
+              ret.getMissingData().add(iv);
+            }
+          }
+          else {
+            ret.getInterpolatedValues().add(iv);
+            if (val == null) {
+              ret.getMissingData().add(iv);
+            }
+          }
+        }
+        return ret;
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        return null;
+      }
+    }
+    else {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
+      return null;
+    }
+  }
+
+  /**
+   * Returns the hourly average data as an InterpolatedValueList.
+   *
+   * @param depositoryId The Depository.
+   * @param sensorId     The Sensor.
+   * @param start        The start of the period.
+   * @param end          The end of the period.
+   * @param keepNulls    if true insert InterpolatedValues with a null value.
+   * @return An InterpolatedValueList of the hourly averages.
+   */
+  public InterpolatedValueList getHourlyPointData(String depositoryId, String sensorId, Date start, Date end, boolean keepNulls) {
+    if (isInRole(orgId)) {
+      InterpolatedValueList ret = new InterpolatedValueList();
+      try {
+        Depository depository = depot.getDepository(depositoryId, orgId, true);
+        XMLGregorianCalendar startCal = Tstamp.makeTimestamp(start.getTime());
+        startCal.setTime(0, 0, 0, 0);
+        XMLGregorianCalendar endCal = Tstamp.makeTimestamp(end.getTime());
+        endCal.setTime(0, 0, 0, 0);
+        endCal = Tstamp.incrementDays(endCal, 1);
+        List<XMLGregorianCalendar> times = Tstamp.getTimestampList(startCal, endCal, 60);
+        for (int i = 1; i < times.size(); i++) {
+          XMLGregorianCalendar begin = times.get(i - 1);
+          Date beginDate = begin.toGregorianCalendar().getTime();
+          XMLGregorianCalendar stop = times.get(i);
+          Date endDate = stop.toGregorianCalendar().getTime();
+          Double val = 0.0;
+          List<Measurement> measurements = depot.getMeasurements(depositoryId, orgId, sensorId, beginDate, endDate, false);
+          if (measurements.size() > 0) {
+            for (Measurement m : measurements) {
+              val += m.getValue();
+            }
+            val = val / measurements.size();
+          }
+          else {
+            val = null;
+          }
+          InterpolatedValue iv = new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate);
+          if (!keepNulls) {
+            if (val != null) {
+              ret.getInterpolatedValues().add(iv);
+            }
+            else {
+              ret.getMissingData().add(iv);
+            }
+          }
+          else {
+            ret.getInterpolatedValues().add(iv);
+            if (val == null) {
+              ret.getMissingData().add(iv);
+            }
+          }
+        }
+        return ret;
+      }
+      catch (IdNotFoundException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         return null;
       }
