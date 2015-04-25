@@ -26,19 +26,15 @@ import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.InterpolatedValueValueComparator;
 import org.wattdepot.common.domainmodel.Labels;
-import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.exception.IdNotFoundException;
-import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.tstamp.Tstamp;
 import org.wattdepot.extension.openeis.OpenEISLabels;
 import org.wattdepot.extension.openeis.domainmodel.LoadAnalysis;
 import org.wattdepot.extension.openeis.http.api.LoadAnalysisResource;
 
-import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.logging.Level;
 
 /**

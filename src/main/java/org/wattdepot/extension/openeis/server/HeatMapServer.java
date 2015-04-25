@@ -67,10 +67,10 @@ public class HeatMapServer extends OpenEISServer {
     try {
       Depository depository = depot.getDepository(depositoryId, orgId, true);
       if (depository.getMeasurementType().getName().startsWith("Power")) {
-        return getHourlyPointData(depositoryId, sensorId, interval);
+        return getHourlyPointData(depositoryId, sensorId, interval, true);
       }
       else if (depository.getMeasurementType().getName().startsWith("Energy")) {
-        return getHourlyDifferenceData(depositoryId, sensorId, interval);
+        return getHourlyDifferenceData(depositoryId, sensorId, interval, true);
       }
       else {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " is not a Power Depository.");

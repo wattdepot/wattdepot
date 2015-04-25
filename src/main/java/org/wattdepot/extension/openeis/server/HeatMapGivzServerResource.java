@@ -49,8 +49,8 @@ public class HeatMapGivzServerResource extends HeatMapServer implements HeatMapG
   @Override
   public String retrieve() {
     InterpolatedValueList mList = doRetrieve();
-    mList.collapseMissingDataNowToPast();
     if (mList != null) {
+      mList.collapseMissingDataNowToPast();
       return OpenEISGvizHelper.getDailyGvizResponse(mList, tqxString, tqString);
     }
     return null;

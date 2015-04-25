@@ -77,8 +77,8 @@ public class LoadAnalysis {
    * @param aveBaseToPeakRatio The average base to peak ratio.
    */
   public LoadAnalysis(Date start, Date end, Double peak, Double aveDailyMax, Double aveDailyMin, Double aveDailyRange, Double aveBaseToPeakRatio) {
-    this.start = start;
-    this.end = end;
+    this.start = new Date(start.getTime());
+    this.end = new Date(end.getTime());
     this.peak = peak;
     this.aveDailyMax = aveDailyMax;
     this.aveDailyMin = aveDailyMin;
@@ -90,7 +90,7 @@ public class LoadAnalysis {
    * @return The start of the period.
    */
   public Date getStart() {
-    return start;
+    return new Date(start.getTime());
   }
 
   /**
@@ -99,14 +99,14 @@ public class LoadAnalysis {
    * @param start The new start.
    */
   public void setStart(Date start) {
-    this.start = start;
+    this.start = new Date(start.getTime());
   }
 
   /**
    * @return The end of the period.
    */
   public Date getEnd() {
-    return end;
+    return new Date(end.getTime());
   }
 
   /**
@@ -115,7 +115,7 @@ public class LoadAnalysis {
    * @param end The new end.
    */
   public void setEnd(Date end) {
-    this.end = end;
+    this.end = new Date(end.getTime());
   }
 
   /**

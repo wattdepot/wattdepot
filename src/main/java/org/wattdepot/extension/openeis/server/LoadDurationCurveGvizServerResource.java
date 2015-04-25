@@ -26,13 +26,19 @@ import org.wattdepot.extension.openeis.util.OpenEISGvizHelper;
 
 /**
  * LoadDurationCurveGvizServerResource - Handles Load Duration Curve Gviz requests.
- * Created by carletonmoore on 4/22/15.
+ *
+ * @author Cam Moore
+ *         Created by carletonmoore on 4/22/15.
  */
 public class LoadDurationCurveGvizServerResource extends LoadDurationCurveServer implements LoadDurationCurveGvizResource {
-  /** The GViz tqx query string. */
+  /**
+   * The GViz tqx query string.
+   */
   private String tqxString = null;
 
-  /** The GViz tq query string. */
+  /**
+   * The GViz tq query string.
+   */
   private String tqString = null;
 
   /**
@@ -49,8 +55,8 @@ public class LoadDurationCurveGvizServerResource extends LoadDurationCurveServer
   @Override
   public String retrieve() {
     InterpolatedValueList mList = doRetrieve();
-    mList.collapseMissingData();
     if (mList != null) {
+      mList.collapseMissingData();
       return OpenEISGvizHelper.getPercentageGvizResponse(mList, tqxString, tqString);
     }
     return null;

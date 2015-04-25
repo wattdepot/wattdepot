@@ -45,7 +45,6 @@ public class EnergySignatureServer extends OpenEISServer {
   private String powerSensorId;
   private String temperatureDepositoryId;
   private String temperatureSensorId;
-  private Double weatherSensitivity;
   private TimeInterval interval;
 
 
@@ -61,7 +60,6 @@ public class EnergySignatureServer extends OpenEISServer {
     this.powerSensorId = getQuery().getValues(OpenEISLabels.POWER_SENSOR);
     this.temperatureDepositoryId = getQuery().getValues(OpenEISLabels.TEMPERATURE_DEPOSITORY);
     this.temperatureSensorId = getQuery().getValues(OpenEISLabels.TEMPERATURE_SENSOR);
-    this.weatherSensitivity = 0.0;
     this.interval = TimeInterval.fromParameter(getQuery().getValues(OpenEISLabels.DURATION));
   }
 
@@ -84,16 +82,16 @@ public class EnergySignatureServer extends OpenEISServer {
         Depository powerDepository = depot.getDepository(powerDepositoryId, orgId, true);
         InterpolatedValueList pOrEValues = null;
         if (powerDepository.getMeasurementType().getName().startsWith("Power")) {
-          pOrEValues = getHourlyPointData(powerDepositoryId, powerSensorId, interval);
+          pOrEValues = getHourlyPointData(powerDepositoryId, powerSensorId, interval, true);
         }
           else if (powerDepository.getMeasurementType().getName().startsWith("Energy")) {
-          pOrEValues = getHourlyDifferenceData(powerDepositoryId, powerSensorId, interval);
+          pOrEValues = getHourlyDifferenceData(powerDepositoryId, powerSensorId, interval, true);
         }
         if (pOrEValues != null) {
           Depository temperatureDepository = depot.getDepository(temperatureDepositoryId, orgId, true);
           DescriptiveStats powerStats = new DescriptiveStats(pOrEValues);
           if (temperatureDepository.getMeasurementType().getName().startsWith("Temperature")) {
-            InterpolatedValueList temperatureValues = getHourlyPointDataYear(temperatureDepositoryId, temperatureSensorId);
+            InterpolatedValueList temperatureValues = getHourlyPointDataYear(temperatureDepositoryId, temperatureSensorId, true);
             DescriptiveStats temperatureStats = new DescriptiveStats(temperatureValues);
             ArrayList<InterpolatedValue> powerData = pOrEValues.getInterpolatedValues();
             ArrayList<InterpolatedValue> temperatureData = temperatureValues.getInterpolatedValues();

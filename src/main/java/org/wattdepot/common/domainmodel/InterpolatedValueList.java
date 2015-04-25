@@ -112,6 +112,10 @@ public class InterpolatedValueList {
     this.missingData = temp;
   }
 
+  /**
+   * Collapses the missing data combining adjacent InterpolatedValues into a single InterpolatedValue from
+   * now to the past.
+   */
   public void collapseMissingDataNowToPast() {
     ArrayList<InterpolatedValue> temp = new ArrayList<InterpolatedValue>();
     Date collapseStart = null;

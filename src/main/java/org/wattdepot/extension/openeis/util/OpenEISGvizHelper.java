@@ -28,7 +28,6 @@ import com.google.visualization.datasource.datatable.value.ValueType;
 import com.google.visualization.datasource.render.JsonRenderer;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
-import org.wattdepot.common.util.tstamp.Tstamp;
 import org.wattdepot.extension.openeis.domainmodel.XYInterpolatedValuesWithAnalysis;
 
 import java.text.DateFormat;
@@ -50,42 +49,55 @@ import java.util.Map;
 public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {
 
   /**
-   * Returns the daily DataTable based upon one value per hour.
-   *
-   * @param valueList The hourly values.
-   * @return The DataTable with a row per day an 24 hourly entries.
+   * @param resource  server resource object
+   * @param tqxString gviz tqx query string, i.e., request id
+   * @param tqString  gviz tq query string, selectable fields
+   * @return gviz response
    */
-  public static DataTable getRow24HourPerDayDataTable(InterpolatedValueList valueList) {
-    DataTable data = new DataTable();
-    DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
-    // Sets up the columns requested by any SELECT in the datasource query
-    ArrayList<InterpolatedValue> values = valueList.getInterpolatedValues();
-    if (!values.isEmpty()) {
-      int numDays = values.size() / 24;
-      data.addColumn(
-          new ColumnDescription("Date", ValueType.TEXT, "Date"));
-      for (int i = 0; i < 24; i++) {
-        data.addColumn(
-            new ColumnDescription("Hour" + i, ValueType.NUMBER, "" + i));
-      }
-      for (int j = 0; j < numDays; j++) {
-        TableRow row = new TableRow();
-        row.addCell(df.format(values.get(j * 24).getStart())); // hour
-        for (int k = 0; k < 24; k++) {
-          Double value = values.get(j * 24 + k).getValue();
-          if (value != null) {
-            row.addCell(value);
+  public static String getDailyGvizResponse(Object resource, String tqxString, String tqString) {
+    DataTable table = null;
+    if (resource instanceof InterpolatedValueList) {
+      InterpolatedValueList list = (InterpolatedValueList) resource;
+      table = getRow24HourPerDayDataTable(list);
+      StringBuilder sb = new StringBuilder();
+      sb.append("google.visualization.Query.setResponse");
+
+      String reqId = null;
+      if (tqxString != null) {
+        String[] tqxArray = tqxString.split(";");
+        for (String s : tqxArray) {
+          if (s.contains("reqId")) {
+            reqId = s.substring(s.indexOf(":") + 1, s.length());
           }
         }
-        try {
-          data.addRow(row);
-        }
-        catch (TypeMismatchException e) {
-          e.printStackTrace();
-        }
       }
+
+      String tableString = JsonRenderer.renderDataTable(table, true, true, true).toString();
+      if (list.getMissingData().size() > 0) {
+        sb.append("({status:'warning',");
+      }
+      else {
+        sb.append("({status:'ok',");
+      }
+      if (reqId != null) {
+        sb.append("reqId:'" + reqId + "',");
+      }
+      if (list.getMissingData().size() > 0) {
+        sb.append("warnings:[");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        for (InterpolatedValue v : list.getMissingData()) {
+          sb.append("{reason: 'missing data " + df.format(v.getStart()) + " to " + df.format(v.getEnd()) + "'},");
+        }
+        if (sb.length() > 0) {
+          sb.substring(0, sb.length() - 1);
+        }
+        sb.append("],");
+      }
+      sb.append("table:" + tableString + "});");
+
+      return sb.toString();
     }
-    return data;
+    return getGvizResponseFromDataTable(table, tqxString/*, tqString*/);
   }
 
   /**
@@ -118,54 +130,42 @@ public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {
   }
 
   /**
-   * @param resource  server resource object
-   * @param tqxString gviz tqx query string, i.e., request id
-   * @param tqString  gviz tq query string, selectable fields
-   * @return gviz response
+   * Returns the daily DataTable based upon one value per hour.
+   *
+   * @param valueList The hourly values.
+   * @return The DataTable with a row per day an 24 hourly entries.
    */
-  public static String getDailyGvizResponse(Object resource, String tqxString, String tqString) {
-    DataTable table = null;
-    if (resource instanceof InterpolatedValueList) {
-      InterpolatedValueList list = (InterpolatedValueList) resource;
-      table = getRow24HourPerDayDataTable(list);
-      String response = "google.visualization.Query.setResponse";
-
-      String reqId = null;
-      if (tqxString != null) {
-        String[] tqxArray = tqxString.split(";");
-        for (String s : tqxArray) {
-          if (s.contains("reqId")) {
-            reqId = s.substring(s.indexOf(":") + 1, s.length());
+  public static DataTable getRow24HourPerDayDataTable(InterpolatedValueList valueList) {
+    DataTable data = new DataTable();
+    DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+    // Sets up the columns requested by any SELECT in the datasource query
+    ArrayList<InterpolatedValue> values = valueList.getInterpolatedValues();
+    if (!values.isEmpty()) {
+      int numDays = values.size() / 24;
+      data.addColumn(
+        new ColumnDescription("Date", ValueType.TEXT, "Date"));
+      for (int i = 0; i < 24; i++) {
+        data.addColumn(
+          new ColumnDescription("Hour" + i, ValueType.NUMBER, "" + i));
+      }
+      for (int j = 0; j < numDays; j++) {
+        TableRow row = new TableRow();
+        row.addCell(df.format(values.get(j * 24).getStart())); // hour
+        for (int k = 0; k < 24; k++) {
+          Double value = values.get(j * 24 + k).getValue();
+          if (value != null) {
+            row.addCell(value);
           }
         }
-      }
-
-      String tableString = JsonRenderer.renderDataTable(table, true, true, true).toString();
-      if (list.getMissingData().size() > 0) {
-        response += "({status:'warning',";
-      }
-      else {
-        response += "({status:'ok',";
-      }
-      if (reqId != null) {
-        response += "reqId:'" + reqId + "',";
-      }
-      if (list.getMissingData().size() > 0) {
-        response += "warnings:[";
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        for (InterpolatedValue v : list.getMissingData()) {
-          response += "{reason: 'missing data " + df.format(v.getStart()) + " to " + df.format(v.getEnd()) + "'},";
+        try {
+          data.addRow(row);
         }
-        if (response.length() > 0) {
-          response = response.substring(0, response.length() - 1);
+        catch (TypeMismatchException e) {
+          e.printStackTrace();
         }
-        response += "],";
       }
-      response += "table:" + tableString + "});";
-
-      return response;
     }
-    return getGvizResponseFromDataTable(table, tqxString/*, tqString*/);
+    return data;
   }
 
   /**
@@ -179,7 +179,8 @@ public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {
     if (resource instanceof InterpolatedValueList) {
       InterpolatedValueList list = (InterpolatedValueList) resource;
       table = getPercentageDataTable(list);
-      String response = "google.visualization.Query.setResponse";
+      StringBuilder sb = new StringBuilder();
+      sb.append("google.visualization.Query.setResponse");
 
       String reqId = null;
       if (tqxString != null) {
@@ -193,24 +194,26 @@ public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {
 
       String tableString = JsonRenderer.renderDataTable(table, true, true, true).toString();
       if (list.getMissingData().size() > 0) {
-        response += "({status:'warning',";
+        sb.append("({status:'warning',");
       }
       else {
-        response += "({status:'ok',";
+        sb.append("({status:'ok',");
       }
       if (reqId != null) {
-        response += "reqId:'" + reqId + "',";
+        sb.append("reqId:'" + reqId + "',");
       }
-      response += "warnings:[";
-      SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-      for (InterpolatedValue v : list.getMissingData()) {
-        response += "{reason: 'missing data " + df.format(v.getStart()) + " to " + df.format(v.getEnd()) + "'},";
+      if (list.getMissingData().size() > 0) {
+        sb.append("warnings:[");
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        for (InterpolatedValue v : list.getMissingData()) {
+          sb.append("{reason: 'missing data " + df.format(v.getStart()) + " to " + df.format(v.getEnd()) + "'},");
+        }
+        sb.substring(0, sb.length() - 1);
+        sb.append("],");
       }
-      response = response.substring(0, response.length() - 1);
-      response += "],";
-      response += "table:" + tableString + "});";
+      sb.append("table:" + tableString + "});");
 
-      return response;
+      return sb.toString();
     }
     return null;
   }
@@ -226,7 +229,8 @@ public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {
       XYInterpolatedValuesWithAnalysis analysis = (XYInterpolatedValuesWithAnalysis) resource;
       try {
         DataTable table = getDataTable(analysis.getDataPoints());
-        String response = "google.visualization.Query.setResponse";
+        StringBuilder sb = new StringBuilder();
+        sb.append("google.visualization.Query.setResponse");
 
         String reqId = null;
         if (tqxString != null) {
@@ -241,31 +245,36 @@ public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {
         String tableString = JsonRenderer.renderDataTable(table, true, true, true).toString();
 
         if (analysis.getAnalysis().entrySet().size() > 0) {
-          response += "({status:'warning',";
+          sb.append("({status:'warning',");
         }
         else {
-          response += "({status:'ok',";
+          sb.append("({status:'ok',");
         }
 
 
         if (reqId != null) {
-          response += "reqId:'" + reqId + "',";
+          sb.append("reqId:'" + reqId + "',");
         }
-        response += "warnings:[";
+        sb.append("warnings:[");
+        boolean added = false;
         DecimalFormat df = new DecimalFormat("0.00");
         for (Map.Entry e : analysis.getAnalysis().entrySet()) {
-          response += "{reason:'" + e.getKey() + ": " + df.format(e.getValue()) + "'},";
+          added = true;
+          sb.append("{reason:'" + e.getKey() + ": " + df.format(e.getValue()) + "'},");
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         for (InterpolatedValue v : analysis.getDataPoints().getMissingData()) {
-          response += "{reason: 'missing data " + dateFormat.format(v.getStart()) + " to " + dateFormat.format(v.getEnd()) + "'},";
+          added = true;
+          sb.append("{reason: 'missing data " + dateFormat.format(v.getStart()) + " to " + dateFormat.format(v.getEnd()) + "'},");
         }
-        response = response.substring(0, response.length() - 1);
-        response += "],";
+        if (added) {
+          sb.substring(0, sb.length() - 1);
+        }
+        sb.append("],");
 
-        response += "table:" + tableString + "});";
+        sb.append("table:" + tableString + "});");
 
-        return response;
+        return sb.toString();
       }
       catch (DataSourceException e) {
         return getGvizDataErrorResponse(e);
@@ -284,6 +293,7 @@ public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {
    * @param tqString  gviz tq query string, selectable fields
    * @return gviz response
    */
+
   public static String getBenchmarkGvizResponse(InterpolatedValueList mList, String tqxString, String tqString) {
     try {
       return getGvizResponseFromDataTable(getColumnDataTable(mList), tqxString);

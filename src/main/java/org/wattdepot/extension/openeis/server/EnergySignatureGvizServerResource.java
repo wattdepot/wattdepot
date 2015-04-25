@@ -49,8 +49,8 @@ public class EnergySignatureGvizServerResource extends EnergySignatureServer imp
   @Override
   public String retrieve() {
     XYInterpolatedValuesWithAnalysis analysis = doRetrieve();
-    analysis.getDataPoints().collapseMissingData();
     if (analysis != null) {
+      analysis.getDataPoints().collapseMissingData();
       return OpenEISGvizHelper.getGvizResponse(analysis, tqxString, tqString);
     }
     return null;

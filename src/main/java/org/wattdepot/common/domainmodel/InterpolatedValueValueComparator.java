@@ -19,6 +19,7 @@
 
 package org.wattdepot.common.domainmodel;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -27,7 +28,7 @@ import java.util.Comparator;
  * @author Cam Moore
  *         Created by carletonmoore on 4/20/15.
  */
-public class InterpolatedValueValueComparator implements Comparator<InterpolatedValue> {
+public class InterpolatedValueValueComparator implements Comparator<InterpolatedValue>, Serializable {
   @Override
   public int compare(InterpolatedValue o1, InterpolatedValue o2) {
     if (o1.getValue() < o2.getValue()) {

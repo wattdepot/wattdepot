@@ -85,8 +85,8 @@ public class LongitudinalBenchmarkingServer extends OpenEISServer {
         Date baseStart = baseCal.toGregorianCalendar().getTime();
         XMLGregorianCalendar compareCal = Tstamp.makeTimestamp(comparisonStartString);
         Date compDate = compareCal.toGregorianCalendar().getTime();
-        ret = getDifferenceValues(depositoryId, sensorId, baseStart, interval, 1);
-        InterpolatedValueList compareValues = getDifferenceValues(depositoryId, sensorId, compDate, interval, numberOfIntervals);
+        ret = getDifferenceValues(depositoryId, sensorId, baseStart, interval, 1, true);
+        InterpolatedValueList compareValues = getDifferenceValues(depositoryId, sensorId, compDate, interval, numberOfIntervals, true);
         for (InterpolatedValue val : compareValues.getInterpolatedValues()) {
           ret.getInterpolatedValues().add(val);
         }
