@@ -414,7 +414,7 @@ function insertRowHTML(index) {
               + '            <div class="col-xs-12"><label class="checkbox"><input type="checkbox" id="endTimeNow'
               + index + '" value="now">Now</label></div>' + '        </div>'
               + '    </div>' + '<div class="col-xs-3 row">    <div class="col-xs-5 control-group">'
-              + '      <select class="col-xs-12 id="dataType' + index + '">'
+              + '      <select class="col-xs-12" id="dataType' + index + '">'
               + '        <option value="point">Point Value</option>'
               + '        <option value="interval">Interval Value</option>'
               + '      </select>' + '    </div>'
