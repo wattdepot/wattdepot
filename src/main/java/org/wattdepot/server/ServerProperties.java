@@ -62,6 +62,18 @@ public class ServerProperties {
   public static final String PORT_KEY = "wattdepot-server.port";
   /** The context root key. */
   public static final String CONTEXT_ROOT_KEY = "wattdepot-server.context.root";
+
+  /** The option to enable SSL. */
+  public static final String SSL = "wattdepot-server.ssl";
+  /** The path to the keystore holding the certificate. */
+  public static final String SSL_KEYSTORE_PATH = "wattdepot-server.ssl.keystore.path";
+  /** The password for the keystore. */
+  public static final String SSL_KEYSTORE_PASSWORD = "wattdepot-server.ssl.keystore.password";
+  /** The password for the key. */
+  public static final String SSL_KEYSTORE_KEY_PASSWORD = "wattdepot-server.ssl.keystore.key.password";
+  /** The type of keystore. */
+  public static final String SSL_KEYSTORE_TYPE = "wattdepot-server.ssl.keystore.type";
+
   /** The database connection driver class. */
   public static final String DB_CONNECTION_DRIVER = "wattdepot-server.db.connection.driver";
   /** The database connection driver url. */
@@ -143,7 +155,7 @@ public class ServerProperties {
     properties.setProperty(WATT_DEPOT_IMPL_KEY, properties.getProperty(TEST_WATT_DEPOT_IMPL_KEY));
     // turn off logging during testing.
     properties.setProperty(LOGGING_LEVEL_KEY, "SEVERE");
-    trimProperties(properties);
+    trimProperties();
     // update the system properties object to reflect these new values.
     Properties systemProperties = System.getProperties();
     systemProperties.putAll(properties);
@@ -206,10 +218,9 @@ public class ServerProperties {
    * Ensures that the there is no leading or trailing whitespace in the property
    * values. The fact that we need to do this indicates a bug in Java's
    * Properties implementation to me.
-   * 
-   * @param properties The properties.
+   *
    */
-  private void trimProperties(Properties properties) {
+  public void trimProperties() {
     // Have to do this iteration in a Java 5 compatible manner. no
     // stringPropertyNames().
     for (Map.Entry<Object, Object> entry : properties.entrySet()) {
@@ -288,6 +299,19 @@ public class ServerProperties {
       }
       throw new SecurityException(sb.toString());
     }
+    if (properties.containsKey(SSL) && properties.getProperty(SSL).equals(TRUE)) {
+      StringBuilder sb = new StringBuilder();
+      if (!properties.containsKey(SSL_KEYSTORE_PASSWORD)) {
+        sb.append("Keystore password is not set. ");
+      }
+      if (!properties.containsKey(SSL_KEYSTORE_KEY_PASSWORD)) {
+        sb.append("Keystore key password is not set. ");
+      }
+      if (sb.length() != 0) {
+        throw new SecurityException(sb.toString());
+      }
+    }
+
     UserInfo.ROOT.setUid(properties.getProperty(ADMIN_USER_NAME));
     UserInfo.ROOT.setPassword(properties.getProperty(ADMIN_USER_PASSWORD));
     UserPassword.ROOT.setUid(properties.getProperty(ADMIN_USER_NAME));
@@ -305,6 +329,15 @@ public class ServerProperties {
     }
     if (!properties.containsKey(PORT_KEY)) {
       properties.setProperty(PORT_KEY, "8192");
+    }
+    if (!properties.containsKey(SSL)) {
+      properties.setProperty(SSL, FALSE);
+    }
+    if (!properties.containsKey(SSL_KEYSTORE_PATH)) {
+      properties.setProperty(SSL_KEYSTORE_PATH, serverHome + "/wattdepot.jks");
+    }
+    if (!properties.containsKey(SSL_KEYSTORE_TYPE)) {
+      properties.setProperty(SSL_KEYSTORE_TYPE, "JKS");
     }
     if (!properties.containsKey(DB_CONNECTION_DRIVER)) {
       properties.setProperty(DB_CONNECTION_DRIVER, "org.postgresql.Driver");
@@ -346,7 +379,7 @@ public class ServerProperties {
       properties.setProperty(TEST_HEROKU_KEY, FALSE);
     }
     logger.finest(echoProperties());
-    trimProperties(properties);
+    trimProperties();
     logger.finest(echoProperties());
 
     // get PORT and DATABASE_URL for heroku

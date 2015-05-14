@@ -21,7 +21,7 @@
 <script src="/webroot/dist/js/wattdepot-visualizer.js"></script>
 <script src="/webroot/dist/js/org.wattdepot.client.js"></script>
 <!--Load the Google AJAX API-->
-<script type='text/javascript' src='http://www.google.com/jsapi'></script>
+<script type='text/javascript' src='https://www.google.com/jsapi'></script>
 
 <script> 
    // Load the Visualization API and Annotated Timeline visualization
