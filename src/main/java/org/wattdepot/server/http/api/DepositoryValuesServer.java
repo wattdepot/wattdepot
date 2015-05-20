@@ -48,12 +48,12 @@ import org.wattdepot.common.util.tstamp.Tstamp;
  * 
  */
 public class DepositoryValuesServer extends WattDepotServerResource {
-  private String depositoryId;
-  private String sensorId;
-  private String start;
-  private String end;
-  private String interval;
-  private String dataType;
+  protected String depositoryId;
+  protected String sensorId;
+  protected String start;
+  protected String end;
+  protected String interval;
+  protected String dataType;
 
   /*
    * (non-Javadoc)

@@ -124,6 +124,8 @@
         <postgres.version>9.4-1201-jdbc41</postgres.version>
         <rabbitmq.version>3.5.0</rabbitmq.version>
         <restlet.version>2.1.2</restlet.version>
+        <jsslutils.version>0.5</jsslutils.version>
+        <simpleframework.version>3.1.3</simpleframework.version>
         <selenium.version>1.0.1</selenium.version>
 
         <!-- Maven Plugin Versions -->
@@ -312,6 +314,26 @@
             <groupId>org.restlet.jse</groupId>
             <artifactId>org.restlet.ext.freemarker</artifactId>
             <version>${restlet.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.restlet.jse</groupId>
+            <artifactId>org.restlet.ext.simple</artifactId>
+            <version>${restlet.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.restlet.jse</groupId>
+            <artifactId>org.restlet.ext.ssl</artifactId>
+            <version>${restlet.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jsslutils</groupId>
+            <artifactId>org.jsslutils</artifactId>
+            <version>${jsslutils.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.simpleframework</groupId>
+            <artifactId>org.simpleframework</artifactId>
+            <version>${simpleframework.version}</version>
         </dependency>
         <dependency>
             <groupId>org.seleniumhq.selenium.client-drivers</groupId>
