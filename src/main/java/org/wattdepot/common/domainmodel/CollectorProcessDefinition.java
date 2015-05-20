@@ -258,21 +258,6 @@ public class CollectorProcessDefinition implements IDomainModel {
   }
 
   /**
-   * Determines if the given group is the owner of this location.
-   * 
-   * @param group the UserGroup to check.
-   * @return True if the group owns the Location or the group is the
-   *         ADMIN_GROUP.
-   */
-  public boolean isOwner(Organization group) {
-    if (ownerId != null
-        && (ownerId.equals(group.getId()) || group.equals(Organization.ADMIN_GROUP))) {
-      return true;
-    }
-    return false;
-  }
-
-  /**
    * @param o The Property to remove.
    * @return true if removed.
    * @see java.util.List#remove(java.lang.Object)

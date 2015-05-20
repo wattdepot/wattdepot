@@ -40,6 +40,7 @@ import org.wattdepot.common.domainmodel.UserInfoList;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.util.logger.LoggerUtil;
+import org.wattdepot.server.StrongAES;
 import org.wattdepot.server.WattDepotServer;
 
 /**
@@ -131,6 +132,13 @@ public class TestWattDepotAdminClient {
       e.printStackTrace();
       fail(e.getMessage() + " should delete defined organization " + three.getName());
     }
+    try {
+      admin.deleteOrganization("bogus-org");
+      fail("Should not be able to delete a bogus organization.");
+    }
+    catch (IdNotFoundException e) {
+      // expected
+    }
     list = admin.getOrganizations();
     assertNotNull(list);
     assertTrue(numOrganizations + 2 == list.getOrganizations().size());
@@ -212,13 +220,21 @@ public class TestWattDepotAdminClient {
     }
     assertFalse("isDefinedUser('bogus') should return false.", admin.isDefinedUserInfo("bogus-id", u1.getOrganizationId()));
     // passwords
-//    try {
-//      UserPassword pass1 = admin.getUserPassword(u1.getUid(), u1.getOrganizationId());
-//      assertNotNull(pass1);
-//    }
-//    catch (IdNotFoundException e) {
-//      fail("u1 is defined");
-//    }
+    try {
+      UserPassword pass1 = admin.getUserPassword(u1.getUid(), u1.getOrganizationId());
+      assertNotNull(pass1);
+      pass1.setEncryptedPassword(StrongAES.getInstance().encrypt("foooo"));
+      try {
+        admin.updateUserPassword(pass1);
+      }
+      catch (IdNotFoundException e) {
+        e.printStackTrace();
+        fail("problem updating password");
+      }
+    }
+    catch (IdNotFoundException e) {
+      fail("u1 is defined");
+    }
 
     // Clean up
     if (admin.isDefinedUserInfo(u1.getUid(), u1.getOrganizationId())) {

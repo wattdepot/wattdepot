@@ -84,6 +84,12 @@ public class Labels {
   /** The label for google visualization. */
   public static final String GVIZ = "gviz";
 
+  /** The label for hourly samples for a single data. */
+  public static final String DAY_HOURLY = "day-hourly";
+
+  /** The label for hourly values or samples. */
+  public static final String HOURLY = "hourly";
+
   /** The label for sampling internal or interval values. */
   public static final String INTERVAL = "interval";
 
@@ -240,4 +246,6 @@ public class Labels {
   /** The base label used for WattDepot. */
   public static final String WATTDEPOT = "wattdepot";
 
+  /** The label used for getting csv values. */
+  public static final String CSV = "csv";
 }

@@ -89,6 +89,9 @@ public class UserPassword {
         && !obj.getClass().isAssignableFrom(getClass()) && getClass() != obj.getClass()) {
       return false;
     }
+    if (!(obj instanceof UserPassword)) {
+      return false;
+    }
     UserPassword other = (UserPassword) obj;
     if (encryptedPassword == null) {
       if (other.encryptedPassword != null) {

@@ -84,8 +84,8 @@ public class UnitsHelper {
       return type + " (" + s2 + ")";
       
     }
-    catch (UnsupportedEncodingException e) {
-      e.printStackTrace();
+    catch (UnsupportedEncodingException e) { // NOPMD
+      // Don't know what to do so just returning s1.
     }
     return type + " (" + s1 + ")";
   }

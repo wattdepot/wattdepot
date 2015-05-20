@@ -170,11 +170,14 @@ public class WattDepotApplication extends Application {
     router.attach(API.VALUE_URI, DepositoryValueServerResource.class);
     router.attach(API.VALUE_GVIZ_URI, GvizDepositoryValueServerResource.class);
     router.attach(API.VALUES_URI, DepositoryValuesServerResource.class);
+    router.attach(API.VALUES_CSV_URI, CsvDepositoryValuesServerResource.class);
     router.attach(API.VALUES_GVIZ_URI, GvizDepositoryValuesServerResource.class);
     router.attach(API.VALUES_AVERAGE_URI, DepositoryAverageValuesServerResource.class);
     router.attach(API.VALUES_AVERAGE_GVIZ_URI, GvizDepositoryAverageValuesServerResource.class);
     router.attach(API.VALUES_MAXIMUM_URI, DepositoryMaximumValuesServerResource.class);
     router.attach(API.VALUES_MINIMUM_URI, DepositoryMinimumValuesServerResource.class);
+    router.attach(API.DAY_HOURLY_VALUES_URI, DepositoryDayHourlyValuesServerResource.class);
+    router.attach(API.HOURLY_VALUES_URI, DepositoryHourlyValuesServerResource.class);
     // MeasurementTypes
     router.attach(API.MEASUREMENT_TYPE_PUT_URI, MeasurementTypePutServerResource.class);
     router.attach(API.MEASUREMENT_TYPE_URI, MeasurementTypeServerResource.class);

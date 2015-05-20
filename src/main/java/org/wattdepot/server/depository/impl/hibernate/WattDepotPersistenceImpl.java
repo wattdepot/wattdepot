@@ -18,6 +18,7 @@
  */
 package org.wattdepot.server.depository.impl.hibernate;
 
+import java.security.InvalidKeyException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,6 +29,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.hibernate.Session;
@@ -211,6 +214,15 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       }
       catch (IdNotFoundException e1) {
         // this shouldn't happen
+        e1.printStackTrace();
+      }
+      catch (IllegalBlockSizeException e1) {
+        e1.printStackTrace();
+      }
+      catch (BadPaddingException e1) {
+        e1.printStackTrace();
+      }
+      catch (InvalidKeyException e1) {
         e1.printStackTrace();
       }
     }

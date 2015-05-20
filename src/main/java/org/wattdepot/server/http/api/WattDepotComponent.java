@@ -23,7 +23,6 @@ import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.restlet.Component;
-import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.ext.jackson.JacksonRepresentation;
 import org.restlet.representation.Representation;
@@ -38,6 +37,10 @@ import org.wattdepot.server.StrongAES;
 import org.wattdepot.server.WattDepotPersistence;
 import org.wattdepot.server.depository.impl.hibernate.MeasurementImpl;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import java.security.InvalidKeyException;
+
 /**
  * WattDepotComponent - Main class to start the WattDepot Http API component of
  * the WattDepotServer.
@@ -51,21 +54,23 @@ public class WattDepotComponent extends Component {
    * Sets up the WattDepotComponent with the given WattDepot.
    * 
    * @param depot The persitent store.
-   * @param port the port number on which the restlet server listens.
+   * @throws javax.crypto.BadPaddingException if there is a problem with the encryption.
+   * @throws java.security.InvalidKeyException if there is a problem with the encryption.
+   * @throws javax.crypto.IllegalBlockSizeException if there is a problem with the encryption.
    */
-  public WattDepotComponent(WattDepotPersistence depot, int port) {
+  public WattDepotComponent(WattDepotPersistence depot) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException {
     setName("WattDepot HTTP API Server");
     setDescription("WattDepot RESTful server.");
     setAuthor("Cam Moore");
     getLogService().setLoggerName("org.wattdepot.server");
     // Add a CLAP client connector
+
     getClients().add(Protocol.CLAP);
     getClients().add(Protocol.FILE);
     getClients().add(Protocol.HTTP);
 
-    // Adds a HTTP server connector
-    Server server = getServers().add(Protocol.HTTP, port);
-    server.getContext().getParameters().set("tracing", "true");
+
+    getServers().getContext().getParameters().set("tracing", "true");
 
     WattDepotApplication app = new WattDepotApplication();
     app.setDepot(depot);

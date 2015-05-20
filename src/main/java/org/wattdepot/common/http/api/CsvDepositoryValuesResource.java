@@ -1,7 +1,7 @@
 /**
- * UserResource.java This file is part of WattDepot.
+ * CsvDepositoryValuesResource.java This file is part of WattDepot.
  *
- * Copyright (C) 2013  Cam Moore
+ * Copyright (C) 2013  Brian Frølund
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,34 +18,26 @@
  */
 package org.wattdepot.common.http.api;
 
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Get;
-import org.restlet.resource.Post;
-import org.wattdepot.common.domainmodel.UserPassword;
 
 /**
- * UserResource - HTTP Interface for data model User.
+ * CsvDepositoryValuesResource - HTTP Interface for getting the MeasuredValueList. <br>
+ * (/wattdepot/{org-id}/depository/{depository-id}/values/csv/)
  * 
- * @author Cam Moore
+ * @author Brian Frølund
  * 
  */
 @SuppressWarnings("PMD.UnusedModifier")
-public interface UserPasswordResource {
+public interface CsvDepositoryValuesResource {
 
   /**
-   * Defines GET /wattdepot/admin/user-password/{user_id} API call.
+   * Defines GET <br/>
+   * /wattdepot/{org-id}/depository/{depository-id}/values/csv/?
+   *   sensor={sensor_id}&start={start}&end={end}&interval={interval}.
    * 
-   * @return The User with the given id. The id is sent in the request.
+   * @return Export csv data file.
    */
-  @Get("json") // Use JSON as transport encoding.
-  public UserPassword retrieve();
-
-  /**
-   * Defines the POST /wattdepot/admin/user-password/ API call.
-   * 
-   * @param user
-   *          The User to store.
-   */
-  @Post()
-  public void update(UserPassword user);
-
+  @Get( value = "csv")
+  public StringRepresentation retrieve();
 }

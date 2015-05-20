@@ -23,6 +23,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.security.InvalidKeyException;
 import java.util.HashSet;
 import java.util.List;
 
@@ -51,6 +52,9 @@ import org.wattdepot.common.exception.UniqueIdException;
 import org.wattdepot.common.util.UnitsHelper;
 import org.wattdepot.server.ServerProperties;
 import org.wattdepot.server.StrongAES;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 
 /**
  * TestWattDepotImpl - Test cases for the WattDepotImpl.
@@ -1420,6 +1424,18 @@ public class TestWattDepotPersistenceImpl {
       fail(e.getMessage() + " should not happen");
     }
     catch (IdNotFoundException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen");
+    }
+    catch (IllegalBlockSizeException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen");
+    }
+    catch (BadPaddingException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen");
+    }
+    catch (InvalidKeyException e) {
       e.printStackTrace();
       fail(e.getMessage() + " should not happen");
     }

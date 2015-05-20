@@ -101,6 +101,20 @@ public class API {
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR;
 
   /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/day-hourly/values/</b> URI for
+   * getting a day's hourly samples. Use GET requests.
+   */
+  public static final String DAY_HOURLY_VALUES_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.DAY_HOURLY + "/" + Labels.VALUES + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/hourly/values/</b> URI for
+   * getting hourly samples. Use GET requests.
+   */
+  public static final String HOURLY_VALUES_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.HOURLY + "/" + Labels.VALUES + "/";
+
+  /**
    * <b>/wattdepot/{org-id}/measurement-pruning-definition/</b> URI for putting a
    * MeasurementPruningDefinition. Use PUT requests.
    */
@@ -286,7 +300,7 @@ public class API {
       + Labels.SENSORS + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/user/{user-id}</b> URI for manipulating UserInfos.
+   * <b>/wattdepot/{org-id}/user-password/{user-id}</b> URI for manipulating UserPasswords.
    * Supports GET, POST, and DELETE requests.
    */
   public static final String USER_PASSWORD_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
@@ -352,6 +366,14 @@ public class API {
   public static final String VALUES_GVIZ_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/"
       + Labels.GVIZ + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/csv/</b> URI to
+   * get all the measured value. Use GET requests.
+   */
+  public static final String VALUES_CSV_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/"
+      + Labels.CSV + "/";
 
   /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/values/average/</b> URI

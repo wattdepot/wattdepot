@@ -4,7 +4,7 @@
   <groupId>org.wattdepot</groupId>
   <artifactId>wattdepot</artifactId>
   <name>WattDepot</name>
-  <version>3.0.2</version>
+  <version>3.0.3-SNAPSHOT</version>
   <description>WattDepot is an open source, RESTful web service that collects electricity data (such as current power utilization or cumulative power utilization) from meters and stores it in a database.</description>
   <url>https://github.com/wattdepot/wattdepot/</url>
   <prerequisites>
@@ -480,7 +480,7 @@
     </plugins>
   </reporting>
   <properties>
-    <commons-math.version>3.3</commons-math.version>
+    <commons-math.version>3.4.1</commons-math.version>
     <appassembler.plugin.version>1.9</appassembler.plugin.version>
     <junit.version>4.12</junit.version>
     <targetJdk>1.7</targetJdk>
@@ -500,11 +500,12 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jcs.version>1.3</jcs.version>
     <surefire.report.plugin.version>2.18</surefire.report.plugin.version>
-    <h2.version>1.4.182</h2.version>
+    <h2.version>1.4.186</h2.version>
     <pool.version>1.6</pool.version>
-    <postgres.version>9.1-901-1.jdbc4</postgres.version>
+    <postgres.version>9.4-1201-jdbc41</postgres.version>
     <surefire.plugin.version>2.18</surefire.plugin.version>
     <jacoco.version>0.7.2.201409121644</jacoco.version>
+    <jsslutils.version>0.5</jsslutils.version>
     <dbcp.version>1.4</dbcp.version>
     <icu4j.version>54.1.1</icu4j.version>
     <hibernate-annotations.version>3.3.1.GA</hibernate-annotations.version>
@@ -513,15 +514,16 @@
     <restlet.version>2.1.2</restlet.version>
     <config.dir>${basedir}</config.dir>
     <site.plugin.version>3.4</site.plugin.version>
-    <rabbitmq.version>3.4.2</rabbitmq.version>
+    <rabbitmq.version>3.5.0</rabbitmq.version>
     <tomcat.jdbc.version>7.0.42</tomcat.jdbc.version>
     <google-visualization-java.version>1.1.1</google-visualization-java.version>
-    <commons-validator.version>1.4.0</commons-validator.version>
+    <commons-validator.version>1.4.1</commons-validator.version>
     <hibernate.version>3.2.6.ga</hibernate.version>
     <antrun.plugin.version>1.7</antrun.plugin.version>
     <concurrent.version>1.0</concurrent.version>
     <google-guava.version>18.0</google-guava.version>
     <json.version>20141113</json.version>
+    <simpleframework.version>3.1.3</simpleframework.version>
     <commons-logging.version>1.2</commons-logging.version>
     <pmd.plugin.version>3.3</pmd.plugin.version>
     <selenium.plugin.version>2.3</selenium.plugin.version>
@@ -531,7 +533,7 @@
     <jacoco.ut.execution.data.file>${project.build.directory}/jacoco-ut.exec</jacoco.ut.execution.data.file>
     <modbus-jamod.version>1.2</modbus-jamod.version>
     <oro.version>2.0.8</oro.version>
-    <hibernate-core.version>4.3.7.Final</hibernate-core.version>
+    <hibernate-core.version>4.3.8.Final</hibernate-core.version>
   </properties>
 </project>
 

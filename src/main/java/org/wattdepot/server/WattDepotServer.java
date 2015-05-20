@@ -28,6 +28,11 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
+import org.restlet.Context;
+import org.restlet.Server;
+import org.restlet.data.Parameter;
+import org.restlet.data.Protocol;
+import org.restlet.util.Series;
 import org.wattdepot.common.util.logger.LoggerUtil;
 import org.wattdepot.server.http.api.WattDepotComponent;
 
@@ -97,32 +102,51 @@ public class WattDepotServer {
   public static WattDepotServer newInstance(ServerProperties properties)
       throws Exception {
     int port = Integer.parseInt(properties.get(ServerProperties.PORT_KEY));
-    WattDepotServer server = new WattDepotServer();
+    WattDepotServer wattDepotServer = new WattDepotServer();
     // System.out.println("WattDepotServer.");
-//    LoggerUtil.showLoggers();
+    //    LoggerUtil.showLoggers();
     boolean enableLogging = Boolean.parseBoolean(properties
         .get(ServerProperties.ENABLE_LOGGING_KEY));
-    server.serverProperties = properties;
-    server.hostName = server.serverProperties.getFullHost();
+    wattDepotServer.serverProperties = properties;
+    wattDepotServer.hostName = wattDepotServer.serverProperties.getFullHost();
 
     // Get the WattDepotPersistence implementation.
     String depotClass = properties.get(ServerProperties.WATT_DEPOT_IMPL_KEY);
-    server.depot = (WattDepotPersistence) Class.forName(depotClass)
+    wattDepotServer.depot = (WattDepotPersistence) Class.forName(depotClass)
         .getConstructor(ServerProperties.class).newInstance(properties);
-    if (server.depot.getSessionOpen() != server.depot.getSessionClose()) {
+    if (wattDepotServer.depot.getSessionOpen() != wattDepotServer.depot.getSessionClose()) {
       throw new RuntimeException("opens and closed mismatched.");
     }
-    server.depot.initializeMeasurementTypes();
-    if (server.depot.getSessionOpen() != server.depot.getSessionClose()) {
+    wattDepotServer.depot.initializeMeasurementTypes();
+    if (wattDepotServer.depot.getSessionOpen() != wattDepotServer.depot.getSessionClose()) {
       throw new RuntimeException("opens and closed mismatched.");
     }
-    server.depot.initializeSensorModels();
-    if (server.depot.getSessionOpen() != server.depot.getSessionClose()) {
+    wattDepotServer.depot.initializeSensorModels();
+    if (wattDepotServer.depot.getSessionOpen() != wattDepotServer.depot.getSessionClose()) {
       throw new RuntimeException("opens and closed mismatched.");
     }
-    server.depot.setServerProperties(properties);
-    server.restletServer = new WattDepotComponent(server.depot, port);
-    server.logger = server.restletServer.getLogger();
+    wattDepotServer.depot.setServerProperties(properties);
+    wattDepotServer.restletServer = new WattDepotComponent(wattDepotServer.depot);
+
+    // Adds a HTTP or HTTPS server connector
+    if (properties.get(ServerProperties.SSL).equals(ServerProperties.TRUE)) {
+
+      Server server = new Server(new Context(), Protocol.HTTPS, port, wattDepotServer.restletServer);
+      Series<Parameter> parameters = server.getContext().getParameters();
+      parameters.add("sslContextFactory", "org.restlet.ext.ssl.DefaultSslContextFactory");
+      parameters.add("keyStorePath", properties.get(ServerProperties.SSL_KEYSTORE_PATH));
+      parameters.add("keyStorePassword", properties.get(ServerProperties.SSL_KEYSTORE_PASSWORD));
+      parameters.add("keyPassword", properties.get(ServerProperties.SSL_KEYSTORE_KEY_PASSWORD));
+      parameters.add("keyStoreType", properties.get(ServerProperties.SSL_KEYSTORE_TYPE));
+//      parameters.add("protocol", "TLS");
+//      parameters.add("wantClientAuthentication", "false");
+      wattDepotServer.restletServer.getServers().add(server);
+    }
+    else {
+      wattDepotServer.restletServer.getServers().add(Protocol.HTTP, port);
+    }
+
+    wattDepotServer.logger = wattDepotServer.restletServer.getLogger();
 
     // Set up logging.
     if (enableLogging) {
@@ -132,9 +156,9 @@ public class WattDepotServer {
       String level = properties.get(ServerProperties.LOGGING_LEVEL_KEY);
      LoggerUtil.setLoggingLevel(base, level);
 
-      server.logger.info("Starting WattDepot server.");
-      server.logger.info("Host: " + server.hostName);
-      server.logger.info(server.serverProperties.echoProperties());
+      wattDepotServer.logger.info("Starting WattDepot server.");
+      wattDepotServer.logger.info("Host: " + wattDepotServer.hostName);
+      wattDepotServer.logger.info(wattDepotServer.serverProperties.echoProperties());
     }
     else {
       LoggerUtil.useConsoleHandler();
@@ -142,12 +166,12 @@ public class WattDepotServer {
       base = base.getParent();
       LoggerUtil.setLoggingLevel(base, Level.SEVERE.toString());
     }
-    server.restletServer.start();
+    wattDepotServer.restletServer.start();
 
-    server.logger.info("WattDepot server now running.");
+    wattDepotServer.logger.info("WattDepot server now running.");
 
 //    LoggerUtil.showLoggers();
-    return server;
+    return wattDepotServer;
   }
 
   /**

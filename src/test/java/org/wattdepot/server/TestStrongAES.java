@@ -25,6 +25,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import java.security.InvalidKeyException;
+
 /**
  * TestStrongAES Test cases for the StrongAES class.
  * 
@@ -52,7 +56,7 @@ public class TestStrongAES {
    * {@link org.wattdepot.server.StrongAES#encrypt(java.lang.String)}.
    */
   @Test
-  public void testRoundTrip() {
+  public void testRoundTrip() throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException {
     StrongAES aes = StrongAES.getInstance();
     String plain = "This is a test with lots of data";
     String result = aes.encrypt(plain);

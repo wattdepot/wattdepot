@@ -19,6 +19,7 @@
 package org.wattdepot.client.http.api;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -295,6 +296,7 @@ public class TestWattDepotClient {
   @Test
   public void testDepository() {
     Depository depo = new Depository("testDepository",  testMeasurementType, testOrg.getId());
+    assertFalse(test.isDefinedDepository(depo.getId()));
     // Get list
     DepositoryList list = test.getDepositories();
     assertNotNull(list);
@@ -349,22 +351,20 @@ public class TestWattDepotClient {
   }
 
   /**
-   * Test get measurement type.
-   *
-   * @throws IdNotFoundException the id not found exception
-   */
-  @Test
-  public void testGetPPMMeasurementType() throws IdNotFoundException {
-    MeasurementType mt = test.getMeasurementType("concentration-ppm");
-    assertNotNull(mt);
-  }
-
-  /**
    * Test method for MeasurementTypes.
    */
   @Test
   public void testMeasurementType() {
+    MeasurementType mt = null;
+    try {
+      mt = test.getMeasurementType("concentration-ppm");
+      assertNotNull(mt);
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
+    }
     MeasurementType type = new MeasurementType("testMeasurementType Client", testMeasurementType.unit());
+    assertFalse(test.isDefinedMeasurementType(type.getId()));
     // Put new instance (CREATE)
     try {
       test.putMeasurementType(type);
@@ -444,6 +444,7 @@ public class TestWattDepotClient {
   @Test
   public void testSensor() {
     Sensor sensor = new Sensor("testSensor Client", "uri", testSensor.getModelId(), testSensor.getOrganizationId());
+    assertFalse(test.isDefinedSensor(sensor.getId()));
     // Get list
     SensorList list = test.getSensors();
     assertNotNull(list);
@@ -508,6 +509,7 @@ public class TestWattDepotClient {
     Sensor sensor = new Sensor("testsensorgroupclient sensor", "uri", testSensor.getModelId(), testSensor.getOrganizationId());
     SensorGroup group = new SensorGroup("TestWattDepotClient Sensor Group", sensors,
         testOrg.getId());
+    assertFalse(test.isDefinedSensorGroup(group.getId()));
     // Get list
     SensorGroupList list = test.getSensorGroups();
     assertNotNull(list);
@@ -572,6 +574,7 @@ public class TestWattDepotClient {
   @Test
   public void testSensorModel() {
     SensorModel model = new SensorModel("testSensorModel", testModel.getProtocol(), testModel.getType(), testModel.getVersion());
+    assertFalse(test.isDefinedSensorModel(model.getId()));
     // Get list
     SensorModelList list = test.getSensorModels();
     assertNotNull(list);
@@ -623,6 +626,7 @@ public class TestWattDepotClient {
   @Test
   public void testCollectorProcessDefinition() {
     CollectorProcessDefinition data = new CollectorProcessDefinition("testCollectorProcessDefinition Client", testCPD.getSensorId(), testCPD.getPollingInterval(), testCPD.getDepositoryId(), testCPD.getOrganizationId());
+    assertFalse(test.isDefinedCollectorProcessDefinition(data.getId()));
     // Get list
     CollectorProcessDefinitionList list = test.getCollectorProcessDefinitions();
     assertNotNull(list);
@@ -654,6 +658,15 @@ public class TestWattDepotClient {
       }
       catch (Exception e) { // NOPMD
         // we expect this
+      }
+      // restore depository id
+      ret.setDepositoryId(data.getDepositoryId());
+      ret.setName("new name");
+      try {
+        test.updateCollectorProcessDefinition(ret);
+      }
+      catch (Exception e) {
+        fail("Should not happen " + e.getMessage());
       }
       list = test.getCollectorProcessDefinitions();
       assertNotNull(list);
@@ -689,6 +702,7 @@ public class TestWattDepotClient {
   @Test
   public void testMeasurementPruningDefinition() {
     MeasurementPruningDefinition data = testMPD;
+    assertFalse(test.isDefinedMeasurementPruningDefinition(data.getId()));
     // Get the list of defined MPDs
     MeasurementPruningDefinitionList list = test.getMeasurementPruningDefinitions();
     assertNotNull(list);
@@ -721,6 +735,15 @@ public class TestWattDepotClient {
       }
       catch (Exception e) { // NOPMD
         // we expect this
+      }
+      // restore depository id
+      ret.setDepositoryId(data.getDepositoryId());
+      ret.setName("new name");
+      try {
+        test.updateMeasurementPruningDefinition(ret);
+      }
+      catch (Exception e) {
+        fail("Should not happen " + e.getMessage());
       }
       // delete instance (DELETE)
       test.deleteMeasurementPruningDefinition(data);
@@ -1019,6 +1042,7 @@ public class TestWattDepotClient {
       Date measTime2 = DateConvert.parseCalStringToDate("2013-11-20T14:45:27.925-1000");
       Date measTime3 = DateConvert.parseCalStringToDate("2013-11-20T14:55:27.925-1000");
       Date measTime4 = DateConvert.parseCalStringToDate("2013-11-20T15:05:57.925-1000");
+      Date afterAll = DateConvert.parseCalStringToDate("2014-11-20T15:05:57.925-1000");
       Measurement m1 = new Measurement(sensor1.getId(), measTime1, 100.0, testMeasurementType.unit());
       test.putMeasurement(testDepository, m1);
       Measurement m2 = new Measurement(sensor1.getId(), measTime2, 150.0, testMeasurementType.unit());
@@ -1031,6 +1055,7 @@ public class TestWattDepotClient {
       assertNotNull(value);
       assertEquals("Got wrong value expecting 100.0 got " + value, 100.0, value, 0.0001);
       Date between12 = DateConvert.parseCalStringToDate("2013-11-20T14:40:27.925-1000");
+      Date between23 = DateConvert.parseCalStringToDate("2013-11-20T14:50:27.925-1000");
       value = test.getValue(testDepository, sensor1, between12);
       assertNotNull(value);
       assertEquals("Got wrong value expecting 125.0 got " + value, 125.0, value, 0.0001);
@@ -1049,6 +1074,13 @@ public class TestWattDepotClient {
       value = test.getValue(testDepository, group, between12);
       assertEquals("Got wrong value", 1375.0, value, 0.0001);
       try {
+        value = test.getValue(testDepository, group, between12, 1200l);
+        assertEquals("Got wrong value", 1375.0, value, 0.0001);
+      }
+      catch (MeasurementGapException e) {
+        fail("Shouldn't throw gap exception.");
+      }
+      try {
         value = test.getValue(testDepository, group, between12, 5l);
         fail("Should throw MeasurementGapException.");
       } catch (MeasurementGapException e) {
@@ -1056,6 +1088,17 @@ public class TestWattDepotClient {
       }
       value = test.getValue(testDepository, group, measTime1, measTime3);
       assertEquals("Got wrong value", 1100.0, value, 0.0001);
+      try {
+        value = test.getValue(testDepository, group, afterAll);
+        fail("Shouldn't be able to get value after last measurement.");
+      }
+      catch (NoMeasurementException nme) {
+        // expected
+      }
+      // values
+      InterpolatedValueList valueList = test.getValues(testDepository, group, between12, between23, 5, false);
+      assertNotNull(valueList);
+      assertTrue(valueList.getInterpolatedValues().size() == 2);
       try {
         value = test.getValue(testDepository, group, measTime1, measTime3, 5L);
 //        fail("shouldn't get here.");

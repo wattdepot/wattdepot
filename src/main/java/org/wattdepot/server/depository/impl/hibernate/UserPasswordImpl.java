@@ -18,6 +18,8 @@
  */
 package org.wattdepot.server.depository.impl.hibernate;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -27,6 +29,8 @@ import javax.persistence.Table;
 
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.server.StrongAES;
+
+import java.security.InvalidKeyException;
 
 /**
  * UserPasswordImpl - Hibernate implementation of UserPassword. Has a Long pk
@@ -209,8 +213,21 @@ public class UserPasswordImpl {
    * @return the equivalent UserPassword.
    */
   public UserPassword toUserPassword() {
-    UserPassword ret = new UserPassword(user.getUid(), org.getId(), StrongAES.getInstance()
-        .decrypt(encryptedPassword));
+    String decrypt = null;
+    UserPassword ret = null;
+    try {
+      decrypt = StrongAES.getInstance().decrypt(encryptedPassword);
+      ret = new UserPassword(user.getUid(), org.getId(), decrypt);
+    }
+    catch (InvalidKeyException e) {
+      e.printStackTrace();
+    }
+    catch (BadPaddingException e) {
+      e.printStackTrace();
+    }
+    catch (IllegalBlockSizeException e) {
+      e.printStackTrace();
+    }
     return ret;
   }
 }

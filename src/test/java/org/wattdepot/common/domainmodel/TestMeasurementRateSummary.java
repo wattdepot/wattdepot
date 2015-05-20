@@ -27,6 +27,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Date;
+
 /**
  * TestMeasurementRateSummary - Test cases for the MeasurementRateSummary class.
  * 
@@ -62,85 +64,22 @@ public class TestMeasurementRateSummary {
   public void testHashCode() {
     int value = base.hashCode();
     assertTrue(base.hashCode() == value);
-  }
-
-  /**
-   * Test method for
-   * {@link org.wattdepot.common.domainmodel.MeasurementRateSummary#getSensorId()}
-   * .
-   */
-  @Test
-  public void testGetSensorId() {
-    assertEquals(base.getSensorId(), InstanceFactory.getSensor().getId());
-  }
-
-  /**
-   * Test method for
-   * {@link org.wattdepot.common.domainmodel.MeasurementRateSummary#getDepositoryId()}
-   * .
-   */
-  @Test
-  public void testGetDepositoryId() {
-    assertEquals(base.getDepositoryId(), InstanceFactory.getDepository().getId());
-  }
-
-  /**
-   * Test method for
-   * {@link org.wattdepot.common.domainmodel.MeasurementRateSummary#getTimestamp()}
-   * .
-   */
-  @Test
-  public void testGetTimestamp() {
-    assertEquals(base.getTimestamp(), InstanceFactory.getTimeBeforeM1());
-  }
-
-  /**
-   * Test method for
-   * {@link org.wattdepot.common.domainmodel.MeasurementRateSummary#getLatestValue()}
-   * .
-   */
-  @Test
-  public void testGetLatestValue() {
-    assertEquals(base.getLatestValue(), InstanceFactory.LATEST_VALUE);
-  }
-
-  /**
-   * Test method for
-   * {@link org.wattdepot.common.domainmodel.MeasurementRateSummary#getType()}.
-   */
-  @Test
-  public void testGetType() {
-    assertEquals(base.getType(), InstanceFactory.getMeasurementType());
-  }
-
-  /**
-   * Test method for
-   * {@link org.wattdepot.common.domainmodel.MeasurementRateSummary#getOneMinuteCount()}
-   * .
-   */
-  @Test
-  public void testGetOneMinuteCount() {
-    assertEquals(base.getOneMinuteCount(), InstanceFactory.ONE_MINUTE_COUNT);
-  }
-
-  /**
-   * Test method for
-   * {@link org.wattdepot.common.domainmodel.MeasurementRateSummary#getOneMinuteRate()}
-   * .
-   */
-  @Test
-  public void testGetOneMinuteRate() {
-    assertEquals(base.getOneMinuteRate(), InstanceFactory.ONE_MINUTE_RATE);
-  }
-
-  /**
-   * Test method for
-   * {@link org.wattdepot.common.domainmodel.MeasurementRateSummary#getTotalCount()}
-   * .
-   */
-  @Test
-  public void testGetTotalCount() {
-    assertEquals(base.getTotalCount(), InstanceFactory.TOTAL_COUNT);
+    MeasurementRateSummary sum = new MeasurementRateSummary();
+    assertFalse(sum.hashCode() == value);
+    sum.setLatestValue(base.getLatestValue());
+    assertFalse(sum.hashCode() == value);
+    sum.setDepositoryId(base.getDepositoryId());
+    assertFalse(sum.hashCode() == value);
+    sum.setOneMinuteCount(base.getOneMinuteCount());
+    assertFalse(sum.hashCode() == value);
+    sum.setOneMinuteRate(base.getOneMinuteRate());
+    assertFalse(sum.hashCode() == value);
+    sum.setSensorId(base.getSensorId());
+    assertFalse(sum.hashCode() == value);
+    sum.setTimestamp(base.getTimestamp());
+    assertFalse(sum.hashCode() == value);
+    sum.setTotalCount(base.getTotalCount());
+    assertTrue(sum.hashCode() == value);
   }
 
   /**
@@ -152,6 +91,37 @@ public class TestMeasurementRateSummary {
   public void testEqualsObject() {
     assertFalse(base.equals(null));
     assertTrue(base.equals(base));
+    assertFalse(base.equals(""));
+    MeasurementRateSummary sum = new MeasurementRateSummary();
+    assertFalse(sum.equals(base));
+    sum.setLatestValue(-1.0);
+    assertFalse(sum.equals(base));
+    sum.setLatestValue(base.getLatestValue());
+    assertFalse(sum.equals(base));
+    sum.setDepositoryId("foo");
+    assertFalse(sum.equals(base));
+    sum.setDepositoryId(base.getDepositoryId());
+    assertFalse(sum.equals(base));
+    sum.setOneMinuteCount(-100l);
+    assertFalse(sum.equals(base));
+    sum.setOneMinuteCount(base.getOneMinuteCount());
+    assertFalse(sum.equals(base));
+    sum.setOneMinuteRate(-10.0);
+    assertFalse(sum.equals(base));
+    sum.setOneMinuteRate(base.getOneMinuteRate());
+    assertFalse(sum.equals(base));
+    sum.setSensorId("foo");
+    assertFalse(sum.equals(base));
+    sum.setSensorId(base.getSensorId());
+    assertFalse(sum.equals(base));
+    sum.setTimestamp(new Date());
+    assertFalse(sum.equals(base));
+    sum.setTimestamp(base.getTimestamp());
+    assertFalse(sum.equals(base));
+    sum.setTotalCount(-392l);
+    assertFalse(sum.equals(base));
+    sum.setTotalCount(base.getTotalCount());
+    assertTrue(sum.equals(base));
     assertTrue(base.equals(InstanceFactory.getMeasurementRateSummary()));
   }
 
