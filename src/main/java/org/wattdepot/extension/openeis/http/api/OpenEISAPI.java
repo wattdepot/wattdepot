@@ -34,7 +34,7 @@ public class OpenEISAPI {
 /************************************************************************************/
 
   /**
-   * <b>/wattdepot/</b> Base URI.
+   * <b>/wattdepot/{org-id}/openeis/</b> Base URI.
    */
   public static final String BASE_URI = org.wattdepot.common.http.api.API.BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + OpenEISLabels.OPENEIS + "/";
