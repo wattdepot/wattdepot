@@ -18,14 +18,12 @@ var dataQueries = []; // The queries and other related data to get the data from
 // the WattDepot Server
 var maxQuerySize = 100; // The maximum size of a single query to the WattDepot
 // server. Any larger query will be split.
-var maxQuerySize = 100; // The maximum size of a single query to the WattDepot
-// server. Any larger query will be split.
 var totalNumQueries = 0; // The total number of queries (not subqueries).
 var totalNumQueriesReturned = 0; // The total number of queries that have
 // returned from the server.
 var queryTimeOut = 300; // The number of seconds the application should wait
 // before its queries time out.
-var numDataTypeReturned = 0; // The number of data type queries that have
+//var numDataTypeReturned = 0; // The number of data type queries that have
 // returned.
 var numVisExecuted = 0; // The number of visualizations executed since the page
 // was loaded.
@@ -44,7 +42,7 @@ function addRow() {
     });
   }
   insertRowHTML(numRows);
-};
+}
 
 /**
  * Creates a filled in visualization selection row to the page.
@@ -325,7 +323,7 @@ function getTimestampFromDate(date) {
       + padZero(date.getMinutes(), 2) + ':' + padZero(date.getSeconds(), 2);
   timestamp = timestamp + '.' + padZero(date.getMilliseconds(), 3);
   return timestamp;
-};
+}
 
 /**
  * Gets the total number of data points needed by all forms in the visualization
@@ -476,7 +474,7 @@ function insertRowHTML(index) {
   }
   selectedDepository(index);
 
-};
+}
 
 /**
  * Loads the page either using the permalink or starting fresh.
@@ -605,7 +603,7 @@ function makeVisualization() {
  */
 function selectDepository(index, depoId) {
   $("#depositorySelect" + index).val(depoId);
-  var sensors = DEPO_SENSORS[depoId]
+  var sensors = DEPO_SENSORS[depoId];
   updateSensorSelection(index, sensors);
   selectedSensor(index);
 }
@@ -623,7 +621,7 @@ function selectedDepository(index) {
   var sensors = DEPO_SENSORS[depoId];
   updateSensorSelection(index, sensors);
   selectedSensor(index);
-};
+}
 
 /**
  * Gets the selected depository and sensor and updates the start and end date
@@ -643,7 +641,7 @@ function selectedSensor(index) {
   $("#enddatetimepicker" + index).parent().append(
       "<div id=\"endInfo" + index + "\" class=\"col-xs-12\"><small>Latest: "
           + DEPO_SENSOR_INFO[depoId][sensorId]['latest'] + "</small></div>");
-};
+}
 
 /**
  * Sets the frequency selector in the given row to the given value.
@@ -715,7 +713,10 @@ function setDate(id, index, value) {
  * 
  * @param endTime
  *          The ending time of the query (should be a Javascript Date object).
- * 
+ *
+ * @param dataType
+ *          The type of the measurement point or interval.
+ *
  * @param interval
  *          The interval at which data should be sampled in minutes.
  * 
@@ -792,20 +793,21 @@ function updateSensorSelection(index, sensors) {
         SENSORGROUPS[group].name));
   }
 //  select.append($("</optgroup>"));
-  var i = 0;
+  var i;
   var length = sensors.length;
   for (i = 0; i < length; i++) {
     select.append($("<option></option>").attr("value", sensors[i]).text(
         SENSORS[sensors[i]].name));
   }
-};
+}
 
 function countGroups() {
-  var count = 0;
-  for ( var prop in SENSORGROUPS) {
-    count++;
-  }
-  return count;
+  return SENSORGROUPS.length;
+  //var count = 0;
+  //for ( var prop in SENSORGROUPS) {
+  //  count++;
+  //}
+  //return count;
 }
 
 /**
@@ -901,7 +903,7 @@ function visualizerResponse(response, queryIndex, startQueryTime, queryID) {
   }
   dataQueries[queryIndex].numReturned++;
   totalNumQueriesReturned++;
-  numDataPoints = table.getNumberOfRows()
+  numDataPoints = table.getNumberOfRows();
   numDataPointsRetrieved += numDataPoints;
 
   // Calculate timings.
@@ -952,7 +954,7 @@ function visualizerResponse(response, queryIndex, startQueryTime, queryID) {
 function validate(formIndex) {
     var valid = true;
     var interval = $('#frequency' + formIndex + ' option:selected').val();
-    var startTime = getDate('start', formIndex)
+    var startTime = getDate('start', formIndex);
     var endTime;
 
     if ($('#endTimeNow' + formIndex).is(':checked')) {
@@ -977,7 +979,7 @@ function validate(formIndex) {
         $('#frequency' + formIndex).css('border', '3px red solid');
         $('#frequency' + formIndex)
             .wrap(
-            '<a href="#" rel="tooltip" data-placement="bottom" title="Error: Interval is larger than the data range.  Please chooose a smaller interval." />');
+            '<a href="#" rel="tooltip" data-placement="bottom" title="Error: Interval is larger than the data range.  Please chooose a smaller interval." ></a>');
     } else if ($('#frequency' + formIndex).hasClass('invalid')) {
         $('#frequency' + formIndex).unwrap();
         $('#frequency' + formIndex).css('border', '');
@@ -1086,7 +1088,7 @@ function visualize() {
         $('#frequency' + formIndex).css('border', '3px red solid');
         $('#frequency' + formIndex)
             .wrap(
-            '<a href="#" rel="tooltip" data-placement="bottom" title="Error: Interval is larger than the data range.  Please chooose a smaller interval." />');
+            '<a href="#" rel="tooltip" data-placement="bottom" title="Error: Interval is larger than the data range.  Please chooose a smaller interval." ></a>');
     } else if ($('#frequency' + formIndex).hasClass('invalid')) {
         $('#frequency' + formIndex).unwrap();
         $('#frequency' + formIndex).css('border', '');
@@ -1161,7 +1163,7 @@ if (error) {
     query.send(function(response) {
       visualizerResponse(response, index, startQueryTime, queryID);
     });
-  }
+  };
 
   $('#linkSpace').val(getUrl() + gatherVariables());
   currentVisID = $('#linkSpace').val() + numVisExecuted;
