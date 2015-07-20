@@ -18,9 +18,6 @@
  */
 package org.wattdepot.server.http.api;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
@@ -28,7 +25,13 @@ import org.restlet.resource.Directory;
 import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
 import org.wattdepot.common.http.api.API;
+import org.wattdepot.extension.WattDepotExtension;
+import org.wattdepot.server.ServerProperties;
 import org.wattdepot.server.WattDepotPersistence;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * UserServerApplication Server app.
@@ -41,6 +44,7 @@ public class WattDepotApplication extends Application {
   private WattDepotPersistence depot;
   private WattDepotComponent component;
   private Map<String, WebSession> sessions;
+  private Map<String, WattDepotExtension> extensionMap;
 
   /**
    * Default constructor.
@@ -50,6 +54,7 @@ public class WattDepotApplication extends Application {
     setDescription("WattDepot HTTP API implementation");
     setAuthor("Cam Moore");
     sessions = new HashMap<String, WebSession>();
+    extensionMap = new HashMap<String, WattDepotExtension>();
   }
 
   /**
@@ -204,6 +209,19 @@ public class WattDepotApplication extends Application {
     router.attach(API.ORGANIZATION_PUT_URI, OrganizationPutServerResource.class);
     router.attach(API.ORGANIZATION_URI, OrganizationServerResource.class);
     router.attach(API.ORGANIZATIONS_URI, OrganizationsServerResource.class);
+    ServerProperties properties = depot.getServerProperties();
+    List<WattDepotExtension> extensions = (List<WattDepotExtension>) properties.getPropertyInstance(ServerProperties.WATTDEPOT_EXTENSIONS);
+    for (WattDepotExtension extension : extensions) {
+      getLogger().info("Loading extension " + extension.getBaseURI());
+      String baseURI = extension.getBaseURI();
+      if (!extensionMap.containsKey(baseURI)) {
+        extensionMap.put(baseURI, extension);
+        Map<String, Class<? extends WattDepotServerResource>> resourceMap = extension.getServerResourceMapping();
+        for (Map.Entry<String, Class<? extends WattDepotServerResource>> entry : resourceMap.entrySet()) {
+          router.attach(entry.getKey(), entry.getValue());
+        }
+      }
+    }
 
     ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(),
         ChallengeScheme.HTTP_BASIC, "WattDepot Realm");

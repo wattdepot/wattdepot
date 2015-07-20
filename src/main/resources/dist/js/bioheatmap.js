@@ -16,16 +16,23 @@
 **    License along with this library; if not, write to the Free Software
 **    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
 *
-*     Modified by Cam Moore to add pass through white.
+*     Modified by Cam Moore to add pass through white and changed the namespace
+*     to work with org.WattDepot.
 */
 
 // setup namespace if not already defined
-if(!org) {
-    var org = {};
-    if(!org.systemsbiology)
-        org.systemsbiology = {};
-    if(!org.systemsbiology.visualization)
-        org.systemsbiology.visualization = {};
+if (!org) {
+    var org = {
+        systemsbiology : {
+            visualization : {}
+        }
+    };
+} else if (!org.systemsbiology) {
+    org.systemsbiology = {
+        visualization : {}
+    }
+} else if (!org.systemsbiology.visualization) {
+    org.systemsbiology.visualization = {}
 }
 
 
@@ -688,16 +695,16 @@ org.systemsbiology.visualization.BioHeatMap = Class.create({
 
 
 // avoid console errors w/ no firebug
-if (!window.console || !console.firebug)
-{
-    var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml",
-        "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
-
-    window.console = {};
-    for (var i = 0; i < names.length; ++i)
-        window.console[names[i]] = function() {
-        }
-}
+//if (!window.console || !console.firebug)
+//{
+//    var names = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml",
+//        "group", "groupEnd", "time", "timeEnd", "count", "trace", "profile", "profileEnd"];
+//
+//    window.console = {};
+//    for (var i = 0; i < names.length; ++i)
+//        window.console[names[i]] = function() {
+//        }
+//}
 
 
 
@@ -797,7 +804,7 @@ org.systemsbiology.visualization.DiscreteColorRange = Class.create({
 
     // returns an RBGA object with the color for the given dataValue
     getCellColorRGBA: function(dataValue) {
-        if(dataValue == null) {
+        if(dataValue == null || dataValue == "NaN") {
             return this._emptyDataColor;
         }
 

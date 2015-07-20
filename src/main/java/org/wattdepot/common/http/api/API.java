@@ -400,4 +400,5 @@ public class API {
   public static final String VALUES_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/";
 
-}
+
+  }
