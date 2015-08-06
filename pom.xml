@@ -574,6 +574,7 @@
                 <version>${javadoc.plugin.version}</version>
                 <configuration>
                     <linksource>true</linksource>
+                    <additionalparam>-Xdoclint:none</additionalparam>
                 </configuration>
                 <executions>
                     <execution>

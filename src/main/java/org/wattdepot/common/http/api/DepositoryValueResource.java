@@ -22,7 +22,7 @@ import org.restlet.resource.Get;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 
 /**
- * DepositoryValueResource - HTTP Interface for getting the MeasuredValues. <br/>
+ * DepositoryValueResource - HTTP Interface for getting the MeasuredValues. <br>
  * (/wattdepot/{org-id}/depository/{depository-id}/value)
  * 
  * @author Cam Moore
@@ -33,18 +33,14 @@ import org.wattdepot.common.domainmodel.InterpolatedValue;
 public interface DepositoryValueResource {
 
   /**
-   * Defines GET <br/>
-   * /wattdepot/{org-id}/depository/{depository-id}/value/?
-   *    sensor={sensorId}&start={start}&end={end}&gap={gapSeconds}
-   * <br/> or GET
-   * /wattdepot/{org-id}/depository/{depository-id}/value/?
-   *    sensor={sensorId}&timestamp={timestamp}&gap={gapSeconds}
-   * <br/> or GET
-   * /wattdepot/{org-id}/depository/{depository-id}/value/?
-   *    sensor={sensorId}&latest=true
-   * <br/> or GET
-   * /wattdepot/{org-id}/depository/{depository-id}/value/?
-   *    sensor={sensorId}&earliest=true
+   * Defines GET. <br>
+   * /wattdepot/{org-id}/depository/{depository-id}/value/?sensor={sensorId}&start={start}&end={end}&gap={gapSeconds}
+   * <br> or GET
+   * /wattdepot/{org-id}/depository/{depository-id}/value/?sensor={sensorId}&timestamp={timestamp}&gap={gapSeconds}
+   * <br> or GET
+   * /wattdepot/{org-id}/depository/{depository-id}/value/?sensor={sensorId}&latest=true
+   * <br> or GET
+   * /wattdepot/{org-id}/depository/{depository-id}/value/?sensor={sensorId}&earliest=true
    *
    * @return The MeasuredValue.
    */

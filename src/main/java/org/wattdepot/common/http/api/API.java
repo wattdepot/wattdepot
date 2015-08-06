@@ -376,7 +376,7 @@ public class API {
       + Labels.CSV + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/average/</b> URI
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/maximum/</b> URI
    * to get all the average value for an interval of measurements. Use GET
    * requests.
    */
@@ -385,7 +385,7 @@ public class API {
       + Labels.MAXIMUM + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/average/</b> URI
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/minimum/</b> URI
    * to get all the average value for an interval of measurements. Use GET
    * requests.
    */
