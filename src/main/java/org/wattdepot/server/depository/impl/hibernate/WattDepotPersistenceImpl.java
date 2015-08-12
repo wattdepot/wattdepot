@@ -1430,8 +1430,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   }
 
   /**
-   * @param id The MeasurementPruningDefinition's id.
    * @param orgId The Organization's id.
+   * @param id The MeasurementPruningDefinition's id.
    * @return The MeasurementPruningDefinition with the given id and orgId, or
    *         null if not defined.
    */
