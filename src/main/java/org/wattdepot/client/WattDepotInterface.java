@@ -440,6 +440,103 @@ public interface WattDepotInterface {
    * @param end The end of the period.
    * @param interval The sample interval in minutes.
    * @param usePointValues Use point values or difference values, if true point values are used, otherwise difference values.
+   * @return The minimum InterpolatedValue of measured values between the start time and the
+   *         end time.
+   * @throws NoMeasurementException if there are no measurements around the
+   *         start or end time.
+   */
+  @SuppressWarnings("PMD.UnusedModifier")
+  public InterpolatedValueList getMinimumValues(Depository depository, Sensor sensor, Date start, Date end, Integer interval, Boolean usePointValues)
+      throws NoMeasurementException;
+
+  /**
+   * @param depository The Depository storing the measurements.
+   * @param sensor The sensor making the measurements.
+   * @param start The start of the period.
+   * @param end The end of the period.
+   * @param interval The sample interval in minutes.
+   * @param usePointValues Use point values or difference values, if true point values are used, otherwise difference values.
+   * @return The maximum InterpolatedValue of measured values between the start time and the
+   *         end time.
+   * @throws NoMeasurementException if there are no measurements around the
+   *         start or end time.
+   */
+  @SuppressWarnings("PMD.UnusedModifier")
+  public InterpolatedValueList getMaximumValues(Depository depository, Sensor sensor, Date start, Date end, Integer interval, Boolean usePointValues)
+      throws NoMeasurementException;
+
+  /**
+   * @param depository The Depository storing the measurements.
+   * @param group The sensor group making the measurements.
+   * @param start The start of the period.
+   * @param end The end of the period.
+   * @param interval The sample interval in minutes.
+   * @param usePointValues Use point values or difference values, if true point values are used, otherwise difference values.
+   * @return The maximum InterpolatedValue of measured values between the start time and the
+   *         end time.
+   * @throws NoMeasurementException if there are no measurements around the
+   *         start or end time.
+   */
+  @SuppressWarnings("PMD.UnusedModifier")
+  public InterpolatedValueList getMaximumValues(Depository depository, SensorGroup group, Date start, Date end, Integer interval, Boolean usePointValues)
+      throws NoMeasurementException;
+
+  /**
+   * @param depository The Depository storing the measurements.
+   * @param sensor The sensor making the measurements.
+   * @param start The start of the period.
+   * @param end The end of the period.
+   * @param interval The sample interval in minutes.
+   * @param usePointValues Use point values or difference values, if true point values are used, otherwise difference values.
+   * @return The average InterpolatedValue of measured values between the start time and the
+   *         end time.
+   * @throws NoMeasurementException if there are no measurements around the
+   *         start or end time.
+   */
+  @SuppressWarnings("PMD.UnusedModifier")
+  public InterpolatedValueList getAverageValues(Depository depository, Sensor sensor, Date start, Date end, Integer interval, Boolean usePointValues)
+      throws NoMeasurementException;
+
+  /**
+   * @param depository The Depository storing the measurements.
+   * @param group The sensor group making the measurements.
+   * @param start The start of the period.
+   * @param end The end of the period.
+   * @param interval The sample interval in minutes.
+   * @param usePointValues Use point values or difference values, if true point values are used, otherwise difference values.
+   * @return The average InterpolatedValue of measured values between the start time and the
+   *         end time.
+   * @throws NoMeasurementException if there are no measurements around the
+   *         start or end time.
+   */
+  @SuppressWarnings("PMD.UnusedModifier")
+  public InterpolatedValueList getAverageValues(Depository depository, SensorGroup group, Date start, Date end, Integer interval, Boolean usePointValues)
+      throws NoMeasurementException;
+
+
+  /**
+   * @param depository The Depository storing the measurements.
+   * @param group The sensor group making the measurements.
+   * @param start The start of the period.
+   * @param end The end of the period.
+   * @param interval The sample interval in minutes.
+   * @param usePointValues Use point values or difference values, if true point values are used, otherwise difference values.
+   * @return The minimum InterpolatedValue of measured values between the start time and the
+   *         end time.
+   * @throws NoMeasurementException if there are no measurements around the
+   *         start or end time.
+   */
+  @SuppressWarnings("PMD.UnusedModifier")
+  public InterpolatedValueList getMinimumValues(Depository depository, SensorGroup group, Date start, Date end, Integer interval, Boolean usePointValues)
+      throws NoMeasurementException;
+
+  /**
+   * @param depository The Depository storing the measurements.
+   * @param sensor The sensor making the measurements.
+   * @param start The start of the period.
+   * @param end The end of the period.
+   * @param interval The sample interval in minutes.
+   * @param usePointValues Use point values or difference values, if true point values are used, otherwise difference values.
    * @return The InterpolatedValueList of measured values between the start time and the
    *         end time.
    * @throws NoMeasurementException if there are no measurements around the

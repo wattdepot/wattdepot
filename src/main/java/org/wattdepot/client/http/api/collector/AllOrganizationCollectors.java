@@ -42,8 +42,8 @@ public class AllOrganizationCollectors {
    * defined for the Organization. Then tries to start Collectors for each
    * definition.
    * 
-   * @param args command line arguments -s <server uri> -u <username> -p
-   *        <password> -o <orgId> [-d].
+   * @param args command line arguments -s &lt;server uri&gt; -u &lt;username&gt; -p
+   *        &lt;password&gt; -o &lt;orgId&gt; [-d].
    * @throws BadCredentialException if the credentials are not defined on the
    *         WattDepot server.
    */

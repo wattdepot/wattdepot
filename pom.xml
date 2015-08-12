@@ -14,7 +14,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.wattdepot</groupId>
     <artifactId>wattdepot</artifactId>
-    <version>3.0.3</version>
+    <version>3.1.0-SNAPSHOT</version>
     <name>WattDepot</name>
     <url>https://github.com/wattdepot/wattdepot/</url>
     <packaging>jar</packaging>
@@ -90,7 +90,7 @@
     </profiles>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <targetJdk>1.7</targetJdk>
+        <!--<targetJdk>1.7</targetJdk>-->
 
         <!-- Dependency Versions -->
         <commons-cli.version>1.2</commons-cli.version>
@@ -264,11 +264,11 @@
             <artifactId>hibernate-c3p0</artifactId>
             <version>${hibernate-core.version}</version>
         </dependency>
-<!--         <dependency>
+         <dependency>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
             <version>${jacoco.version}</version>
-        </dependency> -->
+        </dependency>
         <dependency>
             <groupId>org.jasypt</groupId>
             <artifactId>jasypt</artifactId>
@@ -416,7 +416,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.6.3.201306030806</version>
+                <version>${jacoco.version}</version>
                 <executions>
                     <!-- Prepares the property pointing to the JaCoCo runtime 
                         agent which is passed as VM argument when Maven the Surefire plugin is executed. -->
@@ -574,6 +574,8 @@
                 <version>${javadoc.plugin.version}</version>
                 <configuration>
                     <linksource>true</linksource>
+                    <!-- comment out following line for Java7 -->
+                    <additionalparam>-Xdoclint:none</additionalparam>
                 </configuration>
                 <executions>
                     <execution>

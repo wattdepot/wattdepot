@@ -64,6 +64,7 @@ import org.wattdepot.common.http.api.DepositoryMeasurementPutResource;
 import org.wattdepot.common.http.api.DepositoryMeasurementResource;
 import org.wattdepot.common.http.api.DepositoryMeasurementsPutResource;
 import org.wattdepot.common.http.api.DepositoryMeasurementsResource;
+import org.wattdepot.common.http.api.DepositoryMinimumValuesResource;
 import org.wattdepot.common.http.api.DepositoryPutResource;
 import org.wattdepot.common.http.api.DepositoryResource;
 import org.wattdepot.common.http.api.DepositorySensorsResource;
@@ -1035,6 +1036,186 @@ public class WattDepotClient implements WattDepotInterface {
     }
     catch (ResourceException e1) {
       throw new MeasurementGapException(e1.getCause());
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public InterpolatedValueList getMinimumValues(Depository depository, Sensor sensor, Date start, Date end, Integer interval, Boolean usePointValues) throws NoMeasurementException {
+    ClientResource client = null;
+    try {
+      String valueType = Labels.DIFFERENCE;
+      if (usePointValues) {
+        valueType = Labels.POINT;
+      }
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUES + "/" + Labels.MINIMUM + "/" + "?sensor=" + sensor.getId() + "&start="
+          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&interval=" + interval + "&value-type=" + valueType);
+      DepositoryMinimumValuesResource resource = client.wrap(DepositoryMinimumValuesResource.class);
+      InterpolatedValueList ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (ResourceException e1) {
+      throw new NoMeasurementException(e1.getCause());
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public InterpolatedValueList getMaximumValues(Depository depository, SensorGroup group, Date start, Date end, Integer interval, Boolean usePointValues) throws NoMeasurementException {
+    ClientResource client = null;
+    try {
+      String valueType = Labels.DIFFERENCE;
+      if (usePointValues) {
+        valueType = Labels.POINT;
+      }
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUES + "/" + Labels.MAXIMUM + "/" + "?sensor=" + group.getId() + "&start="
+          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&interval=" + interval + "&value-type=" + valueType);
+      DepositoryMinimumValuesResource resource = client.wrap(DepositoryMinimumValuesResource.class);
+      InterpolatedValueList ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (ResourceException e1) {
+      throw new NoMeasurementException(e1.getCause());
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public InterpolatedValueList getMaximumValues(Depository depository, Sensor sensor, Date start, Date end, Integer interval, Boolean usePointValues) throws NoMeasurementException {
+    ClientResource client = null;
+    try {
+      String valueType = Labels.DIFFERENCE;
+      if (usePointValues) {
+        valueType = Labels.POINT;
+      }
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUES + "/" + Labels.MAXIMUM + "/" + "?sensor=" + sensor.getId() + "&start="
+          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&interval=" + interval + "&value-type=" + valueType);
+      DepositoryMinimumValuesResource resource = client.wrap(DepositoryMinimumValuesResource.class);
+      InterpolatedValueList ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (ResourceException e1) {
+      throw new NoMeasurementException(e1.getCause());
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public InterpolatedValueList getMinimumValues(Depository depository, SensorGroup group, Date start, Date end, Integer interval, Boolean usePointValues) throws NoMeasurementException {
+    ClientResource client = null;
+    try {
+      String valueType = Labels.DIFFERENCE;
+      if (usePointValues) {
+        valueType = Labels.POINT;
+      }
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUES + "/" + Labels.MINIMUM + "/" + "?sensor=" + group.getId() + "&start="
+          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&interval=" + interval + "&value-type=" + valueType);
+      DepositoryMinimumValuesResource resource = client.wrap(DepositoryMinimumValuesResource.class);
+      InterpolatedValueList ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (ResourceException e1) {
+      throw new NoMeasurementException(e1.getCause());
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public InterpolatedValueList getAverageValues(Depository depository, Sensor sensor, Date start, Date end, Integer interval, Boolean usePointValues) throws NoMeasurementException {
+    ClientResource client = null;
+    try {
+      String valueType = Labels.DIFFERENCE;
+      if (usePointValues) {
+        valueType = Labels.POINT;
+      }
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUES + "/" + Labels.AVERAGE + "/" + "?sensor=" + sensor.getId() + "&start="
+          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&interval=" + interval + "&value-type=" + valueType);
+      DepositoryMinimumValuesResource resource = client.wrap(DepositoryMinimumValuesResource.class);
+      InterpolatedValueList ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (ResourceException e1) {
+      throw new NoMeasurementException(e1.getCause());
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public InterpolatedValueList getAverageValues(Depository depository, SensorGroup group, Date start, Date end, Integer interval, Boolean usePointValues) throws NoMeasurementException {
+    ClientResource client = null;
+    try {
+      String valueType = Labels.DIFFERENCE;
+      if (usePointValues) {
+        valueType = Labels.POINT;
+      }
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUES + "/" + Labels.AVERAGE + "/" + "?sensor=" + group.getId() + "&start="
+          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&interval=" + interval + "&value-type=" + valueType);
+      DepositoryMinimumValuesResource resource = client.wrap(DepositoryMinimumValuesResource.class);
+      InterpolatedValueList ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (ResourceException e1) {
+      throw new NoMeasurementException(e1.getCause());
     }
     catch (DatatypeConfigurationException e) {
       e.printStackTrace();
