@@ -400,5 +400,13 @@ public class API {
   public static final String VALUES_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/";
 
+  /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/latest/</b> URI
+   * to get the latest value(s) for a sensor or sensor group. Use GET
+   * requests.
+   */
+  public static final String VALUES_LATEST_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/"
+      + Labels.LATEST + "/";
 
   }
