@@ -574,8 +574,8 @@
                 <version>${javadoc.plugin.version}</version>
                 <configuration>
                     <linksource>true</linksource>
-                    <!-- comment out following line for Java7 -->
-                    <additionalparam>-Xdoclint:none</additionalparam>
+                    <!-- uncomment following line for Java8 -->
+                    <!-- <additionalparam>-Xdoclint:none</additionalparam> -->
                 </configuration>
                 <executions>
                     <execution>
