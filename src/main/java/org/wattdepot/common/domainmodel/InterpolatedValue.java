@@ -18,6 +18,7 @@
  */
 package org.wattdepot.common.domainmodel;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -42,12 +43,14 @@ public class InterpolatedValue {
   private Date start;
   /** The end time of the interpolated value. */
   private Date end;
+  /** A list of sensorIds that didn't contribute to this value. */
+  ArrayList<String> missingSensors;
 
   /**
    * Hide the default constructor.
    */
   protected InterpolatedValue() {
-
+    this.missingSensors = new ArrayList<String>();
   }
 
   /**
@@ -60,6 +63,7 @@ public class InterpolatedValue {
    */
   public InterpolatedValue(String sensorId, Double value, MeasurementType measurementType, Date date) {
     this(sensorId, value, measurementType, date, date);
+    this.missingSensors = new ArrayList<String>();
   }
 
   /**
@@ -77,6 +81,7 @@ public class InterpolatedValue {
     this.measurementType = measurementType;
     this.start = new Date(start.getTime());
     this.end = new Date(end.getTime());
+    this.missingSensors = new ArrayList<String>();
   }
   /*
    * (non-Javadoc)
@@ -271,11 +276,55 @@ public class InterpolatedValue {
     this.value = value;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see java.lang.Object#toString()
+  /**
+   * @return the missing sensors list.
    */
+  public ArrayList<String> getMissingSensors() {
+    return missingSensors;
+  }
+
+  /**
+   * Sets the missing sensors list.
+   * @param missingSensors the new list of missing sensors.
+   */
+  public void setMissingSensors(ArrayList<String> missingSensors) {
+    this.missingSensors = missingSensors;
+  }
+
+  /**
+   * Ads a SensorId to the missing sensors list.
+   * @param s the sensorId.
+   * @return true if successful.
+   */
+  public boolean addMissingSensor(String s) {
+    return missingSensors.add(s);
+  }
+
+  /**
+   * Removes the sensorId from the missing sensors list.
+   * @param s the sensorId.
+   * @return the removed value.
+   */
+  public String removeMissingSensor(String s) {
+    int index = missingSensors.indexOf(s);
+    if (index != -1) {
+      return missingSensors.remove(index);
+    }
+    return null;
+  }
+
+  /**
+   * @return true if the missing sensors list is empty.
+   */
+  public boolean isMissingSensorsEmpty() {
+    return missingSensors.isEmpty();
+  }
+
+  /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Object#toString()
+     */
   @Override
   public String toString() {
     try {

@@ -185,6 +185,7 @@ public class WattDepotApplication extends Application {
     router.attach(API.HOURLY_VALUES_URI, DepositoryHourlyValuesServerResource.class);
     router.attach(API.VALUES_LATEST_URI, DepositoryLatestValuesServerResource.class);
     router.attach(API.SENSOR_STATUS_URI, DepositorySensorStatusServerResource.class);
+    router.attach(API.LATEST_VALUE_URI, DepositoryLatestValueServerResource.class);
     // MeasurementTypes
     router.attach(API.MEASUREMENT_TYPE_PUT_URI, MeasurementTypePutServerResource.class);
     router.attach(API.MEASUREMENT_TYPE_URI, MeasurementTypeServerResource.class);
