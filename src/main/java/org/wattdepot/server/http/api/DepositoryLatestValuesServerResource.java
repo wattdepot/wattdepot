@@ -36,6 +36,7 @@ public class DepositoryLatestValuesServerResource extends WattDepotServerResourc
   protected void doInit() throws ResourceException {
     super.doInit();
     this.sensorId = getQuery().getValues(Labels.SENSOR);
+    this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);
   }
 
   @Override
@@ -82,11 +83,11 @@ public class DepositoryLatestValuesServerResource extends WattDepotServerResourc
         return list;
       }
       catch (IdNotFoundException e) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " not a Depository id.");
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " is not a Depository id.");
         return null;
       }
       catch (MisMatchedOwnerException e) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " not in organization " + orgId + ".");
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " is not in organization " + orgId + ".");
         return null;
       }
 

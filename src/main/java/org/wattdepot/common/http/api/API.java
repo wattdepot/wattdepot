@@ -409,4 +409,12 @@ public class API {
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/"
       + Labels.LATEST + "/";
 
+  /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/sensor-status/</b> URI
+   * to get the latest status for a sensor or sensor group. Use GET
+   * requests.
+   */
+  public static final String SENSOR_STATUS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" +  Labels.DEPOSITORY_ID_VAR + "/" + Labels.SENSOR_STATUS + "/";
+
   }

@@ -204,6 +204,9 @@ public class Labels {
   /** The label for all Sensors. */
   public static final String SENSORS = "sensors";
 
+  /** The label for Sensor Status. */
+  public static final String SENSOR_STATUS = "sensor-status";
+
   /** The label for the start timestamp. */
   public static final String START = "start";
 
