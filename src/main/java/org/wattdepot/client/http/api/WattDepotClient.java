@@ -1289,6 +1289,214 @@ public class WattDepotClient implements WattDepotInterface {
     return null;
   }
 
+  @Override
+  public InterpolatedValueList getHourlyValues(Depository depository, Sensor sensor, Date start, Date end, Boolean usePointValues) {
+    ClientResource client = null;
+    try {
+      StringBuilder sb = new StringBuilder();
+      sb.append(this.organizationId);
+      sb.append("/");
+      sb.append(Labels.DEPOSITORY);
+      sb.append("/");
+      sb.append(depository.getId());
+      sb.append("/");
+      sb.append(Labels.HOURLY);
+      sb.append("/");
+      sb.append(Labels.VALUES);
+      sb.append("/?");
+      sb.append(Labels.SENSOR);
+      sb.append("=");
+      sb.append(sensor.getId());
+      sb.append("&");
+      sb.append(Labels.START);
+      sb.append("=");
+      sb.append(DateConvert.convertDate(start));
+      sb.append("&");
+      sb.append(Labels.END);
+      sb.append("=");
+      sb.append(DateConvert.convertDate(end));
+      sb.append("&");
+      sb.append(Labels.VALUE_TYPE);
+      sb.append("=");
+      if (usePointValues) {
+        sb.append(Labels.POINT);
+      }
+      else {
+        sb.append(Labels.DIFFERENCE);
+      }
+      client = makeClient(sb.toString());
+      DepositoryValuesResource resource = client.wrap(DepositoryValuesResource.class);
+      InterpolatedValueList ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public InterpolatedValueList getHourlyValues(Depository depository, SensorGroup group, Date start, Date end, Boolean usePointValues) {
+    ClientResource client = null;
+    try {
+      StringBuilder sb = new StringBuilder();
+      sb.append(this.organizationId);
+      sb.append("/");
+      sb.append(Labels.DEPOSITORY);
+      sb.append("/");
+      sb.append(depository.getId());
+      sb.append("/");
+      sb.append(Labels.HOURLY);
+      sb.append("/");
+      sb.append(Labels.VALUES);
+      sb.append("/?");
+      sb.append(Labels.SENSOR);
+      sb.append("=");
+      sb.append(group.getId());
+      sb.append("&");
+      sb.append(Labels.START);
+      sb.append("=");
+      sb.append(DateConvert.convertDate(start));
+      sb.append("&");
+      sb.append(Labels.END);
+      sb.append("=");
+      sb.append(DateConvert.convertDate(end));
+      sb.append("&");
+      sb.append(Labels.VALUE_TYPE);
+      sb.append("=");
+      if (usePointValues) {
+        sb.append(Labels.POINT);
+      }
+      else {
+        sb.append(Labels.DIFFERENCE);
+      }
+      client = makeClient(sb.toString());
+      DepositoryValuesResource resource = client.wrap(DepositoryValuesResource.class);
+      InterpolatedValueList ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public InterpolatedValueList getDailyValues(Depository depository, Sensor sensor, Date start, Date end, Boolean usePointValues) {
+    ClientResource client = null;
+    try {
+      StringBuilder sb = new StringBuilder();
+      sb.append(this.organizationId);
+      sb.append("/");
+      sb.append(Labels.DEPOSITORY);
+      sb.append("/");
+      sb.append(depository.getId());
+      sb.append("/");
+      sb.append(Labels.DAILY);
+      sb.append("/");
+      sb.append(Labels.VALUES);
+      sb.append("/?");
+      sb.append(Labels.SENSOR);
+      sb.append("=");
+      sb.append(sensor.getId());
+      sb.append("&");
+      sb.append(Labels.START);
+      sb.append("=");
+      sb.append(DateConvert.convertDate(start));
+      sb.append("&");
+      sb.append(Labels.END);
+      sb.append("=");
+      sb.append(DateConvert.convertDate(end));
+      sb.append("&");
+      sb.append(Labels.VALUE_TYPE);
+      sb.append("=");
+      if (usePointValues) {
+        sb.append(Labels.POINT);
+      }
+      else {
+        sb.append(Labels.DIFFERENCE);
+      }
+      client = makeClient(sb.toString());
+      DepositoryValuesResource resource = client.wrap(DepositoryValuesResource.class);
+      InterpolatedValueList ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public InterpolatedValueList getDailyValues(Depository depository, SensorGroup group, Date start, Date end, Boolean usePointValues) {
+    ClientResource client = null;
+    try {
+      StringBuilder sb = new StringBuilder();
+      sb.append(this.organizationId);
+      sb.append("/");
+      sb.append(Labels.DEPOSITORY);
+      sb.append("/");
+      sb.append(depository.getId());
+      sb.append("/");
+      sb.append(Labels.DAILY);
+      sb.append("/");
+      sb.append(Labels.VALUES);
+      sb.append("/?");
+      sb.append(Labels.SENSOR);
+      sb.append("=");
+      sb.append(group.getId());
+      sb.append("&");
+      sb.append(Labels.START);
+      sb.append("=");
+      sb.append(DateConvert.convertDate(start));
+      sb.append("&");
+      sb.append(Labels.END);
+      sb.append("=");
+      sb.append(DateConvert.convertDate(end));
+      sb.append("&");
+      sb.append(Labels.VALUE_TYPE);
+      sb.append("=");
+      if (usePointValues) {
+        sb.append(Labels.POINT);
+      }
+      else {
+        sb.append(Labels.DIFFERENCE);
+      }
+      client = makeClient(sb.toString());
+      DepositoryValuesResource resource = client.wrap(DepositoryValuesResource.class);
+      InterpolatedValueList ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
   /*
    * (non-Javadoc)
    *

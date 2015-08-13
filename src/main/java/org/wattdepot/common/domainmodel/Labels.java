@@ -44,6 +44,9 @@ public class Labels {
   /** The label for all CollectorProcessDefinition. */
   public static final String COLLECTOR_PROCESS_DEFINITIONS = "collector-process-definitions";
 
+  /** The label for getting daily data. */
+  public static final String DAILY = "daily";
+
   /** The label for getting data. */
   public static final String DATA = "data";
 

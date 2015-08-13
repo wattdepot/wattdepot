@@ -108,6 +108,13 @@ public class API {
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.DAY_HOURLY + "/" + Labels.VALUES + "/";
 
   /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/daily/values/</b> URI for getting daily samples.
+   * Use GET requests.
+   */
+  public static final String DAILY_VALUES_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.DAILY + "/" + Labels.VALUES + "/";
+
+  /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/hourly/values/</b> URI for
    * getting hourly samples. Use GET requests.
    */

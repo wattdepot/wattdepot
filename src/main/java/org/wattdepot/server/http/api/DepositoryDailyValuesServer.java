@@ -42,11 +42,12 @@ import java.util.List;
 import java.util.logging.Level;
 
 /**
- * DepositoryHourlyValuesServer - Base class for handling hourly sample HTTP requests.
+ * DepositoryDailyValuesServer - Base class for handling daily sample HTTP requests.
  *
  * @author Cam Moore
  */
-public class DepositoryHourlyValuesServer extends WattDepotServerResource {
+public class DepositoryDailyValuesServer extends WattDepotServerResource {
+  private static final Integer DAY_MINUTES = 24 * 60;
   private String depositoryId;
   private String sensorId;
   private String start;
@@ -68,16 +69,15 @@ public class DepositoryHourlyValuesServer extends WattDepotServerResource {
     this.dataType = getQuery().getValues(Labels.VALUE_TYPE);
   }
 
-
   /**
-   * retrieve the hourly depository value list for a sensor.
+   * retrieve the daily depository value list for a sensor.
    *
    * @return measurement list.
    */
   public InterpolatedValueList doRetrieve() {
     getLogger().log(
         Level.INFO,
-        "GET /wattdepot/{" + orgId + "}/" + Labels.DEPOSITORY + "/{" + depositoryId + "}/" + Labels.HOURLY + "/"
+        "GET /wattdepot/{" + orgId + "}/" + Labels.DEPOSITORY + "/{" + depositoryId + "}/" + Labels.DAILY + "/"
             + Labels.VALUES + "/?" + Labels.SENSOR + "={" + sensorId + "}&" + Labels.START + "={"
             + start + "}&" + Labels.END + "={" + end + "}&" + Labels.VALUE_TYPE + "={" + dataType + "}");
     if (isInRole(orgId)) {
@@ -87,16 +87,12 @@ public class DepositoryHourlyValuesServer extends WattDepotServerResource {
           Depository depository = depot.getDepository(depositoryId, orgId, true);
           if (depository != null) {
             XMLGregorianCalendar startTime = DateConvert.parseCalString(start);
-            // set start time to beginning of hour.
-            startTime.setMinute(0);
-            startTime.setSecond(0);
-            startTime.setMillisecond(0);
+            // set start time to beginning of day.
+            startTime.setTime(0, 0, 0, 0);
             XMLGregorianCalendar endTime = DateConvert.parseCalString(end);
-            // set end time to beginning of hour.
-            endTime.setMinute(0);
-            endTime.setSecond(0);
-            endTime.setMillisecond(0);
-            List<XMLGregorianCalendar> times = Tstamp.getTimestampList(startTime, endTime, 60);
+            // set end time to beginning of day.
+            endTime.setTime(0, 0, 0, 0);
+            List<XMLGregorianCalendar> times = Tstamp.getTimestampList(startTime, endTime, DAY_MINUTES);
             for (int i = 1; i < times.size(); i++) {
               XMLGregorianCalendar begin = times.get(i - 1);
               Date beginDate = begin.toGregorianCalendar().getTime();
@@ -197,4 +193,5 @@ public class DepositoryHourlyValuesServer extends WattDepotServerResource {
     }
     return val;
   }
+
 }

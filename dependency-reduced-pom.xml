@@ -194,7 +194,6 @@
         </executions>
         <configuration>
           <linksource>true</linksource>
-          <additionalparam>-Xdoclint:none</additionalparam>
         </configuration>
       </plugin>
       <plugin>

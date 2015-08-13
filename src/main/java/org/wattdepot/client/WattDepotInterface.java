@@ -546,6 +546,49 @@ public interface WattDepotInterface {
   public InterpolatedValueList getValues(Depository depository, Sensor sensor, Date start, Date end, Integer interval, Boolean usePointValues)
       throws NoMeasurementException;
 
+  /**
+   * @param depository The Depository storing the measurements.
+   * @param sensor The sensor making the measurements.
+   * @param start The start of the period.
+   * @param end The end of the period.
+   * @param usePointValues Use point values or difference values, if true point values are used, otherwise difference values.
+   * @return The InterpolatedValueList of hourly values between the start time and the end time.
+   */
+  @SuppressWarnings("PMD.UnusedModifier")
+  public InterpolatedValueList getHourlyValues(Depository depository, Sensor sensor, Date start, Date end, Boolean usePointValues);
+
+  /**
+   * @param depository The Depository storing the measurements.
+   * @param group The sensor group making the measurements.
+   * @param start The start of the period.
+   * @param end The end of the period.
+   * @param usePointValues Use point values or difference values, if true point values are used, otherwise difference values.
+   * @return The InterpolatedValueList of hourly values between the start time and the end time.
+   */
+  @SuppressWarnings("PMD.UnusedModifier")
+  public InterpolatedValueList getHourlyValues(Depository depository, SensorGroup group, Date start, Date end, Boolean usePointValues);
+
+  /**
+   * @param depository The Depository storing the measurements.
+   * @param sensor The sensor making the measurements.
+   * @param start The start of the period.
+   * @param end The end of the period.
+   * @param usePointValues Use point values or difference values, if true point values are used, otherwise difference values.
+   * @return The InterpolatedValueList of daily values between the start time and the end time.
+   */
+  @SuppressWarnings("PMD.UnusedModifier")
+  public InterpolatedValueList getDailyValues(Depository depository, Sensor sensor, Date start, Date end, Boolean usePointValues);
+
+  /**
+   * @param depository The Depository storing the measurements.
+   * @param group The sensor group making the measurements.
+   * @param start The start of the period.
+   * @param end The end of the period.
+   * @param usePointValues Use point values or difference values, if true point values are used, otherwise difference values.
+   * @return The InterpolatedValueList of daily values between the start time and the end time.
+   */
+  @SuppressWarnings("PMD.UnusedModifier")
+  public InterpolatedValueList getDailyValues(Depository depository, SensorGroup group, Date start, Date end, Boolean usePointValues);
 
   /**
    * @param depository The Depository storing the measurements.
