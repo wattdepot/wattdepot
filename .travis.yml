@@ -20,3 +20,4 @@ env:
 before_script:
   - psql -c "create user wattdepot with password 'wattdepot';" -U postgres
   - psql -c "create database wattdepot owner wattdepot;" -U postgres
+sudo: false
