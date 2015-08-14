@@ -316,7 +316,7 @@ public class InterpolatedValue {
   /**
    * @return true if the missing sensors list is empty.
    */
-  public boolean isMissingSensorsEmpty() {
+  public boolean missingSensorsEmptyP() {
     return missingSensors.isEmpty();
   }
 
