@@ -558,8 +558,7 @@ public class WattDepotClient implements WattDepotInterface {
   @Override
   public InterpolatedValue getLatestValue(Depository depository, SensorGroup group) {
     ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
-        + depository.getId() + "/" + Labels.VALUE + "/" + "?sensor=" + group.getId()
-        + "&latest=true");
+        + depository.getId() + "/" + Labels.LATEST + "/" + Labels.VALUE + "/" + "?sensor=" + group.getId());
     DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
     InterpolatedValue ret = resource.retrieve();
     client.release();

@@ -119,7 +119,7 @@ public class DepositorySensorStatusServerResource extends WattDepotServerResourc
                 if (cpd != null) {
                   numExpectedMeasurements = Math.round(60.0 / cpd.getPollingInterval() * 60.0 * 24 * numDays);
                 }
-                List<Measurement> measurementList = depot.getMeasurements(depositoryId, orgId, sensorId, startDate, endDate, false);
+                List<Measurement> measurementList = depot.getMeasurements(depositoryId, orgId, s, startDate, endDate, false);
                 int count = measurementList.size();
                 if (count > 0.8 * numExpectedMeasurements) {
                   status.setStatus(SensorStatusEnum.GREEN);
