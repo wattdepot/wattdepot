@@ -26,6 +26,7 @@ import java.util.logging.Level;
 public class DepositoryLatestValueServerResource extends WattDepotServerResource implements DepositoryLatestValueResource {
   private String depositoryId;
   private String sensorId;
+  private String window;
 
   /*
  * (non-Javadoc)
@@ -36,6 +37,7 @@ public class DepositoryLatestValueServerResource extends WattDepotServerResource
   protected void doInit() throws ResourceException {
     super.doInit();
     this.sensorId = getQuery().getValues(Labels.SENSOR);
+    this.window = getQuery().getValues(Labels.WINDOW);
     this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);
   }
 
@@ -45,7 +47,17 @@ public class DepositoryLatestValueServerResource extends WattDepotServerResource
     getLogger().log(
         Level.INFO,
         "GET /wattdepot/{" + orgId + "}/" + Labels.DEPOSITORY + "/{" + depositoryId + "}/"
-            + Labels.LATEST + "/" + Labels.VALUE + "/?" + Labels.SENSOR + "={" + sensorId + "}");
+            + Labels.LATEST + "/" + Labels.VALUE + "/?" + Labels.SENSOR + "={" + sensorId + "}&"
+            + Labels.WINDOW + "={" + window + "}");
+    int width = 5;
+    if (window != null && !window.equals("")) {
+      try {
+        width = Integer.parseInt(window);
+      }
+      catch (NumberFormatException nfe) {
+        width = 5;
+      }
+    }
     if (isInRole(orgId)) {
       try {
         Depository depository = depot.getDepository(depositoryId, orgId, true);
@@ -55,7 +67,7 @@ public class DepositoryLatestValueServerResource extends WattDepotServerResource
           CollectorProcessDefinition cpd = findCPD(depositoryId, sensorId, orgId);
           try {
             if (cpd != null) {
-              return  depot.getLatestMeasuredValue(depositoryId, orgId, sensorId, 3 * cpd.getPollingInterval(), false);
+              return depot.getLatestMeasuredValue(depositoryId, orgId, sensorId, width * cpd.getPollingInterval(), false);
             }
             else {
               return depot.getLatestMeasuredValue(depositoryId, orgId, sensorId, false);
@@ -76,7 +88,7 @@ public class DepositoryLatestValueServerResource extends WattDepotServerResource
                 try {
                   InterpolatedValue latest;
                   if (cpd != null) {
-                    latest = depot.getLatestMeasuredValue(depositoryId, orgId, s, 3 * cpd.getPollingInterval(), false);
+                    latest = depot.getLatestMeasuredValue(depositoryId, orgId, s, width * cpd.getPollingInterval(), false);
                   }
                   else {
                     latest = depot.getLatestMeasuredValue(depositoryId, orgId, s, false);
@@ -111,8 +123,8 @@ public class DepositoryLatestValueServerResource extends WattDepotServerResource
 
   /**
    * @param depositoryId The depository id.
-   * @param sensorId The sensor id.
-   * @param orgId The orgainzation id.
+   * @param sensorId     The sensor id.
+   * @param orgId        The orgainzation id.
    * @return The CollectorProcessDefinition for the depository and sensor, or null if not defined.
    */
   private CollectorProcessDefinition findCPD(String depositoryId, String sensorId, String orgId) {

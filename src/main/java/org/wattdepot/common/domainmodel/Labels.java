@@ -255,6 +255,9 @@ public class Labels {
   /** The base label used for WattDepot. */
   public static final String WATTDEPOT = "wattdepot";
 
+  /** The label used for determining a window. */
+  public static final String WINDOW = "window";
+
   /** The label used for getting csv values. */
   public static final String CSV = "csv";
 }

@@ -1553,7 +1553,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     }
     Date now = new Date();
     Long deltaT = now.getTime() - value.getEnd().getTime();
-    if (Math.abs(deltaT) > window) {
+    if (Math.abs(deltaT) > window * 1000) {
       throw new NoMeasurementException("No recent " + depotId + " measurements for " + sensorId);
     }
     if (timingp) {
