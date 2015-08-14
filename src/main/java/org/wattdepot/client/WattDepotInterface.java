@@ -38,6 +38,8 @@ import org.wattdepot.common.domainmodel.SensorGroupList;
 import org.wattdepot.common.domainmodel.SensorList;
 import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.domainmodel.SensorModelList;
+import org.wattdepot.common.domainmodel.SensorStatus;
+import org.wattdepot.common.domainmodel.SensorStatusList;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementGapException;
 import org.wattdepot.common.exception.MeasurementListSizeExceededException;
@@ -308,6 +310,22 @@ public interface WattDepotInterface {
    */
   @SuppressWarnings("PMD.UnusedModifier")
   public SensorList getSensors();
+
+  /**
+   * @param depository The depository to check.
+   * @param sensor The Sensor.
+   * @return The current sensor status.
+   */
+  @SuppressWarnings("PMD.UnusedModifier")
+  public SensorStatus getSensorStatus(Depository depository, Sensor sensor);
+
+  /**
+   * @param depository The depository to check.
+   * @param group The SensorGroup.
+   * @return A list of SensorStatuses.
+   */
+  @SuppressWarnings("PMD.UnusedModifier")
+  public SensorStatusList getSensorStatuses(Depository depository, SensorGroup group);
 
   /**
    * @param depository The Depository storing the measurements.

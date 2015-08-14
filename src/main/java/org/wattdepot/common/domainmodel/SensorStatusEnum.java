@@ -28,7 +28,7 @@ public enum SensorStatusEnum {
   /**
    * @return The label associated with the status.
    */
-  String getLabel() {
+  public String getLabel() {
     return label;
   }
 

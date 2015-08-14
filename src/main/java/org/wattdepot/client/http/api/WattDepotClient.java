@@ -50,6 +50,8 @@ import org.wattdepot.common.domainmodel.SensorGroupList;
 import org.wattdepot.common.domainmodel.SensorList;
 import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.domainmodel.SensorModelList;
+import org.wattdepot.common.domainmodel.SensorStatus;
+import org.wattdepot.common.domainmodel.SensorStatusList;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementGapException;
@@ -67,6 +69,7 @@ import org.wattdepot.common.http.api.DepositoryMeasurementsResource;
 import org.wattdepot.common.http.api.DepositoryMinimumValuesResource;
 import org.wattdepot.common.http.api.DepositoryPutResource;
 import org.wattdepot.common.http.api.DepositoryResource;
+import org.wattdepot.common.http.api.DepositorySensorStatusResource;
 import org.wattdepot.common.http.api.DepositorySensorsResource;
 import org.wattdepot.common.http.api.DepositoryValueResource;
 import org.wattdepot.common.http.api.DepositoryValuesResource;
@@ -776,6 +779,48 @@ public class WattDepotClient implements WattDepotInterface {
     SensorList ret = resource.retrieve();
     client.release();
     return ret;
+  }
+
+  @Override
+  public SensorStatus getSensorStatus(Depository depository, Sensor sensor) {
+    ClientResource client = null;
+    try {
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.SENSOR_STATUS + "/" + "?sensor=" + sensor.getId());
+      DepositorySensorStatusResource resource = client.wrap(DepositorySensorStatusResource.class);
+      SensorStatusList list = resource.retrieve();
+      client.release();
+      if (list != null) {
+        return list.getStatuses().get(0);
+      }
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public SensorStatusList getSensorStatuses(Depository depository, SensorGroup group) {
+    ClientResource client = null;
+    try {
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.SENSOR_STATUS + "/" + "?sensor=" + group.getId());
+      DepositorySensorStatusResource resource = client.wrap(DepositorySensorStatusResource.class);
+      SensorStatusList list = resource.retrieve();
+      client.release();
+      if (list != null) {
+        return list;
+      }
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
   }
 
   /*
