@@ -1517,7 +1517,50 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       endTime = System.nanoTime();
       diff = endTime - startTime;
       padding = padding.substring(0, padding.length() - 2);
-      timingLogger.log(Level.SEVERE, padding + "getEarliestMeasuredValue(" + depotId + ", " + orgId
+      timingLogger.log(Level.SEVERE, padding + "getLatestMeasuredValue(" + depotId + ", " + orgId
+          + ", " + sensorId + ") took " + (diff / 1E9) + " secs.");
+    }
+    return value;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.server.WattDepotPersistence#getLatestMeasuredValue(java.lang
+   * .String, java.lang.String)
+   */
+  @Override
+  public InterpolatedValue getLatestMeasuredValue(String depotId, String orgId, String sensorId, Long window,
+                                                  boolean check) throws NoMeasurementException, IdNotFoundException {
+    Long startTime = 0l;
+    Long endTime = 0l;
+    Long diff = 0l;
+    if (timingp) {
+      timingLogger.log(Level.SEVERE, padding + "Start getLatestMeasuredValue(" + depotId + ", "
+          + orgId + ", " + sensorId + ")");
+      padding += "  ";
+      startTime = System.nanoTime();
+    }
+    if (check) {
+      getOrganization(orgId, check);
+      getDepository(depotId, orgId, check);
+      getSensor(sensorId, orgId, check);
+    }
+    InterpolatedValue value = getLatestMeasuredValueNoCheck(depotId, orgId, sensorId);
+    if (value == null) {
+      throw new NoMeasurementException("No " + depotId + " measurements for " + sensorId);
+    }
+    Date now = new Date();
+    Long deltaT = now.getTime() - value.getEnd().getTime();
+    if (Math.abs(deltaT) > window) {
+      throw new NoMeasurementException("No recent " + depotId + " measurements for " + sensorId);
+    }
+    if (timingp) {
+      endTime = System.nanoTime();
+      diff = endTime - startTime;
+      padding = padding.substring(0, padding.length() - 2);
+      timingLogger.log(Level.SEVERE, padding + "getLatestMeasuredValue(" + depotId + ", " + orgId
           + ", " + sensorId + ") took " + (diff / 1E9) + " secs.");
     }
     return value;

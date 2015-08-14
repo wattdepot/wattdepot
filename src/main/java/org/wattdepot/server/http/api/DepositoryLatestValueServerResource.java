@@ -2,6 +2,7 @@ package org.wattdepot.server.http.api;
 
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Labels;
@@ -13,6 +14,7 @@ import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.http.api.DepositoryLatestValueResource;
 
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -50,8 +52,14 @@ public class DepositoryLatestValueServerResource extends WattDepotServerResource
         Sensor sensor = depot.getSensor(sensorId, orgId, false);
         InterpolatedValue value = new InterpolatedValue(sensorId, 0.0, depository.getMeasurementType(), new Date());
         if (sensor != null) {
+          CollectorProcessDefinition cpd = findCPD(depositoryId, sensorId, orgId);
           try {
-            return depot.getLatestMeasuredValue(depositoryId, orgId, sensorId, false);
+            if (cpd != null) {
+              return  depot.getLatestMeasuredValue(depositoryId, orgId, sensorId, 3 * cpd.getPollingInterval(), false);
+            }
+            else {
+              return depot.getLatestMeasuredValue(depositoryId, orgId, sensorId, false);
+            }
           }
           catch (NoMeasurementException e) {
             value.addMissingSensor(sensorId);
@@ -64,8 +72,15 @@ public class DepositoryLatestValueServerResource extends WattDepotServerResource
             for (String s : group.getSensors()) {
               sensor = depot.getSensor(s, orgId, false);
               if (sensor != null) {
+                CollectorProcessDefinition cpd = findCPD(depositoryId, s, orgId);
                 try {
-                  InterpolatedValue latest = depot.getLatestMeasuredValue(depositoryId, orgId, s, false);
+                  InterpolatedValue latest;
+                  if (cpd != null) {
+                    latest = depot.getLatestMeasuredValue(depositoryId, orgId, s, 3 * cpd.getPollingInterval(), false);
+                  }
+                  else {
+                    latest = depot.getLatestMeasuredValue(depositoryId, orgId, s, false);
+                  }
                   value.setValue(value.getValue() + latest.getValue());
                   value.setStart(latest.getStart());
                   value.setEnd(latest.getEnd());
@@ -90,6 +105,27 @@ public class DepositoryLatestValueServerResource extends WattDepotServerResource
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " is not in organization " + orgId + ".");
         return null;
       }
+    }
+    return null;
+  }
+
+  /**
+   * @param depositoryId The depository id.
+   * @param sensorId The sensor id.
+   * @param orgId The orgainzation id.
+   * @return The CollectorProcessDefinition for the depository and sensor, or null if not defined.
+   */
+  private CollectorProcessDefinition findCPD(String depositoryId, String sensorId, String orgId) {
+    try {
+      List<CollectorProcessDefinition> cpds = depot.getCollectorProcessDefinitions(orgId, false);
+      for (CollectorProcessDefinition cpd : cpds) {
+        if (cpd.getDepositoryId().equals(depositoryId) && cpd.getSensorId().equals(sensorId)) {
+          return cpd;
+        }
+      }
+    }
+    catch (IdNotFoundException e) {
+      e.printStackTrace();
     }
     return null;
   }

@@ -432,7 +432,21 @@ public abstract class WattDepotPersistence {
    * @throws IdNotFoundException if there is a problem with the ids.
    */
   public abstract InterpolatedValue getLatestMeasuredValue(String depotId, String orgId,
-      String sensorId, boolean check) throws NoMeasurementException, IdNotFoundException;
+                                                           String sensorId, boolean check) throws NoMeasurementException, IdNotFoundException;
+
+  /**
+   * @param depotId the id of the Depository.
+   * @param orgId the Organziation's id.
+   * @param sensorId The id of the Sensor making the measurements.
+   * @param window The number of seconds to consider for latest.
+   * @param check true if want to check the ids.
+   * @return The latest measurement Value
+   * @throws NoMeasurementException If there aren't any measurements around the
+   *         time.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract InterpolatedValue getLatestMeasuredValue(String depotId, String orgId,
+      String sensorId, Long window, boolean check) throws NoMeasurementException, IdNotFoundException;
 
   /**
    * @param depotId the id of the Depository storing the measurements.
