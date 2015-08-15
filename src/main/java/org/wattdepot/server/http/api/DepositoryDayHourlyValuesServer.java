@@ -87,33 +87,35 @@ public class DepositoryDayHourlyValuesServer extends WattDepotServerResource {
             endTime = Tstamp.incrementDays(endTime, 1);
             endTime.setTime(0, 0, 0, 0); // beginning of the next day.
             List<XMLGregorianCalendar> times = Tstamp.getTimestampList(startTime, endTime, 60);
-            for (int i = 1; i < times.size(); i++) {
-              XMLGregorianCalendar begin = times.get(i - 1);
-              Date beginDate = begin.toGregorianCalendar().getTime();
-              XMLGregorianCalendar end = times.get(i);
-              Date endDate = end.toGregorianCalendar().getTime();
-              Double val = 0.0;
-              if (dataType.equals("point")) {  // need to calculate the average value for the hourly intervals
-                List<Measurement> measurements = depot.getMeasurements(depositoryId, orgId, sensorId, beginDate, endDate, false);
-                if (measurements.size() > 0) {
-                  for (Measurement m : measurements) {
-                    val += m.getValue();
+            if (times != null) {
+              for (int i = 1; i < times.size(); i++) {
+                XMLGregorianCalendar begin = times.get(i - 1);
+                Date beginDate = begin.toGregorianCalendar().getTime();
+                XMLGregorianCalendar end = times.get(i);
+                Date endDate = end.toGregorianCalendar().getTime();
+                Double val = 0.0;
+                if (dataType.equals("point")) {  // need to calculate the average value for the hourly intervals
+                  List<Measurement> measurements = depot.getMeasurements(depositoryId, orgId, sensorId, beginDate, endDate, false);
+                  if (measurements.size() > 0) {
+                    for (Measurement m : measurements) {
+                      val += m.getValue();
+                    }
+                    val = val / measurements.size();
                   }
-                  val = val / measurements.size();
+                  else {
+                    val = Double.NaN;
+                  }
                 }
-                else {
-                  val = Double.NaN;
+                else {  // calculate the difference
+                  try {
+                    val = depot.getValue(depositoryId, orgId, sensorId, beginDate, endDate, false);
+                  }
+                  catch (NoMeasurementException nme) {
+                    val = Double.NaN;
+                  }
                 }
+                ret.getInterpolatedValues().add(new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate));
               }
-              else {  // calculate the difference
-                try {
-                  val = depot.getValue(depositoryId, orgId, sensorId, beginDate, endDate, false);
-                }
-                catch (NoMeasurementException nme) {
-                  val = Double.NaN;
-                }
-              }
-              ret.getInterpolatedValues().add(new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate));
             }
           }
         }

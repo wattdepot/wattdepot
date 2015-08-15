@@ -97,41 +97,43 @@ public class DepositoryHourlyValuesServer extends WattDepotServerResource {
             endTime.setSecond(0);
             endTime.setMillisecond(0);
             List<XMLGregorianCalendar> times = Tstamp.getTimestampList(startTime, endTime, 60);
-            for (int i = 1; i < times.size(); i++) {
-              XMLGregorianCalendar begin = times.get(i - 1);
-              Date beginDate = begin.toGregorianCalendar().getTime();
-              XMLGregorianCalendar end = times.get(i);
-              Date endDate = end.toGregorianCalendar().getTime();
-              Sensor sensor = depot.getSensor(sensorId, orgId, false);
-              Double val = 0.0;
-              if (sensor != null) {
-                try {
-                  val = getValueForSensor(depositoryId, orgId, sensorId, beginDate, endDate, dataType);
+            if (times != null) {
+              for (int i = 1; i < times.size(); i++) {
+                XMLGregorianCalendar begin = times.get(i - 1);
+                Date beginDate = begin.toGregorianCalendar().getTime();
+                XMLGregorianCalendar end = times.get(i);
+                Date endDate = end.toGregorianCalendar().getTime();
+                Sensor sensor = depot.getSensor(sensorId, orgId, false);
+                Double val = 0.0;
+                if (sensor != null) {
+                  try {
+                    val = getValueForSensor(depositoryId, orgId, sensorId, beginDate, endDate, dataType);
+                  }
+                  catch (NoMeasurementException e) {
+                    val = Double.NaN;
+                  }
+                  ret.getInterpolatedValues().add(new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate));
                 }
-                catch (NoMeasurementException e) {
-                  val = Double.NaN;
-                }
-                ret.getInterpolatedValues().add(new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate));
-              }
-              else { // try SensorGroup.
-                SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
-                if (group != null) {
-                  InterpolatedValue value = new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate);
-                  for (String s : group.getSensors()) {
-                    sensor = depot.getSensor(s, orgId, false);
-                    if (sensor != null) {
-                      try {
-                        value.setValue(value.getValue() + getValueForSensor(depositoryId, orgId, s, beginDate, endDate, dataType));
-                      }
-                      catch (IdNotFoundException e) {
-                        value.addMissingSensor(s);
-                      }
-                      catch (NoMeasurementException e) {
-                        value.addMissingSensor(s);
+                else { // try SensorGroup.
+                  SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
+                  if (group != null) {
+                    InterpolatedValue value = new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate);
+                    for (String s : group.getSensors()) {
+                      sensor = depot.getSensor(s, orgId, false);
+                      if (sensor != null) {
+                        try {
+                          value.setValue(value.getValue() + getValueForSensor(depositoryId, orgId, s, beginDate, endDate, dataType));
+                        }
+                        catch (IdNotFoundException e) {
+                          value.addMissingSensor(s);
+                        }
+                        catch (NoMeasurementException e) {
+                          value.addMissingSensor(s);
+                        }
                       }
                     }
+                    ret.getInterpolatedValues().add(value);
                   }
-                  ret.getInterpolatedValues().add(value);
                 }
               }
             }
@@ -168,14 +170,15 @@ public class DepositoryHourlyValuesServer extends WattDepotServerResource {
 
   /**
    * Gets the value for the Sensor or SensorGroup.
+   *
    * @param depositoryId The depository id.
-   * @param orgId The organization id.
-   * @param sensorId The sensor or sensor group id.
-   * @param beginDate The beginning date.
-   * @param endDate The ending date.
-   * @param dataType Either 'point' or difference.
+   * @param orgId        The organization id.
+   * @param sensorId     The sensor or sensor group id.
+   * @param beginDate    The beginning date.
+   * @param endDate      The ending date.
+   * @param dataType     Either 'point' or difference.
    * @return The average for point values or the difference for difference values.
-   * @throws IdNotFoundException If the sensor or depository are not defined.
+   * @throws IdNotFoundException    If the sensor or depository are not defined.
    * @throws NoMeasurementException If there are no measurements for the time period.
    */
   private Double getValueForSensor(String depositoryId, String orgId, String sensorId, Date beginDate, Date endDate, String dataType) throws IdNotFoundException, NoMeasurementException {
