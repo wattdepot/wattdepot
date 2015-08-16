@@ -136,14 +136,14 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
 
   /**
    * @param depositoryId the depository id.
-   * @param orgId the organization id.
-   * @param sensorId the sensor or sensor group id.
-   * @param begin the begin time.
-   * @param end the end time.
-   * @param valueType point or difference.
+   * @param orgId        the organization id.
+   * @param sensorId     the sensor or sensor group id.
+   * @param begin        the begin time.
+   * @param end          the end time.
+   * @param valueType    point or difference.
    * @return the value of the sensor measurements over the time interval either an average or a difference.
-   * @throws NoMeasurementException if there are no measurements in the interval.
-   * @throws IdNotFoundException if the depository or sensor are not defined.
+   * @throws NoMeasurementException   if there are no measurements in the interval.
+   * @throws IdNotFoundException      if the depository or sensor are not defined.
    * @throws MisMatchedOwnerException if the depository or sensor are not in the organization.
    */
   private Double getValue(String depositoryId, String orgId, String sensorId, XMLGregorianCalendar begin, XMLGregorianCalendar end, String valueType) throws NoMeasurementException, IdNotFoundException, MisMatchedOwnerException {
@@ -153,27 +153,28 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
       if (sensor != null) {
         List<Measurement> measurementList = depot.getMeasurements(depositoryId, orgId, sensorId, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false);
         ret = 0.0;
-        for (Measurement m : measurementList) {
-          ret += m.getValue();
+        if (measurementList.size() > 0) {
+          for (Measurement m : measurementList) {
+            ret += m.getValue();
+          }
+          ret /= measurementList.size();
         }
-        ret /= measurementList.size();
       }
       else {
         SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
         if (group != null) {
           ret = 0.0;
           for (String s : group.getSensors()) {
-            Double temp = 0.0;
             List<Measurement> measurementList = depot.getMeasurements(depositoryId, orgId, s, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false);
-            for (Measurement m : measurementList) {
-              temp += m.getValue();
-            }
+            Double temp = 0.0;
             if (measurementList.size() > 0) {
+              for (Measurement m : measurementList) {
+                temp += m.getValue();
+              }
               temp /= measurementList.size();
             }
             ret += temp;
           }
-          ret /= group.getSensors().size();
         }
       }
     }
@@ -196,7 +197,7 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
   }
 
   /**
-   * @param time the current time.
+   * @param time              the current time.
    * @param hourlyDailyChoice how wide the window should be.
    * @return the beginning of the window based upon the current time and window width.
    */
@@ -219,7 +220,7 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
   }
 
   /**
-   * @param time the current time.
+   * @param time              the current time.
    * @param hourlyDailyChoice the width of the window.
    * @return the end of the window based upon the current time and the window width.
    */
