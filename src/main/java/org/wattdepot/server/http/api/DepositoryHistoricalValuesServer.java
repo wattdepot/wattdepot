@@ -168,7 +168,9 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
             for (Measurement m : measurementList) {
               temp += m.getValue();
             }
-            temp /= measurementList.size();
+            if (measurementList.size() > 0) {
+              temp /= measurementList.size();
+            }
             ret += temp;
           }
           ret /= group.getSensors().size();
