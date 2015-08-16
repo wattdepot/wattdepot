@@ -91,7 +91,10 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
             begin = Tstamp.incrementDays(begin, -7); // back it up a week
             end = Tstamp.incrementDays(end, -7);
             try {
-              statistics.addValue(getValue(depositoryId, orgId, sensorId, begin, end, valueType));
+              Double val = getValue(depositoryId, orgId, sensorId, begin, end, valueType);
+              if (val != null) {
+                statistics.addValue(val);
+              }
             }
             catch (NoMeasurementException e) { //NOPMD
               // do nothing since there aren't any measurements doesn't contribute to the stats.

@@ -24,6 +24,7 @@ import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.DepositoryList;
+import org.wattdepot.common.domainmodel.HistoricalValues;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Measurement;
@@ -193,6 +194,30 @@ public interface WattDepotInterface {
    */
   @SuppressWarnings("PMD.UnusedModifier")
   public InterpolatedValue getEarliestValue(Depository depository, SensorGroup group);
+
+  /**
+   * @param depository The Depository storing the Measurements.
+   * @param sensor The Sensor making the Measurements.
+   * @param timestamp The time to base the historical values calculation on.
+   * @param daily if true, use daily grouping of values, if false use hourly grouping.
+   * @param samples How many samples to use to calculate the values. Corresponds to weeks.
+   * @param pointValues if true use point value, use difference values otherwise.
+   * @return The HistoricalValues for the given sensor and depository using samples.
+   */
+  @SuppressWarnings("PMD.UnusedModifier")
+  public HistoricalValues getHistoricalValues(Depository depository, Sensor sensor, Date timestamp, Boolean daily, Integer samples, Boolean pointValues);
+
+  /**
+   * @param depository The Depository storing the Measurements.
+   * @param group The SensorGroup whose sensors are making the Measurements.
+   * @param timestamp The time to base the historical values calculation on.
+   * @param daily if true, use daily grouping of values, if false use hourly grouping.
+   * @param samples How many samples to use to calculate the values. Corresponds to weeks.
+   * @param pointValues if true use point value, use difference values otherwise.
+   * @return The HistoricalValues for the given sensor and depository using samples.
+   */
+  @SuppressWarnings("PMD.UnusedModifier")
+  public HistoricalValues getHistoricalValues(Depository depository, SensorGroup group, Date timestamp, Boolean daily, Integer samples, Boolean pointValues);
 
   /**
    * @param depository The Depository storing the Measurements.
