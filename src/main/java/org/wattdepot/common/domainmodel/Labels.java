@@ -93,8 +93,17 @@ public class Labels {
   /** The label for hourly samples for a single data. */
   public static final String DAY_HOURLY = "day-hourly";
 
+  /** The label for historical values. */
+  public static final String HISTORICAL_VALUES = "historical-values";
+
   /** The label for hourly values or samples. */
   public static final String HOURLY = "hourly";
+
+  /** The label for hourly or daily choice. */
+  public static final String HOURLY_DAILY = "hourly-daily";
+
+  /** The label for the hourly-daily choice. */
+  public static final String HOURLY_DAILY_VAR = "{" + HOURLY_DAILY + "}";
 
   /** The label for sampling internal or interval values. */
   public static final String INTERVAL = "interval";
@@ -170,6 +179,12 @@ public class Labels {
 
   /** The label/group for public objects. */
   public static final String PUBLIC = "public";
+
+  /** The label for samples. */
+  public static final String SAMPLES = "samples";
+
+  /** The label for the sample var. */
+  public static final String SAMPLES_VAR = "{" + SAMPLES + "}";
 
   /** The label for a given Sensor. */
   public static final String SENSOR = "sensor";

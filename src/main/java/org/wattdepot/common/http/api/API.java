@@ -432,4 +432,11 @@ public class API {
   public static final String LATEST_VALUE_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.LATEST + "/"
       + Labels.VALUE + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/{hourly-daily}/historical-values/</b>
+   * URI to get the historical values for a sensor or sensor group. Use GET requests.
+   */
+  public static final String HISTORICAL_VALUES_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.HISTORICAL_VALUES + "/" + Labels.HOURLY_DAILY_VAR + "/";
 }
