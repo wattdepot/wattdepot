@@ -131,7 +131,6 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
                   average += groupAve;
                 }
               }
-
             }
             else { // difference values
               if (sensor != null) {
@@ -142,7 +141,12 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
                 if (group != null) {
                   Double d = 0.0;
                   for (String s : group.getSensors()) {
-                    d += depot.getValue(depositoryId, orgId, s, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false);
+                    try {
+                      d += depot.getValue(depositoryId, orgId, s, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false);
+                    }
+                    catch (NoMeasurementException nme) { // NOPMD
+                      // just skip this sensor.
+                    }
                   }
                   statistics.addValue(d);
                 }
