@@ -90,18 +90,27 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
           for (int i = 0; i < samples; i++) {
             begin = Tstamp.incrementDays(begin, -7); // back it up a week
             end = Tstamp.incrementDays(end, -7);
-            try {
-              Double val = getValue(depositoryId, orgId, sensorId, begin, end, valueType);
-              if (val != null) {
-                statistics.addValue(val);
-              }
+            Double minimum = Double.MAX_VALUE; // for this time period
+            Double maximum = Double.MIN_VALUE; // for this time period
+            Sensor sensor = depot.getSensor(sensorId, orgId, false);
+            if (valueType.equals(Labels.POINT)) { // since it is point data must calculate the average of the measurements
+
             }
-            catch (NoMeasurementException e) { //NOPMD
-              // do nothing since there aren't any measurements doesn't contribute to the stats.
+            else { // difference values
+
             }
-            catch (MisMatchedOwnerException e) { //NOPMD
-//              e.printStackTrace();
-            }
+//              try {
+//              Double val = getValue(depositoryId, orgId, sensorId, begin, end, valueType);
+//              if (val != null) {
+//                statistics.addValue(val);
+//              }
+//            }
+//            catch (NoMeasurementException e) { //NOPMD
+//              // do nothing since there aren't any measurements doesn't contribute to the stats.
+//            }
+//            catch (MisMatchedOwnerException e) { //NOPMD
+////              e.printStackTrace();
+//            }
           }
           ret = new HistoricalValues();
           ret.setDepositoryId(depositoryId);
@@ -125,6 +134,10 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
         return null;
       }
       catch (ParseException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        return null;
+      }
+      catch (MisMatchedOwnerException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         return null;
       }
