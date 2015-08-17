@@ -86,18 +86,62 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
           XMLGregorianCalendar time = DateConvert.parseCalString(timestamp);
           XMLGregorianCalendar begin = getBeginning(time, hourlyDailyChoice);
           XMLGregorianCalendar end = getEnding(time, hourlyDailyChoice);
+          Double minimum = Double.MAX_VALUE; // for this time period
+          Double maximum = Double.MIN_VALUE; // for this time period
+          Double average = 0.0;
           DescriptiveStatistics statistics = new DescriptiveStatistics();
           for (int i = 0; i < samples; i++) {
             begin = Tstamp.incrementDays(begin, -7); // back it up a week
             end = Tstamp.incrementDays(end, -7);
-            Double minimum = Double.MAX_VALUE; // for this time period
-            Double maximum = Double.MIN_VALUE; // for this time period
             Sensor sensor = depot.getSensor(sensorId, orgId, false);
             if (valueType.equals(Labels.POINT)) { // since it is point data must calculate the average of the measurements
+              if (sensor != null) {
+                statistics = getStatistics(depositoryId, sensorId, begin, end);
+                if (statistics.getMin() < minimum) {
+                  minimum = statistics.getMin();
+                }
+                if (statistics.getMax() > maximum) {
+                  maximum = statistics.getMax();
+                }
+                average += statistics.getMean();
+              }
+              else {
+                SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
+                if (group != null) {
+                  Double groupMin = 0.0;
+                  Double groupMax = 0.0;
+                  Double groupAve = 0.0;
+                  for (String s : group.getSensors()) {
+                    statistics = getStatistics(depositoryId, s, begin, end);
+                    groupMin += statistics.getMin();
+                    groupMax += statistics.getMax();
+                    groupAve += statistics.getMean();
+                  }
+                  if (maximum < groupMax) {
+                    maximum = groupMax;
+                  }
+                  if (minimum > groupMin) {
+                    minimum = groupMin;
+                  }
+                  average += groupAve;
+                }
+              }
 
             }
             else { // difference values
-
+              if (sensor != null) {
+                statistics.addValue(depot.getValue(depositoryId, orgId, sensorId, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false));
+              }
+              else {
+                SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
+                if (group != null) {
+                  Double d = 0.0;
+                  for (String s : group.getSensors()) {
+                    d += depot.getValue(depositoryId, orgId, s, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false);
+                  }
+                  statistics.addValue(d);
+                }
+              }
             }
 //              try {
 //              Double val = getValue(depositoryId, orgId, sensorId, begin, end, valueType);
@@ -112,12 +156,20 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
 ////              e.printStackTrace();
 //            }
           }
+          if (valueType.equals(Labels.POINT)) {
+            average /= samples;
+          }
+          else {
+            average = statistics.getMean();
+            minimum = statistics.getMin();
+            maximum = statistics.getMax();
+          }
           ret = new HistoricalValues();
           ret.setDepositoryId(depositoryId);
           ret.setSensorId(sensorId);
-          ret.setAverage(statistics.getMean());
-          ret.setMaximum(statistics.getMax());
-          ret.setMinimum(statistics.getMin());
+          ret.setAverage(average);
+          ret.setMaximum(maximum);
+          ret.setMinimum(minimum);
           ret.setNumSamples(samples);
           ret.setWindowWidth(hourlyDailyChoice);
           ret.setValueType(valueType);
@@ -141,10 +193,35 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         return null;
       }
+      catch (NoMeasurementException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        return null;
+      }
 
       return ret;
     }
     return null;
+  }
+
+  /**
+   * @param depositoryId the depository id.
+   * @param sensorId the sensor id.
+   * @param begin the begin time.
+   * @param end the end time.
+   * @return DescriptiveStatistics of the measurements for the peroiod.
+   * @throws IdNotFoundException if there is a problem with the sensorId.
+   * @throws NoMeasurementException if there are no measurements during the period.
+   */
+  private DescriptiveStatistics getStatistics(String depositoryId, String sensorId, XMLGregorianCalendar begin, XMLGregorianCalendar end) throws IdNotFoundException, NoMeasurementException {
+    List<Measurement> measurements = depot.getMeasurements(depositoryId, orgId, sensorId, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false);
+    if (measurements == null) {
+      throw new NoMeasurementException("No measurements for " + sensorId + " from " + begin.toString() + " to " + end.toString());
+    }
+    DescriptiveStatistics ret = new DescriptiveStatistics();
+    for (Measurement m : measurements) {
+      ret.addValue(m.getValue());
+    }
+    return ret;
   }
 
   /**
