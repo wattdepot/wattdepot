@@ -434,7 +434,7 @@ public class API {
       + Labels.VALUE + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/depository/{depository-id}/{hourly-daily}/historical-values/</b>
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/historical-values/{hourly-daily}/</b>
    * URI to get the historical values for a sensor or sensor group. Use GET requests.
    */
   public static final String HISTORICAL_VALUES_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"

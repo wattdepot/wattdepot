@@ -33,6 +33,8 @@ public class HistoricalValues {
   Double average;
   Double minimum;
   Double maximum;
+  Double lowerQuartile;
+  Double upperQuartile;
   Date timestamp;
   String windowWidth;
   String valueType;
@@ -170,6 +172,36 @@ public class HistoricalValues {
    */
   public void setValueType(String valueType) {
     this.valueType = valueType;
+  }
+
+  /**
+   * @return the lower quartile.
+   */
+  public Double getLowerQuartile() {
+    return lowerQuartile;
+  }
+
+  /**
+   * Sets the lower quartile.
+   * @param lowerQuartile the new lower quartile.
+   */
+  public void setLowerQuartile(Double lowerQuartile) {
+    this.lowerQuartile = lowerQuartile;
+  }
+
+  /**
+   * @return the upper quartile.
+   */
+  public Double getUpperQuartile() {
+    return upperQuartile;
+  }
+
+  /**
+   * Sets the upper quartile.
+   * @param upperQuartile the new upper quartile.
+   */
+  public void setUpperQuartile(Double upperQuartile) {
+    this.upperQuartile = upperQuartile;
   }
 
   @Override

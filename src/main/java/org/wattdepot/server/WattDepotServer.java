@@ -104,7 +104,7 @@ public class WattDepotServer {
     int port = Integer.parseInt(properties.get(ServerProperties.PORT_KEY));
     WattDepotServer wattDepotServer = new WattDepotServer();
     // System.out.println("WattDepotServer.");
-    //    LoggerUtil.showLoggers();
+//        LoggerUtil.showLoggers();
     boolean enableLogging = Boolean.parseBoolean(properties
         .get(ServerProperties.ENABLE_LOGGING_KEY));
     wattDepotServer.serverProperties = properties;

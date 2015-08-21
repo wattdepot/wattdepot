@@ -35,6 +35,9 @@ public final class LoggerUtil {
         .hasMoreElements();) {
       String logName = en.nextElement();
       Logger logger = logManager.getLogger(logName);
+      if (logName.startsWith("org.restlet")) {
+        logger.setLevel(Level.SEVERE);
+      }
       if (logger != null) {
         // remove the old handlers
         Handler[] handlers = logger.getHandlers();
