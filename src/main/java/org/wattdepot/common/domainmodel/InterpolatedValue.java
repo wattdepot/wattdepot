@@ -23,6 +23,7 @@ import java.util.Date;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 
+import org.wattdepot.client.http.api.collector.StressCollector;
 import org.wattdepot.common.util.DateConvert;
 
 /**
@@ -43,14 +44,17 @@ public class InterpolatedValue {
   private Date start;
   /** The end time of the interpolated value. */
   private Date end;
-  /** A list of sensorIds that didn't contribute to this value. */
-  ArrayList<String> missingSensors;
+  /** A list of sensorIds that contributed to this value. */
+  private ArrayList<String> reportingSensors;
+  /** A list of sensorIds that should have contributed to this value.  */
+  private ArrayList<String> definedSensors;
 
   /**
    * Hide the default constructor.
    */
   protected InterpolatedValue() {
-    this.missingSensors = new ArrayList<String>();
+    this.reportingSensors = new ArrayList<String>();
+    this.definedSensors = new ArrayList<String>();
   }
 
   /**
@@ -63,7 +67,8 @@ public class InterpolatedValue {
    */
   public InterpolatedValue(String sensorId, Double value, MeasurementType measurementType, Date date) {
     this(sensorId, value, measurementType, date, date);
-    this.missingSensors = new ArrayList<String>();
+    this.reportingSensors = new ArrayList<String>();
+    this.definedSensors = new ArrayList<String>();
   }
 
   /**
@@ -81,13 +86,36 @@ public class InterpolatedValue {
     this.measurementType = measurementType;
     this.start = new Date(start.getTime());
     this.end = new Date(end.getTime());
-    this.missingSensors = new ArrayList<String>();
+    this.reportingSensors = new ArrayList<String>();
+    this.definedSensors = new ArrayList<String>();
   }
-  /*
-   * (non-Javadoc)
-   * 
-   * @see java.lang.Object#equals(java.lang.Object)
+
+  /**
+   * @return The list of defined sensorIds.
    */
+  public ArrayList<String> getDefinedSensors() {
+    return definedSensors;
+  }
+
+  /**
+   * Sets the list of defined sensorIds.
+   * @param definedSensors the new list of sensor ids.
+   */
+  public void setDefinedSensors(ArrayList<String> definedSensors) {
+    this.definedSensors = definedSensors;
+  }
+
+  public void addDefinedSensor(String sensorId) {
+    if (!definedSensors.contains(sensorId)) {
+      definedSensors.add(sensorId);
+    }
+  }
+
+  /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
   @Override
   public boolean equals(Object obj) {
     if (this == obj) {
@@ -279,16 +307,16 @@ public class InterpolatedValue {
   /**
    * @return the missing sensors list.
    */
-  public ArrayList<String> getMissingSensors() {
-    return missingSensors;
+  public ArrayList<String> getReportingSensors() {
+    return reportingSensors;
   }
 
   /**
    * Sets the missing sensors list.
-   * @param missingSensors the new list of missing sensors.
+   * @param reportingSensors the new list of missing sensors.
    */
-  public void setMissingSensors(ArrayList<String> missingSensors) {
-    this.missingSensors = missingSensors;
+  public void setReportingSensors(ArrayList<String> reportingSensors) {
+    this.reportingSensors = reportingSensors;
   }
 
   /**
@@ -296,9 +324,12 @@ public class InterpolatedValue {
    * @param s the sensorId.
    * @return true if successful.
    */
-  public boolean addMissingSensor(String s) {
-    return missingSensors.add(s);
+  public void addReportingSensor(String s) {
+    if (!reportingSensors.contains(s)) {
+      reportingSensors.add(s);
+    }
   }
+
 
   /**
    * Removes the sensorId from the missing sensors list.
@@ -306,9 +337,9 @@ public class InterpolatedValue {
    * @return the removed value.
    */
   public String removeMissingSensor(String s) {
-    int index = missingSensors.indexOf(s);
+    int index = reportingSensors.indexOf(s);
     if (index != -1) {
-      return missingSensors.remove(index);
+      return reportingSensors.remove(index);
     }
     return null;
   }
@@ -317,7 +348,7 @@ public class InterpolatedValue {
    * @return true if the missing sensors list is empty.
    */
   public boolean missingSensorsEmptyP() {
-    return missingSensors.isEmpty();
+    return reportingSensors.isEmpty();
   }
 
   /*

@@ -105,30 +105,34 @@ public class DepositoryHourlyValuesServer extends WattDepotServerResource {
                 Date endDate = end.toGregorianCalendar().getTime();
                 Sensor sensor = depot.getSensor(sensorId, orgId, false);
                 Double val = 0.0;
+                InterpolatedValue value = new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate);
+                value.addDefinedSensor(sensorId);
                 if (sensor != null) {
                   try {
                     val = getValueForSensor(depositoryId, orgId, sensorId, beginDate, endDate, dataType);
+                    value.addReportingSensor(sensorId);
                   }
                   catch (NoMeasurementException e) {
                     val = Double.NaN;
                   }
-                  ret.getInterpolatedValues().add(new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate));
+                  value.setValue(val);
+                  ret.getInterpolatedValues().add(value);
                 }
                 else { // try SensorGroup.
                   SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
                   if (group != null) {
-                    InterpolatedValue value = new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate);
+                    value = new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate);
                     for (String s : group.getSensors()) {
+                      value.addDefinedSensor(s);
                       sensor = depot.getSensor(s, orgId, false);
                       if (sensor != null) {
                         try {
                           value.setValue(value.getValue() + getValueForSensor(depositoryId, orgId, s, beginDate, endDate, dataType));
+                          value.addReportingSensor(s);
                         }
-                        catch (IdNotFoundException e) {
-                          value.addMissingSensor(s);
+                        catch (IdNotFoundException e) { // NOPMD
                         }
-                        catch (NoMeasurementException e) {
-                          value.addMissingSensor(s);
+                        catch (NoMeasurementException e) { // NOPMD
                         }
                       }
                     }

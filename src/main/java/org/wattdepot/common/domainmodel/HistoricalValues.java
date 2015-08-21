@@ -19,11 +19,13 @@
 
 package org.wattdepot.common.domainmodel;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
  * HistoricalValues - A simple calculated historical min, average, and max for a depository, sensor, timestamp
  * and number of samples.
+ *
  * @author Cam Moore
  */
 public class HistoricalValues {
@@ -38,7 +40,66 @@ public class HistoricalValues {
   Date timestamp;
   String windowWidth;
   String valueType;
+  ArrayList<String> reportingSensors;
+  ArrayList<String> definedSensors;
 
+  /**
+   * Default constructor. Initializes the ArrayLists.
+   */
+  public HistoricalValues() {
+    this.reportingSensors = new ArrayList<String>();
+    this.definedSensors = new ArrayList<String>();
+  }
+
+  /**
+   * @return The reporting sensors as an ArrayList of SensorIds.
+   */
+  public ArrayList<String> getReportingSensors() {
+    return reportingSensors;
+  }
+
+  /**
+   * Sets the reporting sensors.
+   * @param reportingSensors the new list of reporting sensors.
+   */
+  public void setReportingSensors(ArrayList<String> reportingSensors) {
+    this.reportingSensors = reportingSensors;
+  }
+
+  /**
+   * Adds the given sensor id to the list of reporting sensors.
+   * @param sensorId the sensor id to add.
+   */
+  public void addReportingSensor(String sensorId) {
+    if (!reportingSensors.contains(sensorId)) {
+      reportingSensors.add(sensorId);
+    }
+  }
+
+  /**
+   * @return the list of defined sensors.
+   */
+  public ArrayList<String> getDefinedSensors() {
+    return definedSensors;
+  }
+
+  /**
+   * Sets the list of defined sensors.
+   * @param definedSensors the new list of defined sensors.
+   */
+  public void setDefinedSensors(ArrayList<String> definedSensors) {
+    this.definedSensors = definedSensors;
+  }
+
+  /**
+   * Adds the sensor id to the list of defined sensors.
+   * @param sensorId the sensor id to add.
+   */
+  public void addDefinedSensor(String sensorId) {
+    if (!definedSensors.contains(sensorId)) {
+      definedSensors.add(sensorId);
+    }
+  }
   /**
    * @return The Depository id.
    */
@@ -48,6 +109,7 @@ public class HistoricalValues {
 
   /**
    * Sets the depository id.
+   *
    * @param depositoryId the new depository id.
    */
   public void setDepositoryId(String depositoryId) {
@@ -63,6 +125,7 @@ public class HistoricalValues {
 
   /**
    * Sets the sensor id.
+   *
    * @param sensorId the new sensor id.
    */
   public void setSensorId(String sensorId) {
@@ -78,6 +141,7 @@ public class HistoricalValues {
 
   /**
    * Sets the number of samples used.
+   *
    * @param numSamples the new number of samples used.
    */
   public void setNumSamples(Integer numSamples) {
@@ -93,6 +157,7 @@ public class HistoricalValues {
 
   /**
    * Sets the average value.
+   *
    * @param average the new average value.
    */
   public void setAverage(Double average) {
@@ -108,6 +173,7 @@ public class HistoricalValues {
 
   /**
    * Sets the minimum value.
+   *
    * @param minimum the new minimum value.
    */
   public void setMinimum(Double minimum) {
@@ -123,6 +189,7 @@ public class HistoricalValues {
 
   /**
    * Sets the maximum value.
+   *
    * @param maximum the new maximum value.
    */
   public void setMaximum(Double maximum) {
@@ -138,6 +205,7 @@ public class HistoricalValues {
 
   /**
    * Sets the time of the historical values.
+   *
    * @param timestamp the new time.
    */
   public void setTimestamp(Date timestamp) {
@@ -153,6 +221,7 @@ public class HistoricalValues {
 
   /**
    * Sets the window width.
+   *
    * @param windowWidth the new window width.
    */
   public void setWindowWidth(String windowWidth) {
@@ -168,6 +237,7 @@ public class HistoricalValues {
 
   /**
    * Sets the value type, point or difference.
+   *
    * @param valueType the new value type.
    */
   public void setValueType(String valueType) {
@@ -183,6 +253,7 @@ public class HistoricalValues {
 
   /**
    * Sets the lower quartile.
+   *
    * @param lowerQuartile the new lower quartile.
    */
   public void setLowerQuartile(Double lowerQuartile) {
@@ -198,6 +269,7 @@ public class HistoricalValues {
 
   /**
    * Sets the upper quartile.
+   *
    * @param upperQuartile the new upper quartile.
    */
   public void setUpperQuartile(Double upperQuartile) {

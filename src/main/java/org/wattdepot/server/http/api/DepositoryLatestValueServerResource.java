@@ -64,6 +64,7 @@ public class DepositoryLatestValueServerResource extends WattDepotServerResource
         Sensor sensor = depot.getSensor(sensorId, orgId, false);
         InterpolatedValue value = new InterpolatedValue(sensorId, 0.0, depository.getMeasurementType(), new Date());
         if (sensor != null) {
+          value.addDefinedSensor(sensorId);
           CollectorProcessDefinition cpd = findCPD(depositoryId, sensorId, orgId);
           try {
             if (cpd != null) {
@@ -74,7 +75,6 @@ public class DepositoryLatestValueServerResource extends WattDepotServerResource
             }
           }
           catch (NoMeasurementException e) {
-            value.addMissingSensor(sensorId);
             return value;
           }
         }
@@ -83,6 +83,7 @@ public class DepositoryLatestValueServerResource extends WattDepotServerResource
           if (group != null) {
             for (String s : group.getSensors()) {
               sensor = depot.getSensor(s, orgId, false);
+              value.addDefinedSensor(s);
               if (sensor != null) {
                 CollectorProcessDefinition cpd = findCPD(depositoryId, s, orgId);
                 try {
@@ -94,15 +95,13 @@ public class DepositoryLatestValueServerResource extends WattDepotServerResource
                     latest = depot.getLatestMeasuredValue(depositoryId, orgId, s, false);
                   }
                   value.setValue(value.getValue() + latest.getValue());
+                  value.addReportingSensor(s);
                   value.setStart(latest.getStart());
                   value.setEnd(latest.getEnd());
                 }
-                catch (NoMeasurementException e) {
-                  value.addMissingSensor(s);
+                catch (NoMeasurementException e) { //NOPMD
+
                 }
-              }
-              else {
-                value.addMissingSensor(s);
               }
             }
             return value;

@@ -1520,6 +1520,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       timingLogger.log(Level.SEVERE, padding + "getLatestMeasuredValue(" + depotId + ", " + orgId
           + ", " + sensorId + ") took " + (diff / 1E9) + " secs.");
     }
+    value.addReportingSensor(sensorId);
+    value.addDefinedSensor(sensorId);
     return value;
   }
 
@@ -1563,6 +1565,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       timingLogger.log(Level.SEVERE, padding + "getLatestMeasuredValue(" + depotId + ", " + orgId
           + ", " + sensorId + ") took " + (diff / 1E9) + " secs.");
     }
+    value.addDefinedSensor(sensorId);
+    value.addReportingSensor(sensorId);
     return value;
   }
 

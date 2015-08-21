@@ -79,7 +79,7 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
             + Labels.HISTORICAL_VALUES + "/?" + Labels.SENSOR + "={" + sensorId + "}&" + Labels.TIMESTAMP + "={"
             + timestamp + "}&" + Labels.VALUE_TYPE + "={" + valueType + "}&" + Labels.SAMPLES + "={" + samples + "}");
     if (isInRole(orgId)) {
-      HistoricalValues ret = null;
+      HistoricalValues ret = new HistoricalValues();
       try {
         Depository depository = depot.getDepository(depositoryId, orgId, true);
         if (depository != null) {
@@ -98,7 +98,9 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
             Sensor sensor = depot.getSensor(sensorId, orgId, false);
             if (valueType.equals(Labels.POINT)) { // since it is point data must calculate the average of the measurements
               if (sensor != null) {
+                ret.addDefinedSensor(sensorId);
                 statistics = updateStatistics(depositoryId, sensorId, begin, end, statistics);
+                ret.addReportingSensor(sensorId);
                 if (statistics.getMin() < minimum) {
                   minimum = statistics.getMin();
                 }
@@ -118,8 +120,10 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
                   Double lowerQuartile = 0.0;
                   Double upperQuartile = 0.0;
                   for (String s : group.getSensors()) {
+                    ret.addDefinedSensor(s);
                     try {
                       statistics = getStatistics(depositoryId, s, begin, end);
+                      ret.addReportingSensor(s);
                       groupMin += statistics.getMin();
                       groupMax += statistics.getMax();
                       groupAve += statistics.getMean();
@@ -144,7 +148,9 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
             }
             else { // difference values
               if (sensor != null) {
+                ret.addDefinedSensor(sensorId);
                 statistics.addValue(depot.getValue(depositoryId, orgId, sensorId, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false));
+                ret.addReportingSensor(sensorId);
               }
               else {
                 SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
@@ -152,7 +158,9 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
                   Double d = 0.0;
                   for (String s : group.getSensors()) {
                     try {
+                      ret.addDefinedSensor(s);
                       d += depot.getValue(depositoryId, orgId, s, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false);
+                      ret.addReportingSensor(s);
                     }
                     catch (NoMeasurementException nme) { // NOPMD
                       // just skip this sensor.
@@ -175,7 +183,6 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
             lowQuartile = statistics.getPercentile(25.0);
             upQuartile = statistics.getPercentile(75.0);
           }
-          ret = new HistoricalValues();
           ret.setDepositoryId(depositoryId);
           ret.setSensorId(sensorId);
           ret.setAverage(average);
@@ -210,8 +217,7 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
         return null;
       }
-
-      return ret;
+      return null;
     }
     return null;
   }
@@ -239,14 +245,14 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
 
   /**
    * @param depositoryId the depository id.
-   * @param SensorId the sensor id.
+   * @param sensorId the sensor id.
    * @param begin the begin time.
    * @param end the end time.
    * @param statistics the statistics object to update.
    * @return the updated object.
-   * @throws IdNotFoundException
+   * @throws IdNotFoundException if there is a problem with the sensorId.
    */
-  private DescriptiveStatistics updateStatistics(String depositoryId, String SensorId, XMLGregorianCalendar begin, XMLGregorianCalendar end, DescriptiveStatistics statistics) throws IdNotFoundException {
+  private DescriptiveStatistics updateStatistics(String depositoryId, String sensorId, XMLGregorianCalendar begin, XMLGregorianCalendar end, DescriptiveStatistics statistics) throws IdNotFoundException {
     List<Measurement> measurements = depot.getMeasurements(depositoryId, orgId, sensorId, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false);
     for (Measurement m : measurements) {
       statistics.addValue(m.getValue());
