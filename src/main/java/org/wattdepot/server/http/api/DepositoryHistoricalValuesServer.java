@@ -130,8 +130,9 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
                       lowerQuartile += statistics.getPercentile(0.25);
                       upperQuartile += statistics.getPercentile(0.75);
                     }
-                    catch (NoMeasurementException nme) { // NOPMD
+                    catch (NoMeasurementException nme) {
                       // skip this sensor
+                      ret.addMissingSensor(s);
                     }
                   }
                   if (maximum < groupMax) {
@@ -162,8 +163,9 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
                       d += depot.getValue(depositoryId, orgId, s, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false);
                       ret.addReportingSensor(s);
                     }
-                    catch (NoMeasurementException nme) { // NOPMD
+                    catch (NoMeasurementException nme) {
                       // just skip this sensor.
+                      ret.addMissingSensor(s);
                     }
                   }
                   statistics.addValue(d);

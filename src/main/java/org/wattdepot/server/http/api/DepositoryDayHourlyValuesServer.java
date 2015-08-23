@@ -93,7 +93,9 @@ public class DepositoryDayHourlyValuesServer extends WattDepotServerResource {
                 Date beginDate = begin.toGregorianCalendar().getTime();
                 XMLGregorianCalendar end = times.get(i);
                 Date endDate = end.toGregorianCalendar().getTime();
+                InterpolatedValue interpolatedValue = new InterpolatedValue(sensorId, 0.0, depository.getMeasurementType(), beginDate, endDate);
                 Double val = 0.0;
+                interpolatedValue.addDefinedSensor(sensorId);
                 if (dataType.equals("point")) {  // need to calculate the average value for the hourly intervals
                   List<Measurement> measurements = depot.getMeasurements(depositoryId, orgId, sensorId, beginDate, endDate, false);
                   if (measurements.size() > 0) {
@@ -101,6 +103,7 @@ public class DepositoryDayHourlyValuesServer extends WattDepotServerResource {
                       val += m.getValue();
                     }
                     val = val / measurements.size();
+                    interpolatedValue.addReportingSensor(sensorId);
                   }
                   else {
                     val = Double.NaN;
@@ -109,12 +112,14 @@ public class DepositoryDayHourlyValuesServer extends WattDepotServerResource {
                 else {  // calculate the difference
                   try {
                     val = depot.getValue(depositoryId, orgId, sensorId, beginDate, endDate, false);
+                    interpolatedValue.addReportingSensor(sensorId);
                   }
                   catch (NoMeasurementException nme) {
                     val = Double.NaN;
                   }
                 }
-                ret.getInterpolatedValues().add(new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate));
+                interpolatedValue.setValue(val);
+                ret.getInterpolatedValues().add(interpolatedValue);
               }
             }
           }

@@ -20,10 +20,12 @@ package org.wattdepot.server.http.api;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementList;
@@ -87,6 +89,7 @@ public class DepositoryMeasurementsIntervalServer extends WattDepotServerResourc
    * @param sensorId The sensor id.
    * @param startDate The start date.
    * @param endDate The end date.
+   * @param interpolatedValue updates the defined and reporting sensors lists.
    * @return The measurements for the given depository and sensor during the
    *         interval from startDate to endDate.
    * @throws IdNotFoundException If any id is not defined.
@@ -94,22 +97,32 @@ public class DepositoryMeasurementsIntervalServer extends WattDepotServerResourc
    *         different organizations.
    */
   protected MeasurementList getMeasurements(String depositoryId, String orgId, String sensorId,
-      Date startDate, Date endDate) throws IdNotFoundException, MisMatchedOwnerException {
+      Date startDate, Date endDate, InterpolatedValue interpolatedValue) throws IdNotFoundException, MisMatchedOwnerException {
     if (startDate != null && endDate != null) {
       MeasurementList ret = new MeasurementList();
       try {
         Sensor sensor = depot.getSensor(sensorId, orgId, true);
-        for (Measurement meas : depot.getMeasurements(depositoryId, orgId, sensor.getId(),
-            startDate, endDate, true)) {
+        interpolatedValue.addDefinedSensor(sensorId);
+        List<Measurement> measurementList = depot.getMeasurements(depositoryId, orgId, sensor.getId(),
+            startDate, endDate, true);
+        if (measurementList.size() > 0) {
+          interpolatedValue.addReportingSensor(sensorId);
+        }
+        for (Measurement meas : measurementList) {
           ret.getMeasurements().add(meas);
         }
       }
       catch (IdNotFoundException nf) {
         SensorGroup group = depot.getSensorGroup(sensorId, orgId, true);
         for (String s : group.getSensors()) {
+          interpolatedValue.addDefinedSensor(s);
           Sensor sensor = depot.getSensor(s, orgId, true);
-          for (Measurement meas : depot.getMeasurements(depositoryId, orgId, sensor.getId(),
-              startDate, endDate, true)) {
+          List<Measurement> measurementList = depot.getMeasurements(depositoryId, orgId, sensor.getId(),
+              startDate, endDate, true);
+          if (measurementList.size() > 0) {
+            interpolatedValue.addReportingSensor(s);
+          }
+          for (Measurement meas : measurementList) {
             ret.getMeasurements().add(meas);
           }
         }

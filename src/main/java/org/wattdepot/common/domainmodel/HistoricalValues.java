@@ -42,6 +42,7 @@ public class HistoricalValues {
   String valueType;
   ArrayList<String> reportingSensors;
   ArrayList<String> definedSensors;
+  ArrayList<String> missingSensors;
 
   /**
    * Default constructor. Initializes the ArrayLists.
@@ -49,6 +50,7 @@ public class HistoricalValues {
   public HistoricalValues() {
     this.reportingSensors = new ArrayList<String>();
     this.definedSensors = new ArrayList<String>();
+    this.missingSensors = new ArrayList<String>();
   }
 
   /**
@@ -100,6 +102,30 @@ public class HistoricalValues {
       definedSensors.add(sensorId);
     }
   }
+
+  /**
+   * @return the list of missing sensors.
+   */
+  public ArrayList<String> getMissingSensors() {
+    return missingSensors;
+  }
+
+  /**
+   * Sets the list of missing sensors.
+   * @param missingSensors the new list of missing sensors.
+   */
+  public void setMissingSensors(ArrayList<String> missingSensors) {
+    this.missingSensors = missingSensors;
+  }
+
+  /**
+   * Adds the given sensor id to the list of missing sensors. Supports duplicates.
+   * @param sensorId the sensor id.
+   */
+  public void addMissingSensor(String sensorId) {
+    this.missingSensors.add(sensorId);
+  }
+
   /**
    * @return The Depository id.
    */

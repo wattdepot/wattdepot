@@ -18,13 +18,11 @@
  */
 package org.wattdepot.common.domainmodel;
 
-import java.util.ArrayList;
-import java.util.Date;
+import org.wattdepot.common.util.DateConvert;
 
 import javax.xml.datatype.DatatypeConfigurationException;
-
-import org.wattdepot.client.http.api.collector.StressCollector;
-import org.wattdepot.common.util.DateConvert;
+import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * InterpolatedValue - represents an interpolated value derived from
@@ -105,6 +103,10 @@ public class InterpolatedValue {
     this.definedSensors = definedSensors;
   }
 
+  /**
+   * Adds the given sensor id to the list of defined sensors.
+   * @param sensorId the sensor id.
+   */
   public void addDefinedSensor(String sensorId) {
     if (!definedSensors.contains(sensorId)) {
       definedSensors.add(sensorId);
@@ -322,7 +324,6 @@ public class InterpolatedValue {
   /**
    * Ads a SensorId to the missing sensors list.
    * @param s the sensorId.
-   * @return true if successful.
    */
   public void addReportingSensor(String s) {
     if (!reportingSensors.contains(s)) {
