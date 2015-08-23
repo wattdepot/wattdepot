@@ -1,32 +1,12 @@
-Submitting Issues
-=================
+Contributions guidelines:
 
-If you are submitting a bug, please test and/or fork [this jsfiddle](http://jsfiddle.net/Eonasdan/0Ltv25o8/) demonstrating the issue. Code issues and fringe case bugs that do not include a jsfiddle (or similar) will be closed.
+- Use 2 spaces indentation
+- If it is a bug, try to add an automated test that reproduces it in the
+  test/issues.coffee, following the conventions already adopted.
+- If it is a new feature, try to add automated tests for it.
+- Never submit patches that break existing tests(make test should take care of
+  downloading dependencies and running the tests)
+- Do not commit the files in the 'build' dir, 'git update-index --assume-unchanged build/{js,css}/*' will help
 
-Contributing code
-=================
-
-To contribute, fork the library and install grunt and dependencies. You need [node](http://nodejs.org/); use [nvm](https://github.com/creationix/nvm) or [nenv](https://github.com/ryuone/nenv) to install it.
-
-```bash
-git clone https://github.com/Eonasdan/bootstrap-datetimepicker.git
-cd bootstrap-datetimepicker
-npm install -g grunt-cli
-npm install
-git checkout development  # all patches against development branch, please!
-grunt                 # this runs tests and jshint
-```
-
-Very important notes
-====================
-
- * **Pull requests to the `master` branch will be closed.** Please submit all pull requests to the `development` branch.
- * **Do not include the minified files in your pull request.** Don't worry, we'll build them when we cut a release.
-
-Grunt tasks
-===========
-
-We use Grunt for managing the build. Here are some useful Grunt tasks:
-
-  * `grunt` The default task lints the code and runs the tests. You should make sure you do this before submitting a PR.
-  * `grunt build` Compiles the less stylesheet and minifies the javascript source in build directory.
+Before starting to develop, enter 'make deps' to download all dependencies
+needed for developing/testing. 'make test' will run all tests. 
