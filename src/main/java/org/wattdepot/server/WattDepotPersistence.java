@@ -245,22 +245,22 @@ public abstract class WattDepotPersistence {
       MisMatchedOwnerException;
 
   /**
-   * Deletes the given MeasurementPruningDefinition.
-   * 
-   * @param id The id of the MeasurementPruningDefinition to delete.
-   * @param orgId The Organization's id.
-   * @throws IdNotFoundException if the id is not defined.
-   */
-  public abstract void deleteMeasurementPruningDefinition(String id, String orgId)
-      throws IdNotFoundException;
-
-  /**
    * @param depotId the id of the Depository storing the measurement.
    * @param orgId the id of the Organization.
    * @param measId The id of the measurement to delete.
    * @throws IdNotFoundException if there is a problem with the ids.
    */
   public abstract void deleteMeasurement(String depotId, String orgId, String measId)
+      throws IdNotFoundException;
+
+  /**
+   * Deletes the given MeasurementPruningDefinition.
+   *
+   * @param id The id of the MeasurementPruningDefinition to delete.
+   * @param orgId The Organization's id.
+   * @throws IdNotFoundException if the id is not defined.
+   */
+  public abstract void deleteMeasurementPruningDefinition(String id, String orgId)
       throws IdNotFoundException;
 
   /**
@@ -394,34 +394,6 @@ public abstract class WattDepotPersistence {
       String sensorId, boolean check) throws NoMeasurementException, IdNotFoundException;
 
   /**
-   * @param id The id of the MeasurementPruningDefinition.
-   * @param orgId The Organization's id.
-   * @param check true if want to check the ids.
-   * @return The defined MeasurementPruningDefinition.
-   * @throws IdNotFoundException if the id is not defined.
-   */
-  public abstract MeasurementPruningDefinition getMeasurementPruningDefinition(String id,
-      String orgId, boolean check) throws IdNotFoundException;
-
-  /**
-   * @param orgId The Organization's id.
-   * @param check true if want to check the ids.
-   * @return A list of the defined MeasurementPruningDefinition ids.
-   * @throws IdNotFoundException if there is a problem with the ids.
-   */
-  public abstract List<String> getMeasurementPruningDefinitionIds(String orgId, boolean check)
-      throws IdNotFoundException;
-
-  /**
-   * @param orgId The Organization's id.
-   * @param check true if want to check the ids.
-   * @return A list of the defined MeasurementPruningDefinitions.
-   * @throws IdNotFoundException If there is a problem with the ids.
-   */
-  public abstract List<MeasurementPruningDefinition> getMeasurementPruningDefinitions(String orgId,
-      boolean check) throws IdNotFoundException;
-
-  /**
    * @param depotId the id of the Depository.
    * @param orgId the Organziation's id.
    * @param sensorId The id of the Sensor making the measurements.
@@ -458,6 +430,48 @@ public abstract class WattDepotPersistence {
    */
   public abstract Measurement getMeasurement(String depotId, String orgId, String measId,
       boolean check) throws IdNotFoundException;
+
+  /**
+   * @param id The id of the MeasurementPruningDefinition.
+   * @param orgId The Organization's id.
+   * @param check true if want to check the ids.
+   * @return The defined MeasurementPruningDefinition.
+   * @throws IdNotFoundException if the id is not defined.
+   */
+  public abstract MeasurementPruningDefinition getMeasurementPruningDefinition(String id,
+      String orgId, boolean check) throws IdNotFoundException;
+
+  /**
+   * @param orgId The Organization's id.
+   * @param check true if want to check the ids.
+   * @return A list of the defined MeasurementPruningDefinition ids.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract List<String> getMeasurementPruningDefinitionIds(String orgId, boolean check)
+      throws IdNotFoundException;
+
+  /**
+   * @param orgId The Organization's id.
+   * @param check true if want to check the ids.
+   * @return A list of the defined MeasurementPruningDefinitions.
+   * @throws IdNotFoundException If there is a problem with the ids.
+   */
+  public abstract List<MeasurementPruningDefinition> getMeasurementPruningDefinitions(String orgId,
+      boolean check) throws IdNotFoundException;
+
+  /**
+   * @param id The unique id for the MeasurementType.
+   * @param check true if want to check the ids.
+   * @return The MeasurementType with the given id.
+   * @throws IdNotFoundException if the id is not defined.
+   */
+  public abstract MeasurementType getMeasurementType(String id, boolean check)
+      throws IdNotFoundException;
+
+  /**
+   * @return A List of the defined MeasurementTypes.
+   */
+  public abstract List<MeasurementType> getMeasurementTypes();
 
   /**
    * @param depotId the id of the Depository storing the measurements.
@@ -514,20 +528,6 @@ public abstract class WattDepotPersistence {
    */
   public abstract Long getMeasurementsCount(String depotId, String orgId, String sensorId,
       Date start, Date end, boolean check) throws IdNotFoundException;
-
-  /**
-   * @param id The unique id for the MeasurementType.
-   * @param check true if want to check the ids.
-   * @return The MeasurementType with the given id.
-   * @throws IdNotFoundException if the id is not defined.
-   */
-  public abstract MeasurementType getMeasurementType(String id, boolean check)
-      throws IdNotFoundException;
-
-  /**
-   * @return A List of the defined MeasurementTypes.
-   */
-  public abstract List<MeasurementType> getMeasurementTypes();
 
   /**
    * @param id the unique id for the Organization.
@@ -637,6 +637,13 @@ public abstract class WattDepotPersistence {
    */
   public ServerProperties getServerProperties() {
     return properties;
+  }
+
+  /**
+   * @param properties the properties to set
+   */
+  public void setServerProperties(ServerProperties properties) {
+    this.properties = properties;
   }
 
   /**
@@ -860,13 +867,6 @@ public abstract class WattDepotPersistence {
    */
   public abstract void putMeasurementList(String depotId, String orgId, MeasurementList measurementList)
       throws MeasurementTypeException, IdNotFoundException;
-
-  /**
-   * @param properties the properties to set
-   */
-  public void setServerProperties(ServerProperties properties) {
-    this.properties = properties;
-  }
 
   /**
    * Cleans up the persistence layer.

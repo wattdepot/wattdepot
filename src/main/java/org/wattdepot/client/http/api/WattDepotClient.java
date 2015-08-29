@@ -35,7 +35,7 @@ import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.DepositoryList;
-import org.wattdepot.common.domainmodel.HistoricalValues;
+import org.wattdepot.common.domainmodel.DescriptiveStats;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Labels;
@@ -63,7 +63,7 @@ import org.wattdepot.common.http.api.CollectorProcessDefinitionPutResource;
 import org.wattdepot.common.http.api.CollectorProcessDefinitionResource;
 import org.wattdepot.common.http.api.CollectorProcessDefinitionsResource;
 import org.wattdepot.common.http.api.DepositoriesResource;
-import org.wattdepot.common.http.api.DepositoryHistoricalValuesResource;
+import org.wattdepot.common.http.api.DepositoryDescriptiveStatsResource;
 import org.wattdepot.common.http.api.DepositoryMeasurementPutResource;
 import org.wattdepot.common.http.api.DepositoryMeasurementResource;
 import org.wattdepot.common.http.api.DepositoryMeasurementsPutResource;
@@ -215,25 +215,9 @@ public class WattDepotClient implements WattDepotInterface {
     }
   }
 
-  @Override
-  public void deleteMeasurementPruningDefinition(MeasurementPruningDefinition gcd) throws IdNotFoundException {
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.MEASUREMENT_PRUNING_DEFINITION + "/"
-        + gcd.getId());
-    MeasurementPruningDefinitionResource resource = client.wrap(MeasurementPruningDefinitionResource.class);
-    try {
-      resource.remove();
-    }
-    catch (ResourceException e) {
-      throw new IdNotFoundException(gcd + "is not stored in WattDepot");
-    }
-    finally {
-      client.release();
-    }
-  }
-
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * org.wattdepot.client.WattDepotInterface#deleteMeasurement(org.wattdepot
    * .datamodel.Depository, org.wattdepot.datamodel.Measurement)
@@ -251,6 +235,22 @@ public class WattDepotClient implements WattDepotInterface {
       throw new IdNotFoundException(measurement + " is not stored in WattDepot.");
     }
     client.release();
+  }
+
+  @Override
+  public void deleteMeasurementPruningDefinition(MeasurementPruningDefinition gcd) throws IdNotFoundException {
+    ClientResource client = makeClient(this.organizationId + "/" + Labels.MEASUREMENT_PRUNING_DEFINITION + "/"
+        + gcd.getId());
+    MeasurementPruningDefinitionResource resource = client.wrap(MeasurementPruningDefinitionResource.class);
+    try {
+      resource.remove();
+    }
+    catch (ResourceException e) {
+      throw new IdNotFoundException(gcd + "is not stored in WattDepot");
+    }
+    finally {
+      client.release();
+    }
   }
 
   /*
@@ -341,994 +341,6 @@ public class WattDepotClient implements WattDepotInterface {
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#getCollectorProcessDefinition(java
-   * .lang .String)
-   */
-  @Override
-  public CollectorProcessDefinition getCollectorProcessDefinition(String id)
-      throws IdNotFoundException {
-    ClientResource client = makeClient(this.organizationId + "/"
-        + Labels.COLLECTOR_PROCESS_DEFINITION + "/" + id);
-    CollectorProcessDefinitionResource resource = client
-        .wrap(CollectorProcessDefinitionResource.class);
-    try {
-      CollectorProcessDefinition ret = resource.retrieve();
-      client.release();
-      return ret;
-    }
-    catch (ResourceException e) {
-      throw new IdNotFoundException(id + " is not a known CollectorProcessDefinition. ");
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#getCollectorProcessDefinitions()
-   */
-  @Override
-  public CollectorProcessDefinitionList getCollectorProcessDefinitions() {
-    ClientResource client = makeClient(this.organizationId + "/"
-        + Labels.COLLECTOR_PROCESS_DEFINITIONS + "/");
-    CollectorProcessDefinitionsResource resource = client
-        .wrap(CollectorProcessDefinitionsResource.class);
-    CollectorProcessDefinitionList ret = resource.retrieve();
-    client.release();
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.client.WattDepotInterface#getDepositories()
-   */
-  @Override
-  public DepositoryList getDepositories() {
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORIES + "/");
-    DepositoriesResource resource = client.wrap(DepositoriesResource.class);
-    DepositoryList ret = null;
-    try {
-      ret = resource.retrieve();
-    }
-    finally {
-      client.release();
-    }
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#getDepository(java.lang.String)
-   */
-  @Override
-  public Depository getDepository(String id) throws IdNotFoundException {
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + id);
-    DepositoryResource resource = client.wrap(DepositoryResource.class);
-    Depository ret = null;
-    try {
-      ret = resource.retrieve();
-    }
-    catch (ResourceException e) {
-      throw new IdNotFoundException(id + " is not a known Depository id.");
-    }
-    finally {
-      client.release();
-    }
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#getDepositorySensors(java.lang.
-   * String)
-   */
-  @Override
-  public SensorList getDepositorySensors(String id) throws IdNotFoundException {
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + id
-        + "/" + Labels.SENSORS + "/");
-    DepositorySensorsResource resource = client.wrap(DepositorySensorsResource.class);
-    SensorList ret = null;
-    try {
-      ret = resource.retrieve();
-    }
-    catch (ResourceException e) {
-      throw new IdNotFoundException(id + " is not a known Depository id.");
-    }
-    finally {
-      client.release();
-    }
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#getEarliestMeasurement(org.wattdepot
-   * .common.domainmodel.Depository, org.wattdepot.common.domainmodel.Sensor)
-   */
-  @Override
-  public InterpolatedValue getEarliestValue(Depository depository, Sensor sensor) {
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
-        + depository.getId() + "/" + Labels.VALUE + "/" + "?sensor=" + sensor.getId()
-        + "&earliest=true");
-    DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
-    InterpolatedValue ret = resource.retrieve();
-    client.release();
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#getEarliestValue(org.wattdepot.
-   * common.domainmodel.Depository,
-   * org.wattdepot.common.domainmodel.SensorGroup)
-   */
-  @Override
-  public InterpolatedValue getEarliestValue(Depository depository, SensorGroup group) {
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
-        + depository.getId() + "/" + Labels.VALUE + "/" + "?sensor=" + group.getId()
-        + "&earliest=true");
-    DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
-    InterpolatedValue ret = resource.retrieve();
-    client.release();
-    return ret;
-  }
-
-  @Override
-  public HistoricalValues getHistoricalValues(Depository depository, Sensor sensor, Date timestamp, Boolean daily, Integer samples, Boolean pointValues) {
-    StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append(this.organizationId);
-    stringBuilder.append("/");
-    stringBuilder.append(Labels.DEPOSITORY);
-    stringBuilder.append("/");
-    stringBuilder.append(depository.getId());
-    stringBuilder.append("/");
-    stringBuilder.append(Labels.HISTORICAL_VALUES);
-    stringBuilder.append("/");
-    if (daily) {
-      stringBuilder.append(Labels.DAILY);
-    }
-    else {
-      stringBuilder.append(Labels.HOURLY);
-    }
-    stringBuilder.append("/?");
-    stringBuilder.append(Labels.SENSOR);
-    stringBuilder.append("=");
-    stringBuilder.append(sensor.getId());
-    stringBuilder.append("&");
-    stringBuilder.append(Labels.TIMESTAMP);
-    stringBuilder.append("=");
-    try {
-      stringBuilder.append(DateConvert.convertDate(timestamp).toXMLFormat());
-    }
-    catch (DatatypeConfigurationException e) {
-      e.printStackTrace();
-    }
-    stringBuilder.append("&");
-    stringBuilder.append(Labels.VALUE_TYPE);
-    stringBuilder.append("=");
-    if (pointValues) {
-      stringBuilder.append(Labels.POINT);
-    }
-    else {
-      stringBuilder.append(Labels.DIFFERENCE);
-    }
-    stringBuilder.append("&");
-    stringBuilder.append(Labels.SAMPLES);
-    stringBuilder.append("=");
-    stringBuilder.append(samples);
-    ClientResource client = makeClient(stringBuilder.toString());
-    DepositoryHistoricalValuesResource resource = client.wrap(DepositoryHistoricalValuesResource.class);
-    HistoricalValues values = null;
-    try {
-      values = resource.retrieve();
-    }
-    catch (ResourceException re) {
-      throw re;
-    }
-    finally {
-      client.release();
-    }
-    return values;
-  }
-//http://mopsa.ics.hawaii.edu:8192/wattdepot/uh/depository/energy/historical-values/daily/?sensor=lehua-total&timestamp=2015-08-15T12:00:00.000-10:00&value-type=difference&samples=5
-  @Override
-  public HistoricalValues getHistoricalValues(Depository depository, SensorGroup group, Date timestamp, Boolean daily, Integer samples, Boolean pointValues) {
-    StringBuilder stringBuilder = new StringBuilder();
-    stringBuilder.append(this.organizationId);
-    stringBuilder.append("/");
-    stringBuilder.append(Labels.DEPOSITORY);
-    stringBuilder.append("/");
-    stringBuilder.append(depository.getId());
-    stringBuilder.append("/");
-    stringBuilder.append(Labels.HISTORICAL_VALUES);
-    stringBuilder.append("/");
-    if (daily) {
-      stringBuilder.append(Labels.DAILY);
-    }
-    else {
-      stringBuilder.append(Labels.HOURLY);
-    }
-    stringBuilder.append("/?");
-    stringBuilder.append(Labels.SENSOR);
-    stringBuilder.append("=");
-    stringBuilder.append(group.getId());
-    stringBuilder.append("&");
-    stringBuilder.append(Labels.TIMESTAMP);
-    stringBuilder.append("=");
-    try {
-      stringBuilder.append(DateConvert.convertDate(timestamp).toXMLFormat());
-    }
-    catch (DatatypeConfigurationException e) {
-      e.printStackTrace();
-    }
-    stringBuilder.append("&");
-    stringBuilder.append(Labels.VALUE_TYPE);
-    stringBuilder.append("=");
-    if (pointValues) {
-      stringBuilder.append(Labels.POINT);
-    }
-    else {
-      stringBuilder.append(Labels.DIFFERENCE);
-    }
-    stringBuilder.append("&");
-    stringBuilder.append(Labels.SAMPLES);
-    stringBuilder.append("=");
-    stringBuilder.append(samples);
-    ClientResource client = makeClient(stringBuilder.toString());
-    DepositoryHistoricalValuesResource resource = client.wrap(DepositoryHistoricalValuesResource.class);
-    HistoricalValues values = null;
-    try {
-      values = resource.retrieve();
-    }
-    catch (ResourceException re) {
-      throw re;
-    }
-    finally {
-      client.release();
-    }
-    return values;  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#getMeasurementPruningDefinition(
-   * java.lang.String)
-   */
-  @Override
-  public MeasurementPruningDefinition getMeasurementPruningDefinition(String id)
-      throws IdNotFoundException {
-    ClientResource client = makeClient(this.organizationId + "/"
-        + Labels.MEASUREMENT_PRUNING_DEFINITION + "/" + id);
-    MeasurementPruningDefinitionResource resource = client
-        .wrap(MeasurementPruningDefinitionResource.class);
-    MeasurementPruningDefinition ret;
-    try {
-      ret = resource.retrieve();
-    }
-    catch (ResourceException e) {
-      throw new IdNotFoundException(id + " is not a known MeasurementPruningDefinition id.");
-    }
-    finally {
-      client.release();
-    }
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#getMeasurementPruningDefinitions()
-   */
-  @Override
-  public MeasurementPruningDefinitionList getMeasurementPruningDefinitions() {
-    ClientResource client = makeClient(this.organizationId + "/"
-        + Labels.MEASUREMENT_PRUNING_DEFINITIONS + "/");
-    MeasurementPruningDefinitionsResource resource = client
-        .wrap(MeasurementPruningDefinitionsResource.class);
-    MeasurementPruningDefinitionList ret = resource.retrieve();
-    client.release();
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#getLatestMeasurement(org.wattdepot
-   * .common.domainmodel.Depository, org.wattdepot.common.domainmodel.Sensor)
-   */
-  @Override
-  public InterpolatedValue getLatestValue(Depository depository, Sensor sensor) {
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
-        + depository.getId() + "/" + Labels.VALUE + "/" + "?sensor=" + sensor.getId()
-        + "&latest=true");
-    DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
-    InterpolatedValue ret = resource.retrieve();
-    client.release();
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#getLatestValue(org.wattdepot.common
-   * .domainmodel.Depository, org.wattdepot.common.domainmodel.SensorGroup)
-   */
-  @Override
-  public InterpolatedValue getLatestValue(Depository depository, SensorGroup group) {
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
-        + depository.getId() + "/" + Labels.LATEST + "/" + Labels.VALUE + "/" + "?sensor=" + group.getId());
-    DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
-    InterpolatedValue ret = resource.retrieve();
-    client.release();
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.client.WattDepotInterface#getMeasurements(org.wattdepot
-   * .datamodel.Depository, org.wattdepot.datamodel.Sensor, java.util.Date,
-   * java.util.Date)
-   */
-  @Override
-  public MeasurementList getMeasurements(Depository depository, Sensor sensor, Date start, Date end) {
-    try {
-      ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
-          + depository.getId() + "/" + Labels.MEASUREMENTS + "/" + "?sensor=" + sensor.getId()
-          + "&start=" + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end));
-      DepositoryMeasurementsResource resource = client.wrap(DepositoryMeasurementsResource.class);
-      MeasurementList ret = resource.retrieve();
-      client.release();
-      return ret;
-    }
-    catch (DatatypeConfigurationException e) {
-      e.printStackTrace();
-    }
-    return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.client.WattDepotInterface#getMeasurements(org.wattdepot
-   * .datamodel.Depository, org.wattdepot.datamodel.SensorGroup, java.util.Date,
-   * java.util.Date)
-   */
-  @Override
-  public MeasurementList getMeasurements(Depository depository, SensorGroup group, Date start,
-      Date end) {
-    try {
-      ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
-          + depository.getId() + "/" + Labels.MEASUREMENTS + "/" + "?sensor=" + group.getId()
-          + "&start=" + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end));
-      DepositoryMeasurementsResource resource = client.wrap(DepositoryMeasurementsResource.class);
-      MeasurementList ret = resource.retrieve();
-      client.release();
-      return ret;
-    }
-    catch (DatatypeConfigurationException e) {
-      e.printStackTrace();
-    }
-    return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#getMeasurementType(java.lang.String
-   * )
-   */
-  @Override
-  public MeasurementType getMeasurementType(String id) throws IdNotFoundException {
-    ClientResource client = makeClient(Labels.PUBLIC + "/" + Labels.MEASUREMENT_TYPE + "/" + id);
-    MeasurementTypeResource resource = client.wrap(MeasurementTypeResource.class);
-    try {
-      MeasurementType ret = resource.retrieve();
-      client.release();
-      return ret;
-    }
-    catch (ResourceException e) {
-      throw new IdNotFoundException(id + " is not a known MeasurementType. ");
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.client.WattDepotInterface#getMeasurementTypes()
-   */
-  @Override
-  public MeasurementTypeList getMeasurementTypes() {
-    ClientResource client = makeClient(Labels.PUBLIC + "/" + Labels.MEASUREMENT_TYPES + "/");
-    MeasurementTypesResource resource = client.wrap(MeasurementTypesResource.class);
-    MeasurementTypeList ret = resource.retrieve();
-    client.release();
-    return ret;
-  }
-
-  /**
-   * @return the organization id.
-   */
-  public String getOrganizationId() {
-    return organizationId;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.client.WattDepotInterface#getSensor(java.lang.String)
-   */
-  @Override
-  public Sensor getSensor(String id) throws IdNotFoundException {
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.SENSOR + "/" + id);
-    SensorResource resource = client.wrap(SensorResource.class);
-    try {
-      Sensor ret = resource.retrieve();
-      client.release();
-      return ret;
-    }
-    catch (ResourceException e) {
-      throw new IdNotFoundException(id + " is not a known Sensor. ");
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#getSensorGroup(java.lang.String)
-   */
-  @Override
-  public SensorGroup getSensorGroup(String id) throws IdNotFoundException {
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.SENSOR_GROUP + "/" + id);
-    SensorGroupResource resource = client.wrap(SensorGroupResource.class);
-    try {
-      SensorGroup ret = resource.retrieve();
-      client.release();
-      return ret;
-    }
-    catch (ResourceException e) {
-      throw new IdNotFoundException(id + " is not a known SensorGroup. ");
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.client.WattDepotInterface#getSensorGroups()
-   */
-  @Override
-  public SensorGroupList getSensorGroups() {
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.SENSOR_GROUPS + "/");
-    SensorGroupsResource resource = client.wrap(SensorGroupsResource.class);
-    SensorGroupList ret = resource.retrieve();
-    client.release();
-    return ret;
-
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#getSensorModel(java.lang.String)
-   */
-  @Override
-  public SensorModel getSensorModel(String id) throws IdNotFoundException {
-    ClientResource client = makeClient(Labels.PUBLIC + "/" + Labels.SENSOR_MODEL + "/" + id);
-    SensorModelResource resource = client.wrap(SensorModelResource.class);
-    try {
-      SensorModel ret = resource.retrieve();
-      client.release();
-      return ret;
-    }
-    catch (ResourceException e) {
-      throw new IdNotFoundException(id + " is not a known SensorModel. ");
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.client.WattDepotInterface#getSensorModels()
-   */
-  @Override
-  public SensorModelList getSensorModels() {
-    ClientResource client = makeClient(Labels.PUBLIC + "/" + Labels.SENSOR_MODELS + "/");
-    SensorModelsResource resource = client.wrap(SensorModelsResource.class);
-    SensorModelList ret = resource.retrieve();
-    client.release();
-    return ret;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.client.WattDepotInterface#getSensors()
-   */
-  @Override
-  public SensorList getSensors() {
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.SENSORS + "/");
-    SensorsResource resource = client.wrap(SensorsResource.class);
-    SensorList ret = resource.retrieve();
-    client.release();
-    return ret;
-  }
-
-  @Override
-  public SensorStatus getSensorStatus(Depository depository, Sensor sensor) {
-    ClientResource client = null;
-    try {
-      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
-          + "/" + Labels.SENSOR_STATUS + "/" + "?sensor=" + sensor.getId());
-      DepositorySensorStatusResource resource = client.wrap(DepositorySensorStatusResource.class);
-      SensorStatusList list = resource.retrieve();
-      client.release();
-      if (list != null) {
-        return list.getStatuses().get(0);
-      }
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-    return null;
-  }
-
-  @Override
-  public SensorStatusList getSensorStatuses(Depository depository, SensorGroup group) {
-    ClientResource client = null;
-    try {
-      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
-          + "/" + Labels.SENSOR_STATUS + "/" + "?sensor=" + group.getId());
-      DepositorySensorStatusResource resource = client.wrap(DepositorySensorStatusResource.class);
-      SensorStatusList list = resource.retrieve();
-      client.release();
-      if (list != null) {
-        return list;
-      }
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-    return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.datamodel
-   * .Depository, org.wattdepot.datamodel.Sensor, java.util.Date)
-   */
-  @Override
-  public Double getValue(Depository depository, Sensor sensor, Date timestamp)
-      throws NoMeasurementException {
-    ClientResource client = null;
-    try {
-      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
-          + "/" + Labels.VALUE + "/" + "?sensor=" + sensor.getId() + "&timestamp="
-          + DateConvert.convertDate(timestamp));
-      DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
-      InterpolatedValue ret = resource.retrieve();
-      client.release();
-      if (ret != null) {
-        return ret.getValue();
-      }
-    }
-    catch (DatatypeConfigurationException e) {
-      throw new NoMeasurementException(e.getMessage());
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-    return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.datamodel
-   * .Depository, org.wattdepot.datamodel.Sensor, java.util.Date,
-   * java.util.Date)
-   */
-  @Override
-  public Double getValue(Depository depository, Sensor sensor, Date start, Date end)
-      throws NoMeasurementException {
-    ClientResource client = null;
-    try {
-      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
-          + "/" + Labels.VALUE + "/" + "?sensor=" + sensor.getId() + "&start="
-          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end));
-      DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
-      InterpolatedValue ret = resource.retrieve();
-      client.release();
-      return ret.getValue();
-    }
-    catch (DatatypeConfigurationException e) {
-      e.printStackTrace();
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-    return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.datamodel
-   * .Depository, org.wattdepot.datamodel.Sensor, java.util.Date,
-   * java.util.Date, java.lang.Long)
-   */
-  @Override
-  public Double getValue(Depository depository, Sensor sensor, Date start, Date end, Long gapSeconds)
-      throws NoMeasurementException, MeasurementGapException {
-    ClientResource client = null;
-    try {
-      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
-          + "/" + Labels.VALUE + "/" + "?sensor=" + sensor.getId() + "&start="
-          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&gap="
-          + gapSeconds);
-      DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
-      InterpolatedValue ret = resource.retrieve();
-      client.release();
-      return ret.getValue();
-    }
-    catch (DatatypeConfigurationException e) {
-      e.printStackTrace();
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-    return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.datamodel
-   * .Depository, org.wattdepot.datamodel.Sensor, java.util.Date,
-   * java.lang.Long)
-   */
-  @Override
-  public Double getValue(Depository depository, Sensor sensor, Date timestamp, Long gapSeconds)
-      throws NoMeasurementException, MeasurementGapException {
-    ClientResource client = null;
-    try {
-      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
-          + "/" + Labels.VALUE + "/" + "?sensor=" + sensor.getId() + "&timestamp="
-          + DateConvert.convertDate(timestamp) + "&gap=" + gapSeconds);
-      DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
-      InterpolatedValue ret = resource.retrieve();
-      client.release();
-      return ret.getValue();
-    }
-    catch (DatatypeConfigurationException e) {
-      e.printStackTrace();
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-    return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.datamodel
-   * .Depository, org.wattdepot.datamodel.SensorGroup, java.util.Date)
-   */
-  @Override
-  public Double getValue(Depository depository, SensorGroup group, Date timestamp)
-      throws NoMeasurementException {
-    ClientResource client = null;
-    try {
-      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
-          + "/" + Labels.VALUE + "/" + "?sensor=" + group.getId() + "&timestamp="
-          + DateConvert.convertDate(timestamp));
-      DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
-      InterpolatedValue ret = resource.retrieve();
-      client.release();
-      if (ret != null) {
-        return ret.getValue();
-      }
-    }
-    catch (ResourceException re) {
-      throw new NoMeasurementException(re.getMessage());
-    }
-    catch (DatatypeConfigurationException e) {
-      throw new NoMeasurementException(e.getMessage());
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-    return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.common.
-   * domainmodel.Depository, org.wattdepot.common.domainmodel.SensorGroup,
-   * java.util.Date, java.util.Date)
-   */
-  @Override
-  public Double getValue(Depository depository, SensorGroup group, Date start, Date end)
-      throws NoMeasurementException {
-    ClientResource client = null;
-    try {
-      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
-          + "/" + Labels.VALUE + "/" + "?sensor=" + group.getId() + "&start="
-          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end));
-      DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
-      InterpolatedValue ret = resource.retrieve();
-      client.release();
-      return ret.getValue();
-    }
-    catch (ResourceException re) {
-      throw new  NoMeasurementException(re.getCause());
-    }
-    catch (DatatypeConfigurationException e) {
-      e.printStackTrace();
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-    return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.common.
-   * domainmodel.Depository, org.wattdepot.common.domainmodel.SensorGroup,
-   * java.util.Date, java.util.Date, java.lang.Long)
-   */
-  @Override
-  public Double getValue(Depository depository, SensorGroup group, Date start, Date end,
-      Long gapSeconds) throws NoMeasurementException, MeasurementGapException {
-    ClientResource client = null;
-    try {
-      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
-          + "/" + Labels.VALUE + "/" + "?sensor=" + group.getId() + "&start="
-          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&gap="
-          + gapSeconds);
-      DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
-      InterpolatedValue ret = resource.retrieve();
-      client.release();
-      return ret.getValue();
-    }
-    catch (ResourceException re) {
-      throw new MeasurementGapException(re.getCause());
-    }
-    catch (DatatypeConfigurationException e) {
-      e.printStackTrace();
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-    return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.common.
-   * domainmodel.Depository, org.wattdepot.common.domainmodel.SensorGroup,
-   * java.util.Date, java.lang.Long)
-   */
-  @Override
-  public Double getValue(Depository depository, SensorGroup group, Date timestamp, Long gapSeconds)
-      throws NoMeasurementException, MeasurementGapException {
-    ClientResource client = null;
-    try {
-      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
-          + "/" + Labels.VALUE + "/" + "?sensor=" + group.getId() + "&timestamp="
-          + DateConvert.convertDate(timestamp) + "&gap=" + gapSeconds);
-      DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
-      InterpolatedValue ret = resource.retrieve();
-      client.release();
-      return ret.getValue();
-    }
-    catch (ResourceException e1) {
-      throw new MeasurementGapException(e1.getCause());
-    }
-    catch (DatatypeConfigurationException e) {
-      e.printStackTrace();
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-    return null;
-  }
-
-  @Override
-  public InterpolatedValueList getMinimumValues(Depository depository, Sensor sensor, Date start, Date end, Integer interval, Boolean usePointValues) throws NoMeasurementException {
-    ClientResource client = null;
-    try {
-      String valueType = Labels.DIFFERENCE;
-      if (usePointValues) {
-        valueType = Labels.POINT;
-      }
-      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
-          + "/" + Labels.VALUES + "/" + Labels.MINIMUM + "/" + "?sensor=" + sensor.getId() + "&start="
-          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&interval=" + interval + "&value-type=" + valueType);
-      DepositoryMinimumValuesResource resource = client.wrap(DepositoryMinimumValuesResource.class);
-      InterpolatedValueList ret = resource.retrieve();
-      client.release();
-      return ret;
-    }
-    catch (ResourceException e1) {
-      throw new NoMeasurementException(e1.getCause());
-    }
-    catch (DatatypeConfigurationException e) {
-      e.printStackTrace();
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-    return null;
-  }
-
-  @Override
-  public InterpolatedValueList getMaximumValues(Depository depository, SensorGroup group, Date start, Date end, Integer interval, Boolean usePointValues) throws NoMeasurementException {
-    ClientResource client = null;
-    try {
-      String valueType = Labels.DIFFERENCE;
-      if (usePointValues) {
-        valueType = Labels.POINT;
-      }
-      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
-          + "/" + Labels.VALUES + "/" + Labels.MAXIMUM + "/" + "?sensor=" + group.getId() + "&start="
-          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&interval=" + interval + "&value-type=" + valueType);
-      DepositoryMinimumValuesResource resource = client.wrap(DepositoryMinimumValuesResource.class);
-      InterpolatedValueList ret = resource.retrieve();
-      client.release();
-      return ret;
-    }
-    catch (ResourceException e1) {
-      throw new NoMeasurementException(e1.getCause());
-    }
-    catch (DatatypeConfigurationException e) {
-      e.printStackTrace();
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-    return null;
-  }
-
-  @Override
-  public InterpolatedValueList getMaximumValues(Depository depository, Sensor sensor, Date start, Date end, Integer interval, Boolean usePointValues) throws NoMeasurementException {
-    ClientResource client = null;
-    try {
-      String valueType = Labels.DIFFERENCE;
-      if (usePointValues) {
-        valueType = Labels.POINT;
-      }
-      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
-          + "/" + Labels.VALUES + "/" + Labels.MAXIMUM + "/" + "?sensor=" + sensor.getId() + "&start="
-          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&interval=" + interval + "&value-type=" + valueType);
-      DepositoryMinimumValuesResource resource = client.wrap(DepositoryMinimumValuesResource.class);
-      InterpolatedValueList ret = resource.retrieve();
-      client.release();
-      return ret;
-    }
-    catch (ResourceException e1) {
-      throw new NoMeasurementException(e1.getCause());
-    }
-    catch (DatatypeConfigurationException e) {
-      e.printStackTrace();
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-    return null;
-  }
-
-  @Override
-  public InterpolatedValueList getMinimumValues(Depository depository, SensorGroup group, Date start, Date end, Integer interval, Boolean usePointValues) throws NoMeasurementException {
-    ClientResource client = null;
-    try {
-      String valueType = Labels.DIFFERENCE;
-      if (usePointValues) {
-        valueType = Labels.POINT;
-      }
-      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
-          + "/" + Labels.VALUES + "/" + Labels.MINIMUM + "/" + "?sensor=" + group.getId() + "&start="
-          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&interval=" + interval + "&value-type=" + valueType);
-      DepositoryMinimumValuesResource resource = client.wrap(DepositoryMinimumValuesResource.class);
-      InterpolatedValueList ret = resource.retrieve();
-      client.release();
-      return ret;
-    }
-    catch (ResourceException e1) {
-      throw new NoMeasurementException(e1.getCause());
-    }
-    catch (DatatypeConfigurationException e) {
-      e.printStackTrace();
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-    return null;
-  }
-
   @Override
   public InterpolatedValueList getAverageValues(Depository depository, Sensor sensor, Date start, Date end, Integer interval, Boolean usePointValues) throws NoMeasurementException {
     ClientResource client = null;
@@ -1392,12 +404,51 @@ public class WattDepotClient implements WattDepotInterface {
   /*
    * (non-Javadoc)
    *
-   * @see org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.common.
-   * domainmodel.Depository, org.wattdepot.common.domainmodel.Sensor,
-   * java.util.Date, java.util.Date, java.lang.Integer, java.lang.Boolean)
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getCollectorProcessDefinition(java
+   * .lang .String)
    */
   @Override
-  public InterpolatedValueList getValues(Depository depository, Sensor sensor, Date start, Date end, Integer interval, Boolean usePointValues) throws NoMeasurementException {
+  public CollectorProcessDefinition getCollectorProcessDefinition(String id)
+      throws IdNotFoundException {
+    ClientResource client = makeClient(this.organizationId + "/"
+        + Labels.COLLECTOR_PROCESS_DEFINITION + "/" + id);
+    CollectorProcessDefinitionResource resource = client
+        .wrap(CollectorProcessDefinitionResource.class);
+    try {
+      CollectorProcessDefinition ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (ResourceException e) {
+      throw new IdNotFoundException(id + " is not a known CollectorProcessDefinition. ");
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getCollectorProcessDefinitions()
+   */
+  @Override
+  public CollectorProcessDefinitionList getCollectorProcessDefinitions() {
+    ClientResource client = makeClient(this.organizationId + "/"
+        + Labels.COLLECTOR_PROCESS_DEFINITIONS + "/");
+    CollectorProcessDefinitionsResource resource = client
+        .wrap(CollectorProcessDefinitionsResource.class);
+    CollectorProcessDefinitionList ret = resource.retrieve();
+    client.release();
+    return ret;
+  }
+
+  @Override
+  public InterpolatedValueList getDailyValues(Depository depository, Sensor sensor, Date start, Date end, Boolean usePointValues) {
     ClientResource client = null;
     try {
       StringBuilder sb = new StringBuilder();
@@ -1406,6 +457,8 @@ public class WattDepotClient implements WattDepotInterface {
       sb.append(Labels.DEPOSITORY);
       sb.append("/");
       sb.append(depository.getId());
+      sb.append("/");
+      sb.append(Labels.DAILY);
       sb.append("/");
       sb.append(Labels.VALUES);
       sb.append("/?");
@@ -1420,10 +473,6 @@ public class WattDepotClient implements WattDepotInterface {
       sb.append(Labels.END);
       sb.append("=");
       sb.append(DateConvert.convertDate(end));
-      sb.append("&");
-      sb.append(Labels.INTERVAL);
-      sb.append("=");
-      sb.append(interval);
       sb.append("&");
       sb.append(Labels.VALUE_TYPE);
       sb.append("=");
@@ -1447,6 +496,288 @@ public class WattDepotClient implements WattDepotInterface {
         client.release();
       }
     }
+    return null;
+  }
+
+  @Override
+  public InterpolatedValueList getDailyValues(Depository depository, SensorGroup group, Date start, Date end, Boolean usePointValues) {
+    ClientResource client = null;
+    try {
+      StringBuilder sb = new StringBuilder();
+      sb.append(this.organizationId);
+      sb.append("/");
+      sb.append(Labels.DEPOSITORY);
+      sb.append("/");
+      sb.append(depository.getId());
+      sb.append("/");
+      sb.append(Labels.DAILY);
+      sb.append("/");
+      sb.append(Labels.VALUES);
+      sb.append("/?");
+      sb.append(Labels.SENSOR);
+      sb.append("=");
+      sb.append(group.getId());
+      sb.append("&");
+      sb.append(Labels.START);
+      sb.append("=");
+      sb.append(DateConvert.convertDate(start));
+      sb.append("&");
+      sb.append(Labels.END);
+      sb.append("=");
+      sb.append(DateConvert.convertDate(end));
+      sb.append("&");
+      sb.append(Labels.VALUE_TYPE);
+      sb.append("=");
+      if (usePointValues) {
+        sb.append(Labels.POINT);
+      }
+      else {
+        sb.append(Labels.DIFFERENCE);
+      }
+      client = makeClient(sb.toString());
+      DepositoryValuesResource resource = client.wrap(DepositoryValuesResource.class);
+      InterpolatedValueList ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.wattdepot.client.WattDepotInterface#getDepositories()
+   */
+  @Override
+  public DepositoryList getDepositories() {
+    ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORIES + "/");
+    DepositoriesResource resource = client.wrap(DepositoriesResource.class);
+    DepositoryList ret = null;
+    try {
+      ret = resource.retrieve();
+    }
+    finally {
+      client.release();
+    }
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getDepository(java.lang.String)
+   */
+  @Override
+  public Depository getDepository(String id) throws IdNotFoundException {
+    ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + id);
+    DepositoryResource resource = client.wrap(DepositoryResource.class);
+    Depository ret = null;
+    try {
+      ret = resource.retrieve();
+    }
+    catch (ResourceException e) {
+      throw new IdNotFoundException(id + " is not a known Depository id.");
+    }
+    finally {
+      client.release();
+    }
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getDepositorySensors(java.lang.
+   * String)
+   */
+  @Override
+  public SensorList getDepositorySensors(String id) throws IdNotFoundException {
+    ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + id
+        + "/" + Labels.SENSORS + "/");
+    DepositorySensorsResource resource = client.wrap(DepositorySensorsResource.class);
+    SensorList ret = null;
+    try {
+      ret = resource.retrieve();
+    }
+    catch (ResourceException e) {
+      throw new IdNotFoundException(id + " is not a known Depository id.");
+    }
+    finally {
+      client.release();
+    }
+    return ret;
+  }
+
+  @Override
+  public DescriptiveStats getDescriptiveStats(Depository depository, Sensor sensor, Date timestamp, Boolean daily, Integer samples, Boolean pointValues) {
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append(this.organizationId);
+    stringBuilder.append("/");
+    stringBuilder.append(Labels.DEPOSITORY);
+    stringBuilder.append("/");
+    stringBuilder.append(depository.getId());
+    stringBuilder.append("/");
+    stringBuilder.append(Labels.DESCRIPTIVE_STATS);
+    stringBuilder.append("/");
+    if (daily) {
+      stringBuilder.append(Labels.DAILY);
+    }
+    else {
+      stringBuilder.append(Labels.HOURLY);
+    }
+    stringBuilder.append("/?");
+    stringBuilder.append(Labels.SENSOR);
+    stringBuilder.append("=");
+    stringBuilder.append(sensor.getId());
+    stringBuilder.append("&");
+    stringBuilder.append(Labels.TIMESTAMP);
+    stringBuilder.append("=");
+    try {
+      stringBuilder.append(DateConvert.convertDate(timestamp).toXMLFormat());
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    stringBuilder.append("&");
+    stringBuilder.append(Labels.VALUE_TYPE);
+    stringBuilder.append("=");
+    if (pointValues) {
+      stringBuilder.append(Labels.POINT);
+    }
+    else {
+      stringBuilder.append(Labels.DIFFERENCE);
+    }
+    stringBuilder.append("&");
+    stringBuilder.append(Labels.SAMPLES);
+    stringBuilder.append("=");
+    stringBuilder.append(samples);
+    ClientResource client = makeClient(stringBuilder.toString());
+    DepositoryDescriptiveStatsResource resource = client.wrap(DepositoryDescriptiveStatsResource.class);
+    DescriptiveStats values = null;
+    try {
+      values = resource.retrieve();
+    }
+    catch (ResourceException re) {
+      throw re;
+    }
+    finally {
+      client.release();
+    }
+    return values;
+  }
+
+//http://mopsa.ics.hawaii.edu:8192/wattdepot/uh/depository/energy/historical-values/daily/?sensor=lehua-total&timestamp=2015-08-15T12:00:00.000-10:00&value-type=difference&samples=5
+  @Override
+  public DescriptiveStats getDescriptiveStats(Depository depository, SensorGroup group, Date timestamp, Boolean daily, Integer samples, Boolean pointValues) {
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append(this.organizationId);
+    stringBuilder.append("/");
+    stringBuilder.append(Labels.DEPOSITORY);
+    stringBuilder.append("/");
+    stringBuilder.append(depository.getId());
+    stringBuilder.append("/");
+    stringBuilder.append(Labels.DESCRIPTIVE_STATS);
+    stringBuilder.append("/");
+    if (daily) {
+      stringBuilder.append(Labels.DAILY);
+    }
+    else {
+      stringBuilder.append(Labels.HOURLY);
+    }
+    stringBuilder.append("/?");
+    stringBuilder.append(Labels.SENSOR);
+    stringBuilder.append("=");
+    stringBuilder.append(group.getId());
+    stringBuilder.append("&");
+    stringBuilder.append(Labels.TIMESTAMP);
+    stringBuilder.append("=");
+    try {
+      stringBuilder.append(DateConvert.convertDate(timestamp).toXMLFormat());
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    stringBuilder.append("&");
+    stringBuilder.append(Labels.VALUE_TYPE);
+    stringBuilder.append("=");
+    if (pointValues) {
+      stringBuilder.append(Labels.POINT);
+    }
+    else {
+      stringBuilder.append(Labels.DIFFERENCE);
+    }
+    stringBuilder.append("&");
+    stringBuilder.append(Labels.SAMPLES);
+    stringBuilder.append("=");
+    stringBuilder.append(samples);
+    ClientResource client = makeClient(stringBuilder.toString());
+    DepositoryDescriptiveStatsResource resource = client.wrap(DepositoryDescriptiveStatsResource.class);
+    DescriptiveStats values = null;
+    try {
+      values = resource.retrieve();
+    }
+    catch (ResourceException re) {
+      throw re;
+    }
+    finally {
+      client.release();
+    }
+    return values;  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getEarliestMeasurement(org.wattdepot
+   * .common.domainmodel.Depository, org.wattdepot.common.domainmodel.Sensor)
+   */
+  @Override
+  public InterpolatedValue getEarliestValue(Depository depository, Sensor sensor) {
+    ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
+        + depository.getId() + "/" + Labels.VALUE + "/" + "?sensor=" + sensor.getId()
+        + "&earliest=true");
+    DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
+    InterpolatedValue ret = resource.retrieve();
+    client.release();
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getEarliestValue(org.wattdepot.
+   * common.domainmodel.Depository,
+   * org.wattdepot.common.domainmodel.SensorGroup)
+   */
+  @Override
+  public InterpolatedValue getEarliestValue(Depository depository, SensorGroup group) {
+    ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
+        + depository.getId() + "/" + Labels.VALUE + "/" + "?sensor=" + group.getId()
+        + "&earliest=true");
+    DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
+    InterpolatedValue ret = resource.retrieve();
+    client.release();
+    return ret;
+  }
+
+  @Override
+  public InterpolatedValueList getHistoricalValues(Depository depository, Sensor sensor, Date timestamp, Boolean daily, Integer samples, Boolean pointValues) {
+    return null;
+  }
+
+  @Override
+  public InterpolatedValueList getHistoricalValues(Depository depository, SensorGroup group, Date timestamp, Boolean daily, Integer samples, Boolean pointValues) {
     return null;
   }
 
@@ -1554,8 +885,738 @@ public class WattDepotClient implements WattDepotInterface {
     return null;
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getLatestMeasurement(org.wattdepot
+   * .common.domainmodel.Depository, org.wattdepot.common.domainmodel.Sensor)
+   */
   @Override
-  public InterpolatedValueList getDailyValues(Depository depository, Sensor sensor, Date start, Date end, Boolean usePointValues) {
+  public InterpolatedValue getLatestValue(Depository depository, Sensor sensor) {
+    ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
+        + depository.getId() + "/" + Labels.VALUE + "/" + "?sensor=" + sensor.getId()
+        + "&latest=true");
+    DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
+    InterpolatedValue ret = resource.retrieve();
+    client.release();
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getLatestValue(org.wattdepot.common
+   * .domainmodel.Depository, org.wattdepot.common.domainmodel.SensorGroup)
+   */
+  @Override
+  public InterpolatedValue getLatestValue(Depository depository, SensorGroup group) {
+    ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
+        + depository.getId() + "/" + Labels.LATEST + "/" + Labels.VALUE + "/" + "?sensor=" + group.getId());
+    DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
+    InterpolatedValue ret = resource.retrieve();
+    client.release();
+    return ret;
+  }
+
+  @Override
+  public InterpolatedValueList getMaximumValues(Depository depository, SensorGroup group, Date start, Date end, Integer interval, Boolean usePointValues) throws NoMeasurementException {
+    ClientResource client = null;
+    try {
+      String valueType = Labels.DIFFERENCE;
+      if (usePointValues) {
+        valueType = Labels.POINT;
+      }
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUES + "/" + Labels.MAXIMUM + "/" + "?sensor=" + group.getId() + "&start="
+          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&interval=" + interval + "&value-type=" + valueType);
+      DepositoryMinimumValuesResource resource = client.wrap(DepositoryMinimumValuesResource.class);
+      InterpolatedValueList ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (ResourceException e1) {
+      throw new NoMeasurementException(e1.getCause());
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public InterpolatedValueList getMaximumValues(Depository depository, Sensor sensor, Date start, Date end, Integer interval, Boolean usePointValues) throws NoMeasurementException {
+    ClientResource client = null;
+    try {
+      String valueType = Labels.DIFFERENCE;
+      if (usePointValues) {
+        valueType = Labels.POINT;
+      }
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUES + "/" + Labels.MAXIMUM + "/" + "?sensor=" + sensor.getId() + "&start="
+          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&interval=" + interval + "&value-type=" + valueType);
+      DepositoryMinimumValuesResource resource = client.wrap(DepositoryMinimumValuesResource.class);
+      InterpolatedValueList ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (ResourceException e1) {
+      throw new NoMeasurementException(e1.getCause());
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getMeasurementPruningDefinition(
+   * java.lang.String)
+   */
+  @Override
+  public MeasurementPruningDefinition getMeasurementPruningDefinition(String id)
+      throws IdNotFoundException {
+    ClientResource client = makeClient(this.organizationId + "/"
+        + Labels.MEASUREMENT_PRUNING_DEFINITION + "/" + id);
+    MeasurementPruningDefinitionResource resource = client
+        .wrap(MeasurementPruningDefinitionResource.class);
+    MeasurementPruningDefinition ret;
+    try {
+      ret = resource.retrieve();
+    }
+    catch (ResourceException e) {
+      throw new IdNotFoundException(id + " is not a known MeasurementPruningDefinition id.");
+    }
+    finally {
+      client.release();
+    }
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getMeasurementPruningDefinitions()
+   */
+  @Override
+  public MeasurementPruningDefinitionList getMeasurementPruningDefinitions() {
+    ClientResource client = makeClient(this.organizationId + "/"
+        + Labels.MEASUREMENT_PRUNING_DEFINITIONS + "/");
+    MeasurementPruningDefinitionsResource resource = client
+        .wrap(MeasurementPruningDefinitionsResource.class);
+    MeasurementPruningDefinitionList ret = resource.retrieve();
+    client.release();
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getMeasurementType(java.lang.String
+   * )
+   */
+  @Override
+  public MeasurementType getMeasurementType(String id) throws IdNotFoundException {
+    ClientResource client = makeClient(Labels.PUBLIC + "/" + Labels.MEASUREMENT_TYPE + "/" + id);
+    MeasurementTypeResource resource = client.wrap(MeasurementTypeResource.class);
+    try {
+      MeasurementType ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (ResourceException e) {
+      throw new IdNotFoundException(id + " is not a known MeasurementType. ");
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.wattdepot.client.WattDepotInterface#getMeasurementTypes()
+   */
+  @Override
+  public MeasurementTypeList getMeasurementTypes() {
+    ClientResource client = makeClient(Labels.PUBLIC + "/" + Labels.MEASUREMENT_TYPES + "/");
+    MeasurementTypesResource resource = client.wrap(MeasurementTypesResource.class);
+    MeasurementTypeList ret = resource.retrieve();
+    client.release();
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.wattdepot.client.WattDepotInterface#getMeasurements(org.wattdepot
+   * .datamodel.Depository, org.wattdepot.datamodel.Sensor, java.util.Date,
+   * java.util.Date)
+   */
+  @Override
+  public MeasurementList getMeasurements(Depository depository, Sensor sensor, Date start, Date end) {
+    try {
+      ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
+          + depository.getId() + "/" + Labels.MEASUREMENTS + "/" + "?sensor=" + sensor.getId()
+          + "&start=" + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end));
+      DepositoryMeasurementsResource resource = client.wrap(DepositoryMeasurementsResource.class);
+      MeasurementList ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.wattdepot.client.WattDepotInterface#getMeasurements(org.wattdepot
+   * .datamodel.Depository, org.wattdepot.datamodel.SensorGroup, java.util.Date,
+   * java.util.Date)
+   */
+  @Override
+  public MeasurementList getMeasurements(Depository depository, SensorGroup group, Date start,
+      Date end) {
+    try {
+      ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
+          + depository.getId() + "/" + Labels.MEASUREMENTS + "/" + "?sensor=" + group.getId()
+          + "&start=" + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end));
+      DepositoryMeasurementsResource resource = client.wrap(DepositoryMeasurementsResource.class);
+      MeasurementList ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  @Override
+  public InterpolatedValueList getMinimumValues(Depository depository, Sensor sensor, Date start, Date end, Integer interval, Boolean usePointValues) throws NoMeasurementException {
+    ClientResource client = null;
+    try {
+      String valueType = Labels.DIFFERENCE;
+      if (usePointValues) {
+        valueType = Labels.POINT;
+      }
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUES + "/" + Labels.MINIMUM + "/" + "?sensor=" + sensor.getId() + "&start="
+          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&interval=" + interval + "&value-type=" + valueType);
+      DepositoryMinimumValuesResource resource = client.wrap(DepositoryMinimumValuesResource.class);
+      InterpolatedValueList ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (ResourceException e1) {
+      throw new NoMeasurementException(e1.getCause());
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public InterpolatedValueList getMinimumValues(Depository depository, SensorGroup group, Date start, Date end, Integer interval, Boolean usePointValues) throws NoMeasurementException {
+    ClientResource client = null;
+    try {
+      String valueType = Labels.DIFFERENCE;
+      if (usePointValues) {
+        valueType = Labels.POINT;
+      }
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUES + "/" + Labels.MINIMUM + "/" + "?sensor=" + group.getId() + "&start="
+          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&interval=" + interval + "&value-type=" + valueType);
+      DepositoryMinimumValuesResource resource = client.wrap(DepositoryMinimumValuesResource.class);
+      InterpolatedValueList ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (ResourceException e1) {
+      throw new NoMeasurementException(e1.getCause());
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  /**
+   * @return the organization id.
+   */
+  public String getOrganizationId() {
+    return organizationId;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.wattdepot.client.WattDepotInterface#getSensor(java.lang.String)
+   */
+  @Override
+  public Sensor getSensor(String id) throws IdNotFoundException {
+    ClientResource client = makeClient(this.organizationId + "/" + Labels.SENSOR + "/" + id);
+    SensorResource resource = client.wrap(SensorResource.class);
+    try {
+      Sensor ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (ResourceException e) {
+      throw new IdNotFoundException(id + " is not a known Sensor. ");
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getSensorGroup(java.lang.String)
+   */
+  @Override
+  public SensorGroup getSensorGroup(String id) throws IdNotFoundException {
+    ClientResource client = makeClient(this.organizationId + "/" + Labels.SENSOR_GROUP + "/" + id);
+    SensorGroupResource resource = client.wrap(SensorGroupResource.class);
+    try {
+      SensorGroup ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (ResourceException e) {
+      throw new IdNotFoundException(id + " is not a known SensorGroup. ");
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.wattdepot.client.WattDepotInterface#getSensorGroups()
+   */
+  @Override
+  public SensorGroupList getSensorGroups() {
+    ClientResource client = makeClient(this.organizationId + "/" + Labels.SENSOR_GROUPS + "/");
+    SensorGroupsResource resource = client.wrap(SensorGroupsResource.class);
+    SensorGroupList ret = resource.retrieve();
+    client.release();
+    return ret;
+
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getSensorModel(java.lang.String)
+   */
+  @Override
+  public SensorModel getSensorModel(String id) throws IdNotFoundException {
+    ClientResource client = makeClient(Labels.PUBLIC + "/" + Labels.SENSOR_MODEL + "/" + id);
+    SensorModelResource resource = client.wrap(SensorModelResource.class);
+    try {
+      SensorModel ret = resource.retrieve();
+      client.release();
+      return ret;
+    }
+    catch (ResourceException e) {
+      throw new IdNotFoundException(id + " is not a known SensorModel. ");
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.wattdepot.client.WattDepotInterface#getSensorModels()
+   */
+  @Override
+  public SensorModelList getSensorModels() {
+    ClientResource client = makeClient(Labels.PUBLIC + "/" + Labels.SENSOR_MODELS + "/");
+    SensorModelsResource resource = client.wrap(SensorModelsResource.class);
+    SensorModelList ret = resource.retrieve();
+    client.release();
+    return ret;
+  }
+
+  @Override
+  public SensorStatus getSensorStatus(Depository depository, Sensor sensor) {
+    ClientResource client = null;
+    try {
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.SENSOR_STATUS + "/" + "?sensor=" + sensor.getId());
+      DepositorySensorStatusResource resource = client.wrap(DepositorySensorStatusResource.class);
+      SensorStatusList list = resource.retrieve();
+      client.release();
+      if (list != null) {
+        return list.getStatuses().get(0);
+      }
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public SensorStatusList getSensorStatuses(Depository depository, SensorGroup group) {
+    ClientResource client = null;
+    try {
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.SENSOR_STATUS + "/" + "?sensor=" + group.getId());
+      DepositorySensorStatusResource resource = client.wrap(DepositorySensorStatusResource.class);
+      SensorStatusList list = resource.retrieve();
+      client.release();
+      if (list != null) {
+        return list;
+      }
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.wattdepot.client.WattDepotInterface#getSensors()
+   */
+  @Override
+  public SensorList getSensors() {
+    ClientResource client = makeClient(this.organizationId + "/" + Labels.SENSORS + "/");
+    SensorsResource resource = client.wrap(SensorsResource.class);
+    SensorList ret = resource.retrieve();
+    client.release();
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.datamodel
+   * .Depository, org.wattdepot.datamodel.Sensor, java.util.Date)
+   */
+  @Override
+  public Double getValue(Depository depository, Sensor sensor, Date timestamp)
+      throws NoMeasurementException {
+    ClientResource client = null;
+    try {
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUE + "/" + "?sensor=" + sensor.getId() + "&timestamp="
+          + DateConvert.convertDate(timestamp));
+      DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
+      InterpolatedValue ret = resource.retrieve();
+      client.release();
+      if (ret != null) {
+        return ret.getValue();
+      }
+    }
+    catch (DatatypeConfigurationException e) {
+      throw new NoMeasurementException(e.getMessage());
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.datamodel
+   * .Depository, org.wattdepot.datamodel.Sensor, java.util.Date,
+   * java.util.Date)
+   */
+  @Override
+  public Double getValue(Depository depository, Sensor sensor, Date start, Date end)
+      throws NoMeasurementException {
+    ClientResource client = null;
+    try {
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUE + "/" + "?sensor=" + sensor.getId() + "&start="
+          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end));
+      DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
+      InterpolatedValue ret = resource.retrieve();
+      client.release();
+      return ret.getValue();
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.datamodel
+   * .Depository, org.wattdepot.datamodel.Sensor, java.util.Date,
+   * java.util.Date, java.lang.Long)
+   */
+  @Override
+  public Double getValue(Depository depository, Sensor sensor, Date start, Date end, Long gapSeconds)
+      throws NoMeasurementException, MeasurementGapException {
+    ClientResource client = null;
+    try {
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUE + "/" + "?sensor=" + sensor.getId() + "&start="
+          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&gap="
+          + gapSeconds);
+      DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
+      InterpolatedValue ret = resource.retrieve();
+      client.release();
+      return ret.getValue();
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.datamodel
+   * .Depository, org.wattdepot.datamodel.Sensor, java.util.Date,
+   * java.lang.Long)
+   */
+  @Override
+  public Double getValue(Depository depository, Sensor sensor, Date timestamp, Long gapSeconds)
+      throws NoMeasurementException, MeasurementGapException {
+    ClientResource client = null;
+    try {
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUE + "/" + "?sensor=" + sensor.getId() + "&timestamp="
+          + DateConvert.convertDate(timestamp) + "&gap=" + gapSeconds);
+      DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
+      InterpolatedValue ret = resource.retrieve();
+      client.release();
+      return ret.getValue();
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.datamodel
+   * .Depository, org.wattdepot.datamodel.SensorGroup, java.util.Date)
+   */
+  @Override
+  public Double getValue(Depository depository, SensorGroup group, Date timestamp)
+      throws NoMeasurementException {
+    ClientResource client = null;
+    try {
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUE + "/" + "?sensor=" + group.getId() + "&timestamp="
+          + DateConvert.convertDate(timestamp));
+      DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
+      InterpolatedValue ret = resource.retrieve();
+      client.release();
+      if (ret != null) {
+        return ret.getValue();
+      }
+    }
+    catch (ResourceException re) {
+      throw new NoMeasurementException(re.getMessage());
+    }
+    catch (DatatypeConfigurationException e) {
+      throw new NoMeasurementException(e.getMessage());
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.common.
+   * domainmodel.Depository, org.wattdepot.common.domainmodel.SensorGroup,
+   * java.util.Date, java.util.Date)
+   */
+  @Override
+  public Double getValue(Depository depository, SensorGroup group, Date start, Date end)
+      throws NoMeasurementException {
+    ClientResource client = null;
+    try {
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUE + "/" + "?sensor=" + group.getId() + "&start="
+          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end));
+      DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
+      InterpolatedValue ret = resource.retrieve();
+      client.release();
+      return ret.getValue();
+    }
+    catch (ResourceException re) {
+      throw new  NoMeasurementException(re.getCause());
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.common.
+   * domainmodel.Depository, org.wattdepot.common.domainmodel.SensorGroup,
+   * java.util.Date, java.util.Date, java.lang.Long)
+   */
+  @Override
+  public Double getValue(Depository depository, SensorGroup group, Date start, Date end,
+      Long gapSeconds) throws NoMeasurementException, MeasurementGapException {
+    ClientResource client = null;
+    try {
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUE + "/" + "?sensor=" + group.getId() + "&start="
+          + DateConvert.convertDate(start) + "&end=" + DateConvert.convertDate(end) + "&gap="
+          + gapSeconds);
+      DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
+      InterpolatedValue ret = resource.retrieve();
+      client.release();
+      return ret.getValue();
+    }
+    catch (ResourceException re) {
+      throw new MeasurementGapException(re.getCause());
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.common.
+   * domainmodel.Depository, org.wattdepot.common.domainmodel.SensorGroup,
+   * java.util.Date, java.lang.Long)
+   */
+  @Override
+  public Double getValue(Depository depository, SensorGroup group, Date timestamp, Long gapSeconds)
+      throws NoMeasurementException, MeasurementGapException {
+    ClientResource client = null;
+    try {
+      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
+          + "/" + Labels.VALUE + "/" + "?sensor=" + group.getId() + "&timestamp="
+          + DateConvert.convertDate(timestamp) + "&gap=" + gapSeconds);
+      DepositoryValueResource resource = client.wrap(DepositoryValueResource.class);
+      InterpolatedValue ret = resource.retrieve();
+      client.release();
+      return ret.getValue();
+    }
+    catch (ResourceException e1) {
+      throw new MeasurementGapException(e1.getCause());
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    finally {
+      if (client != null) {
+        client.release();
+      }
+    }
+    return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.wattdepot.client.WattDepotInterface#getValue(org.wattdepot.common.
+   * domainmodel.Depository, org.wattdepot.common.domainmodel.Sensor,
+   * java.util.Date, java.util.Date, java.lang.Integer, java.lang.Boolean)
+   */
+  @Override
+  public InterpolatedValueList getValues(Depository depository, Sensor sensor, Date start, Date end, Integer interval, Boolean usePointValues) throws NoMeasurementException {
     ClientResource client = null;
     try {
       StringBuilder sb = new StringBuilder();
@@ -1564,8 +1625,6 @@ public class WattDepotClient implements WattDepotInterface {
       sb.append(Labels.DEPOSITORY);
       sb.append("/");
       sb.append(depository.getId());
-      sb.append("/");
-      sb.append(Labels.DAILY);
       sb.append("/");
       sb.append(Labels.VALUES);
       sb.append("/?");
@@ -1581,57 +1640,9 @@ public class WattDepotClient implements WattDepotInterface {
       sb.append("=");
       sb.append(DateConvert.convertDate(end));
       sb.append("&");
-      sb.append(Labels.VALUE_TYPE);
+      sb.append(Labels.INTERVAL);
       sb.append("=");
-      if (usePointValues) {
-        sb.append(Labels.POINT);
-      }
-      else {
-        sb.append(Labels.DIFFERENCE);
-      }
-      client = makeClient(sb.toString());
-      DepositoryValuesResource resource = client.wrap(DepositoryValuesResource.class);
-      InterpolatedValueList ret = resource.retrieve();
-      client.release();
-      return ret;
-    }
-    catch (DatatypeConfigurationException e) {
-      e.printStackTrace();
-    }
-    finally {
-      if (client != null) {
-        client.release();
-      }
-    }
-    return null;
-  }
-
-  @Override
-  public InterpolatedValueList getDailyValues(Depository depository, SensorGroup group, Date start, Date end, Boolean usePointValues) {
-    ClientResource client = null;
-    try {
-      StringBuilder sb = new StringBuilder();
-      sb.append(this.organizationId);
-      sb.append("/");
-      sb.append(Labels.DEPOSITORY);
-      sb.append("/");
-      sb.append(depository.getId());
-      sb.append("/");
-      sb.append(Labels.DAILY);
-      sb.append("/");
-      sb.append(Labels.VALUES);
-      sb.append("/?");
-      sb.append(Labels.SENSOR);
-      sb.append("=");
-      sb.append(group.getId());
-      sb.append("&");
-      sb.append(Labels.START);
-      sb.append("=");
-      sb.append(DateConvert.convertDate(start));
-      sb.append("&");
-      sb.append(Labels.END);
-      sb.append("=");
-      sb.append(DateConvert.convertDate(end));
+      sb.append(interval);
       sb.append("&");
       sb.append(Labels.VALUE_TYPE);
       sb.append("=");
@@ -1923,7 +1934,31 @@ public class WattDepotClient implements WattDepotInterface {
 
   /*
    * (non-Javadoc)
-   * 
+   *
+   * @see org.wattdepot.client.WattDepotInterface#putMeasurement(org.wattdepot.
+   * datamodel.Depository, org.wattdepot.datamodel.Measurement)
+   */
+  @Override
+  public void putMeasurement(Depository depository, Measurement measurement)
+      throws MeasurementTypeException {
+    if (!depository.getMeasurementType().getUnits().equals(measurement.getMeasurementType())) {
+      throw new MeasurementTypeException("Depository " + depository.getName() + " stores "
+          + depository.getMeasurementType() + " not " + measurement.getMeasurementType());
+    }
+    ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
+        + depository.getId() + "/" + Labels.MEASUREMENT + "/");
+    DepositoryMeasurementPutResource resource = client.wrap(DepositoryMeasurementPutResource.class);
+    try {
+      resource.store(measurement);
+    }
+    finally {
+      client.release();
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   *
    * @see
    * org.wattdepot.client.WattDepotInterface#putMeasurementPruningDefinition(
    * org.wattdepot.common.domainmodel.MeasurementPruningDefinition)
@@ -1945,22 +1980,17 @@ public class WattDepotClient implements WattDepotInterface {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see org.wattdepot.client.WattDepotInterface#putMeasurement(org.wattdepot.
-   * datamodel.Depository, org.wattdepot.datamodel.Measurement)
+   *
+   * @see
+   * org.wattdepot.client.WattDepotInterface#putMeasurementType(org.wattdepot
+   * .datamodel.MeasurementType)
    */
   @Override
-  public void putMeasurement(Depository depository, Measurement measurement)
-      throws MeasurementTypeException {
-    if (!depository.getMeasurementType().getUnits().equals(measurement.getMeasurementType())) {
-      throw new MeasurementTypeException("Depository " + depository.getName() + " stores "
-          + depository.getMeasurementType() + " not " + measurement.getMeasurementType());
-    }
-    ClientResource client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/"
-        + depository.getId() + "/" + Labels.MEASUREMENT + "/");
-    DepositoryMeasurementPutResource resource = client.wrap(DepositoryMeasurementPutResource.class);
+  public void putMeasurementType(MeasurementType type) {
+    ClientResource client = makeClient(Labels.PUBLIC + "/" + Labels.MEASUREMENT_TYPE + "/");
+    MeasurementTypePutResource resource = client.wrap(MeasurementTypePutResource.class);
     try {
-      resource.store(measurement);
+      resource.store(type);
     }
     finally {
       client.release();
@@ -2000,25 +2030,6 @@ public class WattDepotClient implements WattDepotInterface {
     else {
       throw new MeasurementListSizeExceededException("MeasurementList size of: " + measurements.size() + " exceeds size "
           + "limit of 10.000");
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * org.wattdepot.client.WattDepotInterface#putMeasurementType(org.wattdepot
-   * .datamodel.MeasurementType)
-   */
-  @Override
-  public void putMeasurementType(MeasurementType type) {
-    ClientResource client = makeClient(Labels.PUBLIC + "/" + Labels.MEASUREMENT_TYPE + "/");
-    MeasurementTypePutResource resource = client.wrap(MeasurementTypePutResource.class);
-    try {
-      resource.store(type);
-    }
-    finally {
-      client.release();
     }
   }
 

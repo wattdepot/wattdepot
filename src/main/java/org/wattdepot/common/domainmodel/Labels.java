@@ -93,6 +93,9 @@ public class Labels {
   /** The label for hourly samples for a single data. */
   public static final String DAY_HOURLY = "day-hourly";
 
+  /** The label for descriptive statistics. */
+  public static final String DESCRIPTIVE_STATS = "descriptive-stats";
+
   /** The label for historical values. */
   public static final String HISTORICAL_VALUES = "historical-values";
 

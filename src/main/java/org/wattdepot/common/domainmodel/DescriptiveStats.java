@@ -23,12 +23,12 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * HistoricalValues - A simple calculated historical min, average, and max for a depository, sensor, timestamp
+ * DescriptiveStats - A simple calculated historical min, average, and max for a depository, sensor, timestamp
  * and number of samples.
  *
  * @author Cam Moore
  */
-public class HistoricalValues {
+public class DescriptiveStats {
   String depositoryId;
   String sensorId;
   Integer numSamples;
@@ -47,7 +47,7 @@ public class HistoricalValues {
   /**
    * Default constructor. Initializes the ArrayLists.
    */
-  public HistoricalValues() {
+  public DescriptiveStats() {
     this.reportingSensors = new ArrayList<String>();
     this.definedSensors = new ArrayList<String>();
     this.missingSensors = new ArrayList<String>();
@@ -307,11 +307,11 @@ public class HistoricalValues {
     if (this == o) {
       return true;
     }
-    if (!(o instanceof HistoricalValues)) {
+    if (!(o instanceof DescriptiveStats)) {
       return false;
     }
 
-    HistoricalValues that = (HistoricalValues) o;
+    DescriptiveStats that = (DescriptiveStats) o;
 
     if (depositoryId != null ? !depositoryId.equals(that.depositoryId) : that.depositoryId != null) {
       return false;
@@ -357,7 +357,7 @@ public class HistoricalValues {
 
   @Override
   public String toString() {
-    return "HistoricalValues{" +
+    return "DescriptiveStats{" +
         "depositoryId='" + depositoryId + '\'' +
         ", sensorId='" + sensorId + '\'' +
         ", numSamples=" + numSamples +

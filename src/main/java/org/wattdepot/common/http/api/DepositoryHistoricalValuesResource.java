@@ -20,12 +20,12 @@
 package org.wattdepot.common.http.api;
 
 import org.restlet.resource.Get;
-import org.wattdepot.common.domainmodel.HistoricalValues;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
 
 /**
  * DepositoryHistoricalValuesResource - HTTP interface for getting the historical values
  * for a depository and sensor or sensor group. <br>
- *   (/wattdepot/{org-id}/depository/{depository-id}/{hourly-daily}/historical-values/)
+ *   (/wattdepot/{org-id}/depository/{depository-id}/{hourly | daily}/historical-values/)
  *
  * @author Cam Moore
  */
@@ -34,13 +34,13 @@ public interface DepositoryHistoricalValuesResource {
 
   /**
    * Defines GET <br/>
-   * /wattdepot/{org-id}/depository/{depository-id}/{hourly-daily}/historical-values/?sensor={sensor_id}
+   * /wattdepot/{org-id}/depository/{depository-id}/{hourly | daily}/historical-values/?sensor={sensor_id}
    * &timestamp={time}&value-type={value-type}&samples={samples}.
    *
-   * @return The HistoricalValues.
+   * @return The DescriptiveStats.
    *
    * @return
    */
   @Get("json")
-  public HistoricalValues retrieve();
+  public InterpolatedValueList retrieve();
 }

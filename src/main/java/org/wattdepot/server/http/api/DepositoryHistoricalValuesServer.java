@@ -19,11 +19,11 @@
 
 package org.wattdepot.server.http.api;
 
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.common.domainmodel.Depository;
-import org.wattdepot.common.domainmodel.HistoricalValues;
+import org.wattdepot.common.domainmodel.InterpolatedValue;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.Sensor;
@@ -31,6 +31,7 @@ import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.NoMeasurementException;
+import org.wattdepot.common.http.api.DepositoryHistoricalValuesResource;
 import org.wattdepot.common.util.DateConvert;
 import org.wattdepot.common.util.tstamp.Tstamp;
 
@@ -45,7 +46,7 @@ import java.util.logging.Level;
  *
  * @author Cam Moore
  */
-public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
+public class DepositoryHistoricalValuesServer extends WattDepotServerResource implements DepositoryHistoricalValuesResource {
   private String depositoryId;
   private String hourlyDailyChoice;
   private String sensorId;
@@ -53,11 +54,125 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
   private String valueType;
   private Integer samples;
 
+  @Override
+  public InterpolatedValueList retrieve() {
+    getLogger().log(
+        Level.INFO,
+        "GET /wattdepot/{" + orgId + "}/" + Labels.DEPOSITORY + "/{" + depositoryId + "}/" + Labels.DESCRIPTIVE_STATS + "/"
+            + hourlyDailyChoice + "/?" + Labels.SENSOR + "={" + sensorId + "}&" + Labels.TIMESTAMP + "={"
+            + timestamp + "}&" + Labels.VALUE_TYPE + "={" + valueType + "}&" + Labels.SAMPLES + "={" + samples + "}");
+    if (isInRole(orgId)) {
+      InterpolatedValueList interpolatedValueList = new InterpolatedValueList();
+      try {
+        Depository depository = depot.getDepository(depositoryId, orgId, true);
+        if (depository != null) {
+          XMLGregorianCalendar time = DateConvert.parseCalString(timestamp);
+          XMLGregorianCalendar begin = DateConvert.getBeginning(time, hourlyDailyChoice);
+          XMLGregorianCalendar end = DateConvert.getEnding(time, hourlyDailyChoice);
+          for (int i = 0; i < samples; i++) {
+            begin = Tstamp.incrementDays(begin, -7); // back it up a week
+            end = Tstamp.incrementDays(end, -7);
+            Sensor sensor = depot.getSensor(sensorId, orgId, false);
+            if (valueType.equals(Labels.POINT)) { // since it is point data add all of the measurements
+              if (sensor != null) { // individual sensor
+                List<Measurement> measurements = depot.getMeasurements(depositoryId, orgId, sensorId, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false);
+                if (measurements.size() == 0) {
+                  InterpolatedValue value = new InterpolatedValue(sensorId, 0.0, depository.getMeasurementType(), DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end));
+                  value.addReportingSensor(sensorId);
+                  interpolatedValueList.getInterpolatedValues().add(value);
+                }
+                else {
+                  for (Measurement m : measurements) {
+                    InterpolatedValue value = new InterpolatedValue(sensorId, m.getValue(), depository.getMeasurementType(), m.getDate());
+                    value.addDefinedSensor(sensorId);
+                    value.addReportingSensor(sensorId);
+                    interpolatedValueList.getInterpolatedValues().add(value);
+                  }
+                }
+              }
+              else { // sensor group
+                SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
+                if (group != null) {
+                  for (String s : group.getSensors()) {
+                    List<Measurement> measurements = depot.getMeasurements(depositoryId, orgId, s, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false);
+                    if (measurements.size() == 0) {
+                      InterpolatedValue value = new InterpolatedValue(s, 0.0, depository.getMeasurementType(), DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end));
+                      value.addDefinedSensor(s);
+                      interpolatedValueList.getInterpolatedValues().add(value);
+                    }
+                    else {
+                      for (Measurement m : measurements) {
+                        InterpolatedValue value = new InterpolatedValue(s, m.getValue(), depository.getMeasurementType(), m.getDate());
+                        value.addReportingSensor(s);
+                        value.addDefinedSensor(s);
+                        interpolatedValueList.getInterpolatedValues().add(value);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            else { // difference values
+              InterpolatedValue value = new InterpolatedValue(sensorId, 0.0 , depository.getMeasurementType(), DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end));
+              if (sensor != null) {
+                value.addDefinedSensor(sensorId);
+                try {
+                  Double val = depot.getValue(depositoryId, orgId, sensorId, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false);
+                  value.setValue(val);
+                  value.addReportingSensor(sensorId);
+                }
+                catch (NoMeasurementException e) { // NOPMD
+                  // ok.
+                }
+              }
+              else {
+                SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
+                if (group != null) {
+                  for (String s : group.getSensors()) {
+                    value.addDefinedSensor(s);
+                    try {
+                      Double val = depot.getValue(depositoryId, orgId, s, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false);
+                      value.setValue(val + value.getValue());
+                      value.addReportingSensor(s);
+                    }
+                    catch (NoMeasurementException e) { // NOPMD
+                      // ok.
+                    }
+                  }
+                }
+              }
+              interpolatedValueList.getInterpolatedValues().add(value);
+            }
+          }
+        }
+        return interpolatedValueList;
+      }
+      catch (IdNotFoundException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        return null;
+      }
+      catch (DatatypeConfigurationException e) {
+        setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+        return null;
+      }
+      catch (ParseException e) {
+        setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+        return null;
+      }
+      catch (MisMatchedOwnerException e) {
+        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        return null;
+      }
+    }
+
+    return null;
+  }
+
   /*
- * (non-Javadoc)
- *
- * @see org.restlet.resource.Resource#doInit()
- */
+   * (non-Javadoc)
+   *
+   * @see org.restlet.resource.Resource#doInit()
+   */
   @Override
   protected void doInit() throws ResourceException {
     super.doInit();
@@ -69,242 +184,5 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource {
     this.samples = Integer.parseInt(getQuery().getValues(Labels.SAMPLES));
   }
 
-  /**
-   * @return the HistoricalValues for the given request.
-   */
-  public HistoricalValues doRetrieve() {
-    getLogger().log(
-        Level.INFO,
-        "GET /wattdepot/{" + orgId + "}/" + Labels.DEPOSITORY + "/{" + depositoryId + "}/" + hourlyDailyChoice + "/"
-            + Labels.HISTORICAL_VALUES + "/?" + Labels.SENSOR + "={" + sensorId + "}&" + Labels.TIMESTAMP + "={"
-            + timestamp + "}&" + Labels.VALUE_TYPE + "={" + valueType + "}&" + Labels.SAMPLES + "={" + samples + "}");
-    if (isInRole(orgId)) {
-      HistoricalValues ret = new HistoricalValues();
-      try {
-        Depository depository = depot.getDepository(depositoryId, orgId, true);
-        if (depository != null) {
-          XMLGregorianCalendar time = DateConvert.parseCalString(timestamp);
-          XMLGregorianCalendar begin = getBeginning(time, hourlyDailyChoice);
-          XMLGregorianCalendar end = getEnding(time, hourlyDailyChoice);
-          Double minimum = Double.MAX_VALUE; // for this time period
-          Double maximum = Double.MIN_VALUE; // for this time period
-          Double average = 0.0;
-          Double upQuartile = 0.0;
-          Double lowQuartile = 0.0;
-          DescriptiveStatistics statistics = new DescriptiveStatistics();
-          for (int i = 0; i < samples; i++) {
-            begin = Tstamp.incrementDays(begin, -7); // back it up a week
-            end = Tstamp.incrementDays(end, -7);
-            Sensor sensor = depot.getSensor(sensorId, orgId, false);
-            if (valueType.equals(Labels.POINT)) { // since it is point data must calculate the average of the measurements
-              if (sensor != null) {
-                ret.addDefinedSensor(sensorId);
-                statistics = updateStatistics(depositoryId, sensorId, begin, end, statistics);
-                ret.addReportingSensor(sensorId);
-                if (statistics.getMin() < minimum) {
-                  minimum = statistics.getMin();
-                }
-                if (statistics.getMax() > maximum) {
-                  maximum = statistics.getMax();
-                }
-                average += statistics.getMean();
-                upQuartile += statistics.getPercentile(75.0);
-                lowQuartile += statistics.getPercentile(25.0);
-              }
-              else {
-                SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
-                if (group != null) {
-                  Double groupMin = 0.0;
-                  Double groupMax = 0.0;
-                  Double groupAve = 0.0;
-                  Double lowerQuartile = 0.0;
-                  Double upperQuartile = 0.0;
-                  for (String s : group.getSensors()) {
-                    ret.addDefinedSensor(s);
-                    try {
-                      statistics = getStatistics(depositoryId, s, begin, end);
-                      ret.addReportingSensor(s);
-                      groupMin += statistics.getMin();
-                      groupMax += statistics.getMax();
-                      groupAve += statistics.getMean();
-                      lowerQuartile += statistics.getPercentile(0.25);
-                      upperQuartile += statistics.getPercentile(0.75);
-                    }
-                    catch (NoMeasurementException nme) {
-                      // skip this sensor
-                      ret.addMissingSensor(s);
-                    }
-                  }
-                  if (maximum < groupMax) {
-                    maximum = groupMax;
-                  }
-                  if (minimum > groupMin) {
-                    minimum = groupMin;
-                  }
-                  average += groupAve;
-                  upQuartile += upperQuartile;
-                  lowQuartile += lowerQuartile;
-                }
-              }
-            }
-            else { // difference values
-              if (sensor != null) {
-                ret.addDefinedSensor(sensorId);
-                statistics.addValue(depot.getValue(depositoryId, orgId, sensorId, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false));
-                ret.addReportingSensor(sensorId);
-              }
-              else {
-                SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
-                if (group != null) {
-                  Double d = 0.0;
-                  for (String s : group.getSensors()) {
-                    try {
-                      ret.addDefinedSensor(s);
-                      d += depot.getValue(depositoryId, orgId, s, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false);
-                      ret.addReportingSensor(s);
-                    }
-                    catch (NoMeasurementException nme) {
-                      // just skip this sensor.
-                      ret.addMissingSensor(s);
-                    }
-                  }
-                  statistics.addValue(d);
-                }
-              }
-            }
-          }
-          if (valueType.equals(Labels.POINT)) {
-            average /= samples;
-            lowQuartile /= samples;
-            upQuartile /= samples;
-          }
-          else {
-            average = statistics.getMean();
-            minimum = statistics.getMin();
-            maximum = statistics.getMax();
-            lowQuartile = statistics.getPercentile(25.0);
-            upQuartile = statistics.getPercentile(75.0);
-          }
-          ret.setDepositoryId(depositoryId);
-          ret.setSensorId(sensorId);
-          ret.setAverage(average);
-          ret.setMaximum(maximum);
-          ret.setMinimum(minimum);
-          ret.setLowerQuartile(lowQuartile);
-          ret.setUpperQuartile(upQuartile);
-          ret.setNumSamples(samples);
-          ret.setWindowWidth(hourlyDailyChoice);
-          ret.setValueType(valueType);
-          ret.setTimestamp(DateConvert.parseCalStringToDate(timestamp));
-          return ret;
-        }
-      }
-      catch (IdNotFoundException e) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-        return null;
-      }
-      catch (DatatypeConfigurationException e) {
-        setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-        return null;
-      }
-      catch (ParseException e) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-        return null;
-      }
-      catch (MisMatchedOwnerException e) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-        return null;
-      }
-      catch (NoMeasurementException e) {
-        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-        return null;
-      }
-      return null;
-    }
-    return null;
-  }
 
-  /**
-   * @param depositoryId the depository id.
-   * @param sensorId the sensor id.
-   * @param begin the begin time.
-   * @param end the end time.
-   * @return DescriptiveStatistics of the measurements for the peroiod.
-   * @throws IdNotFoundException if there is a problem with the sensorId.
-   * @throws NoMeasurementException if there are no measurements during the period.
-   */
-  private DescriptiveStatistics getStatistics(String depositoryId, String sensorId, XMLGregorianCalendar begin, XMLGregorianCalendar end) throws IdNotFoundException, NoMeasurementException {
-    List<Measurement> measurements = depot.getMeasurements(depositoryId, orgId, sensorId, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false);
-    if (measurements == null || measurements.size() == 0) {
-      throw new NoMeasurementException("No measurements for " + sensorId + " from " + begin.toString() + " to " + end.toString());
-    }
-    DescriptiveStatistics ret = new DescriptiveStatistics();
-    for (Measurement m : measurements) {
-      ret.addValue(m.getValue());
-    }
-    return ret;
-  }
-
-  /**
-   * @param depositoryId the depository id.
-   * @param sensorId the sensor id.
-   * @param begin the begin time.
-   * @param end the end time.
-   * @param statistics the statistics object to update.
-   * @return the updated object.
-   * @throws IdNotFoundException if there is a problem with the sensorId.
-   */
-  private DescriptiveStatistics updateStatistics(String depositoryId, String sensorId, XMLGregorianCalendar begin, XMLGregorianCalendar end, DescriptiveStatistics statistics) throws IdNotFoundException {
-    List<Measurement> measurements = depot.getMeasurements(depositoryId, orgId, sensorId, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false);
-    for (Measurement m : measurements) {
-      statistics.addValue(m.getValue());
-    }
-    return statistics;
-  }
-
-  /**
-   * @param time              the current time.
-   * @param hourlyDailyChoice how wide the window should be.
-   * @return the beginning of the window based upon the current time and window width.
-   */
-  private XMLGregorianCalendar getBeginning(XMLGregorianCalendar time, String hourlyDailyChoice) {
-    XMLGregorianCalendar begin = null;
-    if (hourlyDailyChoice.equals(Labels.HOURLY)) {
-      begin = Tstamp.makeTimestamp(time.toGregorianCalendar().getTimeInMillis());
-      begin.setMinute(0);
-      begin.setSecond(0);
-      begin.setMillisecond(0);
-    }
-    else if (hourlyDailyChoice.equals(Labels.DAILY)) {
-      begin = Tstamp.makeTimestamp(time.toGregorianCalendar().getTimeInMillis());
-      begin.setHour(0);
-      begin.setMinute(0);
-      begin.setSecond(0);
-      begin.setMillisecond(0);
-    }
-    return begin;
-  }
-
-  /**
-   * @param time              the current time.
-   * @param hourlyDailyChoice the width of the window.
-   * @return the end of the window based upon the current time and the window width.
-   */
-  private XMLGregorianCalendar getEnding(XMLGregorianCalendar time, String hourlyDailyChoice) {
-    XMLGregorianCalendar end = null;
-    if (hourlyDailyChoice.equals(Labels.HOURLY)) {
-      end = Tstamp.incrementHours(time, 1);
-      end.setMinute(0);
-      end.setSecond(0);
-      end.setMillisecond(0);
-    }
-    else if (hourlyDailyChoice.equals(Labels.DAILY)) {
-      end = Tstamp.incrementDays(time, 1);
-      end.setHour(0);
-      end.setMinute(0);
-      end.setSecond(0);
-      end.setMillisecond(0);
-    }
-    return end;
-  }
 }

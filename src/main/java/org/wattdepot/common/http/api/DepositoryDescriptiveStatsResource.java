@@ -17,20 +17,30 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.wattdepot.server.http.api;
+package org.wattdepot.common.http.api;
 
-import org.wattdepot.common.domainmodel.HistoricalValues;
-import org.wattdepot.common.http.api.DepositoryHistoricalValuesResource;
+import org.restlet.resource.Get;
+import org.wattdepot.common.domainmodel.DescriptiveStats;
 
 /**
- * Server Resource that handles the GET requests for Historical Values.
+ * DepositoryDescriptiveStatsResource - HTTP interface for getting the historical statistics
+ * for a depository and sensor or sensor group. <br>
+ *   (/wattdepot/{org-id}/depository/{depository-id}/{hourly-daily}/historical-stats/)
  *
  * @author Cam Moore
  */
-public class DepositoryHistoricalValuesServerResource extends DepositoryHistoricalValuesServer implements DepositoryHistoricalValuesResource {
+@SuppressWarnings("PMD.UnusedModifier")
+public interface DepositoryDescriptiveStatsResource {
 
-  @Override
-  public HistoricalValues retrieve() {
-    return doRetrieve();
-  }
+  /**
+   * Defines GET <br/>
+   * /wattdepot/{org-id}/depository/{depository-id}/{hourly-daily}/historical-stats/?sensor={sensor_id}
+   * &timestamp={time}&value-type={value-type}&samples={samples}.
+   *
+   * @return The DescriptiveStats.
+   *
+   * @return
+   */
+  @Get("json")
+  public DescriptiveStats retrieve();
 }

@@ -187,7 +187,8 @@ public class WattDepotApplication extends Application {
     router.attach(API.VALUES_LATEST_URI, DepositoryLatestValuesServerResource.class);
     router.attach(API.SENSOR_STATUS_URI, DepositorySensorStatusServerResource.class);
     router.attach(API.LATEST_VALUE_URI, DepositoryLatestValueServerResource.class);
-    router.attach(API.HISTORICAL_VALUES_URI, DepositoryHistoricalValuesServerResource.class);
+    router.attach(API.DESCRIPTIVE_STATS_URI, DepositoryDescriptiveStatsServerResource.class);
+    router.attach(API.HISTORICAL_VALUES_URI, DepositoryHistoricalValuesServer.class);
     // MeasurementTypes
     router.attach(API.MEASUREMENT_TYPE_PUT_URI, MeasurementTypePutServerResource.class);
     router.attach(API.MEASUREMENT_TYPE_URI, MeasurementTypeServerResource.class);
@@ -215,6 +216,7 @@ public class WattDepotApplication extends Application {
     router.attach(API.ORGANIZATION_URI, OrganizationServerResource.class);
     router.attach(API.ORGANIZATIONS_URI, OrganizationsServerResource.class);
     ServerProperties properties = depot.getServerProperties();
+    @SuppressWarnings("unchecked")
     List<WattDepotExtension> extensions = (List<WattDepotExtension>) properties.getPropertyInstance(ServerProperties.WATTDEPOT_EXTENSIONS);
     for (WattDepotExtension extension : extensions) {
       getLogger().info("Loading extension " + extension.getBaseURI());
