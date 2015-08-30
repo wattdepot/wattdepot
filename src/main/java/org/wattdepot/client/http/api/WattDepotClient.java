@@ -64,6 +64,7 @@ import org.wattdepot.common.http.api.CollectorProcessDefinitionResource;
 import org.wattdepot.common.http.api.CollectorProcessDefinitionsResource;
 import org.wattdepot.common.http.api.DepositoriesResource;
 import org.wattdepot.common.http.api.DepositoryDescriptiveStatsResource;
+import org.wattdepot.common.http.api.DepositoryHistoricalValuesResource;
 import org.wattdepot.common.http.api.DepositoryMeasurementPutResource;
 import org.wattdepot.common.http.api.DepositoryMeasurementResource;
 import org.wattdepot.common.http.api.DepositoryMeasurementsPutResource;
@@ -773,12 +774,118 @@ public class WattDepotClient implements WattDepotInterface {
 
   @Override
   public InterpolatedValueList getHistoricalValues(Depository depository, Sensor sensor, Date timestamp, Boolean daily, Integer samples, Boolean pointValues) {
-    return null;
+    ClientResource client = null;
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append(this.organizationId);
+    stringBuilder.append("/");
+    stringBuilder.append(Labels.DEPOSITORY);
+    stringBuilder.append("/");
+    stringBuilder.append(depository.getId());
+    stringBuilder.append("/");
+    stringBuilder.append(Labels.HISTORICAL_VALUES);
+    stringBuilder.append("/");
+    if (daily) {
+      stringBuilder.append(Labels.DAILY);
+    }
+    else {
+      stringBuilder.append(Labels.HOURLY);
+    }
+    stringBuilder.append("/?");
+    stringBuilder.append(Labels.SENSOR);
+    stringBuilder.append("=");
+    stringBuilder.append(sensor.getId());
+    stringBuilder.append("&");
+    stringBuilder.append(Labels.TIMESTAMP);
+    stringBuilder.append("=");
+    try {
+      stringBuilder.append(DateConvert.convertDate(timestamp).toXMLFormat());
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    stringBuilder.append("&");
+    stringBuilder.append(Labels.VALUE_TYPE);
+    stringBuilder.append("=");
+    if (pointValues) {
+      stringBuilder.append(Labels.POINT);
+    }
+    else {
+      stringBuilder.append(Labels.DIFFERENCE);
+    }
+    stringBuilder.append("&");
+    stringBuilder.append(Labels.SAMPLES);
+    stringBuilder.append("=");
+    stringBuilder.append(samples);
+    try {
+      client = makeClient(stringBuilder.toString());
+      DepositoryHistoricalValuesResource resource = client.wrap(DepositoryHistoricalValuesResource.class);
+      InterpolatedValueList ret = resource.retrieve();
+      return ret;
+    }
+    catch (ResourceException re) {
+      throw re;
+    }
+    finally {
+      client.release();
+    }
   }
 
   @Override
   public InterpolatedValueList getHistoricalValues(Depository depository, SensorGroup group, Date timestamp, Boolean daily, Integer samples, Boolean pointValues) {
-    return null;
+    ClientResource client = null;
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append(this.organizationId);
+    stringBuilder.append("/");
+    stringBuilder.append(Labels.DEPOSITORY);
+    stringBuilder.append("/");
+    stringBuilder.append(depository.getId());
+    stringBuilder.append("/");
+    stringBuilder.append(Labels.HISTORICAL_VALUES);
+    stringBuilder.append("/");
+    if (daily) {
+      stringBuilder.append(Labels.DAILY);
+    }
+    else {
+      stringBuilder.append(Labels.HOURLY);
+    }
+    stringBuilder.append("/?");
+    stringBuilder.append(Labels.SENSOR);
+    stringBuilder.append("=");
+    stringBuilder.append(group.getId());
+    stringBuilder.append("&");
+    stringBuilder.append(Labels.TIMESTAMP);
+    stringBuilder.append("=");
+    try {
+      stringBuilder.append(DateConvert.convertDate(timestamp).toXMLFormat());
+    }
+    catch (DatatypeConfigurationException e) {
+      e.printStackTrace();
+    }
+    stringBuilder.append("&");
+    stringBuilder.append(Labels.VALUE_TYPE);
+    stringBuilder.append("=");
+    if (pointValues) {
+      stringBuilder.append(Labels.POINT);
+    }
+    else {
+      stringBuilder.append(Labels.DIFFERENCE);
+    }
+    stringBuilder.append("&");
+    stringBuilder.append(Labels.SAMPLES);
+    stringBuilder.append("=");
+    stringBuilder.append(samples);
+    try {
+      client = makeClient(stringBuilder.toString());
+      DepositoryHistoricalValuesResource resource = client.wrap(DepositoryHistoricalValuesResource.class);
+      InterpolatedValueList ret = resource.retrieve();
+      return ret;
+    }
+    catch (ResourceException re) {
+      throw re;
+    }
+    finally {
+      client.release();
+    }
   }
 
   @Override
