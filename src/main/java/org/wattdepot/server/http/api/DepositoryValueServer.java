@@ -287,7 +287,6 @@ public class DepositoryValueServer extends WattDepotServerResource {
         value = depot.getValue(depositoryId, orgId, sensor.getId(), time, true);
       }
       val = new InterpolatedValue(sensorId, value, deposit.getMeasurementType(), time);
-
     }
     else if (start != null && end != null) {
       startDate = DateConvert.parseCalStringToDate(start);

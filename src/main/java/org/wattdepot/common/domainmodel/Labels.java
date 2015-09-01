@@ -96,6 +96,9 @@ public class Labels {
   /** The label for descriptive statistics. */
   public static final String DESCRIPTIVE_STATS = "descriptive-stats";
 
+  /** The label for the sensor property indicating the sensor can generate power. */
+  public static final String GENERATE_POWER = "generatePower";
+
   /** The label for historical values. */
   public static final String HISTORICAL_VALUES = "historical-values";
 

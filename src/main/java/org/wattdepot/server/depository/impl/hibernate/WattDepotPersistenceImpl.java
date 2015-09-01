@@ -37,6 +37,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.MeasurementList;
 import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
@@ -3043,10 +3044,37 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public Double getValue(String depotId, String orgId, String sensorId, Date start, Date end,
       boolean check) throws NoMeasurementException, IdNotFoundException {
+    Boolean generatePower = false;
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    session.beginTransaction();
+    SensorImpl sensor = retrieveSensor(session, sensorId, orgId);
+    for (PropertyImpl p : sensor.getProperties()) {
+      if (p.getKey().equals(Labels.GENERATE_POWER)) {
+        generatePower = Boolean.parseBoolean(p.getValue());
+      }
+    }
+    session.getTransaction().commit();
+    session.close();
     Double endVal = getValue(depotId, orgId, sensorId, end, check);
     Double startVal = getValue(depotId, orgId, sensorId, start, check);
     if (endVal != null && startVal != null) {
-      return endVal - startVal;
+      Double returnVal = endVal - startVal;
+      if (returnVal < 0 && !generatePower) {
+        Double max = Double.MIN_NORMAL;
+        Double min = Double.MAX_VALUE;
+        List<Measurement> measurements = getMeasurements(depotId, orgId, sensorId, start, end, false);
+        for (Measurement m : measurements) {
+          Double value = m.getValue();
+          if (max < value) {
+            max = value;
+          }
+          if (min > value) {
+            min = value;
+          }
+          returnVal = endVal - startVal + max - min;
+        }
+      }
+      return returnVal;
     }
     return null;
   }
@@ -3061,10 +3089,37 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   public Double getValue(String depotId, String orgId, String sensorId, Date start, Date end,
       Long gapSeconds, boolean check) throws NoMeasurementException, MeasurementGapException,
       IdNotFoundException {
+    Boolean generatePower = false;
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    session.beginTransaction();
+    SensorImpl sensor = retrieveSensor(session, sensorId, orgId);
+    for (PropertyImpl p : sensor.getProperties()) {
+      if (p.getKey().equals(Labels.GENERATE_POWER)) {
+        generatePower = Boolean.parseBoolean(p.getValue());
+      }
+    }
+    session.getTransaction().commit();
+    session.close();
     Double endVal = getValue(depotId, orgId, sensorId, end, gapSeconds, check);
     Double startVal = getValue(depotId, orgId, sensorId, start, gapSeconds, check);
     if (endVal != null && startVal != null) {
-      return endVal - startVal;
+      Double returnVal = endVal - startVal;
+      if (returnVal < 0 && !generatePower) {
+        Double max = Double.MIN_NORMAL;
+        Double min = Double.MAX_VALUE;
+        List<Measurement> measurements = getMeasurements(depotId, orgId, sensorId, start, end, false);
+        for (Measurement m : measurements) {
+          Double value = m.getValue();
+          if (max < value) {
+            max = value;
+          }
+          if (min > value) {
+            min = value;
+          }
+          returnVal = endVal - startVal + max - min;
+        }
+      }
+      return returnVal;
     }
     return null;
   }

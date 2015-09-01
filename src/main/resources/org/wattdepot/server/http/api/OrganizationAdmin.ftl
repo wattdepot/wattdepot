@@ -172,7 +172,10 @@
           <td>${s.name}</td>
           <td>${s.uri}</td>
           <td><#if s.getModelId()??>${s.modelId}</#if></td>
-          <td>[<#assign k = s.properties?size><#list s.properties as prop>{"${prop.key}":"${prop.value}"}<#if k != 1>
+          <td>[<#assign k = s.properties?size>
+            <#list s.properties as p>
+              <#if p.getKey()??>{"${p.key}":"${p.value}"}</#if>
+            <#if k != 1>
             ,</#if><#assign k = k -1></#list>]
           </td>
           <td>
