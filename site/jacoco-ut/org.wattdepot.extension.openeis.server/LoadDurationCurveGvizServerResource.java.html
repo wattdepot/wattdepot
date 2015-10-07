@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>LoadDurationCurveGvizServerResource.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.source.html" class="el_package">org.wattdepot.extension.openeis.server</a> &gt; <span class="el_source">LoadDurationCurveGvizServerResource.java</span></div><h1>LoadDurationCurveGvizServerResource.java</h1><pre class="source lang-java linenums">/*
+ * This file is part of WattDepot.
+ *
+ *  Copyright (C) 2015  Cam Moore
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package org.wattdepot.extension.openeis.server;
+
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
+import org.wattdepot.common.util.GvizHelper;
+import org.wattdepot.extension.openeis.http.api.LoadDurationCurveGvizResource;
+import org.wattdepot.extension.openeis.util.OpenEISGvizHelper;
+
+/**
+ * LoadDurationCurveGvizServerResource - Handles Load Duration Curve Gviz requests.
+ *
+ * @author Cam Moore
+ *         Created by carletonmoore on 4/22/15.
+ */
+<span class="nc" id="L33">public class LoadDurationCurveGvizServerResource extends LoadDurationCurveServer implements LoadDurationCurveGvizResource {</span>
+  /**
+   * The GViz tqx query string.
+   */
+<span class="nc" id="L37">  private String tqxString = null;</span>
+
+  /**
+   * The GViz tq query string.
+   */
+<span class="nc" id="L42">  private String tqString = null;</span>
+
+  /**
+   * Initialize with attributes from the Request.
+   */
+  @Override
+  protected void doInit() {
+<span class="nc" id="L49">    super.doInit();</span>
+
+<span class="nc" id="L51">    this.tqxString = GvizHelper.getGvizQueryString(this, &quot;tqx&quot;);</span>
+<span class="nc" id="L52">    this.tqString = GvizHelper.getGvizQueryString(this, &quot;tq&quot;);</span>
+<span class="nc" id="L53">  }</span>
+
+  @Override
+  public String retrieve() {
+<span class="nc" id="L57">    InterpolatedValueList mList = doRetrieve();</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">    if (mList != null) {</span>
+<span class="nc" id="L59">      mList.collapseMissingData();</span>
+<span class="nc" id="L60">      return OpenEISGvizHelper.getPercentageGvizResponse(mList, tqxString, tqString);</span>
+    }
+<span class="nc" id="L62">    return null;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

@@ -245,22 +245,22 @@ import org.wattdepot.common.util.UnitsHelper;
       MisMatchedOwnerException;
 
   /**
-   * Deletes the given MeasurementPruningDefinition.
-   * 
-   * @param id The id of the MeasurementPruningDefinition to delete.
-   * @param orgId The Organization's id.
-   * @throws IdNotFoundException if the id is not defined.
-   */
-  public abstract void deleteMeasurementPruningDefinition(String id, String orgId)
-      throws IdNotFoundException;
-
-  /**
    * @param depotId the id of the Depository storing the measurement.
    * @param orgId the id of the Organization.
    * @param measId The id of the measurement to delete.
    * @throws IdNotFoundException if there is a problem with the ids.
    */
   public abstract void deleteMeasurement(String depotId, String orgId, String measId)
+      throws IdNotFoundException;
+
+  /**
+   * Deletes the given MeasurementPruningDefinition.
+   *
+   * @param id The id of the MeasurementPruningDefinition to delete.
+   * @param orgId The Organization's id.
+   * @throws IdNotFoundException if the id is not defined.
+   */
+  public abstract void deleteMeasurementPruningDefinition(String id, String orgId)
       throws IdNotFoundException;
 
   /**
@@ -394,6 +394,44 @@ import org.wattdepot.common.util.UnitsHelper;
       String sensorId, boolean check) throws NoMeasurementException, IdNotFoundException;
 
   /**
+   * @param depotId the id of the Depository.
+   * @param orgId the Organziation's id.
+   * @param sensorId The id of the Sensor making the measurements.
+   * @param check true if want to check the ids.
+   * @return The latest measurement Value
+   * @throws NoMeasurementException If there aren't any measurements around the
+   *         time.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract InterpolatedValue getLatestMeasuredValue(String depotId, String orgId,
+                                                           String sensorId, boolean check) throws NoMeasurementException, IdNotFoundException;
+
+  /**
+   * @param depotId the id of the Depository.
+   * @param orgId the Organziation's id.
+   * @param sensorId The id of the Sensor making the measurements.
+   * @param window The number of seconds to consider for latest.
+   * @param check true if want to check the ids.
+   * @return The latest measurement Value
+   * @throws NoMeasurementException If there aren't any measurements around the
+   *         time.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract InterpolatedValue getLatestMeasuredValue(String depotId, String orgId,
+      String sensorId, Long window, boolean check) throws NoMeasurementException, IdNotFoundException;
+
+  /**
+   * @param depotId the id of the Depository storing the measurements.
+   * @param orgId the Organziation's id.
+   * @param measId The measurement id.
+   * @param check true if want to check the ids.
+   * @return The Measurement with the given id or null.
+   * @throws IdNotFoundException if there are problems with the ids.
+   */
+  public abstract Measurement getMeasurement(String depotId, String orgId, String measId,
+      boolean check) throws IdNotFoundException;
+
+  /**
    * @param id The id of the MeasurementPruningDefinition.
    * @param orgId The Organization's id.
    * @param check true if want to check the ids.
@@ -422,28 +460,18 @@ import org.wattdepot.common.util.UnitsHelper;
       boolean check) throws IdNotFoundException;
 
   /**
-   * @param depotId the id of the Depository.
-   * @param orgId the Organziation's id.
-   * @param sensorId The id of the Sensor making the measurements.
+   * @param id The unique id for the MeasurementType.
    * @param check true if want to check the ids.
-   * @return The latest measurement Value
-   * @throws NoMeasurementException If there aren't any measurements around the
-   *         time.
-   * @throws IdNotFoundException if there is a problem with the ids.
+   * @return The MeasurementType with the given id.
+   * @throws IdNotFoundException if the id is not defined.
    */
-  public abstract InterpolatedValue getLatestMeasuredValue(String depotId, String orgId,
-      String sensorId, boolean check) throws NoMeasurementException, IdNotFoundException;
+  public abstract MeasurementType getMeasurementType(String id, boolean check)
+      throws IdNotFoundException;
 
   /**
-   * @param depotId the id of the Depository storing the measurements.
-   * @param orgId the Organziation's id.
-   * @param measId The measurement id.
-   * @param check true if want to check the ids.
-   * @return The Measurement with the given id or null.
-   * @throws IdNotFoundException if there are problems with the ids.
+   * @return A List of the defined MeasurementTypes.
    */
-  public abstract Measurement getMeasurement(String depotId, String orgId, String measId,
-      boolean check) throws IdNotFoundException;
+  public abstract List&lt;MeasurementType&gt; getMeasurementTypes();
 
   /**
    * @param depotId the id of the Depository storing the measurements.
@@ -500,20 +528,6 @@ import org.wattdepot.common.util.UnitsHelper;
    */
   public abstract Long getMeasurementsCount(String depotId, String orgId, String sensorId,
       Date start, Date end, boolean check) throws IdNotFoundException;
-
-  /**
-   * @param id The unique id for the MeasurementType.
-   * @param check true if want to check the ids.
-   * @return The MeasurementType with the given id.
-   * @throws IdNotFoundException if the id is not defined.
-   */
-  public abstract MeasurementType getMeasurementType(String id, boolean check)
-      throws IdNotFoundException;
-
-  /**
-   * @return A List of the defined MeasurementTypes.
-   */
-  public abstract List&lt;MeasurementType&gt; getMeasurementTypes();
 
   /**
    * @param id the unique id for the Organization.
@@ -622,21 +636,28 @@ import org.wattdepot.common.util.UnitsHelper;
    * @return the properties
    */
   public ServerProperties getServerProperties() {
-<span class="fc" id="L625">    return properties;</span>
+<span class="fc" id="L639">    return properties;</span>
   }
+
+  /**
+   * @param properties the properties to set
+   */
+  public void setServerProperties(ServerProperties properties) {
+<span class="fc" id="L646">    this.properties = properties;</span>
+<span class="fc" id="L647">  }</span>
 
   /**
    * @return the sessionClose
    */
   public int getSessionClose() {
-<span class="nc" id="L632">    throw new RuntimeException(&quot;Not implemented.&quot;);</span>
+<span class="nc" id="L653">    throw new RuntimeException(&quot;Not implemented.&quot;);</span>
   }
 
   /**
    * @return the sessionOpen
    */
   public int getSessionOpen() {
-<span class="nc" id="L639">    throw new RuntimeException(&quot;Not implemented.&quot;);</span>
+<span class="nc" id="L660">    throw new RuntimeException(&quot;Not implemented.&quot;);</span>
   }
 
   /**
@@ -771,48 +792,48 @@ import org.wattdepot.common.util.UnitsHelper;
    * Ensures the base set of MeasurementTypes are defined in WattDepot.
    */
   public void initializeMeasurementTypes() {
-<span class="fc bfc" id="L774" title="All 2 branches covered.">    for (String key : UnitsHelper.quantities.keySet()) {</span>
+<span class="fc bfc" id="L795" title="All 2 branches covered.">    for (String key : UnitsHelper.quantities.keySet()) {</span>
       try {
-<span class="fc" id="L776">        getMeasurementType(Slug.slugify(key), false);</span>
+<span class="fc" id="L797">        getMeasurementType(Slug.slugify(key), false);</span>
       }
-<span class="nc" id="L778">      catch (IdNotFoundException e1) {</span>
+<span class="nc" id="L799">      catch (IdNotFoundException e1) {</span>
         try {
-<span class="nc" id="L780">          defineMeasurementType(Slug.slugify(key), key, UnitsHelper.quantities.get(key).toString());</span>
+<span class="nc" id="L801">          defineMeasurementType(Slug.slugify(key), key, UnitsHelper.quantities.get(key).toString());</span>
         }
-<span class="nc" id="L782">        catch (UniqueIdException e) {</span>
-<span class="nc" id="L783">          e.printStackTrace();</span>
+<span class="nc" id="L803">        catch (UniqueIdException e) {</span>
+<span class="nc" id="L804">          e.printStackTrace();</span>
         }
-<span class="nc" id="L785">        catch (BadSlugException e) {</span>
-<span class="nc" id="L786">          e.printStackTrace();</span>
-<span class="nc" id="L787">        }</span>
-<span class="fc" id="L788">      }</span>
-<span class="fc" id="L789">    }</span>
-<span class="fc" id="L790">  }</span>
+<span class="nc" id="L806">        catch (BadSlugException e) {</span>
+<span class="nc" id="L807">          e.printStackTrace();</span>
+<span class="nc" id="L808">        }</span>
+<span class="fc" id="L809">      }</span>
+<span class="fc" id="L810">    }</span>
+<span class="fc" id="L811">  }</span>
 
   /**
    * Ensures the base set of SensorModels are defined in WattDepot.
    */
   public void initializeSensorModels() {
-<span class="fc bfc" id="L796" title="All 2 branches covered.">    for (String key : SensorModelHelper.models.keySet()) {</span>
+<span class="fc bfc" id="L817" title="All 2 branches covered.">    for (String key : SensorModelHelper.models.keySet()) {</span>
       try {
-<span class="fc" id="L798">        getSensorModel(Slug.slugify(key), false);</span>
+<span class="fc" id="L819">        getSensorModel(Slug.slugify(key), false);</span>
       }
-<span class="nc" id="L800">      catch (IdNotFoundException e1) {</span>
-<span class="nc" id="L801">        SensorModel model = SensorModelHelper.models.get(key);</span>
+<span class="nc" id="L821">      catch (IdNotFoundException e1) {</span>
+<span class="nc" id="L822">        SensorModel model = SensorModelHelper.models.get(key);</span>
         try {
-<span class="nc" id="L803">          defineSensorModel(Slug.slugify(model.getName()), model.getName(), model.getProtocol(),</span>
+<span class="nc" id="L824">          defineSensorModel(Slug.slugify(model.getName()), model.getName(), model.getProtocol(),</span>
               model.getType(), model.getVersion());
         }
-<span class="nc" id="L806">        catch (UniqueIdException e) {</span>
-<span class="nc" id="L807">          e.printStackTrace();</span>
+<span class="nc" id="L827">        catch (UniqueIdException e) {</span>
+<span class="nc" id="L828">          e.printStackTrace();</span>
         }
-<span class="nc" id="L809">        catch (BadSlugException e) {</span>
-<span class="nc" id="L810">          e.printStackTrace();</span>
-<span class="nc" id="L811">        }</span>
-<span class="fc" id="L812">      }</span>
-<span class="fc" id="L813">    }</span>
+<span class="nc" id="L830">        catch (BadSlugException e) {</span>
+<span class="nc" id="L831">          e.printStackTrace();</span>
+<span class="nc" id="L832">        }</span>
+<span class="fc" id="L833">      }</span>
+<span class="fc" id="L834">    }</span>
 
-<span class="fc" id="L815">  }</span>
+<span class="fc" id="L836">  }</span>
 
   /**
    * @param depotId the id of the depository.
@@ -846,13 +867,6 @@ import org.wattdepot.common.util.UnitsHelper;
    */
   public abstract void putMeasurementList(String depotId, String orgId, MeasurementList measurementList)
       throws MeasurementTypeException, IdNotFoundException;
-
-  /**
-   * @param properties the properties to set
-   */
-  public void setServerProperties(ServerProperties properties) {
-<span class="fc" id="L854">    this.properties = properties;</span>
-<span class="fc" id="L855">  }</span>
 
   /**
    * Cleans up the persistence layer.

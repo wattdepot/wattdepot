@@ -8,425 +8,568 @@
 <div class="sourceContainer">
 <pre><span class="sourceLineNo">001</span>/**<a name="line.1"></a>
 <span class="sourceLineNo">002</span> * ServerProperties.java This file is part of WattDepot.<a name="line.2"></a>
-<span class="sourceLineNo">003</span> *<a name="line.3"></a>
+<span class="sourceLineNo">003</span> * &lt;p/&gt;<a name="line.3"></a>
 <span class="sourceLineNo">004</span> * Copyright (C) 2013  Cam Moore<a name="line.4"></a>
-<span class="sourceLineNo">005</span> *<a name="line.5"></a>
+<span class="sourceLineNo">005</span> * &lt;p/&gt;<a name="line.5"></a>
 <span class="sourceLineNo">006</span> * This program is free software: you can redistribute it and/or modify<a name="line.6"></a>
 <span class="sourceLineNo">007</span> * it under the terms of the GNU General Public License as published by<a name="line.7"></a>
 <span class="sourceLineNo">008</span> * the Free Software Foundation, either version 3 of the License, or<a name="line.8"></a>
 <span class="sourceLineNo">009</span> * (at your option) any later version.<a name="line.9"></a>
-<span class="sourceLineNo">010</span> *<a name="line.10"></a>
+<span class="sourceLineNo">010</span> * &lt;p/&gt;<a name="line.10"></a>
 <span class="sourceLineNo">011</span> * This program is distributed in the hope that it will be useful,<a name="line.11"></a>
 <span class="sourceLineNo">012</span> * but WITHOUT ANY WARRANTY; without even the implied warranty of<a name="line.12"></a>
 <span class="sourceLineNo">013</span> * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the<a name="line.13"></a>
 <span class="sourceLineNo">014</span> * GNU General Public License for more details.<a name="line.14"></a>
-<span class="sourceLineNo">015</span> *<a name="line.15"></a>
+<span class="sourceLineNo">015</span> * &lt;p/&gt;<a name="line.15"></a>
 <span class="sourceLineNo">016</span> * You should have received a copy of the GNU General Public License<a name="line.16"></a>
 <span class="sourceLineNo">017</span> * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.<a name="line.17"></a>
 <span class="sourceLineNo">018</span> */<a name="line.18"></a>
 <span class="sourceLineNo">019</span>package org.wattdepot.server;<a name="line.19"></a>
 <span class="sourceLineNo">020</span><a name="line.20"></a>
-<span class="sourceLineNo">021</span>import java.io.FileInputStream;<a name="line.21"></a>
-<span class="sourceLineNo">022</span>import java.io.IOException;<a name="line.22"></a>
-<span class="sourceLineNo">023</span>import java.net.URI;<a name="line.23"></a>
-<span class="sourceLineNo">024</span>import java.net.URISyntaxException;<a name="line.24"></a>
-<span class="sourceLineNo">025</span>import java.util.Map;<a name="line.25"></a>
-<span class="sourceLineNo">026</span>import java.util.Properties;<a name="line.26"></a>
-<span class="sourceLineNo">027</span>import java.util.TreeMap;<a name="line.27"></a>
-<span class="sourceLineNo">028</span>import java.util.logging.Logger;<a name="line.28"></a>
-<span class="sourceLineNo">029</span><a name="line.29"></a>
-<span class="sourceLineNo">030</span>import org.wattdepot.common.domainmodel.UserInfo;<a name="line.30"></a>
-<span class="sourceLineNo">031</span>import org.wattdepot.common.domainmodel.UserPassword;<a name="line.31"></a>
-<span class="sourceLineNo">032</span>import org.wattdepot.common.util.UserHome;<a name="line.32"></a>
-<span class="sourceLineNo">033</span><a name="line.33"></a>
-<span class="sourceLineNo">034</span>/**<a name="line.34"></a>
-<span class="sourceLineNo">035</span> * ServerProperties - Provides access to the values stored in the<a name="line.35"></a>
-<span class="sourceLineNo">036</span> * wattdepot-server.properties file.<a name="line.36"></a>
-<span class="sourceLineNo">037</span> * <a name="line.37"></a>
-<span class="sourceLineNo">038</span> * @author Cam Moore<a name="line.38"></a>
-<span class="sourceLineNo">039</span> * <a name="line.39"></a>
-<span class="sourceLineNo">040</span> */<a name="line.40"></a>
-<span class="sourceLineNo">041</span>public class ServerProperties {<a name="line.41"></a>
-<span class="sourceLineNo">042</span>  /** The full path to the server's home directory. */<a name="line.42"></a>
-<span class="sourceLineNo">043</span>  public static final String SERVER_HOME_DIR = "wattdepot-server.homedir";<a name="line.43"></a>
-<span class="sourceLineNo">044</span>  /** The hostname key. */<a name="line.44"></a>
-<span class="sourceLineNo">045</span>  public static final String HOSTNAME_KEY = "wattdepot-server.hostname";<a name="line.45"></a>
-<span class="sourceLineNo">046</span>  /** Name of property used to store the admin username. */<a name="line.46"></a>
-<span class="sourceLineNo">047</span>  public static final String ADMIN_USER_NAME = "wattdepot-server.admin.name";<a name="line.47"></a>
-<span class="sourceLineNo">048</span>  /** The environment variable for storing the admin's name. */<a name="line.48"></a>
-<span class="sourceLineNo">049</span>  public static final String ADMIN_USER_NAME_ENV = "WATTDEPOT_ADMIN_NAME";<a name="line.49"></a>
-<span class="sourceLineNo">050</span>  /** Name of property used to store the admin password. */<a name="line.50"></a>
-<span class="sourceLineNo">051</span>  public static final String ADMIN_USER_PASSWORD = "wattdepot-server.admin.password";<a name="line.51"></a>
-<span class="sourceLineNo">052</span>  /** The environment variable for storing the admin's password. */<a name="line.52"></a>
-<span class="sourceLineNo">053</span>  public static final String ADMIN_USER_PASSWORD_ENV = "WATTDEPOT_ADMIN_PASSWORD";<a name="line.53"></a>
-<span class="sourceLineNo">054</span>  /**<a name="line.54"></a>
-<span class="sourceLineNo">055</span>   * The environment variable name that holds the salt used for encrypting<a name="line.55"></a>
-<span class="sourceLineNo">056</span>   * passwords in WattDepot.<a name="line.56"></a>
+<span class="sourceLineNo">021</span>import org.wattdepot.common.domainmodel.UserInfo;<a name="line.21"></a>
+<span class="sourceLineNo">022</span>import org.wattdepot.common.domainmodel.UserPassword;<a name="line.22"></a>
+<span class="sourceLineNo">023</span>import org.wattdepot.common.util.UserHome;<a name="line.23"></a>
+<span class="sourceLineNo">024</span>import org.wattdepot.extension.WattDepotExtension;<a name="line.24"></a>
+<span class="sourceLineNo">025</span><a name="line.25"></a>
+<span class="sourceLineNo">026</span>import java.io.FileInputStream;<a name="line.26"></a>
+<span class="sourceLineNo">027</span>import java.io.IOException;<a name="line.27"></a>
+<span class="sourceLineNo">028</span>import java.net.URI;<a name="line.28"></a>
+<span class="sourceLineNo">029</span>import java.net.URISyntaxException;<a name="line.29"></a>
+<span class="sourceLineNo">030</span>import java.util.ArrayList;<a name="line.30"></a>
+<span class="sourceLineNo">031</span>import java.util.Map;<a name="line.31"></a>
+<span class="sourceLineNo">032</span>import java.util.Properties;<a name="line.32"></a>
+<span class="sourceLineNo">033</span>import java.util.TreeMap;<a name="line.33"></a>
+<span class="sourceLineNo">034</span>import java.util.logging.Logger;<a name="line.34"></a>
+<span class="sourceLineNo">035</span><a name="line.35"></a>
+<span class="sourceLineNo">036</span>/**<a name="line.36"></a>
+<span class="sourceLineNo">037</span> * ServerProperties - Provides access to the values stored in the<a name="line.37"></a>
+<span class="sourceLineNo">038</span> * wattdepot-server.properties file.<a name="line.38"></a>
+<span class="sourceLineNo">039</span> *<a name="line.39"></a>
+<span class="sourceLineNo">040</span> * @author Cam Moore<a name="line.40"></a>
+<span class="sourceLineNo">041</span> */<a name="line.41"></a>
+<span class="sourceLineNo">042</span>public class ServerProperties {<a name="line.42"></a>
+<span class="sourceLineNo">043</span>  /**<a name="line.43"></a>
+<span class="sourceLineNo">044</span>   * The full path to the server's home directory.<a name="line.44"></a>
+<span class="sourceLineNo">045</span>   */<a name="line.45"></a>
+<span class="sourceLineNo">046</span>  public static final String SERVER_HOME_DIR = "wattdepot-server.homedir";<a name="line.46"></a>
+<span class="sourceLineNo">047</span>  /**<a name="line.47"></a>
+<span class="sourceLineNo">048</span>   * The hostname key.<a name="line.48"></a>
+<span class="sourceLineNo">049</span>   */<a name="line.49"></a>
+<span class="sourceLineNo">050</span>  public static final String HOSTNAME_KEY = "wattdepot-server.hostname";<a name="line.50"></a>
+<span class="sourceLineNo">051</span>  /**<a name="line.51"></a>
+<span class="sourceLineNo">052</span>   * Name of property used to store the admin username.<a name="line.52"></a>
+<span class="sourceLineNo">053</span>   */<a name="line.53"></a>
+<span class="sourceLineNo">054</span>  public static final String ADMIN_USER_NAME = "wattdepot-server.admin.name";<a name="line.54"></a>
+<span class="sourceLineNo">055</span>  /**<a name="line.55"></a>
+<span class="sourceLineNo">056</span>   * The environment variable for storing the admin's name.<a name="line.56"></a>
 <span class="sourceLineNo">057</span>   */<a name="line.57"></a>
-<span class="sourceLineNo">058</span>  public static final String WATTDEPOT_SALT_ENV = "WATTDEPOT_SALT";<a name="line.58"></a>
-<span class="sourceLineNo">059</span>  /** The WattDepot implementation class. */<a name="line.59"></a>
-<span class="sourceLineNo">060</span>  public static final String WATT_DEPOT_IMPL_KEY = "wattdepot-server.wattdepot.impl";<a name="line.60"></a>
-<span class="sourceLineNo">061</span>  /** The wattdepot server port key. */<a name="line.61"></a>
-<span class="sourceLineNo">062</span>  public static final String PORT_KEY = "wattdepot-server.port";<a name="line.62"></a>
-<span class="sourceLineNo">063</span>  /** The context root key. */<a name="line.63"></a>
-<span class="sourceLineNo">064</span>  public static final String CONTEXT_ROOT_KEY = "wattdepot-server.context.root";<a name="line.64"></a>
-<span class="sourceLineNo">065</span>  /** The database connection driver class. */<a name="line.65"></a>
-<span class="sourceLineNo">066</span>  public static final String DB_CONNECTION_DRIVER = "wattdepot-server.db.connection.driver";<a name="line.66"></a>
-<span class="sourceLineNo">067</span>  /** The database connection driver url. */<a name="line.67"></a>
-<span class="sourceLineNo">068</span>  public static final String DB_CONNECTION_URL = "wattdepot-server.db.connection.url";<a name="line.68"></a>
-<span class="sourceLineNo">069</span>  /** The database connection driver url environment variable. */<a name="line.69"></a>
-<span class="sourceLineNo">070</span>  public static final String DB_CONNECTION_URL_ENV = "WATTDEPOT_DATABASE_URL";<a name="line.70"></a>
-<span class="sourceLineNo">071</span>  /** The database url. */<a name="line.71"></a>
-<span class="sourceLineNo">072</span>  public static final String DATABASE_URL = "wattdepot-server.database.url";<a name="line.72"></a>
-<span class="sourceLineNo">073</span>  /** The database username. */<a name="line.73"></a>
-<span class="sourceLineNo">074</span>  public static final String DB_USER_NAME = "wattdepot-server.db.username";<a name="line.74"></a>
-<span class="sourceLineNo">075</span>  /** The database password. */<a name="line.75"></a>
-<span class="sourceLineNo">076</span>  public static final String DB_PASSWORD = "wattdepot-server.db.password";<a name="line.76"></a>
-<span class="sourceLineNo">077</span>  /** The database show sql. */<a name="line.77"></a>
-<span class="sourceLineNo">078</span>  public static final String DB_SHOW_SQL = "wattdepot-server.db.show.sql";<a name="line.78"></a>
-<span class="sourceLineNo">079</span>  /**<a name="line.79"></a>
-<span class="sourceLineNo">080</span>   * The database drop&amp;create tables. valid values are 'validate' | 'update' |<a name="line.80"></a>
-<span class="sourceLineNo">081</span>   * 'create' | 'create-drop'.<a name="line.81"></a>
+<span class="sourceLineNo">058</span>  public static final String ADMIN_USER_NAME_ENV = "WATTDEPOT_ADMIN_NAME";<a name="line.58"></a>
+<span class="sourceLineNo">059</span>  /**<a name="line.59"></a>
+<span class="sourceLineNo">060</span>   * Name of property used to store the admin password.<a name="line.60"></a>
+<span class="sourceLineNo">061</span>   */<a name="line.61"></a>
+<span class="sourceLineNo">062</span>  public static final String ADMIN_USER_PASSWORD = "wattdepot-server.admin.password";<a name="line.62"></a>
+<span class="sourceLineNo">063</span>  /**<a name="line.63"></a>
+<span class="sourceLineNo">064</span>   * The environment variable for storing the admin's password.<a name="line.64"></a>
+<span class="sourceLineNo">065</span>   */<a name="line.65"></a>
+<span class="sourceLineNo">066</span>  public static final String ADMIN_USER_PASSWORD_ENV = "WATTDEPOT_ADMIN_PASSWORD";<a name="line.66"></a>
+<span class="sourceLineNo">067</span>  /**<a name="line.67"></a>
+<span class="sourceLineNo">068</span>   * The environment variable name that holds the salt used for encrypting<a name="line.68"></a>
+<span class="sourceLineNo">069</span>   * passwords in WattDepot.<a name="line.69"></a>
+<span class="sourceLineNo">070</span>   */<a name="line.70"></a>
+<span class="sourceLineNo">071</span>  public static final String WATTDEPOT_SALT_ENV = "WATTDEPOT_SALT";<a name="line.71"></a>
+<span class="sourceLineNo">072</span>  /**<a name="line.72"></a>
+<span class="sourceLineNo">073</span>   * The WattDepot implementation class.<a name="line.73"></a>
+<span class="sourceLineNo">074</span>   */<a name="line.74"></a>
+<span class="sourceLineNo">075</span>  public static final String WATT_DEPOT_IMPL_KEY = "wattdepot-server.wattdepot.impl";<a name="line.75"></a>
+<span class="sourceLineNo">076</span>  /**<a name="line.76"></a>
+<span class="sourceLineNo">077</span>   * The wattdepot server port key.<a name="line.77"></a>
+<span class="sourceLineNo">078</span>   */<a name="line.78"></a>
+<span class="sourceLineNo">079</span>  public static final String PORT_KEY = "wattdepot-server.port";<a name="line.79"></a>
+<span class="sourceLineNo">080</span>  /**<a name="line.80"></a>
+<span class="sourceLineNo">081</span>   * The context root key.<a name="line.81"></a>
 <span class="sourceLineNo">082</span>   */<a name="line.82"></a>
-<span class="sourceLineNo">083</span>  public static final String DB_TABLE_UPDATE = "wattdepot-server.db.update";<a name="line.83"></a>
-<span class="sourceLineNo">084</span>  /**<a name="line.84"></a>
-<span class="sourceLineNo">085</span>   * Enable logging in the server. Logging may hide some stacktraces. Should be<a name="line.85"></a>
-<span class="sourceLineNo">086</span>   * True for production.<a name="line.86"></a>
-<span class="sourceLineNo">087</span>   */<a name="line.87"></a>
-<span class="sourceLineNo">088</span>  public static final String ENABLE_LOGGING_KEY = "wattdepot-server.enable.logging";<a name="line.88"></a>
-<span class="sourceLineNo">089</span>  /** Check the Session opens vs close. */<a name="line.89"></a>
-<span class="sourceLineNo">090</span>  public static final String CHECK_SESSIONS = "wattdepot-server.check.sessions";<a name="line.90"></a>
-<span class="sourceLineNo">091</span>  /** The logging level key. */<a name="line.91"></a>
-<span class="sourceLineNo">092</span>  public static final String LOGGING_LEVEL_KEY = "wattdepot-server.logging.level";<a name="line.92"></a>
-<span class="sourceLineNo">093</span>  /** Enable timing of Server operations. */<a name="line.93"></a>
-<span class="sourceLineNo">094</span>  public static final String SERVER_TIMING_KEY = "wattdepot-server.enable.timing";<a name="line.94"></a>
-<span class="sourceLineNo">095</span>  /** The WattDepot implementation class during testing. */<a name="line.95"></a>
-<span class="sourceLineNo">096</span>  public static final String TEST_WATT_DEPOT_IMPL_KEY = "wattdepot-server.test.wattdepot.impl";<a name="line.96"></a>
-<span class="sourceLineNo">097</span>  /** The wattdepot server port key during testing. */<a name="line.97"></a>
-<span class="sourceLineNo">098</span>  public static final String TEST_PORT_KEY = "wattdepot-server.test.port";<a name="line.98"></a>
-<span class="sourceLineNo">099</span>  /** Heroku key. */<a name="line.99"></a>
-<span class="sourceLineNo">100</span>  public static final String USE_HEROKU_KEY = "wattdepot-server.heroku";<a name="line.100"></a>
-<span class="sourceLineNo">101</span>  /** Heroku test key. */<a name="line.101"></a>
-<span class="sourceLineNo">102</span>  public static final String TEST_HEROKU_KEY = "wattdepot-server.test.heroku";<a name="line.102"></a>
-<span class="sourceLineNo">103</span>  /** The hostname for Heroku. */<a name="line.103"></a>
-<span class="sourceLineNo">104</span>  public static final String HEROKU_HOSTNAME_KEY = "wattdepot-server.heroku.hostname";<a name="line.104"></a>
-<span class="sourceLineNo">105</span>  /** The heroku database URL. */<a name="line.105"></a>
-<span class="sourceLineNo">106</span>  public static final String HEROKU_DATABASE_URL_KEY = "wattdepot-server.heroku.db.url";<a name="line.106"></a>
-<span class="sourceLineNo">107</span><a name="line.107"></a>
-<span class="sourceLineNo">108</span>  /** String for false. */<a name="line.108"></a>
-<span class="sourceLineNo">109</span>  public static final String FALSE = "false";<a name="line.109"></a>
-<span class="sourceLineNo">110</span>  /** String for true. */<a name="line.110"></a>
-<span class="sourceLineNo">111</span>  public static final String TRUE = "true";<a name="line.111"></a>
-<span class="sourceLineNo">112</span><a name="line.112"></a>
-<span class="sourceLineNo">113</span>  /** Where we store the properties. */<a name="line.113"></a>
-<span class="sourceLineNo">114</span>  private Properties properties;<a name="line.114"></a>
-<span class="sourceLineNo">115</span><a name="line.115"></a>
-<span class="sourceLineNo">116</span>  /**<a name="line.116"></a>
-<span class="sourceLineNo">117</span>   * Creates a new ServerProperties instance using the default filename. Prints<a name="line.117"></a>
-<span class="sourceLineNo">118</span>   * an error to the console if problems occur on loading.<a name="line.118"></a>
-<span class="sourceLineNo">119</span>   * @throws Exception if errors occur.<a name="line.119"></a>
+<span class="sourceLineNo">083</span>  public static final String CONTEXT_ROOT_KEY = "wattdepot-server.context.root";<a name="line.83"></a>
+<span class="sourceLineNo">084</span><a name="line.84"></a>
+<span class="sourceLineNo">085</span>  /** The option to enable SSL. */<a name="line.85"></a>
+<span class="sourceLineNo">086</span>  public static final String SSL = "wattdepot-server.ssl";<a name="line.86"></a>
+<span class="sourceLineNo">087</span>  /** The path to the keystore holding the certificate. */<a name="line.87"></a>
+<span class="sourceLineNo">088</span>  public static final String SSL_KEYSTORE_PATH = "wattdepot-server.ssl.keystore.path";<a name="line.88"></a>
+<span class="sourceLineNo">089</span>  /** The password for the keystore. */<a name="line.89"></a>
+<span class="sourceLineNo">090</span>  public static final String SSL_KEYSTORE_PASSWORD = "wattdepot-server.ssl.keystore.password";<a name="line.90"></a>
+<span class="sourceLineNo">091</span>  /** The password for the key. */<a name="line.91"></a>
+<span class="sourceLineNo">092</span>  public static final String SSL_KEYSTORE_KEY_PASSWORD = "wattdepot-server.ssl.keystore.key.password";<a name="line.92"></a>
+<span class="sourceLineNo">093</span>  /** The type of keystore. */<a name="line.93"></a>
+<span class="sourceLineNo">094</span>  public static final String SSL_KEYSTORE_TYPE = "wattdepot-server.ssl.keystore.type";<a name="line.94"></a>
+<span class="sourceLineNo">095</span><a name="line.95"></a>
+<span class="sourceLineNo">096</span>  /** The database connection driver class. */<a name="line.96"></a>
+<span class="sourceLineNo">097</span>  public static final String DB_CONNECTION_DRIVER = "wattdepot-server.db.connection.driver";<a name="line.97"></a>
+<span class="sourceLineNo">098</span>  /**<a name="line.98"></a>
+<span class="sourceLineNo">099</span>   * The database connection driver url.<a name="line.99"></a>
+<span class="sourceLineNo">100</span>   */<a name="line.100"></a>
+<span class="sourceLineNo">101</span>  public static final String DB_CONNECTION_URL = "wattdepot-server.db.connection.url";<a name="line.101"></a>
+<span class="sourceLineNo">102</span>  /**<a name="line.102"></a>
+<span class="sourceLineNo">103</span>   * The database connection driver url environment variable.<a name="line.103"></a>
+<span class="sourceLineNo">104</span>   */<a name="line.104"></a>
+<span class="sourceLineNo">105</span>  public static final String DB_CONNECTION_URL_ENV = "WATTDEPOT_DATABASE_URL";<a name="line.105"></a>
+<span class="sourceLineNo">106</span>  /**<a name="line.106"></a>
+<span class="sourceLineNo">107</span>   * The database url.<a name="line.107"></a>
+<span class="sourceLineNo">108</span>   */<a name="line.108"></a>
+<span class="sourceLineNo">109</span>  public static final String DATABASE_URL = "wattdepot-server.database.url";<a name="line.109"></a>
+<span class="sourceLineNo">110</span>  /**<a name="line.110"></a>
+<span class="sourceLineNo">111</span>   * The database username.<a name="line.111"></a>
+<span class="sourceLineNo">112</span>   */<a name="line.112"></a>
+<span class="sourceLineNo">113</span>  public static final String DB_USER_NAME = "wattdepot-server.db.username";<a name="line.113"></a>
+<span class="sourceLineNo">114</span>  /**<a name="line.114"></a>
+<span class="sourceLineNo">115</span>   * The database password.<a name="line.115"></a>
+<span class="sourceLineNo">116</span>   */<a name="line.116"></a>
+<span class="sourceLineNo">117</span>  public static final String DB_PASSWORD = "wattdepot-server.db.password";<a name="line.117"></a>
+<span class="sourceLineNo">118</span>  /**<a name="line.118"></a>
+<span class="sourceLineNo">119</span>   * The database show sql.<a name="line.119"></a>
 <span class="sourceLineNo">120</span>   */<a name="line.120"></a>
-<span class="sourceLineNo">121</span>  public ServerProperties() throws Exception {<a name="line.121"></a>
-<span class="sourceLineNo">122</span>    this(null);<a name="line.122"></a>
-<span class="sourceLineNo">123</span>  }<a name="line.123"></a>
-<span class="sourceLineNo">124</span><a name="line.124"></a>
-<span class="sourceLineNo">125</span>  /**<a name="line.125"></a>
-<span class="sourceLineNo">126</span>   * Creates a new ServerProperties instance loaded from the given filename.<a name="line.126"></a>
-<span class="sourceLineNo">127</span>   * Prints an error to the console if problems occur on loading.<a name="line.127"></a>
-<span class="sourceLineNo">128</span>   * <a name="line.128"></a>
-<span class="sourceLineNo">129</span>   * @param serverSubdir The name of the subdirectory used to store all files<a name="line.129"></a>
-<span class="sourceLineNo">130</span>   *        for this server.<a name="line.130"></a>
-<span class="sourceLineNo">131</span>   * @throws Exception if errors occur.<a name="line.131"></a>
-<span class="sourceLineNo">132</span>   */<a name="line.132"></a>
-<span class="sourceLineNo">133</span>  public ServerProperties(String serverSubdir) throws Exception {<a name="line.133"></a>
-<span class="sourceLineNo">134</span>    initializeProperties(serverSubdir);<a name="line.134"></a>
-<span class="sourceLineNo">135</span>  }<a name="line.135"></a>
-<span class="sourceLineNo">136</span><a name="line.136"></a>
-<span class="sourceLineNo">137</span>  /**<a name="line.137"></a>
-<span class="sourceLineNo">138</span>   * Sets the properties to their "test" equivalents and updates the system<a name="line.138"></a>
-<span class="sourceLineNo">139</span>   * properties.<a name="line.139"></a>
-<span class="sourceLineNo">140</span>   */<a name="line.140"></a>
-<span class="sourceLineNo">141</span>  public void setTestProperties() {<a name="line.141"></a>
-<span class="sourceLineNo">142</span>    properties.setProperty(PORT_KEY, properties.getProperty(TEST_PORT_KEY));<a name="line.142"></a>
-<span class="sourceLineNo">143</span>    properties.setProperty(WATT_DEPOT_IMPL_KEY, properties.getProperty(TEST_WATT_DEPOT_IMPL_KEY));<a name="line.143"></a>
-<span class="sourceLineNo">144</span>    // turn off logging during testing.<a name="line.144"></a>
-<span class="sourceLineNo">145</span>    properties.setProperty(LOGGING_LEVEL_KEY, "SEVERE");<a name="line.145"></a>
-<span class="sourceLineNo">146</span>    trimProperties(properties);<a name="line.146"></a>
-<span class="sourceLineNo">147</span>    // update the system properties object to reflect these new values.<a name="line.147"></a>
-<span class="sourceLineNo">148</span>    Properties systemProperties = System.getProperties();<a name="line.148"></a>
-<span class="sourceLineNo">149</span>    systemProperties.putAll(properties);<a name="line.149"></a>
-<span class="sourceLineNo">150</span>    System.setProperties(systemProperties);<a name="line.150"></a>
-<span class="sourceLineNo">151</span>  }<a name="line.151"></a>
-<span class="sourceLineNo">152</span><a name="line.152"></a>
-<span class="sourceLineNo">153</span>  /**<a name="line.153"></a>
-<span class="sourceLineNo">154</span>   * Returns a string containing all current properties in alphabetical order.<a name="line.154"></a>
-<span class="sourceLineNo">155</span>   * Properties with the word "password" in their key list "((hidden))" rather<a name="line.155"></a>
-<span class="sourceLineNo">156</span>   * than their actual value for security reasons. This is not super<a name="line.156"></a>
-<span class="sourceLineNo">157</span>   * sophisticated - other properties such as database URLs might benefit from<a name="line.157"></a>
-<span class="sourceLineNo">158</span>   * being hidden too - but it should work for now.<a name="line.158"></a>
-<span class="sourceLineNo">159</span>   * <a name="line.159"></a>
-<span class="sourceLineNo">160</span>   * @return A string with the properties.<a name="line.160"></a>
-<span class="sourceLineNo">161</span>   */<a name="line.161"></a>
-<span class="sourceLineNo">162</span>  public String echoProperties() {<a name="line.162"></a>
-<span class="sourceLineNo">163</span>    String cr = System.getProperty("line.separator");<a name="line.163"></a>
-<span class="sourceLineNo">164</span>    String eq = " = ";<a name="line.164"></a>
-<span class="sourceLineNo">165</span>    String pad = "                ";<a name="line.165"></a>
-<span class="sourceLineNo">166</span>    // Adding them to a treemap has the effect of alphabetizing them.<a name="line.166"></a>
-<span class="sourceLineNo">167</span>    TreeMap&lt;String, String&gt; alphaProps = new TreeMap&lt;String, String&gt;();<a name="line.167"></a>
-<span class="sourceLineNo">168</span>    for (Map.Entry&lt;Object, Object&gt; entry : this.properties.entrySet()) {<a name="line.168"></a>
-<span class="sourceLineNo">169</span>      String propName = (String) entry.getKey();<a name="line.169"></a>
-<span class="sourceLineNo">170</span>      String propValue = (String) entry.getValue();<a name="line.170"></a>
-<span class="sourceLineNo">171</span>      alphaProps.put(propName, propValue);<a name="line.171"></a>
-<span class="sourceLineNo">172</span>    }<a name="line.172"></a>
-<span class="sourceLineNo">173</span>    StringBuffer buff = new StringBuffer(25);<a name="line.173"></a>
-<span class="sourceLineNo">174</span>    buff.append("Server Properties:").append(cr);<a name="line.174"></a>
-<span class="sourceLineNo">175</span>    for (String key : alphaProps.keySet()) {<a name="line.175"></a>
-<span class="sourceLineNo">176</span>      if (key.contains("password")) {<a name="line.176"></a>
-<span class="sourceLineNo">177</span>        buff.append(pad).append(key).append(eq).append("((hidden))").append(cr);<a name="line.177"></a>
-<span class="sourceLineNo">178</span>      }<a name="line.178"></a>
-<span class="sourceLineNo">179</span>      else {<a name="line.179"></a>
-<span class="sourceLineNo">180</span>        buff.append(pad).append(key).append(eq).append(get(key)).append(cr);<a name="line.180"></a>
-<span class="sourceLineNo">181</span>      }<a name="line.181"></a>
-<span class="sourceLineNo">182</span>    }<a name="line.182"></a>
-<span class="sourceLineNo">183</span>    return buff.toString();<a name="line.183"></a>
-<span class="sourceLineNo">184</span>  }<a name="line.184"></a>
-<span class="sourceLineNo">185</span><a name="line.185"></a>
-<span class="sourceLineNo">186</span>  /**<a name="line.186"></a>
-<span class="sourceLineNo">187</span>   * Returns the value of the Server Property specified by the key.<a name="line.187"></a>
-<span class="sourceLineNo">188</span>   * <a name="line.188"></a>
-<span class="sourceLineNo">189</span>   * @param key Should be one of the public static final strings in this class.<a name="line.189"></a>
-<span class="sourceLineNo">190</span>   * @return The value of the key, or null if not found.<a name="line.190"></a>
-<span class="sourceLineNo">191</span>   */<a name="line.191"></a>
-<span class="sourceLineNo">192</span>  public String get(String key) {<a name="line.192"></a>
-<span class="sourceLineNo">193</span>    return this.properties.getProperty(key);<a name="line.193"></a>
-<span class="sourceLineNo">194</span>  }<a name="line.194"></a>
-<span class="sourceLineNo">195</span><a name="line.195"></a>
-<span class="sourceLineNo">196</span>  /**<a name="line.196"></a>
-<span class="sourceLineNo">197</span>   * Sets the given property.<a name="line.197"></a>
-<span class="sourceLineNo">198</span>   * @param key the key.<a name="line.198"></a>
-<span class="sourceLineNo">199</span>   * @param value the value<a name="line.199"></a>
-<span class="sourceLineNo">200</span>   */<a name="line.200"></a>
-<span class="sourceLineNo">201</span>  public void set(String key, String value) {<a name="line.201"></a>
-<span class="sourceLineNo">202</span>    this.properties.setProperty(key, value);<a name="line.202"></a>
-<span class="sourceLineNo">203</span>  }<a name="line.203"></a>
-<span class="sourceLineNo">204</span>  <a name="line.204"></a>
-<span class="sourceLineNo">205</span>  /**<a name="line.205"></a>
-<span class="sourceLineNo">206</span>   * Ensures that the there is no leading or trailing whitespace in the property<a name="line.206"></a>
-<span class="sourceLineNo">207</span>   * values. The fact that we need to do this indicates a bug in Java's<a name="line.207"></a>
-<span class="sourceLineNo">208</span>   * Properties implementation to me.<a name="line.208"></a>
-<span class="sourceLineNo">209</span>   * <a name="line.209"></a>
-<span class="sourceLineNo">210</span>   * @param properties The properties.<a name="line.210"></a>
-<span class="sourceLineNo">211</span>   */<a name="line.211"></a>
-<span class="sourceLineNo">212</span>  private void trimProperties(Properties properties) {<a name="line.212"></a>
-<span class="sourceLineNo">213</span>    // Have to do this iteration in a Java 5 compatible manner. no<a name="line.213"></a>
-<span class="sourceLineNo">214</span>    // stringPropertyNames().<a name="line.214"></a>
-<span class="sourceLineNo">215</span>    for (Map.Entry&lt;Object, Object&gt; entry : properties.entrySet()) {<a name="line.215"></a>
-<span class="sourceLineNo">216</span>      String propName = (String) entry.getKey();<a name="line.216"></a>
-<span class="sourceLineNo">217</span>      properties.setProperty(propName, properties.getProperty(propName).trim());<a name="line.217"></a>
-<span class="sourceLineNo">218</span>    }<a name="line.218"></a>
-<span class="sourceLineNo">219</span>  }<a name="line.219"></a>
-<span class="sourceLineNo">220</span><a name="line.220"></a>
-<span class="sourceLineNo">221</span>  /**<a name="line.221"></a>
-<span class="sourceLineNo">222</span>   * Reads in the properties in ~/.wattdepot3/server/wattdepot-server.properties<a name="line.222"></a>
-<span class="sourceLineNo">223</span>   * if this file exists, and provides default values for all properties not<a name="line.223"></a>
-<span class="sourceLineNo">224</span>   * mentioned in this file. Will also add any pre-existing System properties<a name="line.224"></a>
-<span class="sourceLineNo">225</span>   * that start with "wattdepot-server.".<a name="line.225"></a>
-<span class="sourceLineNo">226</span>   * <a name="line.226"></a>
-<span class="sourceLineNo">227</span>   * @param serverSubdir The name of the subdirectory used to store all files<a name="line.227"></a>
-<span class="sourceLineNo">228</span>   *        for this server.<a name="line.228"></a>
-<span class="sourceLineNo">229</span>   * @throws Exception if errors occur.<a name="line.229"></a>
-<span class="sourceLineNo">230</span>   */<a name="line.230"></a>
-<span class="sourceLineNo">231</span>  private void initializeProperties(String serverSubdir) throws Exception {<a name="line.231"></a>
-<span class="sourceLineNo">232</span>    Logger logger = Logger.getLogger("org.wattdepot.properties");<a name="line.232"></a>
-<span class="sourceLineNo">233</span>    String userHome = UserHome.getHomeString();<a name="line.233"></a>
-<span class="sourceLineNo">234</span>    String wattDepot3Home = userHome + "/.wattdepot3/";<a name="line.234"></a>
-<span class="sourceLineNo">235</span>    String serverHome = null;<a name="line.235"></a>
-<span class="sourceLineNo">236</span>    if (serverSubdir == null) {<a name="line.236"></a>
-<span class="sourceLineNo">237</span>      serverHome = wattDepot3Home + "server";<a name="line.237"></a>
-<span class="sourceLineNo">238</span>    }<a name="line.238"></a>
-<span class="sourceLineNo">239</span>    else {<a name="line.239"></a>
-<span class="sourceLineNo">240</span>      serverHome = wattDepot3Home + serverSubdir;<a name="line.240"></a>
-<span class="sourceLineNo">241</span>    }<a name="line.241"></a>
-<span class="sourceLineNo">242</span>    String propFileName = serverHome + "/wattdepot-server.properties";<a name="line.242"></a>
-<span class="sourceLineNo">243</span>    this.properties = new Properties();<a name="line.243"></a>
-<span class="sourceLineNo">244</span>    // Use properties from file, if they exist.<a name="line.244"></a>
-<span class="sourceLineNo">245</span>    FileInputStream stream = null;<a name="line.245"></a>
-<span class="sourceLineNo">246</span>    try {<a name="line.246"></a>
-<span class="sourceLineNo">247</span>      stream = new FileInputStream(propFileName);<a name="line.247"></a>
-<span class="sourceLineNo">248</span>      properties.load(stream);<a name="line.248"></a>
-<span class="sourceLineNo">249</span>      logger.info("Loading Server properties from: " + propFileName);<a name="line.249"></a>
-<span class="sourceLineNo">250</span><a name="line.250"></a>
-<span class="sourceLineNo">251</span>    }<a name="line.251"></a>
-<span class="sourceLineNo">252</span>    catch (IOException e) {<a name="line.252"></a>
-<span class="sourceLineNo">253</span>      logger.info(propFileName + " not found. Using default server properties.");<a name="line.253"></a>
-<span class="sourceLineNo">254</span>    }<a name="line.254"></a>
-<span class="sourceLineNo">255</span>    finally {<a name="line.255"></a>
-<span class="sourceLineNo">256</span>      if (stream != null) {<a name="line.256"></a>
-<span class="sourceLineNo">257</span>        stream.close();<a name="line.257"></a>
+<span class="sourceLineNo">121</span>  public static final String DB_SHOW_SQL = "wattdepot-server.db.show.sql";<a name="line.121"></a>
+<span class="sourceLineNo">122</span>  /**<a name="line.122"></a>
+<span class="sourceLineNo">123</span>   * The database drop&amp;create tables. valid values are 'validate' | 'update' |<a name="line.123"></a>
+<span class="sourceLineNo">124</span>   * 'create' | 'create-drop'.<a name="line.124"></a>
+<span class="sourceLineNo">125</span>   */<a name="line.125"></a>
+<span class="sourceLineNo">126</span>  public static final String DB_TABLE_UPDATE = "wattdepot-server.db.update";<a name="line.126"></a>
+<span class="sourceLineNo">127</span>  /**<a name="line.127"></a>
+<span class="sourceLineNo">128</span>   * Enable logging in the server. Logging may hide some stacktraces. Should be<a name="line.128"></a>
+<span class="sourceLineNo">129</span>   * True for production.<a name="line.129"></a>
+<span class="sourceLineNo">130</span>   */<a name="line.130"></a>
+<span class="sourceLineNo">131</span>  public static final String ENABLE_LOGGING_KEY = "wattdepot-server.enable.logging";<a name="line.131"></a>
+<span class="sourceLineNo">132</span>  /**<a name="line.132"></a>
+<span class="sourceLineNo">133</span>   * Check the Session opens vs close.<a name="line.133"></a>
+<span class="sourceLineNo">134</span>   */<a name="line.134"></a>
+<span class="sourceLineNo">135</span>  public static final String CHECK_SESSIONS = "wattdepot-server.check.sessions";<a name="line.135"></a>
+<span class="sourceLineNo">136</span>  /**<a name="line.136"></a>
+<span class="sourceLineNo">137</span>   * The logging level key.<a name="line.137"></a>
+<span class="sourceLineNo">138</span>   */<a name="line.138"></a>
+<span class="sourceLineNo">139</span>  public static final String LOGGING_LEVEL_KEY = "wattdepot-server.logging.level";<a name="line.139"></a>
+<span class="sourceLineNo">140</span>  /**<a name="line.140"></a>
+<span class="sourceLineNo">141</span>   * Enable timing of Server operations.<a name="line.141"></a>
+<span class="sourceLineNo">142</span>   */<a name="line.142"></a>
+<span class="sourceLineNo">143</span>  public static final String SERVER_TIMING_KEY = "wattdepot-server.enable.timing";<a name="line.143"></a>
+<span class="sourceLineNo">144</span>  /**<a name="line.144"></a>
+<span class="sourceLineNo">145</span>   * The WattDepot implementation class during testing.<a name="line.145"></a>
+<span class="sourceLineNo">146</span>   */<a name="line.146"></a>
+<span class="sourceLineNo">147</span>  public static final String TEST_WATT_DEPOT_IMPL_KEY = "wattdepot-server.test.wattdepot.impl";<a name="line.147"></a>
+<span class="sourceLineNo">148</span>  /**<a name="line.148"></a>
+<span class="sourceLineNo">149</span>   * The wattdepot server port key during testing.<a name="line.149"></a>
+<span class="sourceLineNo">150</span>   */<a name="line.150"></a>
+<span class="sourceLineNo">151</span>  public static final String TEST_PORT_KEY = "wattdepot-server.test.port";<a name="line.151"></a>
+<span class="sourceLineNo">152</span>  /**<a name="line.152"></a>
+<span class="sourceLineNo">153</span>   * Heroku key.<a name="line.153"></a>
+<span class="sourceLineNo">154</span>   */<a name="line.154"></a>
+<span class="sourceLineNo">155</span>  public static final String USE_HEROKU_KEY = "wattdepot-server.heroku";<a name="line.155"></a>
+<span class="sourceLineNo">156</span>  /**<a name="line.156"></a>
+<span class="sourceLineNo">157</span>   * Heroku test key.<a name="line.157"></a>
+<span class="sourceLineNo">158</span>   */<a name="line.158"></a>
+<span class="sourceLineNo">159</span>  public static final String TEST_HEROKU_KEY = "wattdepot-server.test.heroku";<a name="line.159"></a>
+<span class="sourceLineNo">160</span>  /**<a name="line.160"></a>
+<span class="sourceLineNo">161</span>   * The hostname for Heroku.<a name="line.161"></a>
+<span class="sourceLineNo">162</span>   */<a name="line.162"></a>
+<span class="sourceLineNo">163</span>  public static final String HEROKU_HOSTNAME_KEY = "wattdepot-server.heroku.hostname";<a name="line.163"></a>
+<span class="sourceLineNo">164</span>  /**<a name="line.164"></a>
+<span class="sourceLineNo">165</span>   * The heroku database URL.<a name="line.165"></a>
+<span class="sourceLineNo">166</span>   */<a name="line.166"></a>
+<span class="sourceLineNo">167</span>  public static final String HEROKU_DATABASE_URL_KEY = "wattdepot-server.heroku.db.url";<a name="line.167"></a>
+<span class="sourceLineNo">168</span><a name="line.168"></a>
+<span class="sourceLineNo">169</span>  /**<a name="line.169"></a>
+<span class="sourceLineNo">170</span>   * String for false.<a name="line.170"></a>
+<span class="sourceLineNo">171</span>   */<a name="line.171"></a>
+<span class="sourceLineNo">172</span>  public static final String FALSE = "false";<a name="line.172"></a>
+<span class="sourceLineNo">173</span>  /**<a name="line.173"></a>
+<span class="sourceLineNo">174</span>   * String for true.<a name="line.174"></a>
+<span class="sourceLineNo">175</span>   */<a name="line.175"></a>
+<span class="sourceLineNo">176</span>  public static final String TRUE = "true";<a name="line.176"></a>
+<span class="sourceLineNo">177</span><a name="line.177"></a>
+<span class="sourceLineNo">178</span>  /**<a name="line.178"></a>
+<span class="sourceLineNo">179</span>   * String for the beginning of the WattDepotServer extension definitions.<a name="line.179"></a>
+<span class="sourceLineNo">180</span>   */<a name="line.180"></a>
+<span class="sourceLineNo">181</span>  public static final String WATTDEPOT_EXTENSION = "wattdepot-server.extension";<a name="line.181"></a>
+<span class="sourceLineNo">182</span>  /**<a name="line.182"></a>
+<span class="sourceLineNo">183</span>   * Property key that holds all the WattDepotServer extensions defined in the properties file.<a name="line.183"></a>
+<span class="sourceLineNo">184</span>   */<a name="line.184"></a>
+<span class="sourceLineNo">185</span>  public static final String WATTDEPOT_EXTENSIONS = WATTDEPOT_EXTENSION + "s";<a name="line.185"></a>
+<span class="sourceLineNo">186</span><a name="line.186"></a>
+<span class="sourceLineNo">187</span>  /**<a name="line.187"></a>
+<span class="sourceLineNo">188</span>   * Where we store the properties.<a name="line.188"></a>
+<span class="sourceLineNo">189</span>   */<a name="line.189"></a>
+<span class="sourceLineNo">190</span>  private Properties properties;<a name="line.190"></a>
+<span class="sourceLineNo">191</span><a name="line.191"></a>
+<span class="sourceLineNo">192</span>  /**<a name="line.192"></a>
+<span class="sourceLineNo">193</span>   * Creates a new ServerProperties instance using the default filename. Prints<a name="line.193"></a>
+<span class="sourceLineNo">194</span>   * an error to the console if problems occur on loading.<a name="line.194"></a>
+<span class="sourceLineNo">195</span>   *<a name="line.195"></a>
+<span class="sourceLineNo">196</span>   * @throws Exception if errors occur.<a name="line.196"></a>
+<span class="sourceLineNo">197</span>   */<a name="line.197"></a>
+<span class="sourceLineNo">198</span>  public ServerProperties() throws Exception {<a name="line.198"></a>
+<span class="sourceLineNo">199</span>    this(null);<a name="line.199"></a>
+<span class="sourceLineNo">200</span>  }<a name="line.200"></a>
+<span class="sourceLineNo">201</span><a name="line.201"></a>
+<span class="sourceLineNo">202</span>  /**<a name="line.202"></a>
+<span class="sourceLineNo">203</span>   * Creates a new ServerProperties instance loaded from the given filename.<a name="line.203"></a>
+<span class="sourceLineNo">204</span>   * Prints an error to the console if problems occur on loading.<a name="line.204"></a>
+<span class="sourceLineNo">205</span>   *<a name="line.205"></a>
+<span class="sourceLineNo">206</span>   * @param serverSubdir The name of the subdirectory used to store all files<a name="line.206"></a>
+<span class="sourceLineNo">207</span>   *                     for this server.<a name="line.207"></a>
+<span class="sourceLineNo">208</span>   * @throws Exception if errors occur.<a name="line.208"></a>
+<span class="sourceLineNo">209</span>   */<a name="line.209"></a>
+<span class="sourceLineNo">210</span>  public ServerProperties(String serverSubdir) throws Exception {<a name="line.210"></a>
+<span class="sourceLineNo">211</span>    initializeProperties(serverSubdir);<a name="line.211"></a>
+<span class="sourceLineNo">212</span>  }<a name="line.212"></a>
+<span class="sourceLineNo">213</span><a name="line.213"></a>
+<span class="sourceLineNo">214</span>  /**<a name="line.214"></a>
+<span class="sourceLineNo">215</span>   * Sets the properties to their "test" equivalents and updates the system<a name="line.215"></a>
+<span class="sourceLineNo">216</span>   * properties.<a name="line.216"></a>
+<span class="sourceLineNo">217</span>   */<a name="line.217"></a>
+<span class="sourceLineNo">218</span>  public void setTestProperties() {<a name="line.218"></a>
+<span class="sourceLineNo">219</span>    properties.setProperty(PORT_KEY, properties.getProperty(TEST_PORT_KEY));<a name="line.219"></a>
+<span class="sourceLineNo">220</span>    properties.setProperty(WATT_DEPOT_IMPL_KEY, properties.getProperty(TEST_WATT_DEPOT_IMPL_KEY));<a name="line.220"></a>
+<span class="sourceLineNo">221</span>    // turn off logging during testing.<a name="line.221"></a>
+<span class="sourceLineNo">222</span>    properties.setProperty(LOGGING_LEVEL_KEY, "SEVERE");<a name="line.222"></a>
+<span class="sourceLineNo">223</span>    trimProperties();<a name="line.223"></a>
+<span class="sourceLineNo">224</span>    // update the system properties object to reflect these new values.<a name="line.224"></a>
+<span class="sourceLineNo">225</span>    Properties systemProperties = System.getProperties();<a name="line.225"></a>
+<span class="sourceLineNo">226</span>    systemProperties.putAll(properties);<a name="line.226"></a>
+<span class="sourceLineNo">227</span>    System.setProperties(systemProperties);<a name="line.227"></a>
+<span class="sourceLineNo">228</span>  }<a name="line.228"></a>
+<span class="sourceLineNo">229</span><a name="line.229"></a>
+<span class="sourceLineNo">230</span>  /**<a name="line.230"></a>
+<span class="sourceLineNo">231</span>   * Returns a string containing all current properties in alphabetical order.<a name="line.231"></a>
+<span class="sourceLineNo">232</span>   * Properties with the word "password" in their key list "((hidden))" rather<a name="line.232"></a>
+<span class="sourceLineNo">233</span>   * than their actual value for security reasons. This is not super<a name="line.233"></a>
+<span class="sourceLineNo">234</span>   * sophisticated - other properties such as database URLs might benefit from<a name="line.234"></a>
+<span class="sourceLineNo">235</span>   * being hidden too - but it should work for now.<a name="line.235"></a>
+<span class="sourceLineNo">236</span>   *<a name="line.236"></a>
+<span class="sourceLineNo">237</span>   * @return A string with the properties.<a name="line.237"></a>
+<span class="sourceLineNo">238</span>   */<a name="line.238"></a>
+<span class="sourceLineNo">239</span>  public String echoProperties() {<a name="line.239"></a>
+<span class="sourceLineNo">240</span>    String cr = System.getProperty("line.separator");<a name="line.240"></a>
+<span class="sourceLineNo">241</span>    String eq = " = ";<a name="line.241"></a>
+<span class="sourceLineNo">242</span>    String pad = "                ";<a name="line.242"></a>
+<span class="sourceLineNo">243</span>    // Adding them to a treemap has the effect of alphabetizing them.<a name="line.243"></a>
+<span class="sourceLineNo">244</span>    TreeMap&lt;String, String&gt; alphaProps = new TreeMap&lt;String, String&gt;();<a name="line.244"></a>
+<span class="sourceLineNo">245</span>    for (Map.Entry&lt;Object, Object&gt; entry : this.properties.entrySet()) {<a name="line.245"></a>
+<span class="sourceLineNo">246</span>      String propName = entry.getKey().toString();<a name="line.246"></a>
+<span class="sourceLineNo">247</span>      String propValue = entry.getValue().toString();<a name="line.247"></a>
+<span class="sourceLineNo">248</span>      alphaProps.put(propName, propValue);<a name="line.248"></a>
+<span class="sourceLineNo">249</span>    }<a name="line.249"></a>
+<span class="sourceLineNo">250</span>    StringBuffer buff = new StringBuffer(25);<a name="line.250"></a>
+<span class="sourceLineNo">251</span>    buff.append("Server Properties:").append(cr);<a name="line.251"></a>
+<span class="sourceLineNo">252</span>    for (String key : alphaProps.keySet()) {<a name="line.252"></a>
+<span class="sourceLineNo">253</span>      if (key.contains("password") || key.contains("database.url")) {<a name="line.253"></a>
+<span class="sourceLineNo">254</span>        buff.append(pad).append(key).append(eq).append("((hidden))").append(cr);<a name="line.254"></a>
+<span class="sourceLineNo">255</span>      }<a name="line.255"></a>
+<span class="sourceLineNo">256</span>      else {<a name="line.256"></a>
+<span class="sourceLineNo">257</span>        buff.append(pad).append(key).append(eq).append(get(key)).append(cr);<a name="line.257"></a>
 <span class="sourceLineNo">258</span>      }<a name="line.258"></a>
 <span class="sourceLineNo">259</span>    }<a name="line.259"></a>
-<span class="sourceLineNo">260</span>    processDatabaseURL(properties.getProperty(DATABASE_URL));<a name="line.260"></a>
-<span class="sourceLineNo">261</span>    // grab all of the properties in the environment<a name="line.261"></a>
-<span class="sourceLineNo">262</span>    Map&lt;String, String&gt; systemProps = System.getenv();<a name="line.262"></a>
-<span class="sourceLineNo">263</span>    for (Map.Entry&lt;String, String&gt; prop : systemProps.entrySet()) {<a name="line.263"></a>
-<span class="sourceLineNo">264</span>      if (prop.getKey().startsWith(ADMIN_USER_NAME_ENV)) {<a name="line.264"></a>
-<span class="sourceLineNo">265</span>        properties.setProperty(ADMIN_USER_NAME, prop.getValue());<a name="line.265"></a>
-<span class="sourceLineNo">266</span>      }<a name="line.266"></a>
-<span class="sourceLineNo">267</span>      if (prop.getKey().startsWith(ADMIN_USER_PASSWORD_ENV)) {<a name="line.267"></a>
-<span class="sourceLineNo">268</span>        properties.setProperty(ADMIN_USER_PASSWORD, prop.getValue());<a name="line.268"></a>
-<span class="sourceLineNo">269</span>      }<a name="line.269"></a>
-<span class="sourceLineNo">270</span>      if (prop.getKey().startsWith(DB_CONNECTION_URL_ENV)) {<a name="line.270"></a>
-<span class="sourceLineNo">271</span>        processDatabaseURL(prop.getValue());<a name="line.271"></a>
-<span class="sourceLineNo">272</span>      }<a name="line.272"></a>
-<span class="sourceLineNo">273</span>      if (prop.getKey().startsWith("DATABASE_URL")) {<a name="line.273"></a>
-<span class="sourceLineNo">274</span>        processDatabaseURL(prop.getValue());<a name="line.274"></a>
-<span class="sourceLineNo">275</span>      }<a name="line.275"></a>
-<span class="sourceLineNo">276</span>    }<a name="line.276"></a>
-<span class="sourceLineNo">277</span>    if (!properties.containsKey(ADMIN_USER_NAME) || !properties.containsKey(ADMIN_USER_PASSWORD) || !properties.containsKey(DB_CONNECTION_URL)) {<a name="line.277"></a>
-<span class="sourceLineNo">278</span>      StringBuilder sb = new StringBuilder();<a name="line.278"></a>
-<span class="sourceLineNo">279</span>      if (!properties.containsKey(ADMIN_USER_NAME)) {<a name="line.279"></a>
-<span class="sourceLineNo">280</span>        sb.append("WattDepot Admin name not set. ");<a name="line.280"></a>
-<span class="sourceLineNo">281</span>      }<a name="line.281"></a>
-<span class="sourceLineNo">282</span>      if (!properties.containsKey(ADMIN_USER_PASSWORD)) {<a name="line.282"></a>
-<span class="sourceLineNo">283</span>        sb.append("WattDepot Admin password not set. ");<a name="line.283"></a>
-<span class="sourceLineNo">284</span>      }<a name="line.284"></a>
-<span class="sourceLineNo">285</span>      if (!(properties.containsKey(DB_CONNECTION_URL_ENV) || properties.containsKey("DATABASE_URL"))) {<a name="line.285"></a>
-<span class="sourceLineNo">286</span>        sb.append("WattDepot database url not set. ");<a name="line.286"></a>
-<span class="sourceLineNo">287</span>      }<a name="line.287"></a>
-<span class="sourceLineNo">288</span>      throw new SecurityException(sb.toString());<a name="line.288"></a>
-<span class="sourceLineNo">289</span>    }<a name="line.289"></a>
-<span class="sourceLineNo">290</span>    UserInfo.ROOT.setUid(properties.getProperty(ADMIN_USER_NAME));<a name="line.290"></a>
-<span class="sourceLineNo">291</span>    UserInfo.ROOT.setPassword(properties.getProperty(ADMIN_USER_PASSWORD));<a name="line.291"></a>
-<span class="sourceLineNo">292</span>    UserPassword.ROOT.setUid(properties.getProperty(ADMIN_USER_NAME));<a name="line.292"></a>
-<span class="sourceLineNo">293</span>    UserPassword.ROOT.setPassword(properties.getProperty(ADMIN_USER_PASSWORD));<a name="line.293"></a>
-<span class="sourceLineNo">294</span>    String defaultWattDepotImpl = "org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl";<a name="line.294"></a>
-<span class="sourceLineNo">295</span>    // Set default values if not set<a name="line.295"></a>
-<span class="sourceLineNo">296</span>    if (!properties.containsKey(SERVER_HOME_DIR)) {<a name="line.296"></a>
-<span class="sourceLineNo">297</span>      properties.setProperty(SERVER_HOME_DIR, serverHome);<a name="line.297"></a>
-<span class="sourceLineNo">298</span>    }<a name="line.298"></a>
-<span class="sourceLineNo">299</span>    if (!properties.containsKey(WATT_DEPOT_IMPL_KEY)) {<a name="line.299"></a>
-<span class="sourceLineNo">300</span>      properties.setProperty(WATT_DEPOT_IMPL_KEY, defaultWattDepotImpl);<a name="line.300"></a>
-<span class="sourceLineNo">301</span>    }<a name="line.301"></a>
-<span class="sourceLineNo">302</span>    if (!properties.containsKey(HOSTNAME_KEY)) {<a name="line.302"></a>
-<span class="sourceLineNo">303</span>      properties.setProperty(HOSTNAME_KEY, "localhost");<a name="line.303"></a>
-<span class="sourceLineNo">304</span>    }<a name="line.304"></a>
-<span class="sourceLineNo">305</span>    if (!properties.containsKey(PORT_KEY)) {<a name="line.305"></a>
-<span class="sourceLineNo">306</span>      properties.setProperty(PORT_KEY, "8192");<a name="line.306"></a>
-<span class="sourceLineNo">307</span>    }<a name="line.307"></a>
-<span class="sourceLineNo">308</span>    if (!properties.containsKey(DB_CONNECTION_DRIVER)) {<a name="line.308"></a>
-<span class="sourceLineNo">309</span>      properties.setProperty(DB_CONNECTION_DRIVER, "org.postgresql.Driver");<a name="line.309"></a>
-<span class="sourceLineNo">310</span>    }<a name="line.310"></a>
-<span class="sourceLineNo">311</span>    if (!properties.containsKey(DB_CONNECTION_URL)) {<a name="line.311"></a>
-<span class="sourceLineNo">312</span>      properties.setProperty(DB_CONNECTION_URL, "jdbc:postgresql://localhost:5432/wattdepot");<a name="line.312"></a>
-<span class="sourceLineNo">313</span>    }<a name="line.313"></a>
-<span class="sourceLineNo">314</span>    if (!properties.containsKey(DB_SHOW_SQL)) {<a name="line.314"></a>
-<span class="sourceLineNo">315</span>      properties.setProperty(DB_SHOW_SQL, FALSE);<a name="line.315"></a>
-<span class="sourceLineNo">316</span>    }<a name="line.316"></a>
-<span class="sourceLineNo">317</span>    if (!properties.containsKey(DB_TABLE_UPDATE)) {<a name="line.317"></a>
-<span class="sourceLineNo">318</span>      properties.setProperty(DB_TABLE_UPDATE, "update");<a name="line.318"></a>
-<span class="sourceLineNo">319</span>    }<a name="line.319"></a>
-<span class="sourceLineNo">320</span>    if (!properties.containsKey(ENABLE_LOGGING_KEY)) {<a name="line.320"></a>
-<span class="sourceLineNo">321</span>      properties.setProperty(ENABLE_LOGGING_KEY, TRUE);<a name="line.321"></a>
-<span class="sourceLineNo">322</span>    }<a name="line.322"></a>
-<span class="sourceLineNo">323</span>    if (!properties.containsKey(CHECK_SESSIONS)) {<a name="line.323"></a>
-<span class="sourceLineNo">324</span>      properties.setProperty(CHECK_SESSIONS, FALSE);<a name="line.324"></a>
-<span class="sourceLineNo">325</span>    }<a name="line.325"></a>
-<span class="sourceLineNo">326</span>    if (!properties.containsKey(LOGGING_LEVEL_KEY)) {<a name="line.326"></a>
-<span class="sourceLineNo">327</span>      properties.setProperty(LOGGING_LEVEL_KEY, "INFO");<a name="line.327"></a>
-<span class="sourceLineNo">328</span>    }<a name="line.328"></a>
-<span class="sourceLineNo">329</span>    if (!properties.containsKey(CONTEXT_ROOT_KEY)) {<a name="line.329"></a>
-<span class="sourceLineNo">330</span>      properties.setProperty(CONTEXT_ROOT_KEY, "wattdepot");<a name="line.330"></a>
-<span class="sourceLineNo">331</span>    }<a name="line.331"></a>
-<span class="sourceLineNo">332</span>    if (!properties.containsKey(SERVER_TIMING_KEY)) {<a name="line.332"></a>
-<span class="sourceLineNo">333</span>      properties.setProperty(SERVER_TIMING_KEY, FALSE);<a name="line.333"></a>
-<span class="sourceLineNo">334</span>    }<a name="line.334"></a>
-<span class="sourceLineNo">335</span>    if (!properties.containsKey(TEST_PORT_KEY)) {<a name="line.335"></a>
-<span class="sourceLineNo">336</span>      properties.setProperty(TEST_PORT_KEY, "8194");<a name="line.336"></a>
-<span class="sourceLineNo">337</span>    }<a name="line.337"></a>
-<span class="sourceLineNo">338</span>    if (!properties.containsKey(TEST_WATT_DEPOT_IMPL_KEY)) {<a name="line.338"></a>
-<span class="sourceLineNo">339</span>      properties.setProperty(TEST_WATT_DEPOT_IMPL_KEY, defaultWattDepotImpl);<a name="line.339"></a>
-<span class="sourceLineNo">340</span>    }<a name="line.340"></a>
-<span class="sourceLineNo">341</span>    if (!properties.containsKey(USE_HEROKU_KEY)) {<a name="line.341"></a>
-<span class="sourceLineNo">342</span>      properties.setProperty(USE_HEROKU_KEY, FALSE);<a name="line.342"></a>
-<span class="sourceLineNo">343</span>    }<a name="line.343"></a>
-<span class="sourceLineNo">344</span>    if (!properties.containsKey(TEST_HEROKU_KEY)) {<a name="line.344"></a>
-<span class="sourceLineNo">345</span>      properties.setProperty(TEST_HEROKU_KEY, FALSE);<a name="line.345"></a>
-<span class="sourceLineNo">346</span>    }<a name="line.346"></a>
-<span class="sourceLineNo">347</span>    logger.finest(echoProperties());<a name="line.347"></a>
-<span class="sourceLineNo">348</span>    trimProperties(properties);<a name="line.348"></a>
-<span class="sourceLineNo">349</span>    logger.finest(echoProperties());<a name="line.349"></a>
-<span class="sourceLineNo">350</span><a name="line.350"></a>
-<span class="sourceLineNo">351</span>    // get PORT and DATABASE_URL for heroku<a name="line.351"></a>
-<span class="sourceLineNo">352</span>    String webPort = System.getenv("PORT");<a name="line.352"></a>
-<span class="sourceLineNo">353</span>    if (webPort != null &amp;&amp; !webPort.isEmpty()) {<a name="line.353"></a>
-<span class="sourceLineNo">354</span>      properties.setProperty(PORT_KEY, webPort);<a name="line.354"></a>
-<span class="sourceLineNo">355</span>    }<a name="line.355"></a>
-<span class="sourceLineNo">356</span><a name="line.356"></a>
-<span class="sourceLineNo">357</span>    String databaseURL = System.getenv("DATABASE_URL");<a name="line.357"></a>
-<span class="sourceLineNo">358</span>    if (databaseURL != null &amp;&amp; !databaseURL.isEmpty()) {<a name="line.358"></a>
-<span class="sourceLineNo">359</span>      URI dbUri = new URI(databaseURL);<a name="line.359"></a>
-<span class="sourceLineNo">360</span>      String username = dbUri.getUserInfo().split(":")[0];<a name="line.360"></a>
-<span class="sourceLineNo">361</span>      String password = dbUri.getUserInfo().split(":")[1];<a name="line.361"></a>
-<span class="sourceLineNo">362</span>      String dbUrl = "jdbc:postgresql://" + dbUri.getHost() +  dbUri.getPath();<a name="line.362"></a>
-<span class="sourceLineNo">363</span>      properties.setProperty(DB_USER_NAME, username);<a name="line.363"></a>
-<span class="sourceLineNo">364</span>      properties.setProperty(DB_PASSWORD, password);<a name="line.364"></a>
-<span class="sourceLineNo">365</span>      properties.setProperty(DB_CONNECTION_URL, dbUrl);<a name="line.365"></a>
+<span class="sourceLineNo">260</span>    return buff.toString();<a name="line.260"></a>
+<span class="sourceLineNo">261</span>  }<a name="line.261"></a>
+<span class="sourceLineNo">262</span><a name="line.262"></a>
+<span class="sourceLineNo">263</span>  /**<a name="line.263"></a>
+<span class="sourceLineNo">264</span>   * Returns the value of the Server Property specified by the key.<a name="line.264"></a>
+<span class="sourceLineNo">265</span>   *<a name="line.265"></a>
+<span class="sourceLineNo">266</span>   * @param key Should be one of the public static final strings in this class.<a name="line.266"></a>
+<span class="sourceLineNo">267</span>   * @return The value of the key, or null if not found.<a name="line.267"></a>
+<span class="sourceLineNo">268</span>   */<a name="line.268"></a>
+<span class="sourceLineNo">269</span>  public String get(String key) {<a name="line.269"></a>
+<span class="sourceLineNo">270</span>    return this.properties.getProperty(key);<a name="line.270"></a>
+<span class="sourceLineNo">271</span>  }<a name="line.271"></a>
+<span class="sourceLineNo">272</span><a name="line.272"></a>
+<span class="sourceLineNo">273</span>  /**<a name="line.273"></a>
+<span class="sourceLineNo">274</span>   * Returns the instance.<a name="line.274"></a>
+<span class="sourceLineNo">275</span>   *<a name="line.275"></a>
+<span class="sourceLineNo">276</span>   * @param key The key.<a name="line.276"></a>
+<span class="sourceLineNo">277</span>   * @return The Object associated with the key.<a name="line.277"></a>
+<span class="sourceLineNo">278</span>   */<a name="line.278"></a>
+<span class="sourceLineNo">279</span>  public Object getPropertyInstance(Object key) {<a name="line.279"></a>
+<span class="sourceLineNo">280</span>    return this.properties.get(key);<a name="line.280"></a>
+<span class="sourceLineNo">281</span>  }<a name="line.281"></a>
+<span class="sourceLineNo">282</span><a name="line.282"></a>
+<span class="sourceLineNo">283</span>  /**<a name="line.283"></a>
+<span class="sourceLineNo">284</span>   * Sets the given property.<a name="line.284"></a>
+<span class="sourceLineNo">285</span>   *<a name="line.285"></a>
+<span class="sourceLineNo">286</span>   * @param key   the key.<a name="line.286"></a>
+<span class="sourceLineNo">287</span>   * @param value the value<a name="line.287"></a>
+<span class="sourceLineNo">288</span>   */<a name="line.288"></a>
+<span class="sourceLineNo">289</span>  public void set(String key, String value) {<a name="line.289"></a>
+<span class="sourceLineNo">290</span>    this.properties.setProperty(key, value);<a name="line.290"></a>
+<span class="sourceLineNo">291</span>  }<a name="line.291"></a>
+<span class="sourceLineNo">292</span><a name="line.292"></a>
+<span class="sourceLineNo">293</span>  /**<a name="line.293"></a>
+<span class="sourceLineNo">294</span>   * Ensures that the there is no leading or trailing whitespace in the property<a name="line.294"></a>
+<span class="sourceLineNo">295</span>   * values. The fact that we need to do this indicates a bug in Java's<a name="line.295"></a>
+<span class="sourceLineNo">296</span>   * Properties implementation to me.<a name="line.296"></a>
+<span class="sourceLineNo">297</span>   */<a name="line.297"></a>
+<span class="sourceLineNo">298</span>  public void trimProperties() {<a name="line.298"></a>
+<span class="sourceLineNo">299</span>    // Have to do this iteration in a Java 5 compatible manner. no<a name="line.299"></a>
+<span class="sourceLineNo">300</span>    // stringPropertyNames().<a name="line.300"></a>
+<span class="sourceLineNo">301</span>    for (Map.Entry&lt;Object, Object&gt; entry : properties.entrySet()) {<a name="line.301"></a>
+<span class="sourceLineNo">302</span>      String propName = (String) entry.getKey();<a name="line.302"></a>
+<span class="sourceLineNo">303</span>      if (properties.getProperty(propName) != null) {<a name="line.303"></a>
+<span class="sourceLineNo">304</span>        properties.setProperty(propName, properties.getProperty(propName).trim());<a name="line.304"></a>
+<span class="sourceLineNo">305</span>      }<a name="line.305"></a>
+<span class="sourceLineNo">306</span>    }<a name="line.306"></a>
+<span class="sourceLineNo">307</span>  }<a name="line.307"></a>
+<span class="sourceLineNo">308</span><a name="line.308"></a>
+<span class="sourceLineNo">309</span>  /**<a name="line.309"></a>
+<span class="sourceLineNo">310</span>   * Reads in the properties in ~/.wattdepot3/server/wattdepot-server.properties<a name="line.310"></a>
+<span class="sourceLineNo">311</span>   * if this file exists, and provides default values for all properties not<a name="line.311"></a>
+<span class="sourceLineNo">312</span>   * mentioned in this file. Will also add any pre-existing System properties<a name="line.312"></a>
+<span class="sourceLineNo">313</span>   * that start with "wattdepot-server.".<a name="line.313"></a>
+<span class="sourceLineNo">314</span>   *<a name="line.314"></a>
+<span class="sourceLineNo">315</span>   * @param serverSubdir The name of the subdirectory used to store all files<a name="line.315"></a>
+<span class="sourceLineNo">316</span>   *                     for this server.<a name="line.316"></a>
+<span class="sourceLineNo">317</span>   * @throws Exception if errors occur.<a name="line.317"></a>
+<span class="sourceLineNo">318</span>   */<a name="line.318"></a>
+<span class="sourceLineNo">319</span>  private void initializeProperties(String serverSubdir) throws Exception {<a name="line.319"></a>
+<span class="sourceLineNo">320</span>    Logger logger = Logger.getLogger("org.wattdepot.properties");<a name="line.320"></a>
+<span class="sourceLineNo">321</span>    String userHome = UserHome.getHomeString();<a name="line.321"></a>
+<span class="sourceLineNo">322</span>    String wattDepot3Home = userHome + "/.wattdepot3/";<a name="line.322"></a>
+<span class="sourceLineNo">323</span>    String serverHome = null;<a name="line.323"></a>
+<span class="sourceLineNo">324</span>    if (serverSubdir == null) {<a name="line.324"></a>
+<span class="sourceLineNo">325</span>      serverHome = wattDepot3Home + "server";<a name="line.325"></a>
+<span class="sourceLineNo">326</span>    }<a name="line.326"></a>
+<span class="sourceLineNo">327</span>    else {<a name="line.327"></a>
+<span class="sourceLineNo">328</span>      serverHome = wattDepot3Home + serverSubdir;<a name="line.328"></a>
+<span class="sourceLineNo">329</span>    }<a name="line.329"></a>
+<span class="sourceLineNo">330</span>    String propFileName = serverHome + "/wattdepot-server.properties";<a name="line.330"></a>
+<span class="sourceLineNo">331</span>    this.properties = new Properties();<a name="line.331"></a>
+<span class="sourceLineNo">332</span>    // Use properties from file, if they exist.<a name="line.332"></a>
+<span class="sourceLineNo">333</span>    FileInputStream stream = null;<a name="line.333"></a>
+<span class="sourceLineNo">334</span>    try {<a name="line.334"></a>
+<span class="sourceLineNo">335</span>      stream = new FileInputStream(propFileName);<a name="line.335"></a>
+<span class="sourceLineNo">336</span>      properties.load(stream);<a name="line.336"></a>
+<span class="sourceLineNo">337</span>      logger.info("Loading Server properties from: " + propFileName);<a name="line.337"></a>
+<span class="sourceLineNo">338</span><a name="line.338"></a>
+<span class="sourceLineNo">339</span>    }<a name="line.339"></a>
+<span class="sourceLineNo">340</span>    catch (IOException e) {<a name="line.340"></a>
+<span class="sourceLineNo">341</span>      logger.info(propFileName + " not found. Using default server properties.");<a name="line.341"></a>
+<span class="sourceLineNo">342</span>    }<a name="line.342"></a>
+<span class="sourceLineNo">343</span>    finally {<a name="line.343"></a>
+<span class="sourceLineNo">344</span>      if (stream != null) {<a name="line.344"></a>
+<span class="sourceLineNo">345</span>        stream.close();<a name="line.345"></a>
+<span class="sourceLineNo">346</span>      }<a name="line.346"></a>
+<span class="sourceLineNo">347</span>    }<a name="line.347"></a>
+<span class="sourceLineNo">348</span>    processDatabaseURL(properties.getProperty(DATABASE_URL));<a name="line.348"></a>
+<span class="sourceLineNo">349</span>    processWattDepotExtensions(properties);<a name="line.349"></a>
+<span class="sourceLineNo">350</span>//    processDatabaseURL(properties.getProperty(DB_CONNECTION_URL));<a name="line.350"></a>
+<span class="sourceLineNo">351</span>    // grab all of the properties in the environment<a name="line.351"></a>
+<span class="sourceLineNo">352</span>    Map&lt;String, String&gt; systemProps = System.getenv();<a name="line.352"></a>
+<span class="sourceLineNo">353</span>    for (Map.Entry&lt;String, String&gt; prop : systemProps.entrySet()) {<a name="line.353"></a>
+<span class="sourceLineNo">354</span>      if (prop.getKey().startsWith(ADMIN_USER_NAME_ENV)) {<a name="line.354"></a>
+<span class="sourceLineNo">355</span>        properties.setProperty(ADMIN_USER_NAME, prop.getValue());<a name="line.355"></a>
+<span class="sourceLineNo">356</span>      }<a name="line.356"></a>
+<span class="sourceLineNo">357</span>      if (prop.getKey().startsWith(ADMIN_USER_PASSWORD_ENV)) {<a name="line.357"></a>
+<span class="sourceLineNo">358</span>        properties.setProperty(ADMIN_USER_PASSWORD, prop.getValue());<a name="line.358"></a>
+<span class="sourceLineNo">359</span>      }<a name="line.359"></a>
+<span class="sourceLineNo">360</span>      if (prop.getKey().startsWith(DB_CONNECTION_URL_ENV)) {<a name="line.360"></a>
+<span class="sourceLineNo">361</span>        processDatabaseURL(prop.getValue());<a name="line.361"></a>
+<span class="sourceLineNo">362</span>      }<a name="line.362"></a>
+<span class="sourceLineNo">363</span>      if (prop.getKey().startsWith("DATABASE_URL")) {<a name="line.363"></a>
+<span class="sourceLineNo">364</span>        processDatabaseURL(prop.getValue());<a name="line.364"></a>
+<span class="sourceLineNo">365</span>      }<a name="line.365"></a>
 <span class="sourceLineNo">366</span>    }<a name="line.366"></a>
-<span class="sourceLineNo">367</span><a name="line.367"></a>
-<span class="sourceLineNo">368</span>  }<a name="line.368"></a>
-<span class="sourceLineNo">369</span><a name="line.369"></a>
-<span class="sourceLineNo">370</span>  /**<a name="line.370"></a>
-<span class="sourceLineNo">371</span>   * Parses the given database url to set the database username, password, and connection url.<a name="line.371"></a>
-<span class="sourceLineNo">372</span>   * @param url the database url.<a name="line.372"></a>
-<span class="sourceLineNo">373</span>   * @throws java.net.URISyntaxException if there is a problem with the url.<a name="line.373"></a>
-<span class="sourceLineNo">374</span>   */<a name="line.374"></a>
-<span class="sourceLineNo">375</span>  private void processDatabaseURL(String url) throws URISyntaxException {<a name="line.375"></a>
-<span class="sourceLineNo">376</span>    if (url != null &amp;&amp; !url.isEmpty()) {<a name="line.376"></a>
-<span class="sourceLineNo">377</span>      URI dbUri = new URI(url);<a name="line.377"></a>
-<span class="sourceLineNo">378</span>      String username = dbUri.getUserInfo().split(":")[0];<a name="line.378"></a>
-<span class="sourceLineNo">379</span>      String password = dbUri.getUserInfo().split(":")[1];<a name="line.379"></a>
-<span class="sourceLineNo">380</span>      String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ":" + dbUri.getPort() +  dbUri.getPath();<a name="line.380"></a>
-<span class="sourceLineNo">381</span>      properties.setProperty(DB_USER_NAME, username);<a name="line.381"></a>
-<span class="sourceLineNo">382</span>      properties.setProperty(DB_PASSWORD, password);<a name="line.382"></a>
-<span class="sourceLineNo">383</span>      properties.setProperty(DB_CONNECTION_URL, dbUrl);<a name="line.383"></a>
-<span class="sourceLineNo">384</span>    }<a name="line.384"></a>
-<span class="sourceLineNo">385</span><a name="line.385"></a>
-<span class="sourceLineNo">386</span>  }<a name="line.386"></a>
-<span class="sourceLineNo">387</span><a name="line.387"></a>
-<span class="sourceLineNo">388</span>  /**<a name="line.388"></a>
-<span class="sourceLineNo">389</span>   * Returns the fully qualified host name, such as<a name="line.389"></a>
-<span class="sourceLineNo">390</span>   * "http://localhost:9876/wattdepot/". Note, the String will end with "/", so<a name="line.390"></a>
-<span class="sourceLineNo">391</span>   * there is no need to append another if you are constructing a URI.<a name="line.391"></a>
-<span class="sourceLineNo">392</span>   * <a name="line.392"></a>
-<span class="sourceLineNo">393</span>   * @return The fully qualified host name.<a name="line.393"></a>
-<span class="sourceLineNo">394</span>   */<a name="line.394"></a>
-<span class="sourceLineNo">395</span>  public String getFullHost() {<a name="line.395"></a>
-<span class="sourceLineNo">396</span>    // We have a special case for Heroku here, which leaves out the port number.<a name="line.396"></a>
-<span class="sourceLineNo">397</span>    // This is needed<a name="line.397"></a>
-<span class="sourceLineNo">398</span>    // because Heroku apps listen on a private port on localhost, but remote<a name="line.398"></a>
-<span class="sourceLineNo">399</span>    // connections into<a name="line.399"></a>
-<span class="sourceLineNo">400</span>    // the server always come on port 80. This causes problems because the port<a name="line.400"></a>
-<span class="sourceLineNo">401</span>    // number is used<a name="line.401"></a>
-<span class="sourceLineNo">402</span>    // in at least 3 places: by the Server to decide what port number to bind to<a name="line.402"></a>
-<span class="sourceLineNo">403</span>    // (on Heroku this<a name="line.403"></a>
-<span class="sourceLineNo">404</span>    // is the private port # given by the $PORT environment variable), the<a name="line.404"></a>
-<span class="sourceLineNo">405</span>    // announced URL of the<a name="line.405"></a>
-<span class="sourceLineNo">406</span>    // server to the public (always 80 on Heroku, though usually left out of URI<a name="line.406"></a>
-<span class="sourceLineNo">407</span>    // to default to<a name="line.407"></a>
-<span class="sourceLineNo">408</span>    // 80), and the URI of parent resources such as a Source in a SensorData<a name="line.408"></a>
-<span class="sourceLineNo">409</span>    // resource (should be<a name="line.409"></a>
-<span class="sourceLineNo">410</span>    // the public port on Heroku).<a name="line.410"></a>
-<span class="sourceLineNo">411</span>    if (properties.getProperty(USE_HEROKU_KEY).equals(TRUE)<a name="line.411"></a>
-<span class="sourceLineNo">412</span>        || properties.getProperty(TEST_HEROKU_KEY).equals(TRUE)) {<a name="line.412"></a>
-<span class="sourceLineNo">413</span>      return "http://" + get(HOSTNAME_KEY) + ":80/" + get(CONTEXT_ROOT_KEY) + "/";<a name="line.413"></a>
-<span class="sourceLineNo">414</span>    }<a name="line.414"></a>
-<span class="sourceLineNo">415</span>    else {<a name="line.415"></a>
-<span class="sourceLineNo">416</span>      return "http://" + get(HOSTNAME_KEY) + ":" + get(PORT_KEY) + "/" + get(CONTEXT_ROOT_KEY)<a name="line.416"></a>
-<span class="sourceLineNo">417</span>          + "/";<a name="line.417"></a>
-<span class="sourceLineNo">418</span>    }<a name="line.418"></a>
-<span class="sourceLineNo">419</span>  }<a name="line.419"></a>
-<span class="sourceLineNo">420</span><a name="line.420"></a>
-<span class="sourceLineNo">421</span>}<a name="line.421"></a>
+<span class="sourceLineNo">367</span>    if (!properties.containsKey(ADMIN_USER_NAME) || !properties.containsKey(ADMIN_USER_PASSWORD) || !properties.containsKey(DB_CONNECTION_URL)) {<a name="line.367"></a>
+<span class="sourceLineNo">368</span>      StringBuilder sb = new StringBuilder();<a name="line.368"></a>
+<span class="sourceLineNo">369</span>      if (!properties.containsKey(ADMIN_USER_NAME)) {<a name="line.369"></a>
+<span class="sourceLineNo">370</span>        sb.append("WattDepot Admin name not set. ");<a name="line.370"></a>
+<span class="sourceLineNo">371</span>      }<a name="line.371"></a>
+<span class="sourceLineNo">372</span>      if (!properties.containsKey(ADMIN_USER_PASSWORD)) {<a name="line.372"></a>
+<span class="sourceLineNo">373</span>        sb.append("WattDepot Admin password not set. ");<a name="line.373"></a>
+<span class="sourceLineNo">374</span>      }<a name="line.374"></a>
+<span class="sourceLineNo">375</span>      if (!(properties.containsKey(DB_CONNECTION_URL_ENV) || properties.containsKey("DATABASE_URL"))) {<a name="line.375"></a>
+<span class="sourceLineNo">376</span>        sb.append("WattDepot database url not set. ");<a name="line.376"></a>
+<span class="sourceLineNo">377</span>      }<a name="line.377"></a>
+<span class="sourceLineNo">378</span>      throw new SecurityException(sb.toString());<a name="line.378"></a>
+<span class="sourceLineNo">379</span>    }<a name="line.379"></a>
+<span class="sourceLineNo">380</span>    if (properties.containsKey(SSL) &amp;&amp; properties.getProperty(SSL).equals(TRUE)) {<a name="line.380"></a>
+<span class="sourceLineNo">381</span>      StringBuilder sb = new StringBuilder();<a name="line.381"></a>
+<span class="sourceLineNo">382</span>      if (!properties.containsKey(SSL_KEYSTORE_PASSWORD)) {<a name="line.382"></a>
+<span class="sourceLineNo">383</span>        sb.append("Keystore password is not set. ");<a name="line.383"></a>
+<span class="sourceLineNo">384</span>      }<a name="line.384"></a>
+<span class="sourceLineNo">385</span>      if (!properties.containsKey(SSL_KEYSTORE_KEY_PASSWORD)) {<a name="line.385"></a>
+<span class="sourceLineNo">386</span>        sb.append("Keystore key password is not set. ");<a name="line.386"></a>
+<span class="sourceLineNo">387</span>      }<a name="line.387"></a>
+<span class="sourceLineNo">388</span>      if (sb.length() != 0) {<a name="line.388"></a>
+<span class="sourceLineNo">389</span>        throw new SecurityException(sb.toString());<a name="line.389"></a>
+<span class="sourceLineNo">390</span>      }<a name="line.390"></a>
+<span class="sourceLineNo">391</span>    }<a name="line.391"></a>
+<span class="sourceLineNo">392</span><a name="line.392"></a>
+<span class="sourceLineNo">393</span>    UserInfo.ROOT.setUid(properties.getProperty(ADMIN_USER_NAME));<a name="line.393"></a>
+<span class="sourceLineNo">394</span>    UserInfo.ROOT.setPassword(properties.getProperty(ADMIN_USER_PASSWORD));<a name="line.394"></a>
+<span class="sourceLineNo">395</span>    UserPassword.ROOT.setUid(properties.getProperty(ADMIN_USER_NAME));<a name="line.395"></a>
+<span class="sourceLineNo">396</span>    UserPassword.ROOT.setPassword(properties.getProperty(ADMIN_USER_PASSWORD));<a name="line.396"></a>
+<span class="sourceLineNo">397</span>    String defaultWattDepotImpl = "org.wattdepot.server.depository.impl.hibernate.WattDepotPersistenceImpl";<a name="line.397"></a>
+<span class="sourceLineNo">398</span>    // Set default values if not set<a name="line.398"></a>
+<span class="sourceLineNo">399</span>    if (!properties.containsKey(SERVER_HOME_DIR)) {<a name="line.399"></a>
+<span class="sourceLineNo">400</span>      properties.setProperty(SERVER_HOME_DIR, serverHome);<a name="line.400"></a>
+<span class="sourceLineNo">401</span>    }<a name="line.401"></a>
+<span class="sourceLineNo">402</span>    if (!properties.containsKey(WATT_DEPOT_IMPL_KEY)) {<a name="line.402"></a>
+<span class="sourceLineNo">403</span>      properties.setProperty(WATT_DEPOT_IMPL_KEY, defaultWattDepotImpl);<a name="line.403"></a>
+<span class="sourceLineNo">404</span>    }<a name="line.404"></a>
+<span class="sourceLineNo">405</span>    if (!properties.containsKey(HOSTNAME_KEY)) {<a name="line.405"></a>
+<span class="sourceLineNo">406</span>      properties.setProperty(HOSTNAME_KEY, "localhost");<a name="line.406"></a>
+<span class="sourceLineNo">407</span>    }<a name="line.407"></a>
+<span class="sourceLineNo">408</span>    if (!properties.containsKey(PORT_KEY)) {<a name="line.408"></a>
+<span class="sourceLineNo">409</span>      properties.setProperty(PORT_KEY, "8192");<a name="line.409"></a>
+<span class="sourceLineNo">410</span>    }<a name="line.410"></a>
+<span class="sourceLineNo">411</span>    if (!properties.containsKey(SSL)) {<a name="line.411"></a>
+<span class="sourceLineNo">412</span>      properties.setProperty(SSL, FALSE);<a name="line.412"></a>
+<span class="sourceLineNo">413</span>    }<a name="line.413"></a>
+<span class="sourceLineNo">414</span>    if (!properties.containsKey(SSL_KEYSTORE_PATH)) {<a name="line.414"></a>
+<span class="sourceLineNo">415</span>      properties.setProperty(SSL_KEYSTORE_PATH, serverHome + "/wattdepot.jks");<a name="line.415"></a>
+<span class="sourceLineNo">416</span>    }<a name="line.416"></a>
+<span class="sourceLineNo">417</span>    if (!properties.containsKey(SSL_KEYSTORE_TYPE)) {<a name="line.417"></a>
+<span class="sourceLineNo">418</span>      properties.setProperty(SSL_KEYSTORE_TYPE, "JKS");<a name="line.418"></a>
+<span class="sourceLineNo">419</span>    }<a name="line.419"></a>
+<span class="sourceLineNo">420</span>    if (!properties.containsKey(DB_CONNECTION_DRIVER)) {<a name="line.420"></a>
+<span class="sourceLineNo">421</span>      properties.setProperty(DB_CONNECTION_DRIVER, "org.postgresql.Driver");<a name="line.421"></a>
+<span class="sourceLineNo">422</span>    }<a name="line.422"></a>
+<span class="sourceLineNo">423</span>    if (!properties.containsKey(DB_CONNECTION_URL)) {<a name="line.423"></a>
+<span class="sourceLineNo">424</span>      properties.setProperty(DB_CONNECTION_URL, "jdbc:postgresql://localhost:5432/wattdepot");<a name="line.424"></a>
+<span class="sourceLineNo">425</span>    }<a name="line.425"></a>
+<span class="sourceLineNo">426</span>    if (!properties.containsKey(DB_SHOW_SQL)) {<a name="line.426"></a>
+<span class="sourceLineNo">427</span>      properties.setProperty(DB_SHOW_SQL, FALSE);<a name="line.427"></a>
+<span class="sourceLineNo">428</span>    }<a name="line.428"></a>
+<span class="sourceLineNo">429</span>    if (!properties.containsKey(DB_TABLE_UPDATE)) {<a name="line.429"></a>
+<span class="sourceLineNo">430</span>      properties.setProperty(DB_TABLE_UPDATE, "update");<a name="line.430"></a>
+<span class="sourceLineNo">431</span>    }<a name="line.431"></a>
+<span class="sourceLineNo">432</span>    if (!properties.containsKey(ENABLE_LOGGING_KEY)) {<a name="line.432"></a>
+<span class="sourceLineNo">433</span>      properties.setProperty(ENABLE_LOGGING_KEY, TRUE);<a name="line.433"></a>
+<span class="sourceLineNo">434</span>    }<a name="line.434"></a>
+<span class="sourceLineNo">435</span>    if (!properties.containsKey(CHECK_SESSIONS)) {<a name="line.435"></a>
+<span class="sourceLineNo">436</span>      properties.setProperty(CHECK_SESSIONS, FALSE);<a name="line.436"></a>
+<span class="sourceLineNo">437</span>    }<a name="line.437"></a>
+<span class="sourceLineNo">438</span>    if (!properties.containsKey(LOGGING_LEVEL_KEY)) {<a name="line.438"></a>
+<span class="sourceLineNo">439</span>      properties.setProperty(LOGGING_LEVEL_KEY, "INFO");<a name="line.439"></a>
+<span class="sourceLineNo">440</span>    }<a name="line.440"></a>
+<span class="sourceLineNo">441</span>    if (!properties.containsKey(CONTEXT_ROOT_KEY)) {<a name="line.441"></a>
+<span class="sourceLineNo">442</span>      properties.setProperty(CONTEXT_ROOT_KEY, "wattdepot");<a name="line.442"></a>
+<span class="sourceLineNo">443</span>    }<a name="line.443"></a>
+<span class="sourceLineNo">444</span>    if (!properties.containsKey(SERVER_TIMING_KEY)) {<a name="line.444"></a>
+<span class="sourceLineNo">445</span>      properties.setProperty(SERVER_TIMING_KEY, FALSE);<a name="line.445"></a>
+<span class="sourceLineNo">446</span>    }<a name="line.446"></a>
+<span class="sourceLineNo">447</span>    if (!properties.containsKey(TEST_PORT_KEY)) {<a name="line.447"></a>
+<span class="sourceLineNo">448</span>      properties.setProperty(TEST_PORT_KEY, "8194");<a name="line.448"></a>
+<span class="sourceLineNo">449</span>    }<a name="line.449"></a>
+<span class="sourceLineNo">450</span>    if (!properties.containsKey(TEST_WATT_DEPOT_IMPL_KEY)) {<a name="line.450"></a>
+<span class="sourceLineNo">451</span>      properties.setProperty(TEST_WATT_DEPOT_IMPL_KEY, defaultWattDepotImpl);<a name="line.451"></a>
+<span class="sourceLineNo">452</span>    }<a name="line.452"></a>
+<span class="sourceLineNo">453</span>    if (!properties.containsKey(USE_HEROKU_KEY)) {<a name="line.453"></a>
+<span class="sourceLineNo">454</span>      properties.setProperty(USE_HEROKU_KEY, FALSE);<a name="line.454"></a>
+<span class="sourceLineNo">455</span>    }<a name="line.455"></a>
+<span class="sourceLineNo">456</span>    if (!properties.containsKey(TEST_HEROKU_KEY)) {<a name="line.456"></a>
+<span class="sourceLineNo">457</span>      properties.setProperty(TEST_HEROKU_KEY, FALSE);<a name="line.457"></a>
+<span class="sourceLineNo">458</span>    }<a name="line.458"></a>
+<span class="sourceLineNo">459</span>    logger.finest(echoProperties());<a name="line.459"></a>
+<span class="sourceLineNo">460</span>    trimProperties();<a name="line.460"></a>
+<span class="sourceLineNo">461</span>    logger.finest(echoProperties());<a name="line.461"></a>
+<span class="sourceLineNo">462</span><a name="line.462"></a>
+<span class="sourceLineNo">463</span>    // get PORT and DATABASE_URL for heroku<a name="line.463"></a>
+<span class="sourceLineNo">464</span>    String webPort = System.getenv("PORT");<a name="line.464"></a>
+<span class="sourceLineNo">465</span>    if (webPort != null &amp;&amp; !webPort.isEmpty()) {<a name="line.465"></a>
+<span class="sourceLineNo">466</span>      properties.setProperty(PORT_KEY, webPort);<a name="line.466"></a>
+<span class="sourceLineNo">467</span>    }<a name="line.467"></a>
+<span class="sourceLineNo">468</span><a name="line.468"></a>
+<span class="sourceLineNo">469</span>    String databaseURL = System.getenv("DATABASE_URL");<a name="line.469"></a>
+<span class="sourceLineNo">470</span>    if (databaseURL != null &amp;&amp; !databaseURL.isEmpty()) {<a name="line.470"></a>
+<span class="sourceLineNo">471</span>      URI dbUri = new URI(databaseURL);<a name="line.471"></a>
+<span class="sourceLineNo">472</span>      String username = dbUri.getUserInfo().split(":")[0];<a name="line.472"></a>
+<span class="sourceLineNo">473</span>      String password = dbUri.getUserInfo().split(":")[1];<a name="line.473"></a>
+<span class="sourceLineNo">474</span>      String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + dbUri.getPath();<a name="line.474"></a>
+<span class="sourceLineNo">475</span>      properties.setProperty(DB_USER_NAME, username);<a name="line.475"></a>
+<span class="sourceLineNo">476</span>      properties.setProperty(DB_PASSWORD, password);<a name="line.476"></a>
+<span class="sourceLineNo">477</span>      properties.setProperty(DB_CONNECTION_URL, dbUrl);<a name="line.477"></a>
+<span class="sourceLineNo">478</span>    }<a name="line.478"></a>
+<span class="sourceLineNo">479</span>//    logger.severe(echoProperties());<a name="line.479"></a>
+<span class="sourceLineNo">480</span>  }<a name="line.480"></a>
+<span class="sourceLineNo">481</span><a name="line.481"></a>
+<span class="sourceLineNo">482</span>  /**<a name="line.482"></a>
+<span class="sourceLineNo">483</span>   * Consolidates all the WattDepotServer extensions.<a name="line.483"></a>
+<span class="sourceLineNo">484</span>   *<a name="line.484"></a>
+<span class="sourceLineNo">485</span>   * @param properties The ServerProperties.<a name="line.485"></a>
+<span class="sourceLineNo">486</span>   */<a name="line.486"></a>
+<span class="sourceLineNo">487</span>  private void processWattDepotExtensions(Properties properties) {<a name="line.487"></a>
+<span class="sourceLineNo">488</span>    ArrayList&lt;WattDepotExtension&gt; extensions = new ArrayList&lt;WattDepotExtension&gt;();<a name="line.488"></a>
+<span class="sourceLineNo">489</span>    for (Object key : properties.keySet()) {<a name="line.489"></a>
+<span class="sourceLineNo">490</span>      if (key.toString().startsWith(WATTDEPOT_EXTENSION)) {<a name="line.490"></a>
+<span class="sourceLineNo">491</span>        String extensionClass = properties.getProperty(key.toString());<a name="line.491"></a>
+<span class="sourceLineNo">492</span>        try {<a name="line.492"></a>
+<span class="sourceLineNo">493</span>          WattDepotExtension extension = (WattDepotExtension) Class.forName(extensionClass).newInstance();<a name="line.493"></a>
+<span class="sourceLineNo">494</span>          extensions.add(extension);<a name="line.494"></a>
+<span class="sourceLineNo">495</span>        }<a name="line.495"></a>
+<span class="sourceLineNo">496</span>        catch (InstantiationException e) {<a name="line.496"></a>
+<span class="sourceLineNo">497</span>          e.printStackTrace();<a name="line.497"></a>
+<span class="sourceLineNo">498</span>        }<a name="line.498"></a>
+<span class="sourceLineNo">499</span>        catch (IllegalAccessException e) {<a name="line.499"></a>
+<span class="sourceLineNo">500</span>          e.printStackTrace();<a name="line.500"></a>
+<span class="sourceLineNo">501</span>        }<a name="line.501"></a>
+<span class="sourceLineNo">502</span>        catch (ClassNotFoundException e) {<a name="line.502"></a>
+<span class="sourceLineNo">503</span>          e.printStackTrace();<a name="line.503"></a>
+<span class="sourceLineNo">504</span>        }<a name="line.504"></a>
+<span class="sourceLineNo">505</span>      }<a name="line.505"></a>
+<span class="sourceLineNo">506</span>    }<a name="line.506"></a>
+<span class="sourceLineNo">507</span>    properties.put(WATTDEPOT_EXTENSIONS, extensions);<a name="line.507"></a>
+<span class="sourceLineNo">508</span>  }<a name="line.508"></a>
+<span class="sourceLineNo">509</span><a name="line.509"></a>
+<span class="sourceLineNo">510</span>  /**<a name="line.510"></a>
+<span class="sourceLineNo">511</span>   * Parses the given database url to set the database username, password, and connection url.<a name="line.511"></a>
+<span class="sourceLineNo">512</span>   *<a name="line.512"></a>
+<span class="sourceLineNo">513</span>   * @param url the database url.<a name="line.513"></a>
+<span class="sourceLineNo">514</span>   * @throws java.net.URISyntaxException if there is a problem with the url.<a name="line.514"></a>
+<span class="sourceLineNo">515</span>   */<a name="line.515"></a>
+<span class="sourceLineNo">516</span>  private void processDatabaseURL(String url) throws URISyntaxException {<a name="line.516"></a>
+<span class="sourceLineNo">517</span>    if (url != null &amp;&amp; !url.isEmpty()) {<a name="line.517"></a>
+<span class="sourceLineNo">518</span>      URI dbUri = new URI(url);<a name="line.518"></a>
+<span class="sourceLineNo">519</span>      if (dbUri.getUserInfo() != null &amp;&amp; dbUri.getUserInfo().indexOf(":") != -1) {<a name="line.519"></a>
+<span class="sourceLineNo">520</span>        String username = dbUri.getUserInfo().split(":")[0];<a name="line.520"></a>
+<span class="sourceLineNo">521</span>        String password = dbUri.getUserInfo().split(":")[1];<a name="line.521"></a>
+<span class="sourceLineNo">522</span>        properties.setProperty(DB_USER_NAME, username);<a name="line.522"></a>
+<span class="sourceLineNo">523</span>        properties.setProperty(DB_PASSWORD, password);<a name="line.523"></a>
+<span class="sourceLineNo">524</span>      }<a name="line.524"></a>
+<span class="sourceLineNo">525</span>      String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ":" + dbUri.getPort() + dbUri.getPath();<a name="line.525"></a>
+<span class="sourceLineNo">526</span>      properties.setProperty(DB_CONNECTION_URL, dbUrl);<a name="line.526"></a>
+<span class="sourceLineNo">527</span>    }<a name="line.527"></a>
+<span class="sourceLineNo">528</span><a name="line.528"></a>
+<span class="sourceLineNo">529</span>  }<a name="line.529"></a>
+<span class="sourceLineNo">530</span><a name="line.530"></a>
+<span class="sourceLineNo">531</span>  /**<a name="line.531"></a>
+<span class="sourceLineNo">532</span>   * Returns the fully qualified host name, such as<a name="line.532"></a>
+<span class="sourceLineNo">533</span>   * "http://localhost:9876/wattdepot/". Note, the String will end with "/", so<a name="line.533"></a>
+<span class="sourceLineNo">534</span>   * there is no need to append another if you are constructing a URI.<a name="line.534"></a>
+<span class="sourceLineNo">535</span>   *<a name="line.535"></a>
+<span class="sourceLineNo">536</span>   * @return The fully qualified host name.<a name="line.536"></a>
+<span class="sourceLineNo">537</span>   */<a name="line.537"></a>
+<span class="sourceLineNo">538</span>  public String getFullHost() {<a name="line.538"></a>
+<span class="sourceLineNo">539</span>    // We have a special case for Heroku here, which leaves out the port number.<a name="line.539"></a>
+<span class="sourceLineNo">540</span>    // This is needed<a name="line.540"></a>
+<span class="sourceLineNo">541</span>    // because Heroku apps listen on a private port on localhost, but remote<a name="line.541"></a>
+<span class="sourceLineNo">542</span>    // connections into<a name="line.542"></a>
+<span class="sourceLineNo">543</span>    // the server always come on port 80. This causes problems because the port<a name="line.543"></a>
+<span class="sourceLineNo">544</span>    // number is used<a name="line.544"></a>
+<span class="sourceLineNo">545</span>    // in at least 3 places: by the Server to decide what port number to bind to<a name="line.545"></a>
+<span class="sourceLineNo">546</span>    // (on Heroku this<a name="line.546"></a>
+<span class="sourceLineNo">547</span>    // is the private port # given by the $PORT environment variable), the<a name="line.547"></a>
+<span class="sourceLineNo">548</span>    // announced URL of the<a name="line.548"></a>
+<span class="sourceLineNo">549</span>    // server to the public (always 80 on Heroku, though usually left out of URI<a name="line.549"></a>
+<span class="sourceLineNo">550</span>    // to default to<a name="line.550"></a>
+<span class="sourceLineNo">551</span>    // 80), and the URI of parent resources such as a Source in a SensorData<a name="line.551"></a>
+<span class="sourceLineNo">552</span>    // resource (should be<a name="line.552"></a>
+<span class="sourceLineNo">553</span>    // the public port on Heroku).<a name="line.553"></a>
+<span class="sourceLineNo">554</span>    if (properties.getProperty(USE_HEROKU_KEY).equals(TRUE)<a name="line.554"></a>
+<span class="sourceLineNo">555</span>        || properties.getProperty(TEST_HEROKU_KEY).equals(TRUE)) {<a name="line.555"></a>
+<span class="sourceLineNo">556</span>      return "http://" + get(HOSTNAME_KEY) + ":80/" + get(CONTEXT_ROOT_KEY) + "/";<a name="line.556"></a>
+<span class="sourceLineNo">557</span>    }<a name="line.557"></a>
+<span class="sourceLineNo">558</span>    else {<a name="line.558"></a>
+<span class="sourceLineNo">559</span>      return "http://" + get(HOSTNAME_KEY) + ":" + get(PORT_KEY) + "/" + get(CONTEXT_ROOT_KEY)<a name="line.559"></a>
+<span class="sourceLineNo">560</span>          + "/";<a name="line.560"></a>
+<span class="sourceLineNo">561</span>    }<a name="line.561"></a>
+<span class="sourceLineNo">562</span>  }<a name="line.562"></a>
+<span class="sourceLineNo">563</span><a name="line.563"></a>
+<span class="sourceLineNo">564</span>}<a name="line.564"></a>
 
 
 

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>WattDepotAdminClient.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.client.http.api</a> &gt; <span class="el_source">WattDepotAdminClient.java</span></div><h1>WattDepotAdminClient.java</h1><pre class="source lang-java linenums">/**
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>WattDepotAdminClient.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.source.html" class="el_package">org.wattdepot.client.http.api</a> &gt; <span class="el_source">WattDepotAdminClient.java</span></div><h1>WattDepotAdminClient.java</h1><pre class="source lang-java linenums">/**
  * WattDepotAdminClient.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
@@ -84,11 +84,11 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
     try {
 <span class="fc" id="L85">      resource.remove();</span>
     }
-<span class="nc" id="L87">    catch (ResourceException re) {</span>
-<span class="nc" id="L88">      throw new IdNotFoundException(id + &quot; is not a defined Organization.&quot;);</span>
+<span class="fc" id="L87">    catch (ResourceException re) {</span>
+<span class="fc" id="L88">      throw new IdNotFoundException(id + &quot; is not a defined Organization.&quot;);</span>
     }
     finally {
-<span class="pc" id="L91">      client.release();</span>
+<span class="fc" id="L91">      client.release();</span>
 <span class="fc" id="L92">    }</span>
 <span class="fc" id="L93">  }</span>
 
@@ -281,19 +281,19 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    */
   @Override
   public UserPassword getUserPassword(String id, String orgId) throws IdNotFoundException {
-<span class="nc" id="L284">    ClientResource client = makeClient(orgId + &quot;/&quot; + Labels.USER_PASSWORD + &quot;/&quot; + id);</span>
-<span class="nc" id="L285">    UserPasswordResource resource = client.wrap(UserPasswordResource.class);</span>
-<span class="nc" id="L286">    UserPassword ret = null;</span>
+<span class="fc" id="L284">    ClientResource client = makeClient(orgId + &quot;/&quot; + Labels.USER_PASSWORD + &quot;/&quot; + id);</span>
+<span class="fc" id="L285">    UserPasswordResource resource = client.wrap(UserPasswordResource.class);</span>
+<span class="fc" id="L286">    UserPassword ret = null;</span>
     try {
-<span class="nc" id="L288">      ret = resource.retrieve();</span>
+<span class="fc" id="L288">      ret = resource.retrieve();</span>
     }
 <span class="nc" id="L290">    catch (ResourceException re) {</span>
 <span class="nc" id="L291">      throw new IdNotFoundException(id + &quot; is not a defined UserPassword.&quot;);</span>
     }
     finally {
-<span class="nc" id="L294">      client.release();</span>
-<span class="nc" id="L295">    }</span>
-<span class="nc" id="L296">    return ret;</span>
+<span class="pc" id="L294">      client.release();</span>
+<span class="fc" id="L295">    }</span>
+<span class="fc" id="L296">    return ret;</span>
   }
 
   /* (non-Javadoc)
@@ -301,18 +301,18 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
    */
   @Override
   public void updateUserPassword(UserPassword password) throws IdNotFoundException {
-<span class="nc" id="L304">    ClientResource client = makeClient(password.getOrganizationId() + &quot;/&quot; + Labels.USER_PASSWORD + &quot;/&quot;);</span>
-<span class="nc" id="L305">    UserPasswordResource resource = client.wrap(UserPasswordResource.class);</span>
+<span class="fc" id="L304">    ClientResource client = makeClient(password.getOrganizationId() + &quot;/&quot; + Labels.USER_PASSWORD + &quot;/&quot; + password.getUid());</span>
+<span class="fc" id="L305">    UserPasswordResource resource = client.wrap(UserPasswordResource.class);</span>
     try {
-<span class="nc" id="L307">      resource.update(password);</span>
+<span class="fc" id="L307">      resource.update(password);</span>
     }
 <span class="nc" id="L309">    catch (ResourceException re) {</span>
 <span class="nc" id="L310">      throw new IdNotFoundException(password.getUid() + &quot; is not a defined UserPassword.&quot;);</span>
     }
     finally {
-<span class="nc" id="L313">      client.release();</span>
-<span class="nc" id="L314">    }</span>
-<span class="nc" id="L315">  }</span>
+<span class="pc" id="L313">      client.release();</span>
+<span class="fc" id="L314">    }</span>
+<span class="fc" id="L315">  }</span>
 
   /* (non-Javadoc)
    * @see org.wattdepot.client.WattDepotAdminInterface#isDefinedOrganization(java.lang.String)
@@ -343,4 +343,4 @@ public class WattDepotAdminClient extends WattDepotClient implements WattDepotAd
   }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

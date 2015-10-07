@@ -79,12 +79,12 @@ public class DepositorySensorContribution {
    */
   @Override
   public int hashCode() {
-<span class="nc" id="L82">    final int prime = 31;</span>
-<span class="nc" id="L83">    int result = 1;</span>
-<span class="nc bnc" id="L84" title="All 2 branches missed.">    result = prime * result + ((depository == null) ? 0 : depository.hashCode());</span>
-<span class="nc bnc" id="L85" title="All 2 branches missed.">    result = prime * result + ((pk == null) ? 0 : pk.hashCode());</span>
-<span class="nc bnc" id="L86" title="All 2 branches missed.">    result = prime * result + ((sensor == null) ? 0 : sensor.hashCode());</span>
-<span class="nc" id="L87">    return result;</span>
+<span class="fc" id="L82">    final int prime = 31;</span>
+<span class="fc" id="L83">    int result = 1;</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">    result = prime * result + ((depository == null) ? 0 : depository.hashCode());</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">    result = prime * result + ((pk == null) ? 0 : pk.hashCode());</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">    result = prime * result + ((sensor == null) ? 0 : sensor.hashCode());</span>
+<span class="fc" id="L87">    return result;</span>
   }
 
   /*
@@ -94,41 +94,41 @@ public class DepositorySensorContribution {
    */
   @Override
   public boolean equals(Object obj) {
-<span class="nc bnc" id="L97" title="All 2 branches missed.">    if (this == obj) {</span>
-<span class="nc" id="L98">      return true;</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">    if (this == obj) {</span>
+<span class="fc" id="L98">      return true;</span>
     }
-<span class="nc bnc" id="L100" title="All 2 branches missed.">    if (obj == null) {</span>
-<span class="nc" id="L101">      return false;</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">    if (obj == null) {</span>
+<span class="fc" id="L101">      return false;</span>
     }
-<span class="nc bnc" id="L103" title="All 2 branches missed.">    if (getClass() != obj.getClass()) {</span>
-<span class="nc" id="L104">      return false;</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">    if (getClass() != obj.getClass()) {</span>
+<span class="fc" id="L104">      return false;</span>
     }
-<span class="nc" id="L106">    DepositorySensorContribution other = (DepositorySensorContribution) obj;</span>
-<span class="nc bnc" id="L107" title="All 2 branches missed.">    if (depository == null) {</span>
-<span class="nc bnc" id="L108" title="All 2 branches missed.">      if (other.depository != null) {</span>
-<span class="nc" id="L109">        return false;</span>
+<span class="fc" id="L106">    DepositorySensorContribution other = (DepositorySensorContribution) obj;</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">    if (depository == null) {</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">      if (other.depository != null) {</span>
+<span class="fc" id="L109">        return false;</span>
       }
     }
-<span class="nc bnc" id="L112" title="All 2 branches missed.">    else if (!depository.equals(other.depository)) {</span>
-<span class="nc" id="L113">      return false;</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">    else if (!depository.equals(other.depository)) {</span>
+<span class="fc" id="L113">      return false;</span>
     }
-<span class="nc bnc" id="L115" title="All 2 branches missed.">    if (pk == null) {</span>
-<span class="nc bnc" id="L116" title="All 2 branches missed.">      if (other.pk != null) {</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">    if (pk == null) {</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">      if (other.pk != null) {</span>
 <span class="nc" id="L117">        return false;</span>
       }
     }
 <span class="nc bnc" id="L120" title="All 2 branches missed.">    else if (!pk.equals(other.pk)) {</span>
 <span class="nc" id="L121">      return false;</span>
     }
-<span class="nc bnc" id="L123" title="All 2 branches missed.">    if (sensor == null) {</span>
-<span class="nc bnc" id="L124" title="All 2 branches missed.">      if (other.sensor != null) {</span>
-<span class="nc" id="L125">        return false;</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">    if (sensor == null) {</span>
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">      if (other.sensor != null) {</span>
+<span class="fc" id="L125">        return false;</span>
       }
     }
-<span class="nc bnc" id="L128" title="All 2 branches missed.">    else if (!sensor.equals(other.sensor)) {</span>
-<span class="nc" id="L129">      return false;</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">    else if (!sensor.equals(other.sensor)) {</span>
+<span class="fc" id="L129">      return false;</span>
     }
-<span class="nc" id="L131">    return true;</span>
+<span class="fc" id="L131">    return true;</span>
   }
 
   /**
@@ -149,7 +149,7 @@ public class DepositorySensorContribution {
    * @return the depository
    */
   public DepositoryImpl getDepository() {
-<span class="nc" id="L152">    return depository;</span>
+<span class="fc" id="L152">    return depository;</span>
   }
 
   /**
@@ -166,7 +166,7 @@ public class DepositorySensorContribution {
    */
   @Override
   public String toString() {
-<span class="nc" id="L169">    return &quot;DepositorySensorContribution [pk=&quot; + pk + &quot;, sensor=&quot; + sensor + &quot;, depository=&quot;</span>
+<span class="fc" id="L169">    return &quot;DepositorySensorContribution [pk=&quot; + pk + &quot;, sensor=&quot; + sensor + &quot;, depository=&quot;</span>
         + depository + &quot;]&quot;;
   }
 

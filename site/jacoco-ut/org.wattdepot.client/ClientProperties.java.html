@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ClientProperties.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.client</a> &gt; <span class="el_source">ClientProperties.java</span></div><h1>ClientProperties.java</h1><pre class="source lang-java linenums">/**
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>ClientProperties.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.source.html" class="el_package">org.wattdepot.client</a> &gt; <span class="el_source">ClientProperties.java</span></div><h1>ClientProperties.java</h1><pre class="source lang-java linenums">/**
  * ClientProperties.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
@@ -191,11 +191,11 @@ public class ClientProperties {
     // grab all of the properties in the environment
 <span class="fc" id="L192">    Map&lt;String, String&gt; systemProps = System.getenv();</span>
 <span class="fc bfc" id="L193" title="All 2 branches covered.">    for (Map.Entry&lt;String, String&gt; prop : systemProps.entrySet()) {</span>
-<span class="fc bfc" id="L194" title="All 2 branches covered.">      if (prop.getKey().startsWith(ServerProperties.ADMIN_USER_NAME_ENV)) {</span>
-<span class="fc" id="L195">        properties.setProperty(USER_NAME, prop.getValue());</span>
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">      if (prop.getKey().startsWith(ServerProperties.ADMIN_USER_NAME_ENV)) {</span>
+<span class="nc" id="L195">        properties.setProperty(USER_NAME, prop.getValue());</span>
       }
-<span class="fc bfc" id="L197" title="All 2 branches covered.">      if (prop.getKey().startsWith(ServerProperties.ADMIN_USER_PASSWORD_ENV)) {</span>
-<span class="fc" id="L198">        properties.setProperty(USER_PASSWORD, prop.getValue());</span>
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">      if (prop.getKey().startsWith(ServerProperties.ADMIN_USER_PASSWORD_ENV)) {</span>
+<span class="nc" id="L198">        properties.setProperty(USER_PASSWORD, prop.getValue());</span>
       }
 <span class="fc" id="L200">    }</span>
 <span class="fc" id="L201">    addClientSystemProperties(this.properties);</span>
@@ -239,4 +239,4 @@ public class ClientProperties {
 <span class="fc" id="L239">  }</span>
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

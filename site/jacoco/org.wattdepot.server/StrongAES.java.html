@@ -115,26 +115,15 @@ public class StrongAES {
   /**
    * @param cipherText the encrypted string.
    * @return the decrypted string.
+   * @throws java.security.InvalidKeyException if there is a problem.
+   * @throws javax.crypto.BadPaddingException if there is a problem.
+   * @throws javax.crypto.IllegalBlockSizeException if there is a problem.
    */
-  public String decrypt(String cipherText) {
-<span class="fc" id="L120">    String plainText = null;</span>
-    try {
-<span class="fc" id="L122">      this.cipher.init(Cipher.DECRYPT_MODE, this.key);</span>
-<span class="fc" id="L123">      plainText = new String(cipher.doFinal(Base64.decodeBase64(cipherText)));</span>
-    }
-<span class="nc" id="L125">    catch (InvalidKeyException e) { // NOPMD</span>
-      // not sure what to do.
-<span class="nc" id="L127">      e.printStackTrace();</span>
-    }
-<span class="nc" id="L129">    catch (IllegalBlockSizeException e) {</span>
-      // TODO Auto-generated catch block
-<span class="nc" id="L131">      e.printStackTrace();</span>
-    }
-<span class="nc" id="L133">    catch (BadPaddingException e) {</span>
-      // TODO Auto-generated catch block
-<span class="nc" id="L135">      e.printStackTrace();</span>
-<span class="pc" id="L136">    }</span>
-<span class="fc" id="L137">    return plainText;</span>
+  public String decrypt(String cipherText) throws InvalidKeyException, BadPaddingException, IllegalBlockSizeException {
+<span class="fc" id="L123">    String plainText = null;</span>
+<span class="fc" id="L124">    this.cipher.init(Cipher.DECRYPT_MODE, this.key);</span>
+<span class="fc" id="L125">    plainText = new String(cipher.doFinal(Base64.decodeBase64(cipherText)));</span>
+<span class="fc" id="L126">    return plainText;</span>
 
   }
 }

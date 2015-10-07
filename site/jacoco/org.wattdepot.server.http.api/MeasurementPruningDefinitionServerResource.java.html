@@ -101,11 +101,11 @@ import org.wattdepot.common.http.api.MeasurementPruningDefinitionResource;
         try {
 <span class="pc bpc" id="L102" title="1 of 2 branches missed.">          if (depot.getMeasurementPruningDefinitionIds(orgId, true).contains(definition.getId())) {</span>
             try {
-<span class="nc" id="L104">              depot.updateMeasurementPruningDefinition(definition);</span>
+<span class="fc" id="L104">              depot.updateMeasurementPruningDefinition(definition);</span>
             }
 <span class="fc" id="L106">            catch (IdNotFoundException e) {</span>
 <span class="fc" id="L107">              setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
-<span class="nc" id="L108">            }</span>
+<span class="fc" id="L108">            }</span>
           }
         }
 <span class="nc" id="L111">        catch (IdNotFoundException e) {</span>

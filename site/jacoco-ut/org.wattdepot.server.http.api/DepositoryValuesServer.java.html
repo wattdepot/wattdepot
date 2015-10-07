@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DepositoryValuesServer.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">DepositoryValuesServer.java</span></div><h1>DepositoryValuesServer.java</h1><pre class="source lang-java linenums">/**
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DepositoryValuesServer.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.source.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">DepositoryValuesServer.java</span></div><h1>DepositoryValuesServer.java</h1><pre class="source lang-java linenums">/**
  * DepositoryValuesServer.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Yongwen Xu
@@ -48,12 +48,12 @@ import org.wattdepot.common.util.tstamp.Tstamp;
  * 
  */
 <span class="fc" id="L50">public class DepositoryValuesServer extends WattDepotServerResource {</span>
-  private String depositoryId;
-  private String sensorId;
-  private String start;
-  private String end;
-  private String interval;
-  private String dataType;
+  protected String depositoryId;
+  protected String sensorId;
+  protected String start;
+  protected String end;
+  protected String interval;
+  protected String dataType;
 
   /*
    * (non-Javadoc)
@@ -101,7 +101,7 @@ import org.wattdepot.common.util.tstamp.Tstamp;
                 intervalMinutes);
 <span class="pc bpc" id="L102" title="1 of 2 branches missed.">            if (timestampList != null) {</span>
 <span class="fc" id="L103">              Sensor sensor = depot.getSensor(sensorId, orgId, false);</span>
-<span class="pc bpc" id="L104" title="1 of 2 branches missed.">              if (sensor != null) {</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">              if (sensor != null) {</span>
 <span class="fc" id="L105">                Date previous = null;</span>
 <span class="fc bfc" id="L106" title="All 2 branches covered.">                for (int i = 0; i &lt; timestampList.size(); i++) {</span>
                   InterpolatedValue mValue;
@@ -134,16 +134,16 @@ import org.wattdepot.common.util.tstamp.Tstamp;
                 }
 <span class="fc" id="L135">              }</span>
               else {
-<span class="nc" id="L137">                SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);</span>
-<span class="nc bnc" id="L138" title="All 2 branches missed.">                if (group != null) {</span>
-<span class="nc" id="L139">                  Date previous = null;</span>
-<span class="nc bnc" id="L140" title="All 2 branches missed.">                  for (int i = 0; i &lt; timestampList.size(); i++) {</span>
-<span class="nc" id="L141">                    Date timestamp = DateConvert.convertXMLCal(timestampList.get(i));</span>
-<span class="nc" id="L142">                    Double value = new Double(0);</span>
-<span class="nc bnc" id="L143" title="All 2 branches missed.">                    for (String s : group.getSensors()) {</span>
-<span class="nc" id="L144">                      Sensor sens = depot.getSensor(s, orgId, true);</span>
-<span class="nc bnc" id="L145" title="All 2 branches missed.">                      if (sens != null) {</span>
-<span class="nc bnc" id="L146" title="All 2 branches missed.">                        if (&quot;point&quot;.equals(dataType)) {</span>
+<span class="fc" id="L137">                SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">                if (group != null) {</span>
+<span class="fc" id="L139">                  Date previous = null;</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">                  for (int i = 0; i &lt; timestampList.size(); i++) {</span>
+<span class="fc" id="L141">                    Date timestamp = DateConvert.convertXMLCal(timestampList.get(i));</span>
+<span class="fc" id="L142">                    Double value = new Double(0);</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">                    for (String s : group.getSensors()) {</span>
+<span class="fc" id="L144">                      Sensor sens = depot.getSensor(s, orgId, true);</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">                      if (sens != null) {</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">                        if (&quot;point&quot;.equals(dataType)) {</span>
                           try {
 <span class="nc" id="L148">                            value += depot.getValue(depositoryId, orgId, sens.getId(), timestamp,</span>
                                 true);
@@ -153,31 +153,31 @@ import org.wattdepot.common.util.tstamp.Tstamp;
 <span class="nc" id="L153">                          }</span>
                         }
                         else {
-<span class="nc bnc" id="L156" title="All 2 branches missed.">                          if (previous != null) {</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">                          if (previous != null) {</span>
                             try {
-<span class="nc" id="L158">                              value += depot.getValue(depositoryId, orgId, sens.getId(),</span>
+<span class="fc" id="L158">                              value += depot.getValue(depositoryId, orgId, sens.getId(),</span>
                                   previous, timestamp, true);
                             }
 <span class="nc" id="L161">                            catch (NoMeasurementException e) { // NOPMD</span>
                               // No measurements so return 0,
-<span class="nc" id="L163">                            }</span>
+<span class="fc" id="L163">                            }</span>
                           }
                         }
                       }
-<span class="nc" id="L167">                    }</span>
-<span class="nc bnc" id="L168" title="All 2 branches missed.">                    if (&quot;point&quot;.equals(dataType)) {</span>
+<span class="fc" id="L167">                    }</span>
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">                    if (&quot;point&quot;.equals(dataType)) {</span>
 <span class="nc" id="L169">                      InterpolatedValue mValue = new InterpolatedValue(group.getId(), value,</span>
                           depository.getMeasurementType(), timestamp);
 <span class="nc" id="L171">                      ret.getInterpolatedValues().add(mValue);</span>
 <span class="nc" id="L172">                    }</span>
                     else {
-<span class="nc bnc" id="L174" title="All 2 branches missed.">                      if (previous != null) {</span>
-<span class="nc" id="L175">                        InterpolatedValue mValue = new InterpolatedValue(group.getId(), value,</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">                      if (previous != null) {</span>
+<span class="fc" id="L175">                        InterpolatedValue mValue = new InterpolatedValue(group.getId(), value,</span>
                             depository.getMeasurementType(), previous, timestamp);
-<span class="nc" id="L177">                        ret.getInterpolatedValues().add(mValue);</span>
+<span class="fc" id="L177">                        ret.getInterpolatedValues().add(mValue);</span>
                       }
                     }
-<span class="nc" id="L180">                    previous = timestamp;</span>
+<span class="fc" id="L180">                    previous = timestamp;</span>
                   }
                 }
               }
@@ -222,4 +222,4 @@ import org.wattdepot.common.util.tstamp.Tstamp;
     }
   }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

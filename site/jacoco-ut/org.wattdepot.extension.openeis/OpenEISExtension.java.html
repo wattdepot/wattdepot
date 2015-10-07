@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>OpenEISExtension.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.source.html" class="el_package">org.wattdepot.extension.openeis</a> &gt; <span class="el_source">OpenEISExtension.java</span></div><h1>OpenEISExtension.java</h1><pre class="source lang-java linenums">/*
+ * This file is part of WattDepot.
+ *
+ *  Copyright (C) 2015  Cam Moore
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package org.wattdepot.extension.openeis;
+
+import org.wattdepot.extension.WattDepotExtension;
+import org.wattdepot.extension.openeis.http.api.OpenEISAPI;
+import org.wattdepot.extension.openeis.http.api.OpenEISUIServerResource;
+import org.wattdepot.extension.openeis.server.EnergySignatureGvizServerResource;
+import org.wattdepot.extension.openeis.server.EnergySignatureServerResource;
+import org.wattdepot.extension.openeis.server.HeatMapGivzServerResource;
+import org.wattdepot.extension.openeis.server.HeatMapServerResource;
+import org.wattdepot.extension.openeis.server.LoadAnalysisServerResource;
+import org.wattdepot.extension.openeis.server.LoadDurationCurveGvizServerResource;
+import org.wattdepot.extension.openeis.server.LoadDurationCurveServerResource;
+import org.wattdepot.extension.openeis.server.LongitudinalBenchmarkingGvisServerResource;
+import org.wattdepot.extension.openeis.server.LongitudinalBenchmarkingServerResource;
+import org.wattdepot.extension.openeis.server.TimeSeriesLoadProfileGvizServerResource;
+import org.wattdepot.extension.openeis.server.TimeSeriesLoadProfileServerResource;
+import org.wattdepot.server.http.api.WattDepotServerResource;
+
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * OpenEISExtension - A WattDepot extension that supports several of the OpenEIS algorithms.
+ *
+ * @author Cam Moore
+ *         Created by carletonmoore on 4/9/15.
+ */
+<span class="fc" id="L47">public class OpenEISExtension implements WattDepotExtension {</span>
+  @Override
+  public String getBaseURI() {
+<span class="fc" id="L50">    return OpenEISAPI.BASE_URI;</span>
+  }
+
+  @Override
+  public Map&lt;String, Class&lt;? extends WattDepotServerResource&gt;&gt; getServerResourceMapping() {
+<span class="fc" id="L55">    HashMap&lt;String, Class&lt;? extends WattDepotServerResource&gt;&gt; mapping = new HashMap&lt;String, Class&lt;? extends WattDepotServerResource&gt;&gt;();</span>
+    // OpenEIS algorithms
+<span class="fc" id="L57">    mapping.put(OpenEISAPI.OPENEIS_UI_URI, OpenEISUIServerResource.class);</span>
+<span class="fc" id="L58">    mapping.put(OpenEISAPI.OPENEIS_TIME_SERIES_LOAD_DATA_URI, TimeSeriesLoadProfileServerResource.class);</span>
+<span class="fc" id="L59">    mapping.put(OpenEISAPI.OPENEIS_TIME_SERIES_LOAD_GVIZ_URI, TimeSeriesLoadProfileGvizServerResource.class);</span>
+<span class="fc" id="L60">    mapping.put(OpenEISAPI.OPENEIS_HEAT_MAP_DATA_URI, HeatMapServerResource.class);</span>
+<span class="fc" id="L61">    mapping.put(OpenEISAPI.OPENEIS_HEAT_MAP_GVIS_URI, HeatMapGivzServerResource.class);</span>
+<span class="fc" id="L62">    mapping.put(OpenEISAPI.OPENEIS_ENERGY_SIGNATURE_DATA_URI, EnergySignatureServerResource.class);</span>
+<span class="fc" id="L63">    mapping.put(OpenEISAPI.OPENEIS_ENERGY_SIGNATURE_GVIZ_URI, EnergySignatureGvizServerResource.class);</span>
+<span class="fc" id="L64">    mapping.put(OpenEISAPI.OPENEIS_LONGITUDINAL_BASELINE_DATA_URI, LongitudinalBenchmarkingServerResource.class);</span>
+<span class="fc" id="L65">    mapping.put(OpenEISAPI.OPENEIS_LONGITUDINAL_BASELINE_GVIZ_URI, LongitudinalBenchmarkingGvisServerResource.class);</span>
+<span class="fc" id="L66">    mapping.put(OpenEISAPI.OPENEIS_LOAD_ANALYSIS, LoadAnalysisServerResource.class);</span>
+<span class="fc" id="L67">    mapping.put(OpenEISAPI.OPENEIS_LOAD_DURATION_CURVE_DATA_URI, LoadDurationCurveServerResource.class);</span>
+<span class="fc" id="L68">    mapping.put(OpenEISAPI.OPENEIS_LOAD_DURATION_CURVE_GVIZ_URI, LoadDurationCurveGvizServerResource.class);</span>
+<span class="fc" id="L69">    return mapping;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

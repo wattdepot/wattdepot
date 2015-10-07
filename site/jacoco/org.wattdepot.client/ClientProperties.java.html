@@ -191,11 +191,11 @@ public class ClientProperties {
     // grab all of the properties in the environment
 <span class="fc" id="L192">    Map&lt;String, String&gt; systemProps = System.getenv();</span>
 <span class="fc bfc" id="L193" title="All 2 branches covered.">    for (Map.Entry&lt;String, String&gt; prop : systemProps.entrySet()) {</span>
-<span class="fc bfc" id="L194" title="All 2 branches covered.">      if (prop.getKey().startsWith(ServerProperties.ADMIN_USER_NAME_ENV)) {</span>
-<span class="fc" id="L195">        properties.setProperty(USER_NAME, prop.getValue());</span>
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">      if (prop.getKey().startsWith(ServerProperties.ADMIN_USER_NAME_ENV)) {</span>
+<span class="nc" id="L195">        properties.setProperty(USER_NAME, prop.getValue());</span>
       }
-<span class="fc bfc" id="L197" title="All 2 branches covered.">      if (prop.getKey().startsWith(ServerProperties.ADMIN_USER_PASSWORD_ENV)) {</span>
-<span class="fc" id="L198">        properties.setProperty(USER_PASSWORD, prop.getValue());</span>
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">      if (prop.getKey().startsWith(ServerProperties.ADMIN_USER_PASSWORD_ENV)) {</span>
+<span class="nc" id="L198">        properties.setProperty(USER_PASSWORD, prop.getValue());</span>
       }
 <span class="fc" id="L200">    }</span>
 <span class="fc" id="L201">    addClientSystemProperties(this.properties);</span>

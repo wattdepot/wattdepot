@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DepositorySensorStatusServerResource.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">DepositorySensorStatusServerResource.java</span></div><h1>DepositorySensorStatusServerResource.java</h1><pre class="source lang-java linenums">/*
+ * This file is part of WattDepot.
+ *
+ *  Copyright (C) 2015  Cam Moore
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package org.wattdepot.server.http.api;
+
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
+import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.domainmodel.SensorStatus;
+import org.wattdepot.common.domainmodel.SensorStatusEnum;
+import org.wattdepot.common.domainmodel.SensorStatusList;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
+import org.wattdepot.common.http.api.DepositorySensorStatusResource;
+import org.wattdepot.common.util.DateConvert;
+import org.wattdepot.common.util.tstamp.Tstamp;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.Date;
+import java.util.List;
+import java.util.logging.Level;
+
+/**
+ * DepositorySensorStatusServerResource - Returns the SensorStatus(es) for the Sensor or SensorGroup.
+ *
+ * @author Cam Moore
+ */
+<span class="nc" id="L48">public class DepositorySensorStatusServerResource extends WattDepotServerResource implements DepositorySensorStatusResource {</span>
+  private String depositoryId;
+  private String sensorId;
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.restlet.resource.Resource#doInit()
+   */
+  @Override
+  protected void doInit() throws ResourceException {
+<span class="nc" id="L59">    super.doInit();</span>
+<span class="nc" id="L60">    this.sensorId = getQuery().getValues(Labels.SENSOR);</span>
+<span class="nc" id="L61">    this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);</span>
+<span class="nc" id="L62">  }</span>
+
+  @Override
+  public SensorStatusList retrieve() {
+<span class="nc" id="L66">    getLogger().log(</span>
+        Level.INFO,
+        &quot;GET /wattdepot/{&quot; + orgId + &quot;}/&quot; + Labels.DEPOSITORY + &quot;/{&quot; + depositoryId + &quot;}/&quot;
+            + Labels.SENSOR_STATUS + &quot;/?&quot; + Labels.SENSOR + &quot;={&quot; + sensorId + &quot;}&quot;);
+<span class="nc bnc" id="L70" title="All 2 branches missed.">    if (isInRole(orgId)) {</span>
+<span class="nc" id="L71">      SensorStatusList list = new SensorStatusList();</span>
+<span class="nc" id="L72">      Integer numDays = 7;</span>
+      try {
+<span class="nc" id="L74">        XMLGregorianCalendar now = Tstamp.makeTimestamp();</span>
+<span class="nc" id="L75">        XMLGregorianCalendar weekAgo = Tstamp.incrementDays(now, -1 * numDays);</span>
+<span class="nc" id="L76">        Date endDate = DateConvert.convertXMLCal(now);</span>
+<span class="nc" id="L77">        Date startDate = DateConvert.convertXMLCal(weekAgo);</span>
+<span class="nc" id="L78">        depot.getDepository(depositoryId, orgId, true);</span>
+<span class="nc" id="L79">        Sensor sensor = depot.getSensor(sensorId, orgId, false);</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        if (sensor != null) {</span>
+<span class="nc" id="L81">          SensorStatus status = new SensorStatus();</span>
+<span class="nc" id="L82">          status.setSensorId(sensorId);</span>
+<span class="nc" id="L83">          status.setTimestamp(now);</span>
+<span class="nc" id="L84">          String cpdName = sensorId + &quot;-&quot; + depositoryId;</span>
+<span class="nc" id="L85">          CollectorProcessDefinition cpd = depot.getCollectorProcessDefinition(cpdName, orgId, true);</span>
+<span class="nc" id="L86">          Long numExpectedMeasurements = 0l;</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">          if (cpd != null) {</span>
+<span class="nc" id="L88">            numExpectedMeasurements = Math.round(60.0 / cpd.getPollingInterval() * 60.0 * 24 * numDays);</span>
+          }
+<span class="nc" id="L90">          List&lt;Measurement&gt; measurementList = depot.getMeasurements(depositoryId, orgId, sensorId, startDate, endDate, false);</span>
+<span class="nc" id="L91">          int count = measurementList.size();</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">          if (count &gt; 0.8 * numExpectedMeasurements) {</span>
+<span class="nc" id="L93">            status.setStatus(SensorStatusEnum.GREEN);</span>
+          }
+<span class="nc bnc" id="L95" title="All 2 branches missed.">          else if (count &gt; 0.5 * numExpectedMeasurements) {</span>
+<span class="nc" id="L96">            status.setStatus(SensorStatusEnum.YELLOW);</span>
+          }
+<span class="nc bnc" id="L98" title="All 2 branches missed.">          else if (count &gt; 0) {</span>
+<span class="nc" id="L99">            status.setStatus(SensorStatusEnum.RED);</span>
+          }
+          else {
+<span class="nc" id="L102">            status.setStatus(SensorStatusEnum.BLACK);</span>
+          }
+<span class="nc" id="L104">          list.getStatuses().add(status);</span>
+<span class="nc" id="L105">          return list;</span>
+        }
+        else {
+<span class="nc" id="L108">          SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">          if (group != null) {</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">            for (String s : group.getSensors()) {</span>
+<span class="nc" id="L111">              sensor = depot.getSensor(s, orgId, false);</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">              if (sensor != null) {</span>
+<span class="nc" id="L113">                SensorStatus status = new SensorStatus();</span>
+<span class="nc" id="L114">                status.setSensorId(s);</span>
+<span class="nc" id="L115">                status.setTimestamp(now);</span>
+<span class="nc" id="L116">                String cpdName = s + &quot;-&quot; + depositoryId;</span>
+<span class="nc" id="L117">                CollectorProcessDefinition cpd = depot.getCollectorProcessDefinition(cpdName, orgId, false);</span>
+<span class="nc" id="L118">                Long numExpectedMeasurements = 60l * 24 * numDays; // one measurement a minute.</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">                if (cpd != null) {</span>
+<span class="nc" id="L120">                  numExpectedMeasurements = Math.round(60.0 / cpd.getPollingInterval() * 60.0 * 24 * numDays);</span>
+                }
+<span class="nc" id="L122">                List&lt;Measurement&gt; measurementList = depot.getMeasurements(depositoryId, orgId, s, startDate, endDate, false);</span>
+<span class="nc" id="L123">                int count = measurementList.size();</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">                if (count &gt; 0.8 * numExpectedMeasurements) {</span>
+<span class="nc" id="L125">                  status.setStatus(SensorStatusEnum.GREEN);</span>
+                }
+<span class="nc bnc" id="L127" title="All 2 branches missed.">                else if (count &gt; 0.5 * numExpectedMeasurements) {</span>
+<span class="nc" id="L128">                  status.setStatus(SensorStatusEnum.YELLOW);</span>
+                }
+<span class="nc bnc" id="L130" title="All 2 branches missed.">                else if (count &gt; 0) {</span>
+<span class="nc" id="L131">                  status.setStatus(SensorStatusEnum.RED);</span>
+                }
+                else {
+<span class="nc" id="L134">                  status.setStatus(SensorStatusEnum.BLACK);</span>
+                }
+<span class="nc" id="L136">                list.getStatuses().add(status);</span>
+              }
+<span class="nc" id="L138">            }</span>
+<span class="nc" id="L139">            return list;</span>
+          }
+        }
+      }
+<span class="nc" id="L143">      catch (IdNotFoundException e) {</span>
+<span class="nc" id="L144">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + &quot; is not a Depository id.&quot;);</span>
+<span class="nc" id="L145">        return null;</span>
+      }
+<span class="nc" id="L147">      catch (MisMatchedOwnerException e) {</span>
+<span class="nc" id="L148">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + &quot; is not in organization &quot; + orgId + &quot;.&quot;);</span>
+<span class="nc" id="L149">        return null;</span>
+<span class="nc" id="L150">      }</span>
+
+<span class="nc" id="L152">      return list;</span>
+    }
+<span class="nc" id="L154">    return null;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

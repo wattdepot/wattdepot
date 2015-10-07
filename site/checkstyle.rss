@@ -25,7 +25,7 @@ under the License.
     <language>en-us</language>
     <copyright>&#169;2015 Collaborative Software Development Laboratory</copyright>
     <item>
-      <title>File: 228,
+      <title>File: 294,
              Errors: 0,
              Warnings: 0,
              Infos: 0
@@ -60,6 +60,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.SensorStatusEnum.java">org/wattdepot/common/domainmodel/SensorStatusEnum.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#wattdepot-server.properties">wattdepot-server.properties</a>
                 </td>
                 <td>
@@ -75,6 +89,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.SensorModelsResource.java">org/wattdepot/common/http/api/SensorModelsResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.server.EnergySignatureServerResource.java">org/wattdepot/extension/openeis/server/EnergySignatureServerResource.java</a>
                 </td>
                 <td>
                   0
@@ -130,6 +158,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.http.api.TimeSeriesLoadProfileDataResource.java">org/wattdepot/extension/openeis/http/api/TimeSeriesLoadProfileDataResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.http.api.performance.PutThroughput.java">org/wattdepot/client/http/api/performance/PutThroughput.java</a>
                 </td>
                 <td>
@@ -159,6 +201,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.UserInfoPutResource.java">org/wattdepot/common/http/api/UserInfoPutResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.XYInterpolatedValueList.java">org/wattdepot/common/domainmodel/XYInterpolatedValueList.java</a>
                 </td>
                 <td>
                   0
@@ -214,6 +270,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.server.EnergySignatureServer.java">org/wattdepot/extension/openeis/server/EnergySignatureServer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.exception.MeasurementTypeException.java">org/wattdepot/common/exception/MeasurementTypeException.java</a>
                 </td>
                 <td>
@@ -228,7 +298,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositoryMaximumValuesResource.java">org/wattdepot/common/http/api/DepositoryMaximumValuesResource.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.GvizDepositoryValueServerResource.java">org/wattdepot/server/http/api/GvizDepositoryValueServerResource.java</a>
                 </td>
                 <td>
                   0
@@ -242,7 +312,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.GvizDepositoryValueServerResource.java">org/wattdepot/server/http/api/GvizDepositoryValueServerResource.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositoryMaximumValuesResource.java">org/wattdepot/common/http/api/DepositoryMaximumValuesResource.java</a>
                 </td>
                 <td>
                   0
@@ -284,7 +354,35 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.domainmodel.LoadAnalysis.java">org/wattdepot/extension/openeis/domainmodel/LoadAnalysis.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryMaximumValuesServerResource.java">org/wattdepot/server/http/api/DepositoryMaximumValuesServerResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.http.api.EnergySignatureDataResource.java">org/wattdepot/extension/openeis/http/api/EnergySignatureDataResource.java</a>
                 </td>
                 <td>
                   0
@@ -340,6 +438,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.http.api.LoadDurationCurveGvizResource.java">org/wattdepot/extension/openeis/http/api/LoadDurationCurveGvizResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.exception.BadSensorUriException.java">org/wattdepot/common/exception/BadSensorUriException.java</a>
                 </td>
                 <td>
@@ -355,6 +467,62 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryValuesServerResource.java">org/wattdepot/server/http/api/DepositoryValuesServerResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.server.LongitudinalBenchmarkingGvisServerResource.java">org/wattdepot/extension/openeis/server/LongitudinalBenchmarkingGvisServerResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.server.HeatMapGivzServerResource.java">org/wattdepot/extension/openeis/server/HeatMapGivzServerResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.http.api.TimeSeriesLoadProfileGvizResource.java">org/wattdepot/extension/openeis/http/api/TimeSeriesLoadProfileGvizResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.domainmodel.XYInterpolatedValuesWithAnalysis.java">org/wattdepot/extension/openeis/domainmodel/XYInterpolatedValuesWithAnalysis.java</a>
                 </td>
                 <td>
                   0
@@ -396,6 +564,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.server.LoadDurationCurveGvizServerResource.java">org/wattdepot/extension/openeis/server/LoadDurationCurveGvizServerResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositoryMeasurementsResource.java">org/wattdepot/common/http/api/DepositoryMeasurementsResource.java</a>
                 </td>
                 <td>
@@ -410,7 +592,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.depository.impl.hibernate.SensorImpl.java">org/wattdepot/server/depository/impl/hibernate/SensorImpl.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryDescriptiveStatsServer.java">org/wattdepot/server/http/api/DepositoryDescriptiveStatsServer.java</a>
                 </td>
                 <td>
                   0
@@ -438,7 +620,35 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.depository.impl.hibernate.SensorImpl.java">org/wattdepot/server/depository/impl/hibernate/SensorImpl.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.http.api.collector.SharkCollector.java">org/wattdepot/client/http/api/collector/SharkCollector.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.server.OpenEISServer.java">org/wattdepot/extension/openeis/server/OpenEISServer.java</a>
                 </td>
                 <td>
                   0
@@ -480,7 +690,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.http.api.performance.GetEarliestValueThroughput.java">org/wattdepot/client/http/api/performance/GetEarliestValueThroughput.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.server.HeatMapServer.java">org/wattdepot/extension/openeis/server/HeatMapServer.java</a>
                 </td>
                 <td>
                   0
@@ -495,6 +705,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.LoginServerResource.java">org/wattdepot/server/http/api/LoginServerResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.http.api.performance.GetEarliestValueThroughput.java">org/wattdepot/client/http/api/performance/GetEarliestValueThroughput.java</a>
                 </td>
                 <td>
                   0
@@ -536,7 +760,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.SensorGroup.java">org/wattdepot/common/domainmodel/SensorGroup.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.DescriptiveStats.java">org/wattdepot/common/domainmodel/DescriptiveStats.java</a>
                 </td>
                 <td>
                   0
@@ -551,6 +775,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.CollectorProcessDefinitionsServerResource.java">org/wattdepot/server/http/api/CollectorProcessDefinitionsServerResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.SensorGroup.java">org/wattdepot/common/domainmodel/SensorGroup.java</a>
                 </td>
                 <td>
                   0
@@ -607,6 +845,48 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.http.api.performance.package-info.java">org/wattdepot/client/http/api/performance/package-info.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryHourlyValuesServerResource.java">org/wattdepot/server/http/api/DepositoryHourlyValuesServerResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryHourlyValuesServer.java">org/wattdepot/server/http/api/DepositoryHourlyValuesServer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.server.TimeSeriesLoadProfileServer.java">org/wattdepot/extension/openeis/server/TimeSeriesLoadProfileServer.java</a>
                 </td>
                 <td>
                   0
@@ -704,6 +984,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.SensorStatus.java">org/wattdepot/common/domainmodel/SensorStatus.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.http.api.collector.package-info.java">org/wattdepot/client/http/api/collector/package-info.java</a>
                 </td>
                 <td>
@@ -746,6 +1040,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.depository.impl.hibernate.DepositoryImpl.java">org/wattdepot/server/depository/impl/hibernate/DepositoryImpl.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.http.api.performance.GetLatestValueTask.java">org/wattdepot/client/http/api/performance/GetLatestValueTask.java</a>
                 </td>
                 <td>
@@ -774,7 +1082,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.depository.impl.hibernate.DepositoryImpl.java">org/wattdepot/server/depository/impl/hibernate/DepositoryImpl.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.WattDepotAdminInterface.java">org/wattdepot/client/WattDepotAdminInterface.java</a>
                 </td>
                 <td>
                   0
@@ -788,7 +1096,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.WattDepotAdminInterface.java">org/wattdepot/client/WattDepotAdminInterface.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.CsvDepositoryValuesServerResource.java">org/wattdepot/server/http/api/CsvDepositoryValuesServerResource.java</a>
                 </td>
                 <td>
                   0
@@ -816,6 +1124,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryValuesServer.java">org/wattdepot/server/http/api/DepositoryValuesServer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.AdminServerResource.java">org/wattdepot/server/http/api/AdminServerResource.java</a>
                 </td>
                 <td>
@@ -830,7 +1152,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryValuesServer.java">org/wattdepot/server/http/api/DepositoryValuesServer.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.CsvDepositoryValuesResource.java">org/wattdepot/common/http/api/CsvDepositoryValuesResource.java</a>
                 </td>
                 <td>
                   0
@@ -858,7 +1180,35 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.server.LoadDurationCurveServerResource.java">org/wattdepot/extension/openeis/server/LoadDurationCurveServerResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.depository.impl.hibernate.SensorModelImpl.java">org/wattdepot/server/depository/impl/hibernate/SensorModelImpl.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.OpenEISLabels.java">org/wattdepot/extension/openeis/OpenEISLabels.java</a>
                 </td>
                 <td>
                   0
@@ -914,6 +1264,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.OpenEISExtension.java">org/wattdepot/extension/openeis/OpenEISExtension.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositorySensorSummaryServerResource.java">org/wattdepot/server/http/api/DepositorySensorSummaryServerResource.java</a>
                 </td>
                 <td>
@@ -929,6 +1293,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.SensorPutServerResource.java">org/wattdepot/server/http/api/SensorPutServerResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.server.TimeSeriesLoadProfileGvizServerResource.java">org/wattdepot/extension/openeis/server/TimeSeriesLoadProfileGvizServerResource.java</a>
                 </td>
                 <td>
                   0
@@ -998,6 +1376,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.util.OpenEISGvizHelper.java">org/wattdepot/extension/openeis/util/OpenEISGvizHelper.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.SensorMeasurementServerResource.java">org/wattdepot/server/http/api/SensorMeasurementServerResource.java</a>
                 </td>
                 <td>
@@ -1026,20 +1418,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.depository.impl.hibernate.OrganizationImpl.java">org/wattdepot/server/depository/impl/hibernate/OrganizationImpl.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.GvizDepositoryValuesServerResource.java">org/wattdepot/server/http/api/GvizDepositoryValuesServerResource.java</a>
                 </td>
                 <td>
@@ -1054,7 +1432,63 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.depository.impl.hibernate.OrganizationImpl.java">org/wattdepot/server/depository/impl/hibernate/OrganizationImpl.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.http.api.HeatMapDataResource.java">org/wattdepot/extension/openeis/http/api/HeatMapDataResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.SensorGroupList.java">org/wattdepot/common/domainmodel/SensorGroupList.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.http.api.HeatMapGvizResource.java">org/wattdepot/extension/openeis/http/api/HeatMapGvizResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.server.LongitudinalBenchmarkingServer.java">org/wattdepot/extension/openeis/server/LongitudinalBenchmarkingServer.java</a>
                 </td>
                 <td>
                   0
@@ -1208,6 +1642,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.http.api.LoadDurationCurveDataResource.java">org/wattdepot/extension/openeis/http/api/LoadDurationCurveDataResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.MeasurementTypeList.java">org/wattdepot/common/domainmodel/MeasurementTypeList.java</a>
                 </td>
                 <td>
@@ -1223,6 +1671,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.util.logger.OneLineFormatter.java">org/wattdepot/common/util/logger/OneLineFormatter.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.SensorStatusList.java">org/wattdepot/common/domainmodel/SensorStatusList.java</a>
                 </td>
                 <td>
                   0
@@ -1362,7 +1824,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.GvizDepositoryMeasurementsResource.java">org/wattdepot/common/http/api/GvizDepositoryMeasurementsResource.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.depository.impl.hibernate.SensorGroupImpl.java">org/wattdepot/server/depository/impl/hibernate/SensorGroupImpl.java</a>
                 </td>
                 <td>
                   0
@@ -1376,7 +1838,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.depository.impl.hibernate.SensorGroupImpl.java">org/wattdepot/server/depository/impl/hibernate/SensorGroupImpl.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.GvizDepositoryMeasurementsResource.java">org/wattdepot/common/http/api/GvizDepositoryMeasurementsResource.java</a>
                 </td>
                 <td>
                   0
@@ -1446,6 +1908,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositorySensorStatusResource.java">org/wattdepot/common/http/api/DepositorySensorStatusResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.UserPassword.java">org/wattdepot/common/domainmodel/UserPassword.java</a>
                 </td>
                 <td>
@@ -1474,6 +1950,34 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.InterpolatedValueValueComparator.java">org/wattdepot/common/domainmodel/InterpolatedValueValueComparator.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositoryHourlyValuesResource.java">org/wattdepot/common/http/api/DepositoryHourlyValuesResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.http.api.package-info.java">org/wattdepot/client/http/api/package-info.java</a>
                 </td>
                 <td>
@@ -1489,6 +1993,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.http.api.collector.MultiThreadedCollector.java">org/wattdepot/client/http/api/collector/MultiThreadedCollector.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.domainmodel.TimeInterval.java">org/wattdepot/extension/openeis/domainmodel/TimeInterval.java</a>
                 </td>
                 <td>
                   0
@@ -1545,6 +2063,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositoryMeasurementResource.java">org/wattdepot/common/http/api/DepositoryMeasurementResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositoryDayHourlyValuesResource.java">org/wattdepot/common/http/api/DepositoryDayHourlyValuesResource.java</a>
                 </td>
                 <td>
                   0
@@ -1629,6 +2161,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.http.api.collector.AllOrganizationCollectors.java">org/wattdepot/client/http/api/collector/AllOrganizationCollectors.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryDayHourlyValuesServerResource.java">org/wattdepot/server/http/api/DepositoryDayHourlyValuesServerResource.java</a>
                 </td>
                 <td>
                   0
@@ -1866,6 +2412,48 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryDailyValuesServer.java">org/wattdepot/server/http/api/DepositoryDailyValuesServer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.XYInterpolatedValue.java">org/wattdepot/common/domainmodel/XYInterpolatedValue.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.server.LongitudinalBenchmarkingServerResource.java">org/wattdepot/extension/openeis/server/LongitudinalBenchmarkingServerResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositorySensorSummaryResource.java">org/wattdepot/common/http/api/DepositorySensorSummaryResource.java</a>
                 </td>
                 <td>
@@ -1881,6 +2469,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.WattDepotServer.java">org/wattdepot/server/WattDepotServer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.server.HeatMapServerResource.java">org/wattdepot/extension/openeis/server/HeatMapServerResource.java</a>
                 </td>
                 <td>
                   0
@@ -1978,6 +2580,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositoryLatestValueResource.java">org/wattdepot/common/http/api/DepositoryLatestValueResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.MeasurementPruningDefinitionsServerResource.java">org/wattdepot/server/http/api/MeasurementPruningDefinitionsServerResource.java</a>
                 </td>
                 <td>
@@ -1992,7 +2608,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.UserInfosResource.java">org/wattdepot/common/http/api/UserInfosResource.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryMeasurementPutServerResource.java">org/wattdepot/server/http/api/DepositoryMeasurementPutServerResource.java</a>
                 </td>
                 <td>
                   0
@@ -2006,7 +2622,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryMeasurementPutServerResource.java">org/wattdepot/server/http/api/DepositoryMeasurementPutServerResource.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.UserInfosResource.java">org/wattdepot/common/http/api/UserInfosResource.java</a>
                 </td>
                 <td>
                   0
@@ -2048,6 +2664,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryHistoricalValuesServer.java">org/wattdepot/server/http/api/DepositoryHistoricalValuesServer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.util.tstamp.TstampComparator.java">org/wattdepot/common/util/tstamp/TstampComparator.java</a>
                 </td>
                 <td>
@@ -2062,7 +2692,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.GvizDepositoryAverageValuesResource.java">org/wattdepot/common/http/api/GvizDepositoryAverageValuesResource.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositorySensorsServerResource.java">org/wattdepot/server/http/api/DepositorySensorsServerResource.java</a>
                 </td>
                 <td>
                   0
@@ -2076,7 +2706,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositorySensorsServerResource.java">org/wattdepot/server/http/api/DepositorySensorsServerResource.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.GvizDepositoryAverageValuesResource.java">org/wattdepot/common/http/api/GvizDepositoryAverageValuesResource.java</a>
                 </td>
                 <td>
                   0
@@ -2146,6 +2776,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.server.TimeSeriesLoadProfileServerResource.java">org/wattdepot/extension/openeis/server/TimeSeriesLoadProfileServerResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.http.api.performance.GetEarliestValueTask.java">org/wattdepot/client/http/api/performance/GetEarliestValueTask.java</a>
                 </td>
                 <td>
@@ -2175,6 +2819,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.http.api.collector.MeasurementSummaryClient.java">org/wattdepot/client/http/api/collector/MeasurementSummaryClient.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.http.api.OpenEISAPI.java">org/wattdepot/extension/openeis/http/api/OpenEISAPI.java</a>
                 </td>
                 <td>
                   0
@@ -2258,6 +2916,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.http.api.OpenEISUIServerResource.java">org/wattdepot/extension/openeis/http/api/OpenEISUIServerResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.InterpolatedValue.java">org/wattdepot/common/domainmodel/InterpolatedValue.java</a>
                 </td>
                 <td>
@@ -2328,7 +3000,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.http.api.performance.PerformanceTimedTask.java">org/wattdepot/client/http/api/performance/PerformanceTimedTask.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryServerResource.java">org/wattdepot/server/http/api/DepositoryServerResource.java</a>
                 </td>
                 <td>
                   0
@@ -2342,7 +3014,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryServerResource.java">org/wattdepot/server/http/api/DepositoryServerResource.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.http.api.performance.PerformanceTimedTask.java">org/wattdepot/client/http/api/performance/PerformanceTimedTask.java</a>
                 </td>
                 <td>
                   0
@@ -2370,6 +3042,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.Measurement.java">org/wattdepot/common/domainmodel/Measurement.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.Labels.java">org/wattdepot/common/domainmodel/Labels.java</a>
                 </td>
                 <td>
@@ -2384,7 +3070,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.Measurement.java">org/wattdepot/common/domainmodel/Measurement.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.http.api.EnergySignatureGvizResource.java">org/wattdepot/extension/openeis/http/api/EnergySignatureGvizResource.java</a>
                 </td>
                 <td>
                   0
@@ -2468,20 +3154,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositorySensorsResource.java">org/wattdepot/common/http/api/DepositorySensorsResource.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.IntervalValue.java">org/wattdepot/common/domainmodel/IntervalValue.java</a>
                 </td>
                 <td>
@@ -2496,7 +3168,49 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositorySensorsResource.java">org/wattdepot/common/http/api/DepositorySensorsResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.http.api.LoadAnalysisResource.java">org/wattdepot/extension/openeis/http/api/LoadAnalysisResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.MeasurementPruningDefinitionList.java">org/wattdepot/common/domainmodel/MeasurementPruningDefinitionList.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositoryHistoricalValuesResource.java">org/wattdepot/common/http/api/DepositoryHistoricalValuesResource.java</a>
                 </td>
                 <td>
                   0
@@ -2538,20 +3252,6 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.AdminEnv.java">org/wattdepot/server/AdminEnv.java</a>
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-                <td>
-                  0
-                </td>
-              </tr>
-                          <tr>
-                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.IsAliveServerResource.java">org/wattdepot/server/http/api/IsAliveServerResource.java</a>
                 </td>
                 <td>
@@ -2566,7 +3266,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.OrganizationsResource.java">org/wattdepot/common/http/api/OrganizationsResource.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.AdminEnv.java">org/wattdepot/server/AdminEnv.java</a>
                 </td>
                 <td>
                   0
@@ -2594,7 +3294,35 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.OrganizationsResource.java">org/wattdepot/common/http/api/OrganizationsResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.domainmodel.UserInfo.java">org/wattdepot/common/domainmodel/UserInfo.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryDescriptiveStatsServerResource.java">org/wattdepot/server/http/api/DepositoryDescriptiveStatsServerResource.java</a>
                 </td>
                 <td>
                   0
@@ -2650,6 +3378,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.server.LoadAnalysisServerResource.java">org/wattdepot/extension/openeis/server/LoadAnalysisServerResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.SensorModelPutServerResource.java">org/wattdepot/server/http/api/SensorModelPutServerResource.java</a>
                 </td>
                 <td>
@@ -2692,7 +3434,35 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryDailyValuesServerResource.java">org/wattdepot/server/http/api/DepositoryDailyValuesServerResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.GvizDepositoryMeasurementsServerResource.java">org/wattdepot/server/http/api/GvizDepositoryMeasurementsServerResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositoryDescriptiveStatsResource.java">org/wattdepot/common/http/api/DepositoryDescriptiveStatsResource.java</a>
                 </td>
                 <td>
                   0
@@ -2762,6 +3532,20 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositorySensorStatusServerResource.java">org/wattdepot/server/http/api/DepositorySensorStatusServerResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryMinimumValuesServerResource.java">org/wattdepot/server/http/api/DepositoryMinimumValuesServerResource.java</a>
                 </td>
                 <td>
@@ -2804,7 +3588,35 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.server.EnergySignatureGvizServerResource.java">org/wattdepot/extension/openeis/server/EnergySignatureGvizServerResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.CollectorProcessDefinitionResource.java">org/wattdepot/common/http/api/CollectorProcessDefinitionResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositoryLatestValuesResource.java">org/wattdepot/common/http/api/DepositoryLatestValuesResource.java</a>
                 </td>
                 <td>
                   0
@@ -2846,7 +3658,35 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryDayHourlyValuesServer.java">org/wattdepot/server/http/api/DepositoryDayHourlyValuesServer.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.util.Slug.java">org/wattdepot/common/util/Slug.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.server.LoadDurationCurveServer.java">org/wattdepot/extension/openeis/server/LoadDurationCurveServer.java</a>
                 </td>
                 <td>
                   0
@@ -2875,6 +3715,20 @@ under the License.
                           <tr>
                 <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.util.logger.LoggerUtil.java">org/wattdepot/common/util/logger/LoggerUtil.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryLatestValuesServerResource.java">org/wattdepot/server/http/api/DepositoryLatestValuesServerResource.java</a>
                 </td>
                 <td>
                   0
@@ -2958,7 +3812,49 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositoryDailyValuesResource.java">org/wattdepot/common/http/api/DepositoryDailyValuesResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.http.api.LongitudinalBenchmarkingGvizResource.java">org/wattdepot/extension/openeis/http/api/LongitudinalBenchmarkingGvizResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.util.csv.CSVObjectFactory.java">org/wattdepot/common/util/csv/CSVObjectFactory.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.WattDepotExtension.java">org/wattdepot/extension/WattDepotExtension.java</a>
                 </td>
                 <td>
                   0
@@ -3014,7 +3910,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositoryResource.java">org/wattdepot/common/http/api/DepositoryResource.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.exception.NoMeasurementException.java">org/wattdepot/common/exception/NoMeasurementException.java</a>
                 </td>
                 <td>
                   0
@@ -3028,7 +3924,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.exception.NoMeasurementException.java">org/wattdepot/common/exception/NoMeasurementException.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositoryResource.java">org/wattdepot/common/http/api/DepositoryResource.java</a>
                 </td>
                 <td>
                   0
@@ -3056,7 +3952,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositoryPutResource.java">org/wattdepot/common/http/api/DepositoryPutResource.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.http.api.performance.GetLatestValueThroughput.java">org/wattdepot/client/http/api/performance/GetLatestValueThroughput.java</a>
                 </td>
                 <td>
                   0
@@ -3070,7 +3966,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.http.api.performance.GetLatestValueThroughput.java">org/wattdepot/client/http/api/performance/GetLatestValueThroughput.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.DepositoryPutResource.java">org/wattdepot/common/http/api/DepositoryPutResource.java</a>
                 </td>
                 <td>
                   0
@@ -3112,7 +4008,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.http.api.performance.PutTask.java">org/wattdepot/client/http/api/performance/PutTask.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.server.http.api.DepositoryLatestValueServerResource.java">org/wattdepot/server/http/api/DepositoryLatestValueServerResource.java</a>
                 </td>
                 <td>
                   0
@@ -3126,7 +4022,7 @@ under the License.
               </tr>
                           <tr>
                 <td>
-                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.util.UserHome.java">org/wattdepot/common/util/UserHome.java</a>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.client.http.api.performance.PutTask.java">org/wattdepot/client/http/api/performance/PutTask.java</a>
                 </td>
                 <td>
                   0
@@ -3154,7 +4050,35 @@ under the License.
               </tr>
                           <tr>
                 <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.util.UserHome.java">org/wattdepot/common/util/UserHome.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
                   <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.common.http.api.GvizDepositoryValueResource.java">org/wattdepot/common/http/api/GvizDepositoryValueResource.java</a>
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+                <td>
+                  0
+                </td>
+              </tr>
+                          <tr>
+                <td>
+                  <a href="https://github.com/wattdepot/wattdepot//checkstyle.html#org.wattdepot.extension.openeis.http.api.LongitudinalBenchmarkingDataResource.java">org/wattdepot/extension/openeis/http/api/LongitudinalBenchmarkingDataResource.java</a>
                 </td>
                 <td>
                   0

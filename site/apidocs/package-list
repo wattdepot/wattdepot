@@ -12,6 +12,12 @@ org.wattdepot.common.util
 org.wattdepot.common.util.csv
 org.wattdepot.common.util.logger
 org.wattdepot.common.util.tstamp
+org.wattdepot.extension
+org.wattdepot.extension.openeis
+org.wattdepot.extension.openeis.domainmodel
+org.wattdepot.extension.openeis.http.api
+org.wattdepot.extension.openeis.server
+org.wattdepot.extension.openeis.util
 org.wattdepot.server
 org.wattdepot.server.depository.impl.hibernate
 org.wattdepot.server.http.api

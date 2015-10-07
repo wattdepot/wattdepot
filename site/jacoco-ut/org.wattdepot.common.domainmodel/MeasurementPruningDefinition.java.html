@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MeasurementPruningDefinition.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.domainmodel</a> &gt; <span class="el_source">MeasurementPruningDefinition.java</span></div><h1>MeasurementPruningDefinition.java</h1><pre class="source lang-java linenums">/**
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MeasurementPruningDefinition.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.source.html" class="el_package">org.wattdepot.common.domainmodel</a> &gt; <span class="el_source">MeasurementPruningDefinition.java</span></div><h1>MeasurementPruningDefinition.java</h1><pre class="source lang-java linenums">/**
  * MeasurementPruningDefinition.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
@@ -115,79 +115,79 @@ public class MeasurementPruningDefinition implements IDomainModel {
    */
   @Override
   public boolean equals(Object obj) {
-<span class="pc bpc" id="L118" title="1 of 2 branches missed.">    if (this == obj) {</span>
-<span class="nc" id="L119">      return true;</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">    if (this == obj) {</span>
+<span class="fc" id="L119">      return true;</span>
     }
-<span class="pc bpc" id="L121" title="1 of 2 branches missed.">    if (obj == null) {</span>
-<span class="nc" id="L122">      return false;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">    if (obj == null) {</span>
+<span class="fc" id="L122">      return false;</span>
     }
-<span class="pc bpc" id="L124" title="1 of 2 branches missed.">    if (getClass() != obj.getClass()) {</span>
-<span class="nc" id="L125">      return false;</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">    if (getClass() != obj.getClass()) {</span>
+<span class="fc" id="L125">      return false;</span>
     }
 <span class="fc" id="L127">    MeasurementPruningDefinition other = (MeasurementPruningDefinition) obj;</span>
-<span class="pc bpc" id="L128" title="1 of 2 branches missed.">    if (collectWindowDays == null) {</span>
-<span class="nc bnc" id="L129" title="All 2 branches missed.">      if (other.collectWindowDays != null) {</span>
-<span class="nc" id="L130">        return false;</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">    if (collectWindowDays == null) {</span>
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">      if (other.collectWindowDays != null) {</span>
+<span class="fc" id="L130">        return false;</span>
       }
     }
-<span class="pc bpc" id="L133" title="1 of 2 branches missed.">    else if (!collectWindowDays.equals(other.collectWindowDays)) {</span>
-<span class="nc" id="L134">      return false;</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">    else if (!collectWindowDays.equals(other.collectWindowDays)) {</span>
+<span class="fc" id="L134">      return false;</span>
     }
-<span class="pc bpc" id="L136" title="1 of 2 branches missed.">    if (depositoryId == null) {</span>
-<span class="nc bnc" id="L137" title="All 2 branches missed.">      if (other.depositoryId != null) {</span>
-<span class="nc" id="L138">        return false;</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">    if (depositoryId == null) {</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">      if (other.depositoryId != null) {</span>
+<span class="fc" id="L138">        return false;</span>
       }
     }
-<span class="pc bpc" id="L141" title="1 of 2 branches missed.">    else if (!depositoryId.equals(other.depositoryId)) {</span>
-<span class="nc" id="L142">      return false;</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">    else if (!depositoryId.equals(other.depositoryId)) {</span>
+<span class="fc" id="L142">      return false;</span>
     }
-<span class="pc bpc" id="L144" title="1 of 2 branches missed.">    if (id == null) {</span>
-<span class="nc bnc" id="L145" title="All 2 branches missed.">      if (other.id != null) {</span>
-<span class="nc" id="L146">        return false;</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">    if (id == null) {</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">      if (other.id != null) {</span>
+<span class="fc" id="L146">        return false;</span>
       }
     }
-<span class="pc bpc" id="L149" title="1 of 2 branches missed.">    else if (!id.equals(other.id)) {</span>
-<span class="nc" id="L150">      return false;</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">    else if (!id.equals(other.id)) {</span>
+<span class="fc" id="L150">      return false;</span>
     }
-<span class="pc bpc" id="L152" title="1 of 2 branches missed.">    if (ignoreWindowDays == null) {</span>
-<span class="nc bnc" id="L153" title="All 2 branches missed.">      if (other.ignoreWindowDays != null) {</span>
-<span class="nc" id="L154">        return false;</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">    if (ignoreWindowDays == null) {</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">      if (other.ignoreWindowDays != null) {</span>
+<span class="fc" id="L154">        return false;</span>
       }
     }
-<span class="pc bpc" id="L157" title="1 of 2 branches missed.">    else if (!ignoreWindowDays.equals(other.ignoreWindowDays)) {</span>
-<span class="nc" id="L158">      return false;</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">    else if (!ignoreWindowDays.equals(other.ignoreWindowDays)) {</span>
+<span class="fc" id="L158">      return false;</span>
     }
-<span class="pc bpc" id="L160" title="1 of 2 branches missed.">    if (minGapSeconds == null) {</span>
-<span class="nc bnc" id="L161" title="All 2 branches missed.">      if (other.minGapSeconds != null) {</span>
-<span class="nc" id="L162">        return false;</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">    if (minGapSeconds == null) {</span>
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">      if (other.minGapSeconds != null) {</span>
+<span class="fc" id="L162">        return false;</span>
       }
     }
-<span class="pc bpc" id="L165" title="1 of 2 branches missed.">    else if (!minGapSeconds.equals(other.minGapSeconds)) {</span>
-<span class="nc" id="L166">      return false;</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">    else if (!minGapSeconds.equals(other.minGapSeconds)) {</span>
+<span class="fc" id="L166">      return false;</span>
     }
-<span class="pc bpc" id="L168" title="1 of 2 branches missed.">    if (name == null) {</span>
-<span class="nc bnc" id="L169" title="All 2 branches missed.">      if (other.name != null) {</span>
-<span class="nc" id="L170">        return false;</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">    if (name == null) {</span>
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">      if (other.name != null) {</span>
+<span class="fc" id="L170">        return false;</span>
       }
     }
 <span class="fc bfc" id="L173" title="All 2 branches covered.">    else if (!name.equals(other.name)) {</span>
 <span class="fc" id="L174">      return false;</span>
     }
-<span class="pc bpc" id="L176" title="1 of 2 branches missed.">    if (sensorId == null) {</span>
-<span class="nc bnc" id="L177" title="All 2 branches missed.">      if (other.sensorId != null) {</span>
-<span class="nc" id="L178">        return false;</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">    if (sensorId == null) {</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">      if (other.sensorId != null) {</span>
+<span class="fc" id="L178">        return false;</span>
       }
     }
-<span class="pc bpc" id="L181" title="1 of 2 branches missed.">    else if (!sensorId.equals(other.sensorId)) {</span>
-<span class="nc" id="L182">      return false;</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">    else if (!sensorId.equals(other.sensorId)) {</span>
+<span class="fc" id="L182">      return false;</span>
     }
-<span class="pc bpc" id="L184" title="1 of 2 branches missed.">    if (orgId == null) {</span>
-<span class="nc bnc" id="L185" title="All 2 branches missed.">      if (other.orgId != null) {</span>
-<span class="nc" id="L186">        return false;</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">    if (orgId == null) {</span>
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">      if (other.orgId != null) {</span>
+<span class="fc" id="L186">        return false;</span>
       }
     }
-<span class="pc bpc" id="L189" title="1 of 2 branches missed.">    else if (!orgId.equals(other.orgId)) {</span>
-<span class="nc" id="L190">      return false;</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">    else if (!orgId.equals(other.orgId)) {</span>
+<span class="fc" id="L190">      return false;</span>
     }
 <span class="fc" id="L192">    return true;</span>
   }
@@ -318,14 +318,14 @@ public class MeasurementPruningDefinition implements IDomainModel {
   public int hashCode() {
 <span class="fc" id="L319">    final int prime = 31;</span>
 <span class="fc" id="L320">    int result = 1;</span>
-<span class="pc bpc" id="L321" title="1 of 2 branches missed.">    result = prime * result + ((collectWindowDays == null) ? 0 : collectWindowDays.hashCode());</span>
-<span class="pc bpc" id="L322" title="1 of 2 branches missed.">    result = prime * result + ((depositoryId == null) ? 0 : depositoryId.hashCode());</span>
-<span class="pc bpc" id="L323" title="1 of 2 branches missed.">    result = prime * result + ((id == null) ? 0 : id.hashCode());</span>
-<span class="pc bpc" id="L324" title="1 of 2 branches missed.">    result = prime * result + ((ignoreWindowDays == null) ? 0 : ignoreWindowDays.hashCode());</span>
-<span class="pc bpc" id="L325" title="1 of 2 branches missed.">    result = prime * result + ((minGapSeconds == null) ? 0 : minGapSeconds.hashCode());</span>
-<span class="pc bpc" id="L326" title="1 of 2 branches missed.">    result = prime * result + ((name == null) ? 0 : name.hashCode());</span>
-<span class="pc bpc" id="L327" title="1 of 2 branches missed.">    result = prime * result + ((sensorId == null) ? 0 : sensorId.hashCode());</span>
-<span class="pc bpc" id="L328" title="1 of 2 branches missed.">    result = prime * result + ((orgId == null) ? 0 : orgId.hashCode());</span>
+<span class="fc bfc" id="L321" title="All 2 branches covered.">    result = prime * result + ((collectWindowDays == null) ? 0 : collectWindowDays.hashCode());</span>
+<span class="fc bfc" id="L322" title="All 2 branches covered.">    result = prime * result + ((depositoryId == null) ? 0 : depositoryId.hashCode());</span>
+<span class="fc bfc" id="L323" title="All 2 branches covered.">    result = prime * result + ((id == null) ? 0 : id.hashCode());</span>
+<span class="fc bfc" id="L324" title="All 2 branches covered.">    result = prime * result + ((ignoreWindowDays == null) ? 0 : ignoreWindowDays.hashCode());</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">    result = prime * result + ((minGapSeconds == null) ? 0 : minGapSeconds.hashCode());</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">    result = prime * result + ((name == null) ? 0 : name.hashCode());</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">    result = prime * result + ((sensorId == null) ? 0 : sensorId.hashCode());</span>
+<span class="fc bfc" id="L328" title="All 2 branches covered.">    result = prime * result + ((orgId == null) ? 0 : orgId.hashCode());</span>
 <span class="fc" id="L329">    return result;</span>
   }
 
@@ -459,4 +459,4 @@ public class MeasurementPruningDefinition implements IDomainModel {
   }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>GvizHelper.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.util</a> &gt; <span class="el_source">GvizHelper.java</span></div><h1>GvizHelper.java</h1><pre class="source lang-java linenums">/**
  * GvizHelper.java This file is part of WattDepot.
- *
+ * &lt;p/&gt;
  * Copyright (C) 2013  Yongwen Xu
- *
+ * &lt;p/&gt;
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * &lt;p/&gt;
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * &lt;p/&gt;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
  */
@@ -41,6 +41,8 @@ import com.google.visualization.datasource.datatable.TableRow;
 import com.google.visualization.datasource.datatable.value.DateTimeValue;
 import com.google.visualization.datasource.datatable.value.ValueType;
 import com.google.visualization.datasource.render.JsonRenderer;
+import org.wattdepot.common.domainmodel.XYInterpolatedValue;
+import org.wattdepot.common.domainmodel.XYInterpolatedValueList;
 
 /**
  * GvizHelper - Utility class that handles Google Visualization using the Google Visualization
@@ -49,14 +51,14 @@ import com.google.visualization.datasource.render.JsonRenderer;
  * * @see &lt;a
  * href=&quot;http://code.google.com/apis/chart/interactive/docs/dev/implementing_data_source.html&quot;&gt;Google
  * Visualization Datasource API&lt;/a&gt;
- * 
+ *
  * @author Yongwen Xu
  *
  */
-<span class="nc" id="L56">public class GvizHelper { </span>
+<span class="nc" id="L58">public class GvizHelper {</span>
   /** Conversion factor for milliseconds per minute. */
   private static final long MILLISECONDS_PER_MINUTE = 60L * 1000;
-  
+
   /**
    * @param server
    *          the restlet ServerResource
@@ -65,18 +67,18 @@ import com.google.visualization.datasource.render.JsonRenderer;
    * @return the value of the gviz query string from the request
    */
   public static String getGvizQueryString(ServerResource server, String type) {
-<span class="nc" id="L68">    String qs = server.getRequest().getResourceRef().getQueryAsForm().getFirstValue(type);</span>
+<span class="nc" id="L70">    String qs = server.getRequest().getResourceRef().getQueryAsForm().getFirstValue(type);</span>
     try {
-<span class="nc bnc" id="L70" title="All 2 branches missed.">      if (qs != null) {</span>
-<span class="nc" id="L71">        qs = URLDecoder.decode(qs, &quot;UTF-8&quot;);</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">      if (qs != null) {</span>
+<span class="nc" id="L73">        qs = URLDecoder.decode(qs, &quot;UTF-8&quot;);</span>
       }
     }
-<span class="nc" id="L74">    catch (UnsupportedEncodingException e) {</span>
-<span class="nc" id="L75">      qs = null;</span>
-<span class="nc" id="L76">    }</span>
-<span class="nc" id="L77">    return qs;</span>
+<span class="nc" id="L76">    catch (UnsupportedEncodingException e) {</span>
+<span class="nc" id="L77">      qs = null;</span>
+<span class="nc" id="L78">    }</span>
+<span class="nc" id="L79">    return qs;</span>
   }
-  
+
   /**
    * @param resource
    *          server resource object
@@ -87,58 +89,61 @@ import com.google.visualization.datasource.render.JsonRenderer;
    * @return gviz response 
    */
   public static String getGvizResponse(Object resource, String tqxString, String tqString) {
-<span class="nc" id="L90">    DataTable table = null;</span>
+<span class="nc" id="L92">    DataTable table = null;</span>
     try {
-<span class="nc bnc" id="L92" title="All 2 branches missed.">      if (resource instanceof InterpolatedValue) {</span>
-<span class="nc" id="L93">        table = getDataTable((InterpolatedValue)resource);</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">      if (resource instanceof InterpolatedValue) {</span>
+<span class="nc" id="L95">        table = getDataTable((InterpolatedValue) resource);</span>
       }
-<span class="nc bnc" id="L95" title="All 2 branches missed.">      if (resource instanceof MeasurementList) {</span>
-<span class="nc" id="L96">        table = getDataTable((MeasurementList)resource);</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">      if (resource instanceof MeasurementList) {</span>
+<span class="nc" id="L98">        table = getDataTable((MeasurementList) resource);</span>
       }
-<span class="nc bnc" id="L98" title="All 2 branches missed.">      if (resource instanceof InterpolatedValueList) {</span>
-<span class="nc" id="L99">        table = getDataTable((InterpolatedValueList)resource);</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">      if (resource instanceof InterpolatedValueList) {</span>
+<span class="nc" id="L101">        table = getDataTable((InterpolatedValueList) resource);</span>
       }
-    } 
-<span class="nc" id="L102">    catch (DataSourceException e) {</span>
-<span class="nc" id="L103">      return getGvizDataErrorResponse(e);</span>
-<span class="nc" id="L104">    }</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">      if (resource instanceof XYInterpolatedValueList) {</span>
+<span class="nc" id="L104">        table = getDataTable((XYInterpolatedValueList) resource);</span>
+      }
+    }
+<span class="nc" id="L107">    catch (DataSourceException e) {</span>
+<span class="nc" id="L108">      return getGvizDataErrorResponse(e);</span>
+<span class="nc" id="L109">    }</span>
 
-<span class="nc" id="L106">    return getGvizResponseFromDataTable(table, tqxString/*, tqString*/);</span>
+<span class="nc" id="L111">    return getGvizResponseFromDataTable(table, tqxString/*, tqString*/);</span>
   }
-  
+
   /**
-   * @param mValue 
+   * @param mValue
    *          mesured value
    * @return gviz DataTable
-   * @throws DataSourceException 
+   * @throws DataSourceException
    *          data source exception
    */
-  private static DataTable getDataTable(InterpolatedValue mValue) throws DataSourceException {    
-    
-<span class="nc" id="L118">    MeasurementType mType = mValue.getMeasurementType();</span>
-    
-<span class="nc" id="L120">    DataTable data = new DataTable();</span>
+  private static DataTable getDataTable(InterpolatedValue mValue) throws DataSourceException {
+
+<span class="nc" id="L123">    MeasurementType mType = mValue.getMeasurementType();</span>
+
+<span class="nc" id="L125">    DataTable data = new DataTable();</span>
 
     try {
-<span class="nc" id="L123">      data.addColumn(</span>
+<span class="nc" id="L128">      data.addColumn(</span>
           new ColumnDescription(&quot;Date&quot;, ValueType.DATETIME, &quot;Date &amp; Time&quot;));
-<span class="nc" id="L125">      data.addColumn(</span>
+<span class="nc" id="L130">      data.addColumn(</span>
           new ColumnDescription(mType.getName(), ValueType.NUMBER, mType.toString()));
-      
-<span class="nc" id="L128">      TableRow row = new TableRow();</span>
-      
-<span class="nc" id="L130">      XMLGregorianCalendar xgcal = DateConvert.convertDate(mValue.getStart());</span>
-<span class="nc" id="L131">      row.addCell(new DateTimeValue(convertTimestamp(xgcal)));</span>
-<span class="nc" id="L132">      row.addCell(mValue.getValue());</span>
 
-<span class="nc" id="L134">      data.addRow(row);</span>
+<span class="nc" id="L133">      TableRow row = new TableRow();</span>
+
+<span class="nc" id="L135">      XMLGregorianCalendar xgcal = DateConvert.convertDate(mValue.getStart());</span>
+<span class="nc" id="L136">      row.addCell(new DateTimeValue(convertTimestamp(xgcal)));</span>
+<span class="nc" id="L137">      row.addCell(mValue.getValue());</span>
+
+<span class="nc" id="L139">      data.addRow(row);</span>
     }
-<span class="nc" id="L136">    catch (TypeMismatchException | DatatypeConfigurationException e) {</span>
-<span class="nc" id="L137">      throw new DataSourceException(ReasonType.INTERNAL_ERROR, &quot;Problem adding data to table&quot;); // NOPMD</span>
-<span class="nc" id="L138">    }</span>
-<span class="nc" id="L139">    return data;</span>
+<span class="nc" id="L141">    catch (TypeMismatchException | DatatypeConfigurationException e) {</span>
+<span class="nc" id="L142">      throw new DataSourceException(ReasonType.INTERNAL_ERROR, &quot;Problem adding data to table&quot;); // NOPMD</span>
+<span class="nc" id="L143">    }</span>
+<span class="nc" id="L144">    return data;</span>
   }
-  
+
   /**
    * @param mList
    *          measurement list
@@ -147,35 +152,35 @@ import com.google.visualization.datasource.render.JsonRenderer;
    *          data source exception
    */
   private static DataTable getDataTable(MeasurementList mList) throws DataSourceException {
-<span class="nc" id="L150">    DataTable data = new DataTable();</span>
+<span class="nc" id="L155">    DataTable data = new DataTable();</span>
 
     // Sets up the columns requested by any SELECT in the datasource query
-<span class="nc" id="L153">    ArrayList&lt;Measurement&gt; measurements = mList.getMeasurements();</span>
-<span class="nc bnc" id="L154" title="All 2 branches missed.">    if (! measurements.isEmpty()) {</span>
-<span class="nc" id="L155">      String type = measurements.get(0).getMeasurementType();</span>
+<span class="nc" id="L158">    ArrayList&lt;Measurement&gt; measurements = mList.getMeasurements();</span>
+<span class="nc bnc" id="L159" title="All 2 branches missed.">    if (!measurements.isEmpty()) {</span>
+<span class="nc" id="L160">      String type = measurements.get(0).getMeasurementType();</span>
       try {
-<span class="nc" id="L157">        data.addColumn(</span>
+<span class="nc" id="L162">        data.addColumn(</span>
             new ColumnDescription(&quot;Timestamp&quot;, ValueType.DATETIME, &quot;Date &amp; Time&quot;));
-<span class="nc" id="L159">        data.addColumn(</span>
+<span class="nc" id="L164">        data.addColumn(</span>
             new ColumnDescription(type, ValueType.NUMBER, type));
-        
-<span class="nc bnc" id="L162" title="All 2 branches missed.">        for (Measurement measurement : measurements) {</span>
-<span class="nc" id="L163">          TableRow row = new TableRow();</span>
-<span class="nc" id="L164">          XMLGregorianCalendar xgcal = DateConvert.convertDate(measurement.getDate());</span>
-<span class="nc" id="L165">          row.addCell(new DateTimeValue(convertTimestamp(xgcal)));</span>
-<span class="nc" id="L166">          row.addCell(measurement.getValue());</span>
-<span class="nc" id="L167">          data.addRow(row);</span>
-<span class="nc" id="L168">        }</span>
+
+<span class="nc bnc" id="L167" title="All 2 branches missed.">        for (Measurement measurement : measurements) {</span>
+<span class="nc" id="L168">          TableRow row = new TableRow();</span>
+<span class="nc" id="L169">          XMLGregorianCalendar xgcal = DateConvert.convertDate(measurement.getDate());</span>
+<span class="nc" id="L170">          row.addCell(new DateTimeValue(convertTimestamp(xgcal)));</span>
+<span class="nc" id="L171">          row.addCell(measurement.getValue());</span>
+<span class="nc" id="L172">          data.addRow(row);</span>
+<span class="nc" id="L173">        }</span>
       }
-<span class="nc" id="L170">      catch (NumberFormatException e) {</span>
+<span class="nc" id="L175">      catch (NumberFormatException e) {</span>
         // String value in database couldn't be converted to a number.
-<span class="nc" id="L172">        throw new DataSourceException(ReasonType.INTERNAL_ERROR, &quot;Found bad number in database&quot;); // NOPMD</span>
+<span class="nc" id="L177">        throw new DataSourceException(ReasonType.INTERNAL_ERROR, &quot;Found bad number in database&quot;); // NOPMD</span>
       }
-<span class="nc" id="L174">      catch (TypeMismatchException | DatatypeConfigurationException e) {</span>
-<span class="nc" id="L175">          throw new DataSourceException(ReasonType.INTERNAL_ERROR, &quot;Problem adding data to table&quot;); // NOPMD</span>
-<span class="nc" id="L176">      } </span>
+<span class="nc" id="L179">      catch (TypeMismatchException | DatatypeConfigurationException e) {</span>
+<span class="nc" id="L180">        throw new DataSourceException(ReasonType.INTERNAL_ERROR, &quot;Problem adding data to table&quot;); // NOPMD</span>
+<span class="nc" id="L181">      }</span>
     }
-<span class="nc" id="L178">    return data;</span>
+<span class="nc" id="L183">    return data;</span>
   }
 
   /**
@@ -186,47 +191,86 @@ import com.google.visualization.datasource.render.JsonRenderer;
    *          data source exception
    */
   private static DataTable getDataTable(InterpolatedValueList mList) throws DataSourceException {
-<span class="nc" id="L189">    DataTable data = new DataTable();</span>
+<span class="nc" id="L194">    DataTable data = new DataTable();</span>
 
     // Sets up the columns requested by any SELECT in the datasource query
-<span class="nc" id="L192">    ArrayList&lt;InterpolatedValue&gt; values = mList.getInterpolatedValues();</span>
-<span class="nc bnc" id="L193" title="All 2 branches missed.">    if (! values.isEmpty()) {</span>
-<span class="nc" id="L194">      String type = values.get(0).getMeasurementType().getUnits();</span>
+<span class="nc" id="L197">    ArrayList&lt;InterpolatedValue&gt; values = mList.getInterpolatedValues();</span>
+<span class="nc bnc" id="L198" title="All 2 branches missed.">    if (!values.isEmpty()) {</span>
+<span class="nc" id="L199">      String type = values.get(0).getMeasurementType().getUnits();</span>
       try {
-<span class="nc" id="L196">        data.addColumn(</span>
+<span class="nc" id="L201">        data.addColumn(</span>
             new ColumnDescription(&quot;Timestamp&quot;, ValueType.DATETIME, &quot;Date &amp; Time&quot;));
-<span class="nc" id="L198">        data.addColumn(</span>
+<span class="nc" id="L203">        data.addColumn(</span>
             new ColumnDescription(type, ValueType.NUMBER, type));
-        
-<span class="nc bnc" id="L201" title="All 2 branches missed.">        for (InterpolatedValue value : values) {</span>
-<span class="nc" id="L202">          TableRow row = new TableRow();</span>
-<span class="nc" id="L203">          XMLGregorianCalendar xgcal = DateConvert.convertDate(value.getStart());</span>
-<span class="nc" id="L204">          row.addCell(new DateTimeValue(convertTimestamp(xgcal)));</span>
-<span class="nc" id="L205">          row.addCell(value.getValue());</span>
-<span class="nc" id="L206">          data.addRow(row);</span>
-<span class="nc" id="L207">        }</span>
+
+<span class="nc bnc" id="L206" title="All 2 branches missed.">        for (InterpolatedValue value : values) {</span>
+<span class="nc" id="L207">          TableRow row = new TableRow();</span>
+<span class="nc" id="L208">          XMLGregorianCalendar xgcal = DateConvert.convertDate(value.getStart());</span>
+<span class="nc" id="L209">          row.addCell(new DateTimeValue(convertTimestamp(xgcal)));</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">          if (value.getValue() != null) {</span>
+<span class="nc" id="L211">            row.addCell(value.getValue());</span>
+          }
+<span class="nc" id="L213">          data.addRow(row);</span>
+<span class="nc" id="L214">        }</span>
       }
-<span class="nc" id="L209">      catch (NumberFormatException e) {</span>
+<span class="nc" id="L216">      catch (NumberFormatException e) {</span>
         // String value in database couldn't be converted to a number.
-<span class="nc" id="L211">        throw new DataSourceException(ReasonType.INTERNAL_ERROR, &quot;Found bad number in database&quot;); // NOPMD</span>
+<span class="nc" id="L218">        throw new DataSourceException(ReasonType.INTERNAL_ERROR, &quot;Found bad number in database&quot;); // NOPMD</span>
       }
-<span class="nc" id="L213">      catch (TypeMismatchException | DatatypeConfigurationException e) {</span>
-<span class="nc" id="L214">          throw new DataSourceException(ReasonType.INTERNAL_ERROR, &quot;Problem adding data to table&quot;); // NOPMD</span>
-<span class="nc" id="L215">      } </span>
+<span class="nc" id="L220">      catch (TypeMismatchException | DatatypeConfigurationException e) {</span>
+<span class="nc" id="L221">        throw new DataSourceException(ReasonType.INTERNAL_ERROR, &quot;Problem adding data to table&quot;); // NOPMD</span>
+<span class="nc" id="L222">      }</span>
     }
-<span class="nc" id="L217">    return data;</span>
+<span class="nc" id="L224">    return data;</span>
   }
-  
+
+  /**
+   * @param list The XYInterpolatedValueList.
+   * @return The gviz data table.
+   * @throws DataSourceException if there is a data source problem.
+   */
+  protected static DataTable getDataTable(XYInterpolatedValueList list) throws DataSourceException {
+<span class="nc" id="L233">    DataTable data = new DataTable();</span>
+
+<span class="nc" id="L235">    ArrayList&lt;XYInterpolatedValue&gt; values = list.getValues();</span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">    if (!values.isEmpty()) {</span>
+<span class="nc" id="L237">      String xType = values.get(0).getXMeasurementType().getUnits();</span>
+<span class="nc" id="L238">      String yType = values.get(0).getYMeasurementType().getUnits();</span>
+      try {
+<span class="nc" id="L240">        data.addColumn(new ColumnDescription(xType, ValueType.NUMBER, xType));</span>
+<span class="nc" id="L241">        data.addColumn(new ColumnDescription(yType, ValueType.NUMBER, yType));</span>
+
+<span class="nc bnc" id="L243" title="All 2 branches missed.">        for (XYInterpolatedValue value : values) {</span>
+<span class="nc" id="L244">          TableRow row = new TableRow();</span>
+<span class="nc bnc" id="L245" title="All 4 branches missed.">          if (value.getXValue() != null &amp;&amp; value.getYValue() != null) {</span>
+<span class="nc" id="L246">            row.addCell(value.getXValue());</span>
+<span class="nc" id="L247">            row.addCell(value.getYValue());</span>
+          }
+<span class="nc" id="L249">          data.addRow(row);</span>
+<span class="nc" id="L250">        }</span>
+
+      }
+<span class="nc" id="L253">      catch (NumberFormatException e) {</span>
+        // String value in database couldn't be converted to a number.
+<span class="nc" id="L255">        throw new DataSourceException(ReasonType.INTERNAL_ERROR, &quot;Found bad number in database&quot;); // NOPMD</span>
+      }
+<span class="nc" id="L257">      catch (TypeMismatchException e) {</span>
+<span class="nc" id="L258">        throw new DataSourceException(ReasonType.INTERNAL_ERROR, &quot;Problem adding data to table&quot;); // NOPMD</span>
+<span class="nc" id="L259">      }</span>
+    }
+<span class="nc" id="L261">    return data;</span>
+  }
+
   /**
    * @param e
    *          DataSourceException
    * @return the error message
    */
-  private static String getGvizDataErrorResponse(DataSourceException e) {
-<span class="nc" id="L226">    return &quot;({status:'error',errors:[{reason:'&quot;</span>
+  protected static String getGvizDataErrorResponse(DataSourceException e) {
+<span class="nc" id="L270">    return &quot;({status:'error',errors:[{reason:'&quot;</span>
         + e.getReasonType().toString() + &quot;',message:'&quot; + e.getMessageToUser() + &quot;'}]});&quot;;
   }
-  
+
   /**
    * @param table
    *          gviz data table
@@ -234,48 +278,48 @@ import com.google.visualization.datasource.render.JsonRenderer;
    *          gviz query string
    * @return the gviz json response
    */
-  private static String getGvizResponseFromDataTable(DataTable table, String tqxString/*, String tqString*/) {
-<span class="nc" id="L238">    String response = &quot;google.visualization.Query.setResponse&quot;;</span>
-    
-<span class="nc" id="L240">    String reqId = null;</span>
-<span class="nc bnc" id="L241" title="All 2 branches missed.">    if (tqxString != null) {</span>
-<span class="nc" id="L242">      String[] tqxArray = tqxString.split(&quot;;&quot;);</span>
-<span class="nc bnc" id="L243" title="All 2 branches missed.">      for (String s : tqxArray) {</span>
-<span class="nc bnc" id="L244" title="All 2 branches missed.">        if (s.contains(&quot;reqId&quot;)) {</span>
-<span class="nc" id="L245">          reqId = s.substring(s.indexOf(&quot;:&quot;) + 1, s.length());</span>
+  protected static String getGvizResponseFromDataTable(DataTable table, String tqxString/*, String tqString*/) {
+<span class="nc" id="L282">    String response = &quot;google.visualization.Query.setResponse&quot;;</span>
+
+<span class="nc" id="L284">    String reqId = null;</span>
+<span class="nc bnc" id="L285" title="All 2 branches missed.">    if (tqxString != null) {</span>
+<span class="nc" id="L286">      String[] tqxArray = tqxString.split(&quot;;&quot;);</span>
+<span class="nc bnc" id="L287" title="All 2 branches missed.">      for (String s : tqxArray) {</span>
+<span class="nc bnc" id="L288" title="All 2 branches missed.">        if (s.contains(&quot;reqId&quot;)) {</span>
+<span class="nc" id="L289">          reqId = s.substring(s.indexOf(&quot;:&quot;) + 1, s.length());</span>
         }
       }
     }
-    
-<span class="nc" id="L250">    String tableString = JsonRenderer.renderDataTable(table, true, true, true).toString();</span>
-    
-<span class="nc" id="L252">    response += &quot;({status:'ok',&quot;;</span>
-    
-<span class="nc bnc" id="L254" title="All 2 branches missed.">    if (reqId != null) {</span>
-<span class="nc" id="L255">      response += &quot;reqId:'&quot; + reqId + &quot;',&quot;;</span>
+
+<span class="nc" id="L294">    String tableString = JsonRenderer.renderDataTable(table, true, true, true).toString();</span>
+
+<span class="nc" id="L296">    response += &quot;({status:'ok',&quot;;</span>
+
+<span class="nc bnc" id="L298" title="All 2 branches missed.">    if (reqId != null) {</span>
+<span class="nc" id="L299">      response += &quot;reqId:'&quot; + reqId + &quot;',&quot;;</span>
     }
-<span class="nc" id="L257">    response += &quot;table:&quot; + tableString + &quot;});&quot;;</span>
-    
-<span class="nc" id="L259">    return response;</span>
+<span class="nc" id="L301">    response += &quot;table:&quot; + tableString + &quot;});&quot;;</span>
+
+<span class="nc" id="L303">    return response;</span>
   }
-  
+
   /**
    * Takes an XMLGregorianCalendar (the native WattDepot timestamp format) and returns a 
    * com.ibm.icu.util.GregorianCalendar (&lt;b&gt;note:&lt;/b&gt;
    * this is &lt;b&gt;not&lt;/b&gt; the same as a java.util.GregorianCalendar!) with the time zone set to GMT,
    * but with the timestamp adjusted by the provided offset.
-   * 
+   *
    * For example, if the input value is 10 AM Hawaii Standard Time (HST is -10 hours from UTC), and
    * the offset is -600 minutes then the output will be 10 AM UTC, effectively subtracting 10 hours
    * from the timestamp (in addition to the conversion between types).
-   * 
+   *
    * This rigamarole is needed because the Google Visualization data source library only accepts
    * timestamps in UTC, and the Annonated Timeline visualization displays the UTC values. Without
    * this conversion, any graphs of meter data recorded in the Hawaii time zone (for instance) would
    * display the data 10 hours later in the graph, which is not acceptable. The timezoneOffset is
    * provided if in the future we want the capability to display data normalized to an arbitrary
    * time zone, rather than just the one the data was collected in.
-   * 
+   *
    * @param timestamp the input XMLGregorianCalendar timestamp
    * @return a com.ibm.icu.util.GregorianCalendar suitable for use by the Google visualization data
    * source library, and normalized by timeZoneOffset but with timeZone field set to GMT.
@@ -286,20 +330,20 @@ import com.google.visualization.datasource.render.JsonRenderer;
     // XMLGregorianCalendar -&gt; GregorianCalendar, extract milliseconds since epoch, feed that
     // to the IBM GregorianCalendar.
 
-<span class="nc" id="L289">    int timeZoneOffset = timestamp.getTimezone();</span>
-    
-<span class="nc" id="L291">    com.ibm.icu.util.GregorianCalendar gvizCal = new com.ibm.icu.util.GregorianCalendar();</span>
-    
+<span class="nc" id="L333">    int timeZoneOffset = timestamp.getTimezone();</span>
+
+<span class="nc" id="L335">    com.ibm.icu.util.GregorianCalendar gvizCal = new com.ibm.icu.util.GregorianCalendar();</span>
+
     // Added bonus, DateTimeValue only accepts GregorianCalendars if the timezone is GMT.
-<span class="nc" id="L294">    gvizCal.setTimeZone(com.ibm.icu.util.TimeZone.getTimeZone(&quot;GMT&quot;));</span>
-    
-<span class="nc" id="L296">    java.util.GregorianCalendar standardCal = timestamp.toGregorianCalendar();</span>
+<span class="nc" id="L338">    gvizCal.setTimeZone(com.ibm.icu.util.TimeZone.getTimeZone(&quot;GMT&quot;));</span>
+
+<span class="nc" id="L340">    java.util.GregorianCalendar standardCal = timestamp.toGregorianCalendar();</span>
 
     // Add the timeZoneOffset to the epoch time after converting to milliseconds
-<span class="nc" id="L299">    gvizCal.setTimeInMillis(standardCal.getTimeInMillis()</span>
+<span class="nc" id="L343">    gvizCal.setTimeInMillis(standardCal.getTimeInMillis()</span>
         + timeZoneOffset * MILLISECONDS_PER_MINUTE);
 
-<span class="nc" id="L302">    return gvizCal;</span>
+<span class="nc" id="L346">    return gvizCal;</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

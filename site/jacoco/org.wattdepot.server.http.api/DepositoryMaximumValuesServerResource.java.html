@@ -26,6 +26,8 @@ import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.MeasurementList;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.DepositoryMaximumValuesResource;
 
 /**
@@ -35,7 +37,7 @@ import org.wattdepot.common.http.api.DepositoryMaximumValuesResource;
  * @author Cam Moore
  * 
  */
-<span class="nc" id="L38">public class DepositoryMaximumValuesServerResource extends DepositoryMeasurementsIntervalServer</span>
+<span class="nc" id="L40">public class DepositoryMaximumValuesServerResource extends DepositoryMeasurementsIntervalServer</span>
     implements DepositoryMaximumValuesResource {
 
   /*
@@ -46,31 +48,37 @@ import org.wattdepot.common.http.api.DepositoryMaximumValuesResource;
    */
   @Override
   public InterpolatedValueList retrieve() {
-<span class="nc" id="L49">    InterpolatedValueList ret = new InterpolatedValueList();</span>
+<span class="nc" id="L51">    InterpolatedValueList ret = new InterpolatedValueList();</span>
     // loop from start till end getting the measurements in the interval
-<span class="nc" id="L51">    Date tempStart = startDate;</span>
-<span class="nc" id="L52">    Date tempEnd = incrementMinutes(tempStart, interval);</span>
+<span class="nc" id="L53">    Date tempStart = startDate;</span>
+<span class="nc" id="L54">    Date tempEnd = incrementMinutes(tempStart, interval);</span>
     try {
-<span class="nc" id="L54">      Depository deposit = depot.getDepository(depositoryId, orgId, true);</span>
-<span class="nc bnc" id="L55" title="All 2 branches missed.">      while (tempEnd.before(endDate)) {</span>
-<span class="nc" id="L56">        MeasurementList meas = getMeasurements(depositoryId, orgId, sensorId, tempStart, tempEnd);</span>
-<span class="nc" id="L57">        DescriptiveStats stat = new DescriptiveStats(meas, valueType);</span>
-<span class="nc" id="L58">        Double value = stat.getMax();</span>
-<span class="nc bnc" id="L59" title="All 2 branches missed.">        if (Double.isNaN(value)) {</span>
-<span class="nc" id="L60">          value = 0.0;</span>
+<span class="nc" id="L56">      Depository deposit = depot.getDepository(depositoryId, orgId, true);</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">      while (tempEnd.before(endDate)) {</span>
+<span class="nc" id="L58">        InterpolatedValue interpolatedValue = new InterpolatedValue(sensorId, 0.0, deposit.getMeasurementType(),</span>
+            tempStart);
+<span class="nc" id="L60">        MeasurementList meas = getMeasurements(depositoryId, orgId, sensorId, tempStart, tempEnd, interpolatedValue);</span>
+<span class="nc" id="L61">        DescriptiveStats stat = new DescriptiveStats(meas, valueType);</span>
+<span class="nc" id="L62">        Double value = stat.getMax();</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">        if (Double.isNaN(value)) {</span>
+<span class="nc" id="L64">          value = 0.0;</span>
         }
-<span class="nc" id="L62">        ret.getInterpolatedValues()</span>
-            .add(
-                new InterpolatedValue(sensorId, value, deposit.getMeasurementType(),
-                    tempStart));
-<span class="nc" id="L66">        tempStart = tempEnd;</span>
-<span class="nc" id="L67">        tempEnd = incrementMinutes(tempStart, interval);</span>
-<span class="nc" id="L68">      }</span>
+<span class="nc" id="L66">        interpolatedValue.setValue(value);</span>
+<span class="nc" id="L67">        ret.getInterpolatedValues().add(interpolatedValue);</span>
+<span class="nc" id="L68">        tempStart = tempEnd;</span>
+<span class="nc" id="L69">        tempEnd = incrementMinutes(tempStart, interval);</span>
+<span class="nc" id="L70">      }</span>
     }
-<span class="nc" id="L70">    catch (Exception e) {</span>
-<span class="nc" id="L71">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
-<span class="nc" id="L72">    }</span>
-<span class="nc" id="L73">    return ret;</span>
+<span class="nc" id="L72">    catch (IdNotFoundException e) {</span>
+<span class="nc" id="L73">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="nc" id="L74">      return null;</span>
+    }
+<span class="nc" id="L76">    catch (MisMatchedOwnerException e) {</span>
+<span class="nc" id="L77">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="nc" id="L78">      return null;</span>
+<span class="nc" id="L79">    }</span>
+
+<span class="nc" id="L81">    return ret;</span>
   }
 
 }

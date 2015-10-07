@@ -113,7 +113,7 @@ public class MeasurementRateSummary {
    * @return the type
    */
   public MeasurementType getType() {
-<span class="fc" id="L116">    return type;</span>
+<span class="nc" id="L116">    return type;</span>
   }
 
   /**
@@ -174,13 +174,13 @@ public class MeasurementRateSummary {
   public int hashCode() {
 <span class="fc" id="L175">    final int prime = 31;</span>
 <span class="fc" id="L176">    int result = 1;</span>
-<span class="pc bpc" id="L177" title="1 of 2 branches missed.">    result = prime * result + ((depositoryId == null) ? 0 : depositoryId.hashCode());</span>
-<span class="pc bpc" id="L178" title="1 of 2 branches missed.">    result = prime * result + ((oneMinuteCount == null) ? 0 : oneMinuteCount.hashCode());</span>
-<span class="pc bpc" id="L179" title="1 of 2 branches missed.">    result = prime * result + ((oneMinuteRate == null) ? 0 : oneMinuteRate.hashCode());</span>
-<span class="pc bpc" id="L180" title="1 of 2 branches missed.">    result = prime * result + ((sensorId == null) ? 0 : sensorId.hashCode());</span>
-<span class="pc bpc" id="L181" title="1 of 2 branches missed.">    result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());</span>
-<span class="pc bpc" id="L182" title="1 of 2 branches missed.">    result = prime * result + ((latestValue == null) ? 0 : latestValue.hashCode());</span>
-<span class="pc bpc" id="L183" title="1 of 2 branches missed.">    result = prime * result + ((totalCount == null) ? 0 : totalCount.hashCode());</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">    result = prime * result + ((depositoryId == null) ? 0 : depositoryId.hashCode());</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">    result = prime * result + ((oneMinuteCount == null) ? 0 : oneMinuteCount.hashCode());</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">    result = prime * result + ((oneMinuteRate == null) ? 0 : oneMinuteRate.hashCode());</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">    result = prime * result + ((sensorId == null) ? 0 : sensorId.hashCode());</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">    result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">    result = prime * result + ((latestValue == null) ? 0 : latestValue.hashCode());</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">    result = prime * result + ((totalCount == null) ? 0 : totalCount.hashCode());</span>
 <span class="fc" id="L184">    return result;</span>
   }
 
@@ -197,65 +197,65 @@ public class MeasurementRateSummary {
 <span class="fc bfc" id="L197" title="All 2 branches covered.">    if (obj == null) {</span>
 <span class="fc" id="L198">      return false;</span>
     }
-<span class="pc bpc" id="L200" title="1 of 2 branches missed.">    if (getClass() != obj.getClass()) {</span>
-<span class="nc" id="L201">      return false;</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">    if (getClass() != obj.getClass()) {</span>
+<span class="fc" id="L201">      return false;</span>
     }
 <span class="fc" id="L203">    MeasurementRateSummary other = (MeasurementRateSummary) obj;</span>
-<span class="pc bpc" id="L204" title="1 of 2 branches missed.">    if (latestValue == null) {</span>
-<span class="nc bnc" id="L205" title="All 2 branches missed.">      if (other.latestValue != null) {</span>
-<span class="nc" id="L206">        return false;</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">    if (latestValue == null) {</span>
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">      if (other.latestValue != null) {</span>
+<span class="fc" id="L206">        return false;</span>
       }
     }
-<span class="pc bpc" id="L209" title="1 of 2 branches missed.">    else if (!latestValue.equals(other.latestValue)) {</span>
-<span class="nc" id="L210">      return false;</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">    else if (!latestValue.equals(other.latestValue)) {</span>
+<span class="fc" id="L210">      return false;</span>
     }
-<span class="pc bpc" id="L212" title="1 of 2 branches missed.">    if (depositoryId == null) {</span>
-<span class="nc bnc" id="L213" title="All 2 branches missed.">      if (other.depositoryId != null) {</span>
-<span class="nc" id="L214">        return false;</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">    if (depositoryId == null) {</span>
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">      if (other.depositoryId != null) {</span>
+<span class="fc" id="L214">        return false;</span>
       }
     }
-<span class="pc bpc" id="L217" title="1 of 2 branches missed.">    else if (!depositoryId.equals(other.depositoryId)) {</span>
-<span class="nc" id="L218">      return false;</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">    else if (!depositoryId.equals(other.depositoryId)) {</span>
+<span class="fc" id="L218">      return false;</span>
     }
-<span class="pc bpc" id="L220" title="1 of 2 branches missed.">    if (oneMinuteCount == null) {</span>
-<span class="nc bnc" id="L221" title="All 2 branches missed.">      if (other.oneMinuteCount != null) {</span>
-<span class="nc" id="L222">        return false;</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">    if (oneMinuteCount == null) {</span>
+<span class="pc bpc" id="L221" title="1 of 2 branches missed.">      if (other.oneMinuteCount != null) {</span>
+<span class="fc" id="L222">        return false;</span>
       }
     }
-<span class="pc bpc" id="L225" title="1 of 2 branches missed.">    else if (!oneMinuteCount.equals(other.oneMinuteCount)) {</span>
-<span class="nc" id="L226">      return false;</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">    else if (!oneMinuteCount.equals(other.oneMinuteCount)) {</span>
+<span class="fc" id="L226">      return false;</span>
     }
-<span class="pc bpc" id="L228" title="1 of 2 branches missed.">    if (oneMinuteRate == null) {</span>
-<span class="nc bnc" id="L229" title="All 2 branches missed.">      if (other.oneMinuteRate != null) {</span>
-<span class="nc" id="L230">        return false;</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">    if (oneMinuteRate == null) {</span>
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">      if (other.oneMinuteRate != null) {</span>
+<span class="fc" id="L230">        return false;</span>
       }
     }
-<span class="pc bpc" id="L233" title="1 of 2 branches missed.">    else if (!oneMinuteRate.equals(other.oneMinuteRate)) {</span>
-<span class="nc" id="L234">      return false;</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">    else if (!oneMinuteRate.equals(other.oneMinuteRate)) {</span>
+<span class="fc" id="L234">      return false;</span>
     }
-<span class="pc bpc" id="L236" title="1 of 2 branches missed.">    if (sensorId == null) {</span>
-<span class="nc bnc" id="L237" title="All 2 branches missed.">      if (other.sensorId != null) {</span>
-<span class="nc" id="L238">        return false;</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">    if (sensorId == null) {</span>
+<span class="pc bpc" id="L237" title="1 of 2 branches missed.">      if (other.sensorId != null) {</span>
+<span class="fc" id="L238">        return false;</span>
       }
     }
-<span class="pc bpc" id="L241" title="1 of 2 branches missed.">    else if (!sensorId.equals(other.sensorId)) {</span>
-<span class="nc" id="L242">      return false;</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">    else if (!sensorId.equals(other.sensorId)) {</span>
+<span class="fc" id="L242">      return false;</span>
     }
-<span class="pc bpc" id="L244" title="1 of 2 branches missed.">    if (timestamp == null) {</span>
-<span class="nc bnc" id="L245" title="All 2 branches missed.">      if (other.timestamp != null) {</span>
-<span class="nc" id="L246">        return false;</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">    if (timestamp == null) {</span>
+<span class="pc bpc" id="L245" title="1 of 2 branches missed.">      if (other.timestamp != null) {</span>
+<span class="fc" id="L246">        return false;</span>
       }
     }
-<span class="pc bpc" id="L249" title="1 of 2 branches missed.">    else if (!timestamp.equals(other.timestamp)) {</span>
-<span class="nc" id="L250">      return false;</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">    else if (!timestamp.equals(other.timestamp)) {</span>
+<span class="fc" id="L250">      return false;</span>
     }
-<span class="pc bpc" id="L252" title="1 of 2 branches missed.">    if (totalCount == null) {</span>
-<span class="nc bnc" id="L253" title="All 2 branches missed.">      if (other.totalCount != null) {</span>
-<span class="nc" id="L254">        return false;</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">    if (totalCount == null) {</span>
+<span class="pc bpc" id="L253" title="1 of 2 branches missed.">      if (other.totalCount != null) {</span>
+<span class="fc" id="L254">        return false;</span>
       }
     }
-<span class="pc bpc" id="L257" title="1 of 2 branches missed.">    else if (!totalCount.equals(other.totalCount)) {</span>
-<span class="nc" id="L258">      return false;</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">    else if (!totalCount.equals(other.totalCount)) {</span>
+<span class="fc" id="L258">      return false;</span>
     }
 <span class="fc" id="L260">    return true;</span>
   }

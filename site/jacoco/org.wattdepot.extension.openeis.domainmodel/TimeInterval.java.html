@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>TimeInterval.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.extension.openeis.domainmodel</a> &gt; <span class="el_source">TimeInterval.java</span></div><h1>TimeInterval.java</h1><pre class="source lang-java linenums">/*
+ * This file is part of WattDepot.
+ *
+ *  Copyright (C) 2015  Cam Moore
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package org.wattdepot.extension.openeis.domainmodel;
+
+/**
+ * TimeInterval - Standard time intervals for doing OpenEIS analyses.
+ *
+ * @author Cam Moore
+ *         Created by carletonmoore on 4/16/15.
+ */
+<span class="nc" id="L28">public enum TimeInterval {</span>
+  /**
+   * One week.
+   */
+<span class="nc" id="L32">  ONE_WEEK(7, &quot;1w&quot;),</span>
+  /**
+   * Two weeks.
+   */
+<span class="nc" id="L36">  TWO_WEEKS(14, &quot;2w&quot;),</span>
+  /**
+   * Three weeks.
+   */
+<span class="nc" id="L40">  THREE_WEEKS(21, &quot;3w&quot;),</span>
+  /**
+   * Four weeks.
+   */
+<span class="nc" id="L44">  FOUR_WEEKS(28, &quot;4w&quot;),</span>
+  /**
+   * One month .
+   */
+<span class="nc" id="L48">  ONE_MONTH(31, &quot;1m&quot;),</span>
+  /**
+   * Two months.
+   */
+<span class="nc" id="L52">  TWO_MONTHS(62, &quot;2m&quot;),</span>
+  /**
+   * Three months.
+   */
+<span class="nc" id="L56">  THREE_MONTHS(93, &quot;3m&quot;),</span>
+  /**
+   * Four months.
+   */
+<span class="nc" id="L60">  FOUR_MONTHS(124, &quot;4m&quot;),</span>
+  /**
+   * Five months.
+   */
+<span class="nc" id="L64">  FIVE_MONTHS(155, &quot;5m&quot;),</span>
+  /**
+   * Six months.
+   */
+<span class="nc" id="L68">  SIX_MONTHS(186, &quot;6m&quot;),</span>
+  /**
+   * One year.
+   */
+<span class="nc" id="L72">  ONE_YEAR(365, &quot;1y&quot;);</span>
+
+
+  private final int numDays;
+  private final String parameter;
+
+  /**
+   * Creates a TimeInterval with a given number of days.
+   *
+   * @param days  the number of days.
+   * @param param the String encoding for this TimeInterval.
+   */
+<span class="nc" id="L84">  TimeInterval(int days, String param) {</span>
+<span class="nc" id="L85">    this.numDays = days;</span>
+<span class="nc" id="L86">    this.parameter = param;</span>
+<span class="nc" id="L87">  }</span>
+
+  /**
+   * @return the number of days associated with this TimeInterval.
+   */
+  public int getNumDays() {
+<span class="nc" id="L93">    return numDays;</span>
+  }
+
+  /**
+   * @return the string parameter associated with this TimeInterval.
+   */
+  public String getParameter() {
+<span class="nc" id="L100">    return parameter;</span>
+  }
+
+  /**
+   * Returns the defined TimeInterval for the given parameter, defaults to ONE_MONTH for
+   * unknown strings.
+   *
+   * @param parameter the pramamter.
+   * @return the defined TimeInterval for the given parameter, defaults to ONE_MONTH for
+   * unknown strings.
+   */
+  public static TimeInterval fromParameter(String parameter) {
+<span class="nc" id="L112">    TimeInterval interval = null;</span>
+<span class="nc bnc" id="L113" title="All 46 branches missed.">    switch (parameter) {</span>
+      case &quot;1w&quot;:
+<span class="nc" id="L115">        interval = TimeInterval.ONE_WEEK;</span>
+<span class="nc" id="L116">        break;</span>
+      case &quot;2w&quot;:
+<span class="nc" id="L118">        interval = TimeInterval.TWO_WEEKS;</span>
+<span class="nc" id="L119">        break;</span>
+      case &quot;3w&quot;:
+<span class="nc" id="L121">        interval = TimeInterval.THREE_WEEKS;</span>
+<span class="nc" id="L122">        break;</span>
+      case &quot;4w&quot;:
+<span class="nc" id="L124">        interval = TimeInterval.FOUR_WEEKS;</span>
+<span class="nc" id="L125">        break;</span>
+      case &quot;1m&quot;:
+<span class="nc" id="L127">        interval = TimeInterval.ONE_MONTH;</span>
+<span class="nc" id="L128">        break;</span>
+      case &quot;2m&quot;:
+<span class="nc" id="L130">        interval = TimeInterval.TWO_MONTHS;</span>
+<span class="nc" id="L131">        break;</span>
+      case &quot;3m&quot;:
+<span class="nc" id="L133">        interval = TimeInterval.THREE_MONTHS;</span>
+<span class="nc" id="L134">        break;</span>
+      case &quot;4m&quot;:
+<span class="nc" id="L136">        interval = TimeInterval.FOUR_MONTHS;</span>
+<span class="nc" id="L137">        break;</span>
+      case &quot;5m&quot;:
+<span class="nc" id="L139">        interval = TimeInterval.FIVE_MONTHS;</span>
+<span class="nc" id="L140">        break;</span>
+      case &quot;6m&quot;:
+<span class="nc" id="L142">        interval = TimeInterval.SIX_MONTHS;</span>
+<span class="nc" id="L143">        break;</span>
+      case &quot;1y&quot;:
+<span class="nc" id="L145">        interval = TimeInterval.ONE_YEAR;</span>
+<span class="nc" id="L146">        break;</span>
+      default:
+<span class="nc" id="L148">        interval = TimeInterval.ONE_MONTH;</span>
+    }
+<span class="nc" id="L150">    return interval;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

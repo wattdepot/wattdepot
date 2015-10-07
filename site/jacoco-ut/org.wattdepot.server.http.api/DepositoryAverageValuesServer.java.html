@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DepositoryAverageValuesServer.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">DepositoryAverageValuesServer.java</span></div><h1>DepositoryAverageValuesServer.java</h1><pre class="source lang-java linenums">/**
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DepositoryAverageValuesServer.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.source.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">DepositoryAverageValuesServer.java</span></div><h1>DepositoryAverageValuesServer.java</h1><pre class="source lang-java linenums">/**
  * DepositoryAverageValuesServer.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
@@ -106,42 +106,42 @@ import org.wattdepot.common.util.tstamp.Tstamp;
                   endInterval);
 <span class="nc" id="L107">              DescriptiveStatistics stats = new DescriptiveStatistics();</span>
 <span class="nc" id="L108">              Date previous = null;</span>
-<span class="nc bnc" id="L109" title="All 2 branches missed.">              for (int j = 0; j &lt; intervalList.size(); j++) {</span>
-<span class="nc" id="L110">                Date timestamp = DateConvert.convertXMLCal(intervalList.get(j));</span>
-<span class="nc" id="L111">                Double value = null;</span>
-<span class="nc bnc" id="L112" title="All 2 branches missed.">                if (&quot;point&quot;.equals(dataType)) {</span>
-<span class="nc" id="L113">                  value = getValue(depositoryId, orgId, sensorId, timestamp);</span>
+<span class="nc" id="L109">              InterpolatedValue interpolatedValue = new InterpolatedValue(sensorId, 0.0, depository.getMeasurementType(), valueDate);</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">              for (int j = 0; j &lt; intervalList.size(); j++) {</span>
+<span class="nc" id="L111">                Date timestamp = DateConvert.convertXMLCal(intervalList.get(j));</span>
+<span class="nc" id="L112">                Double value = null;</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">                if (&quot;point&quot;.equals(dataType)) {</span>
+<span class="nc" id="L114">                  value = getValue(depositoryId, orgId, sensorId, timestamp, interpolatedValue);</span>
                 }
                 else {
-<span class="nc bnc" id="L116" title="All 2 branches missed.">                  if (previous != null) {</span>
-<span class="nc" id="L117">                    value = getValue(depositoryId, orgId, sensorId, previous, timestamp);</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">                  if (previous != null) {</span>
+<span class="nc" id="L118">                    value = getValue(depositoryId, orgId, sensorId, previous, timestamp, interpolatedValue);</span>
                   }
-<span class="nc" id="L119">                  previous = timestamp;</span>
+<span class="nc" id="L120">                  previous = timestamp;</span>
                 }
-<span class="nc bnc" id="L121" title="All 2 branches missed.">                if (value != null) {</span>
-<span class="nc" id="L122">                  stats.addValue(value);</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">                if (value != null) {</span>
+<span class="nc" id="L123">                  stats.addValue(value);</span>
                 }
               }
 
-<span class="nc bnc" id="L126" title="All 2 branches missed.">              if (!Double.isNaN(stats.getMean())) {</span>
-<span class="nc" id="L127">                ret.getInterpolatedValues().add(</span>
-                    new InterpolatedValue(sensorId, stats.getMean(), depository
-                        .getMeasurementType(), valueDate));
+<span class="nc bnc" id="L127" title="All 2 branches missed.">              if (!Double.isNaN(stats.getMean())) {</span>
+<span class="nc" id="L128">                interpolatedValue.setValue(stats.getMean());</span>
+<span class="nc" id="L129">                ret.getInterpolatedValues().add(interpolatedValue);</span>
               }
             }
           }
         }
 <span class="nc" id="L134">        catch (IdNotFoundException e) {</span>
-          // TODO Auto-generated catch block
-<span class="nc" id="L136">          e.printStackTrace();</span>
+<span class="nc" id="L135">          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="nc" id="L136">          return null;</span>
         }
 <span class="nc" id="L138">        catch (ParseException e) {</span>
-          // TODO Auto-generated catch block
-<span class="nc" id="L140">          e.printStackTrace();</span>
+<span class="nc" id="L139">          setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());</span>
+<span class="nc" id="L140">          return null;</span>
         }
 <span class="nc" id="L142">        catch (DatatypeConfigurationException e) {</span>
-          // TODO Auto-generated catch block
-<span class="nc" id="L144">          e.printStackTrace();</span>
+<span class="nc" id="L143">          setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());</span>
+<span class="nc" id="L144">          return null;</span>
 <span class="nc" id="L145">        }</span>
 <span class="nc" id="L146">        return ret;</span>
       }
@@ -161,40 +161,45 @@ import org.wattdepot.common.util.tstamp.Tstamp;
    * @param orgId The organization.
    * @param sensorId The sensor.
    * @param timestamp When to get the value.
+   * @param interpolatedValue the interpolated value used to update definedSensors and reportingSensors.
    * @return The value.
    */
-  private Double getValue(String depositoryId, String orgId, String sensorId, Date timestamp) {
+  private Double getValue(String depositoryId, String orgId, String sensorId, Date timestamp, InterpolatedValue interpolatedValue) {
     try {
-<span class="nc" id="L168">      Sensor sensor = depot.getSensor(sensorId, orgId, false);</span>
-<span class="nc" id="L169">      Double value = 0.0;</span>
-<span class="nc bnc" id="L170" title="All 2 branches missed.">      if (sensor != null) { // just get sensor value</span>
+<span class="nc" id="L169">      Sensor sensor = depot.getSensor(sensorId, orgId, false);</span>
+<span class="nc" id="L170">      Double value = 0.0;</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">      if (sensor != null) { // just get sensor value</span>
+<span class="nc" id="L172">        interpolatedValue.addDefinedSensor(sensorId);</span>
         try {
-<span class="nc" id="L172">          value = depot.getValue(depositoryId, orgId, sensor.getId(), timestamp, true);</span>
+<span class="nc" id="L174">          value = depot.getValue(depositoryId, orgId, sensor.getId(), timestamp, true);</span>
+<span class="nc" id="L175">          interpolatedValue.addReportingSensor(sensorId);</span>
         }
-<span class="nc" id="L174">        catch (NoMeasurementException e) {</span>
-<span class="nc" id="L175">          return null;</span>
-<span class="nc" id="L176">        }</span>
+<span class="nc" id="L177">        catch (NoMeasurementException e) {</span>
+<span class="nc" id="L178">          return null;</span>
+<span class="nc" id="L179">        }</span>
       }
       else { // check for sensor group
-<span class="nc" id="L179">        SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);</span>
-<span class="nc bnc" id="L180" title="All 2 branches missed.">        if (group != null) {</span>
-<span class="nc bnc" id="L181" title="All 2 branches missed.">          for (String s : group.getSensors()) {</span>
+<span class="nc" id="L182">        SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">        if (group != null) {</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">          for (String s : group.getSensors()) {</span>
             try {
-<span class="nc" id="L183">              value += depot.getValue(depositoryId, orgId, s, timestamp, true);</span>
+<span class="nc" id="L186">              interpolatedValue.addDefinedSensor(s);</span>
+<span class="nc" id="L187">              value += depot.getValue(depositoryId, orgId, s, timestamp, true);</span>
+<span class="nc" id="L188">              interpolatedValue.addReportingSensor(s);</span>
             }
-<span class="nc" id="L185">            catch (NoMeasurementException e) { // NOPMD</span>
+<span class="nc" id="L190">            catch (NoMeasurementException e) { // NOPMD</span>
               // add 0 to value so do nothing.
-<span class="nc" id="L187">            }</span>
-<span class="nc" id="L188">          }</span>
+<span class="nc" id="L192">            }</span>
+<span class="nc" id="L193">          }</span>
         }
       }
-<span class="nc" id="L191">      return value;</span>
+<span class="nc" id="L196">      return value;</span>
     }
-<span class="nc" id="L193">    catch (MisMatchedOwnerException e) {</span>
-<span class="nc" id="L194">      return null;</span>
+<span class="nc" id="L198">    catch (MisMatchedOwnerException e) {</span>
+<span class="nc" id="L199">      return null;</span>
     }
-<span class="nc" id="L196">    catch (IdNotFoundException e) {</span>
-<span class="nc" id="L197">      return null;</span>
+<span class="nc" id="L201">    catch (IdNotFoundException e) {</span>
+<span class="nc" id="L202">      return null;</span>
     }
   }
 
@@ -204,42 +209,47 @@ import org.wattdepot.common.util.tstamp.Tstamp;
    * @param sensorId The sensor.
    * @param start The start of the interval.
    * @param end The end of the interval.
+   * @param interpolatedValue the value used to update the defined and reporting sensors.
    * @return The value.
    */
-  private Double getValue(String depositoryId, String orgId, String sensorId, Date start, Date end) {
+  private Double getValue(String depositoryId, String orgId, String sensorId, Date start, Date end, InterpolatedValue interpolatedValue) {
     try {
-<span class="nc" id="L211">      Sensor sensor = depot.getSensor(sensorId, orgId, false);</span>
-<span class="nc" id="L212">      Double value = 0.0;</span>
-<span class="nc bnc" id="L213" title="All 2 branches missed.">      if (sensor != null) { // just get sensor value</span>
+<span class="nc" id="L217">      Sensor sensor = depot.getSensor(sensorId, orgId, false);</span>
+<span class="nc" id="L218">      Double value = 0.0;</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">      if (sensor != null) { // just get sensor value</span>
+<span class="nc" id="L220">        interpolatedValue.addDefinedSensor(sensorId);</span>
         try {
-<span class="nc" id="L215">          value = depot.getValue(depositoryId, orgId, sensor.getId(), start, end, true);</span>
+<span class="nc" id="L222">          value = depot.getValue(depositoryId, orgId, sensor.getId(), start, end, true);</span>
+<span class="nc" id="L223">          interpolatedValue.addReportingSensor(sensorId);</span>
         }
-<span class="nc" id="L217">        catch (NoMeasurementException e) {</span>
-<span class="nc" id="L218">          return null;</span>
-<span class="nc" id="L219">        }</span>
+<span class="nc" id="L225">        catch (NoMeasurementException e) {</span>
+<span class="nc" id="L226">          return null;</span>
+<span class="nc" id="L227">        }</span>
       }
       else { // check for sensor group
-<span class="nc" id="L222">        SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);</span>
-<span class="nc bnc" id="L223" title="All 2 branches missed.">        if (group != null) {</span>
-<span class="nc bnc" id="L224" title="All 2 branches missed.">          for (String s : group.getSensors()) {</span>
+<span class="nc" id="L230">        SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);</span>
+<span class="nc bnc" id="L231" title="All 2 branches missed.">        if (group != null) {</span>
+<span class="nc bnc" id="L232" title="All 2 branches missed.">          for (String s : group.getSensors()) {</span>
+<span class="nc" id="L233">            interpolatedValue.addDefinedSensor(s);</span>
             try {
-<span class="nc" id="L226">              value += depot.getValue(depositoryId, orgId, s, start, end, true);</span>
+<span class="nc" id="L235">              value += depot.getValue(depositoryId, orgId, s, start, end, true);</span>
+<span class="nc" id="L236">              interpolatedValue.addReportingSensor(s);</span>
             }
-<span class="nc" id="L228">            catch (NoMeasurementException e) { // NOPMD</span>
+<span class="nc" id="L238">            catch (NoMeasurementException e) { // NOPMD</span>
               // add 0 to value so do nothing.
-<span class="nc" id="L230">            }</span>
-<span class="nc" id="L231">          }</span>
+<span class="nc" id="L240">            }</span>
+<span class="nc" id="L241">          }</span>
         }
       }
-<span class="nc" id="L234">      return value;</span>
+<span class="nc" id="L244">      return value;</span>
     }
-<span class="nc" id="L236">    catch (MisMatchedOwnerException e) {</span>
-<span class="nc" id="L237">      return null;</span>
+<span class="nc" id="L246">    catch (MisMatchedOwnerException e) {</span>
+<span class="nc" id="L247">      return null;</span>
     }
-<span class="nc" id="L239">    catch (IdNotFoundException e) {</span>
-<span class="nc" id="L240">      return null;</span>
+<span class="nc" id="L249">    catch (IdNotFoundException e) {</span>
+<span class="nc" id="L250">      return null;</span>
     }
 
   }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

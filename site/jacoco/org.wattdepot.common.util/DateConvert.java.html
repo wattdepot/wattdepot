@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DateConvert.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.util</a> &gt; <span class="el_source">DateConvert.java</span></div><h1>DateConvert.java</h1><pre class="source lang-java linenums">/**
  * DateConvert.java This file is part of WattDepot.
- *
+ * &lt;p/&gt;
  * Copyright (C) 2013  Cam Moore
- *
+ * &lt;p/&gt;
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * &lt;p/&gt;
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * &lt;p/&gt;
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
  */
 package org.wattdepot.common.util;
+
+import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.util.tstamp.Tstamp;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,16 +33,16 @@ import javax.xml.datatype.XMLGregorianCalendar;
 /**
  * DateUtilities - Utility functions dealing with java.util.Date and
  * java.xml.datatype.XMLGregorianCalendar instances.
- * 
+ *
  * @author Cam Moore
- * 
+ *
  */
-<span class="nc" id="L37">public class DateConvert {</span>
+<span class="nc" id="L40">public class DateConvert {</span>
 
   /**
    * Parses the given String representation of an XMLGregorianCalendar and
    * returns the instance.
-   * 
+   *
    * @param s
    *          The String representation of an XMLGregorianCalendar with the
    *          format yyyy-MM-dd'T'HH:mm:ss.SSS
@@ -51,10 +54,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
    */
   public static XMLGregorianCalendar parseCalString(String s) throws ParseException,
       DatatypeConfigurationException {
-<span class="fc" id="L54">    XMLGregorianCalendar result = null;</span>
-<span class="fc" id="L55">    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(&quot;yyyy-MM-dd'T'HH:mm:ss.SSSX&quot;);</span>
-<span class="fc" id="L56">    result = convertDate(simpleDateFormat.parse(s));</span>
-<span class="fc" id="L57">    return result;</span>
+<span class="fc" id="L57">    XMLGregorianCalendar result = null;</span>
+<span class="fc" id="L58">    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(&quot;yyyy-MM-dd'T'HH:mm:ss.SSSX&quot;);</span>
+<span class="fc" id="L59">    result = convertDate(simpleDateFormat.parse(s));</span>
+<span class="fc" id="L60">    return result;</span>
   }
 
   /**
@@ -68,12 +71,12 @@ import javax.xml.datatype.XMLGregorianCalendar;
    */
   public static Date parseCalStringToDate(String s) throws ParseException,
       DatatypeConfigurationException {
-<span class="fc" id="L71">    return convertXMLCal(parseCalString(s));</span>
+<span class="fc" id="L74">    return convertXMLCal(parseCalString(s));</span>
   }
 
   /**
    * Converts a java.util.Date to a javax.xml.datatype.XMLGregorianCalendar.
-   * 
+   *
    * @param date
    *          The Date to convert.
    * @return The XMLGregorianCalendar representation of the given Date.
@@ -81,22 +84,72 @@ import javax.xml.datatype.XMLGregorianCalendar;
    *           if there is a problem instantiating the DatatypeFactory.
    */
   public static XMLGregorianCalendar convertDate(Date date) throws DatatypeConfigurationException {
-<span class="fc" id="L84">    XMLGregorianCalendar result = null;</span>
-<span class="fc" id="L85">    GregorianCalendar gregorianCalendar = (GregorianCalendar) GregorianCalendar.getInstance();</span>
-<span class="fc" id="L86">    gregorianCalendar.setTime(date);</span>
-<span class="fc" id="L87">    result = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);</span>
-<span class="fc" id="L88">    return result;</span>
+<span class="fc" id="L87">    XMLGregorianCalendar result = null;</span>
+<span class="fc" id="L88">    GregorianCalendar gregorianCalendar = (GregorianCalendar) GregorianCalendar.getInstance();</span>
+<span class="fc" id="L89">    gregorianCalendar.setTime(date);</span>
+<span class="fc" id="L90">    result = DatatypeFactory.newInstance().newXMLGregorianCalendar(gregorianCalendar);</span>
+<span class="fc" id="L91">    return result;</span>
   }
 
   /**
    * Converts the given XMLGregorianCalendar to a java.util.Date.
-   * 
+   *
    * @param xgc
    *          The XMLGregorianCalendar.
    * @return The Date representation of the XMLGregorianCalendar.
    */
   public static Date convertXMLCal(XMLGregorianCalendar xgc) {
-<span class="fc" id="L99">    return xgc.toGregorianCalendar().getTime();</span>
+<span class="fc" id="L102">    return xgc.toGregorianCalendar().getTime();</span>
   }
+
+  /**
+   * Returns the beginning of the hour or day given the time and hour or daily choice.
+   * @param time              the current time.
+   * @param hourlyDailyChoice how wide the window should be.
+   * @return the beginning of the window based upon the current time and window width.
+   */
+  public static XMLGregorianCalendar getBeginning(XMLGregorianCalendar time, String hourlyDailyChoice) {
+<span class="nc" id="L112">    XMLGregorianCalendar begin = null;</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">    if (hourlyDailyChoice.equals(Labels.HOURLY)) {</span>
+<span class="nc" id="L114">      begin = Tstamp.makeTimestamp(time.toGregorianCalendar().getTimeInMillis());</span>
+<span class="nc" id="L115">      begin.setMinute(0);</span>
+<span class="nc" id="L116">      begin.setSecond(0);</span>
+<span class="nc" id="L117">      begin.setMillisecond(0);</span>
+    }
+<span class="nc bnc" id="L119" title="All 2 branches missed.">    else if (hourlyDailyChoice.equals(Labels.DAILY)) {</span>
+<span class="nc" id="L120">      begin = Tstamp.makeTimestamp(time.toGregorianCalendar().getTimeInMillis());</span>
+<span class="nc" id="L121">      begin.setHour(0);</span>
+<span class="nc" id="L122">      begin.setMinute(0);</span>
+<span class="nc" id="L123">      begin.setSecond(0);</span>
+<span class="nc" id="L124">      begin.setMillisecond(0);</span>
+    }
+<span class="nc" id="L126">    return begin;</span>
+  }
+
+  /**
+   * Returns the end of the hour or day give the time and the hour or daily choice.
+   * @param time              the current time.
+   * @param hourlyDailyChoice the width of the window.
+   * @return the end of the window based upon the current time and the window width.
+   */
+  public static XMLGregorianCalendar getEnding(XMLGregorianCalendar time, String hourlyDailyChoice) {
+<span class="nc" id="L136">    XMLGregorianCalendar end = null;</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">    if (hourlyDailyChoice.equals(Labels.HOURLY)) {</span>
+<span class="nc" id="L138">      end = Tstamp.incrementHours(time, 1);</span>
+<span class="nc" id="L139">      end.setMinute(0);</span>
+<span class="nc" id="L140">      end.setSecond(0);</span>
+<span class="nc" id="L141">      end.setMillisecond(0);</span>
+    }
+<span class="nc bnc" id="L143" title="All 2 branches missed.">    else if (hourlyDailyChoice.equals(Labels.DAILY)) {</span>
+<span class="nc" id="L144">      end = Tstamp.incrementDays(time, 1);</span>
+<span class="nc" id="L145">      end.setHour(0);</span>
+<span class="nc" id="L146">      end.setMinute(0);</span>
+<span class="nc" id="L147">      end.setSecond(0);</span>
+<span class="nc" id="L148">      end.setMillisecond(0);</span>
+    }
+<span class="nc" id="L150">    return end;</span>
+  }
+
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

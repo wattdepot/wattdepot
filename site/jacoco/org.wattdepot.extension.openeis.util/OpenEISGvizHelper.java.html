@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>OpenEISGvizHelper.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.extension.openeis.util</a> &gt; <span class="el_source">OpenEISGvizHelper.java</span></div><h1>OpenEISGvizHelper.java</h1><pre class="source lang-java linenums">/*
+ * This file is part of WattDepot.
+ *
+ *  Copyright (C) 2015  Cam Moore
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package org.wattdepot.extension.openeis.util;
+
+import com.google.visualization.datasource.base.DataSourceException;
+import com.google.visualization.datasource.base.TypeMismatchException;
+import com.google.visualization.datasource.datatable.ColumnDescription;
+import com.google.visualization.datasource.datatable.DataTable;
+import com.google.visualization.datasource.datatable.TableRow;
+import com.google.visualization.datasource.datatable.value.ValueType;
+import com.google.visualization.datasource.render.JsonRenderer;
+import org.wattdepot.common.domainmodel.InterpolatedValue;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
+import org.wattdepot.extension.openeis.domainmodel.XYInterpolatedValuesWithAnalysis;
+
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Map;
+
+/**
+ * GvizHelper - Utility class that handles Google Visualization using the Google Visualization
+ * Datasource library.
+ * &lt;p/&gt;
+ * * @see &lt;a
+ * href=&quot;http://code.google.com/apis/chart/interactive/docs/dev/implementing_data_source.html&quot;&gt;Google
+ * Visualization Datasource API&lt;/a&gt;
+ *
+ * @author Cam Moore
+ */
+<span class="nc" id="L49">public class OpenEISGvizHelper extends org.wattdepot.common.util.GvizHelper {</span>
+
+  /**
+   * @param resource  server resource object
+   * @param tqxString gviz tqx query string, i.e., request id
+   * @param tqString  gviz tq query string, selectable fields
+   * @return gviz response
+   */
+  public static String getDailyGvizResponse(Object resource, String tqxString, String tqString) {
+<span class="nc" id="L58">    DataTable table = null;</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">    if (resource instanceof InterpolatedValueList) {</span>
+<span class="nc" id="L60">      InterpolatedValueList list = (InterpolatedValueList) resource;</span>
+<span class="nc" id="L61">      table = getRow24HourPerDayDataTable(list);</span>
+<span class="nc" id="L62">      StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L63">      sb.append(&quot;google.visualization.Query.setResponse&quot;);</span>
+
+<span class="nc" id="L65">      String reqId = null;</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">      if (tqxString != null) {</span>
+<span class="nc" id="L67">        String[] tqxArray = tqxString.split(&quot;;&quot;);</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        for (String s : tqxArray) {</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">          if (s.contains(&quot;reqId&quot;)) {</span>
+<span class="nc" id="L70">            reqId = s.substring(s.indexOf(&quot;:&quot;) + 1, s.length());</span>
+          }
+        }
+      }
+
+<span class="nc" id="L75">      String tableString = JsonRenderer.renderDataTable(table, true, true, true).toString();</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">      if (list.getMissingData().size() &gt; 0) {</span>
+<span class="nc" id="L77">        sb.append(&quot;({status:'warning',&quot;);</span>
+      }
+      else {
+<span class="nc" id="L80">        sb.append(&quot;({status:'ok',&quot;);</span>
+      }
+<span class="nc bnc" id="L82" title="All 2 branches missed.">      if (reqId != null) {</span>
+<span class="nc" id="L83">        sb.append(&quot;reqId:'&quot; + reqId + &quot;',&quot;);</span>
+      }
+<span class="nc bnc" id="L85" title="All 2 branches missed.">      if (list.getMissingData().size() &gt; 0) {</span>
+<span class="nc" id="L86">        sb.append(&quot;warnings:[&quot;);</span>
+<span class="nc" id="L87">        SimpleDateFormat df = new SimpleDateFormat(&quot;yyyy-MM-dd'T'HH:mm:ss.SSSZ&quot;);</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        for (InterpolatedValue v : list.getMissingData()) {</span>
+<span class="nc" id="L89">          sb.append(&quot;{reason: 'missing data &quot; + df.format(v.getStart()) + &quot; to &quot; + df.format(v.getEnd()) + &quot;'},&quot;);</span>
+<span class="nc" id="L90">        }</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (sb.length() &gt; 0) {</span>
+<span class="nc" id="L92">          sb.substring(0, sb.length() - 1);</span>
+        }
+<span class="nc" id="L94">        sb.append(&quot;],&quot;);</span>
+      }
+<span class="nc" id="L96">      sb.append(&quot;table:&quot; + tableString + &quot;});&quot;);</span>
+
+<span class="nc" id="L98">      return sb.toString();</span>
+    }
+<span class="nc" id="L100">    return getGvizResponseFromDataTable(table, tqxString/*, tqString*/);</span>
+  }
+
+  /**
+   * Returns a DataTable representing a line graph who's x values are the percentage.
+   *
+   * @param valueList The values.
+   * @return The DataTable suitable for a line graph.
+   */
+  public static DataTable getPercentageDataTable(InterpolatedValueList valueList) {
+<span class="nc" id="L110">    DataTable data = new DataTable();</span>
+<span class="nc" id="L111">    ArrayList&lt;InterpolatedValue&gt; values = valueList.getInterpolatedValues();</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">    if (!values.isEmpty()) {</span>
+<span class="nc" id="L113">      data.addColumn(new ColumnDescription(&quot;Percent&quot;, ValueType.NUMBER, &quot;Percent&quot;));</span>
+<span class="nc" id="L114">      data.addColumn(new ColumnDescription(&quot;Power&quot;, ValueType.NUMBER, &quot;W&quot;));</span>
+<span class="nc" id="L115">      int count = 0;</span>
+<span class="nc" id="L116">      int size = values.size();</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">      for (InterpolatedValue v : values) {</span>
+<span class="nc" id="L118">        TableRow row = new TableRow();</span>
+<span class="nc" id="L119">        row.addCell((100.0 * count++) / size);</span>
+<span class="nc" id="L120">        row.addCell(v.getValue());</span>
+        try {
+<span class="nc" id="L122">          data.addRow(row);</span>
+        }
+<span class="nc" id="L124">        catch (TypeMismatchException e) {</span>
+<span class="nc" id="L125">          e.printStackTrace();</span>
+<span class="nc" id="L126">        }</span>
+<span class="nc" id="L127">      }</span>
+    }
+<span class="nc" id="L129">    return data;</span>
+  }
+
+  /**
+   * Returns the daily DataTable based upon one value per hour.
+   *
+   * @param valueList The hourly values.
+   * @return The DataTable with a row per day an 24 hourly entries.
+   */
+  public static DataTable getRow24HourPerDayDataTable(InterpolatedValueList valueList) {
+<span class="nc" id="L139">    DataTable data = new DataTable();</span>
+<span class="nc" id="L140">    DateFormat df = new SimpleDateFormat(&quot;MM/dd/yyyy&quot;);</span>
+    // Sets up the columns requested by any SELECT in the datasource query
+<span class="nc" id="L142">    ArrayList&lt;InterpolatedValue&gt; values = valueList.getInterpolatedValues();</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">    if (!values.isEmpty()) {</span>
+<span class="nc" id="L144">      int numDays = values.size() / 24;</span>
+<span class="nc" id="L145">      data.addColumn(</span>
+        new ColumnDescription(&quot;Date&quot;, ValueType.TEXT, &quot;Date&quot;));
+<span class="nc bnc" id="L147" title="All 2 branches missed.">      for (int i = 0; i &lt; 24; i++) {</span>
+<span class="nc" id="L148">        data.addColumn(</span>
+          new ColumnDescription(&quot;Hour&quot; + i, ValueType.NUMBER, &quot;&quot; + i));
+      }
+<span class="nc bnc" id="L151" title="All 2 branches missed.">      for (int j = 0; j &lt; numDays; j++) {</span>
+<span class="nc" id="L152">        TableRow row = new TableRow();</span>
+<span class="nc" id="L153">        row.addCell(df.format(values.get(j * 24).getStart())); // hour</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">        for (int k = 0; k &lt; 24; k++) {</span>
+<span class="nc" id="L155">          Double value = values.get(j * 24 + k).getValue();</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">          if (value != null) {</span>
+<span class="nc" id="L157">            row.addCell(value);</span>
+          }
+        }
+        try {
+<span class="nc" id="L161">          data.addRow(row);</span>
+        }
+<span class="nc" id="L163">        catch (TypeMismatchException e) {</span>
+<span class="nc" id="L164">          e.printStackTrace();</span>
+<span class="nc" id="L165">        }</span>
+      }
+    }
+<span class="nc" id="L168">    return data;</span>
+  }
+
+  /**
+   * @param resource  server resource object
+   * @param tqxString gviz tqx query string, i.e., request id
+   * @param tqString  gviz tq query string, selectable fields
+   * @return gviz response
+   */
+  public static String getPercentageGvizResponse(Object resource, String tqxString, String tqString) {
+<span class="nc" id="L178">    DataTable table = null;</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">    if (resource instanceof InterpolatedValueList) {</span>
+<span class="nc" id="L180">      InterpolatedValueList list = (InterpolatedValueList) resource;</span>
+<span class="nc" id="L181">      table = getPercentageDataTable(list);</span>
+<span class="nc" id="L182">      StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L183">      sb.append(&quot;google.visualization.Query.setResponse&quot;);</span>
+
+<span class="nc" id="L185">      String reqId = null;</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">      if (tqxString != null) {</span>
+<span class="nc" id="L187">        String[] tqxArray = tqxString.split(&quot;;&quot;);</span>
+<span class="nc bnc" id="L188" title="All 2 branches missed.">        for (String s : tqxArray) {</span>
+<span class="nc bnc" id="L189" title="All 2 branches missed.">          if (s.contains(&quot;reqId&quot;)) {</span>
+<span class="nc" id="L190">            reqId = s.substring(s.indexOf(&quot;:&quot;) + 1, s.length());</span>
+          }
+        }
+      }
+
+<span class="nc" id="L195">      String tableString = JsonRenderer.renderDataTable(table, true, true, true).toString();</span>
+<span class="nc bnc" id="L196" title="All 2 branches missed.">      if (list.getMissingData().size() &gt; 0) {</span>
+<span class="nc" id="L197">        sb.append(&quot;({status:'warning',&quot;);</span>
+      }
+      else {
+<span class="nc" id="L200">        sb.append(&quot;({status:'ok',&quot;);</span>
+      }
+<span class="nc bnc" id="L202" title="All 2 branches missed.">      if (reqId != null) {</span>
+<span class="nc" id="L203">        sb.append(&quot;reqId:'&quot; + reqId + &quot;',&quot;);</span>
+      }
+<span class="nc bnc" id="L205" title="All 2 branches missed.">      if (list.getMissingData().size() &gt; 0) {</span>
+<span class="nc" id="L206">        sb.append(&quot;warnings:[&quot;);</span>
+<span class="nc" id="L207">        SimpleDateFormat df = new SimpleDateFormat(&quot;yyyy-MM-dd'T'HH:mm:ss.SSSZ&quot;);</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">        for (InterpolatedValue v : list.getMissingData()) {</span>
+<span class="nc" id="L209">          sb.append(&quot;{reason: 'missing data &quot; + df.format(v.getStart()) + &quot; to &quot; + df.format(v.getEnd()) + &quot;'},&quot;);</span>
+<span class="nc" id="L210">        }</span>
+<span class="nc" id="L211">        sb.substring(0, sb.length() - 1);</span>
+<span class="nc" id="L212">        sb.append(&quot;],&quot;);</span>
+      }
+<span class="nc" id="L214">      sb.append(&quot;table:&quot; + tableString + &quot;});&quot;);</span>
+
+<span class="nc" id="L216">      return sb.toString();</span>
+    }
+<span class="nc" id="L218">    return null;</span>
+  }
+
+  /**
+   * @param resource  server resource object
+   * @param tqxString gviz tqx query string, i.e., request id
+   * @param tqString  gviz tq query string, selectable fields
+   * @return gviz response
+   */
+  public static String getGvizResponse(Object resource, String tqxString, String tqString) {
+<span class="nc bnc" id="L228" title="All 2 branches missed.">    if (resource instanceof XYInterpolatedValuesWithAnalysis) {</span>
+<span class="nc" id="L229">      XYInterpolatedValuesWithAnalysis analysis = (XYInterpolatedValuesWithAnalysis) resource;</span>
+      try {
+<span class="nc" id="L231">        DataTable table = getDataTable(analysis.getDataPoints());</span>
+<span class="nc" id="L232">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L233">        sb.append(&quot;google.visualization.Query.setResponse&quot;);</span>
+
+<span class="nc" id="L235">        String reqId = null;</span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">        if (tqxString != null) {</span>
+<span class="nc" id="L237">          String[] tqxArray = tqxString.split(&quot;;&quot;);</span>
+<span class="nc bnc" id="L238" title="All 2 branches missed.">          for (String s : tqxArray) {</span>
+<span class="nc bnc" id="L239" title="All 2 branches missed.">            if (s.contains(&quot;reqId&quot;)) {</span>
+<span class="nc" id="L240">              reqId = s.substring(s.indexOf(&quot;:&quot;) + 1, s.length());</span>
+            }
+          }
+        }
+
+<span class="nc" id="L245">        String tableString = JsonRenderer.renderDataTable(table, true, true, true).toString();</span>
+
+<span class="nc bnc" id="L247" title="All 2 branches missed.">        if (analysis.getAnalysis().entrySet().size() &gt; 0) {</span>
+<span class="nc" id="L248">          sb.append(&quot;({status:'warning',&quot;);</span>
+        }
+        else {
+<span class="nc" id="L251">          sb.append(&quot;({status:'ok',&quot;);</span>
+        }
+
+
+<span class="nc bnc" id="L255" title="All 2 branches missed.">        if (reqId != null) {</span>
+<span class="nc" id="L256">          sb.append(&quot;reqId:'&quot; + reqId + &quot;',&quot;);</span>
+        }
+<span class="nc" id="L258">        sb.append(&quot;warnings:[&quot;);</span>
+<span class="nc" id="L259">        boolean added = false;</span>
+<span class="nc" id="L260">        DecimalFormat df = new DecimalFormat(&quot;0.00&quot;);</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">        for (Map.Entry e : analysis.getAnalysis().entrySet()) {</span>
+<span class="nc" id="L262">          added = true;</span>
+<span class="nc" id="L263">          sb.append(&quot;{reason:'&quot; + e.getKey() + &quot;: &quot; + df.format(e.getValue()) + &quot;'},&quot;);</span>
+<span class="nc" id="L264">        }</span>
+<span class="nc" id="L265">        SimpleDateFormat dateFormat = new SimpleDateFormat(&quot;yyyy-MM-dd'T'HH:mm:ss.SSSZ&quot;);</span>
+<span class="nc bnc" id="L266" title="All 2 branches missed.">        for (InterpolatedValue v : analysis.getDataPoints().getMissingData()) {</span>
+<span class="nc" id="L267">          added = true;</span>
+<span class="nc" id="L268">          sb.append(&quot;{reason: 'missing data &quot; + dateFormat.format(v.getStart()) + &quot; to &quot; + dateFormat.format(v.getEnd()) + &quot;'},&quot;);</span>
+<span class="nc" id="L269">        }</span>
+<span class="nc bnc" id="L270" title="All 2 branches missed.">        if (added) {</span>
+<span class="nc" id="L271">          sb.substring(0, sb.length() - 1);</span>
+        }
+<span class="nc" id="L273">        sb.append(&quot;],&quot;);</span>
+
+<span class="nc" id="L275">        sb.append(&quot;table:&quot; + tableString + &quot;});&quot;);</span>
+
+<span class="nc" id="L277">        return sb.toString();</span>
+      }
+<span class="nc" id="L279">      catch (DataSourceException e) {</span>
+<span class="nc" id="L280">        return getGvizDataErrorResponse(e);</span>
+      }
+    }
+    else {
+<span class="nc" id="L284">      return org.wattdepot.common.util.GvizHelper.getGvizResponse(resource, tqxString, tqString);</span>
+    }
+  }
+
+  /**
+   * Returns the google visualization query string to create a benchmark column chart.
+   *
+   * @param mList     The list of values, the first value is the benchmark.
+   * @param tqxString gviz tqx query string, i.e., request id
+   * @param tqString  gviz tq query string, selectable fields
+   * @return gviz response
+   */
+
+  public static String getBenchmarkGvizResponse(InterpolatedValueList mList, String tqxString, String tqString) {
+    try {
+<span class="nc" id="L299">      return getGvizResponseFromDataTable(getColumnDataTable(mList), tqxString);</span>
+    }
+<span class="nc" id="L301">    catch (DataSourceException e) {</span>
+<span class="nc" id="L302">      e.printStackTrace();</span>
+    }
+<span class="nc" id="L304">    return null;</span>
+  }
+
+  /**
+   * Returns the DataTable suitable for a Column chart.
+   *
+   * @param mList The data.
+   * @return The DataTable for a column chart.
+   * @throws DataSourceException if there is a problem.
+   */
+  private static DataTable getColumnDataTable(InterpolatedValueList mList) throws DataSourceException {
+<span class="nc" id="L315">    DataTable table = new DataTable();</span>
+    // Sets up the columns requested by any SELECT in the datasource query
+<span class="nc" id="L317">    ArrayList&lt;InterpolatedValue&gt; values = mList.getInterpolatedValues();</span>
+<span class="nc bnc" id="L318" title="All 2 branches missed.">    if (!values.isEmpty()) {</span>
+<span class="nc" id="L319">      String type = values.get(0).getMeasurementType().getUnits();</span>
+<span class="nc" id="L320">      table.addColumn(new ColumnDescription(&quot;Value&quot;, ValueType.TEXT, &quot;Interval&quot;));</span>
+<span class="nc" id="L321">      table.addColumn(new ColumnDescription(type, ValueType.NUMBER, type));</span>
+<span class="nc" id="L322">      boolean once = true;</span>
+<span class="nc" id="L323">      SimpleDateFormat format = new SimpleDateFormat(&quot;MM/dd/YY&quot;);</span>
+
+<span class="nc bnc" id="L325" title="All 2 branches missed.">      for (InterpolatedValue value : values) {</span>
+<span class="nc" id="L326">        TableRow row = new TableRow();</span>
+<span class="nc" id="L327">        String label = &quot;&quot;;</span>
+<span class="nc bnc" id="L328" title="All 2 branches missed.">        if (once) {</span>
+<span class="nc" id="L329">          label = &quot;Baseline: &quot;;</span>
+<span class="nc" id="L330">          once = false;</span>
+        }
+<span class="nc" id="L332">        row.addCell(label + format.format(value.getStart()) + &quot; - &quot; + format.format(value.getEnd()));</span>
+<span class="nc bnc" id="L333" title="All 2 branches missed.">        if (value.getValue() != null) {</span>
+<span class="nc" id="L334">          row.addCell(value.getValue());</span>
+        }
+<span class="nc" id="L336">        table.addRow(row);</span>
+<span class="nc" id="L337">      }</span>
+    }
+<span class="nc" id="L339">    return table;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>UnitsHelper.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.util</a> &gt; <span class="el_source">UnitsHelper.java</span></div><h1>UnitsHelper.java</h1><pre class="source lang-java linenums">/**
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>UnitsHelper.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.source.html" class="el_package">org.wattdepot.common.util</a> &gt; <span class="el_source">UnitsHelper.java</span></div><h1>UnitsHelper.java</h1><pre class="source lang-java linenums">/**
  * UnitsHelper.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
@@ -63,8 +63,10 @@ import javax.measure.unit.UnitFormat;
 <span class="fc" id="L63">    quantities.put(buildName(&quot;Humidity&quot;, NonSI.PERCENT), NonSI.PERCENT);</span>
 <span class="fc" id="L64">    quantities.put(buildName(&quot;Concentration&quot;, SI.MICRO(SI.GRAM.divide(NonSI.LITER))), SI.MICRO(SI.GRAM.divide(NonSI.LITER)));</span>
 <span class="fc" id="L65">    quantities.put(buildName(&quot;Cloud Coverage&quot;, NonSI.PERCENT), NonSI.PERCENT);</span>
+<span class="fc" id="L66">    quantities.put(buildName(&quot;Area&quot;, SI.SQUARE_METRE), SI.SQUARE_METRE);</span>
+<span class="fc" id="L67">    quantities.put(buildName(&quot;Area&quot;, NonSI.FOOT.times(NonSI.FOOT)), NonSI.FOOT.times(NonSI.FOOT));</span>
 
-<span class="fc" id="L67">  }</span>
+<span class="fc" id="L69">  }</span>
 
   /**
    * @param type
@@ -74,22 +76,22 @@ import javax.measure.unit.UnitFormat;
    * @return The name.
    */
   public static String buildName(String type, Unit&lt;?&gt; unit) {
-<span class="fc" id="L77">    String s = unit.toString();</span>
-<span class="fc" id="L78">    String s1 = Normalizer.normalize(s, Normalizer.Form.NFKD);</span>
-<span class="fc" id="L79">    String regex = Pattern.quote(&quot;[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+&quot;);</span>
+<span class="fc" id="L79">    String s = unit.toString();</span>
+<span class="fc" id="L80">    String s1 = Normalizer.normalize(s, Normalizer.Form.NFKD);</span>
+<span class="fc" id="L81">    String regex = Pattern.quote(&quot;[\\p{InCombiningDiacriticalMarks}\\p{IsLm}\\p{IsSk}]+&quot;);</span>
 
     try {
-<span class="fc" id="L82">      String s2 = new String(s1.replaceAll(regex, &quot;&quot;).getBytes(&quot;ascii&quot;), &quot;ascii&quot;);</span>
-<span class="fc" id="L83">      s2 = s2.replace(&quot;?&quot;, &quot;&quot;);</span>
-<span class="fc" id="L84">      return type + &quot; (&quot; + s2 + &quot;)&quot;;</span>
+<span class="fc" id="L84">      String s2 = new String(s1.replaceAll(regex, &quot;&quot;).getBytes(&quot;ascii&quot;), &quot;ascii&quot;);</span>
+<span class="fc" id="L85">      s2 = s2.replace(&quot;?&quot;, &quot;&quot;);</span>
+<span class="fc" id="L86">      return type + &quot; (&quot; + s2 + &quot;)&quot;;</span>
       
     }
-<span class="nc" id="L87">    catch (UnsupportedEncodingException e) {</span>
-<span class="nc" id="L88">      e.printStackTrace();</span>
+<span class="nc" id="L89">    catch (UnsupportedEncodingException e) { // NOPMD</span>
+      // Don't know what to do so just returning s1.
     }
-<span class="nc" id="L90">    return type + &quot; (&quot; + s1 + &quot;)&quot;;</span>
+<span class="nc" id="L92">    return type + &quot; (&quot; + s1 + &quot;)&quot;;</span>
   }
 
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

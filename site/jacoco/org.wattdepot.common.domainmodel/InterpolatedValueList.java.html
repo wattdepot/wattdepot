@@ -19,6 +19,7 @@
 package org.wattdepot.common.domainmodel;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * MeasuredValueList - a list of measured values.
@@ -28,37 +29,123 @@ import java.util.ArrayList;
  */
 public class InterpolatedValueList {
   private ArrayList&lt;InterpolatedValue&gt; interpolatedValues;
+  private ArrayList&lt;InterpolatedValue&gt; missingData;
 
   /**
    * Default Constructor.
    */
-<span class="fc" id="L35">  public InterpolatedValueList() {</span>
-<span class="fc" id="L36">    interpolatedValues = new ArrayList&lt;InterpolatedValue&gt;();</span>
-<span class="fc" id="L37">  }</span>
+<span class="fc" id="L37">  public InterpolatedValueList() {</span>
+<span class="fc" id="L38">    interpolatedValues = new ArrayList&lt;InterpolatedValue&gt;();</span>
+<span class="fc" id="L39">    missingData = new ArrayList&lt;InterpolatedValue&gt;();</span>
+<span class="fc" id="L40">  }</span>
 
   /**
    * @return the measuredValues
    */
   public ArrayList&lt;InterpolatedValue&gt; getInterpolatedValues() {
-<span class="fc" id="L43">    return interpolatedValues;</span>
+<span class="fc" id="L46">    return interpolatedValues;</span>
   }
 
   /**
    * @param interpolatedValues the measuredValues to set
    */
   public void setInterpolatedValues(ArrayList&lt;InterpolatedValue&gt; interpolatedValues) {
-<span class="fc" id="L50">    this.interpolatedValues = interpolatedValues;</span>
-<span class="fc" id="L51">  }</span>
+<span class="fc" id="L53">    this.interpolatedValues = interpolatedValues;</span>
+<span class="fc" id="L54">  }</span>
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see java.lang.Object#toString()
+  /**
+   * @return the missing data InterpolatedValues with null for the value.
    */
-  @Override
-  public String toString() {
-<span class="fc" id="L60">    return &quot;InterpolatedValueList [InterpolatedValues=&quot; + interpolatedValues + &quot;]&quot;;</span>
+  public ArrayList&lt;InterpolatedValue&gt; getMissingData() {
+<span class="fc" id="L60">    return missingData;</span>
   }
 
+  /**
+   * @param missingData the missing data to set.
+   */
+  public void setMissingData(ArrayList&lt;InterpolatedValue&gt; missingData) {
+<span class="fc" id="L67">    this.missingData = missingData;</span>
+<span class="fc" id="L68">  }</span>
+
+  /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Object#toString()
+     */
+  @Override
+  public String toString() {
+<span class="fc" id="L77">    return &quot;InterpolatedValueList [InterpolatedValues=&quot; + interpolatedValues + &quot;, MissingData=&quot; + missingData + &quot;]&quot;;</span>
+  }
+
+  /**
+   * Collapses the missing data combining adjacent InterpolatedValues into a single InterpolatedValue.
+   */
+  public void collapseMissingData() {
+<span class="nc" id="L84">    ArrayList&lt;InterpolatedValue&gt; temp = new ArrayList&lt;InterpolatedValue&gt;();</span>
+<span class="nc" id="L85">    Date collapseStart = null;</span>
+<span class="nc" id="L86">    Date collapseEnd = null;</span>
+<span class="nc" id="L87">    String sensorId = null;</span>
+<span class="nc" id="L88">    MeasurementType type = null;</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">    for (InterpolatedValue v : missingData) {</span>
+<span class="nc" id="L90">      sensorId = v.getSensorId();</span>
+<span class="nc" id="L91">      type = v.getMeasurementType();</span>
+<span class="nc" id="L92">      Date start = v.getStart();</span>
+<span class="nc" id="L93">      Date end = v.getEnd();</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">      if (collapseStart == null) {</span>
+<span class="nc" id="L95">        collapseStart = start;</span>
+<span class="nc" id="L96">        collapseEnd = end;</span>
+      }
+      else {
+<span class="nc bnc" id="L99" title="All 2 branches missed.">        if (collapseEnd.getTime() == start.getTime()) { // old end == start collapse the interval</span>
+<span class="nc" id="L100">          collapseEnd = end;</span>
+        }
+        else { // not adjacent
+<span class="nc" id="L103">          temp.add(new InterpolatedValue(sensorId, null, type, collapseStart, collapseEnd));</span>
+<span class="nc" id="L104">          collapseStart = null;</span>
+<span class="nc" id="L105">          collapseEnd = null;</span>
+        }
+      }
+<span class="nc" id="L108">    }</span>
+<span class="nc bnc" id="L109" title="All 4 branches missed.">    if (collapseStart != null &amp;&amp; collapseEnd != null) {</span>
+<span class="nc" id="L110">      temp.add(new InterpolatedValue(sensorId, null, type, collapseStart, collapseEnd));</span>
+    }
+<span class="nc" id="L112">    this.missingData = temp;</span>
+<span class="nc" id="L113">  }</span>
+
+  /**
+   * Collapses the missing data combining adjacent InterpolatedValues into a single InterpolatedValue from
+   * now to the past.
+   */
+  public void collapseMissingDataNowToPast() {
+<span class="nc" id="L120">    ArrayList&lt;InterpolatedValue&gt; temp = new ArrayList&lt;InterpolatedValue&gt;();</span>
+<span class="nc" id="L121">    Date collapseStart = null;</span>
+<span class="nc" id="L122">    Date collapseEnd = null;</span>
+<span class="nc" id="L123">    String sensorId = null;</span>
+<span class="nc" id="L124">    MeasurementType type = null;</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">    for (InterpolatedValue v : missingData) {</span>
+<span class="nc" id="L126">      sensorId = v.getSensorId();</span>
+<span class="nc" id="L127">      type = v.getMeasurementType();</span>
+<span class="nc" id="L128">      Date start = v.getStart();</span>
+<span class="nc" id="L129">      Date end = v.getEnd();</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">      if (collapseStart == null) {</span>
+<span class="nc" id="L131">        collapseStart = start;</span>
+<span class="nc" id="L132">        collapseEnd = end;</span>
+      }
+      else {
+<span class="nc bnc" id="L135" title="All 2 branches missed.">        if (collapseStart.getTime() == end.getTime()) { // old end == start collapse the interval</span>
+<span class="nc" id="L136">          collapseStart = start;</span>
+        }
+        else { // not adjacent
+<span class="nc" id="L139">          temp.add(new InterpolatedValue(sensorId, null, type, collapseStart, collapseEnd));</span>
+<span class="nc" id="L140">          collapseStart = null;</span>
+<span class="nc" id="L141">          collapseEnd = null;</span>
+        }
+      }
+<span class="nc" id="L144">    }</span>
+<span class="nc bnc" id="L145" title="All 4 branches missed.">    if (collapseStart != null &amp;&amp; collapseEnd != null) {</span>
+<span class="nc" id="L146">      temp.add(new InterpolatedValue(sensorId, null, type, collapseStart, collapseEnd));</span>
+    }
+<span class="nc" id="L148">    this.missingData = temp;</span>
+<span class="nc" id="L149">  }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

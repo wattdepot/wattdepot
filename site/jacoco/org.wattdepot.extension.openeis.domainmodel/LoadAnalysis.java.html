@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>LoadAnalysis.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.extension.openeis.domainmodel</a> &gt; <span class="el_source">LoadAnalysis.java</span></div><h1>LoadAnalysis.java</h1><pre class="source lang-java linenums">/*
+ * This file is part of WattDepot.
+ *
+ *  Copyright (C) 2015  Cam Moore
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package org.wattdepot.extension.openeis.domainmodel;
+
+import org.wattdepot.common.domainmodel.InterpolatedValue;
+
+import java.util.ArrayList;
+import java.util.Date;
+
+/**
+ * LoadAnalysis - Represents several load analyses for a sensor over a period of days.
+ *
+ * @author Cam Moore
+ *         Created by carletonmoore on 4/20/15.
+ */
+public class LoadAnalysis {
+  /**
+   * Start of the analysis period.
+   */
+  private Date start;
+  /**
+   * End of the analysis period.
+   */
+  private Date end;
+  /**
+   * Peak value during the period.
+   */
+  private Double peak;
+  /**
+   * Average daily maximum.
+   */
+  private Double aveDailyMax;
+  /**
+   * Average daily minimum.
+   */
+  private Double aveDailyMin;
+  /**
+   * Average daily range.
+   */
+  private Double aveDailyRange;
+  /**
+   * 5th percentile to 95th percentile ratio.
+   */
+  private Double aveBaseToPeakRatio;
+
+  /**
+   * Any missing data.
+   */
+  private ArrayList&lt;InterpolatedValue&gt; missingData;
+
+  /**
+   * Constructs a new LoadAnalysis with the given data.
+   *
+   * @param start              The start of the period.
+   * @param end                The end of the period.
+   * @param peak               The peak value of the period.
+   * @param aveDailyMax        The average daily maximum.
+   * @param aveDailyMin        The average daily minimum.
+   * @param aveDailyRange      The average daily range.
+   * @param aveBaseToPeakRatio The average base to peak ratio.
+   */
+<span class="nc" id="L79">  public LoadAnalysis(Date start, Date end, Double peak, Double aveDailyMax, Double aveDailyMin, Double aveDailyRange, Double aveBaseToPeakRatio) {</span>
+<span class="nc" id="L80">    this.start = new Date(start.getTime());</span>
+<span class="nc" id="L81">    this.end = new Date(end.getTime());</span>
+<span class="nc" id="L82">    this.peak = peak;</span>
+<span class="nc" id="L83">    this.aveDailyMax = aveDailyMax;</span>
+<span class="nc" id="L84">    this.aveDailyMin = aveDailyMin;</span>
+<span class="nc" id="L85">    this.aveDailyRange = aveDailyRange;</span>
+<span class="nc" id="L86">    this.aveBaseToPeakRatio = aveBaseToPeakRatio;</span>
+<span class="nc" id="L87">  }</span>
+
+  /**
+   * @return The start of the period.
+   */
+  public Date getStart() {
+<span class="nc" id="L93">    return new Date(start.getTime());</span>
+  }
+
+  /**
+   * Sets the start of the peiord.
+   *
+   * @param start The new start.
+   */
+  public void setStart(Date start) {
+<span class="nc" id="L102">    this.start = new Date(start.getTime());</span>
+<span class="nc" id="L103">  }</span>
+
+  /**
+   * @return The end of the period.
+   */
+  public Date getEnd() {
+<span class="nc" id="L109">    return new Date(end.getTime());</span>
+  }
+
+  /**
+   * Sets the end of the period.
+   *
+   * @param end The new end.
+   */
+  public void setEnd(Date end) {
+<span class="nc" id="L118">    this.end = new Date(end.getTime());</span>
+<span class="nc" id="L119">  }</span>
+
+  /**
+   * @return The Peak value over the period.
+   */
+  public Double getPeak() {
+<span class="nc" id="L125">    return peak;</span>
+  }
+
+  /**
+   * Sets the peak value for the period.
+   *
+   * @param peak The new peak value.
+   */
+  public void setPeak(Double peak) {
+<span class="nc" id="L134">    this.peak = peak;</span>
+<span class="nc" id="L135">  }</span>
+
+  /**
+   * @return The average daily maximum for the period.
+   */
+  public Double getAveDailyMax() {
+<span class="nc" id="L141">    return aveDailyMax;</span>
+  }
+
+  /**
+   * Sets the average daily maximum for the peroid.
+   *
+   * @param aveDailyMax The new average daily maximum.
+   */
+  public void setAveDailyMax(Double aveDailyMax) {
+<span class="nc" id="L150">    this.aveDailyMax = aveDailyMax;</span>
+<span class="nc" id="L151">  }</span>
+
+  /**
+   * @return The average daily minimum for the period.
+   */
+  public Double getAveDailyMin() {
+<span class="nc" id="L157">    return aveDailyMin;</span>
+  }
+
+  /**
+   * Sets the average daily minimum for the peroid.
+   *
+   * @param aveDailyMin The new average daily minimum.
+   */
+  public void setAveDailyMin(Double aveDailyMin) {
+<span class="nc" id="L166">    this.aveDailyMin = aveDailyMin;</span>
+<span class="nc" id="L167">  }</span>
+
+  /**
+   * @return The average daily range over the period.
+   */
+  public Double getAveDailyRange() {
+<span class="nc" id="L173">    return aveDailyRange;</span>
+  }
+
+  /**
+   * Sets the average daily range over the period.
+   *
+   * @param aveDailyRange The new average daily range.
+   */
+  public void setAveDailyRange(Double aveDailyRange) {
+<span class="nc" id="L182">    this.aveDailyRange = aveDailyRange;</span>
+<span class="nc" id="L183">  }</span>
+
+  /**
+   * @return The average base to peak ratio.
+   */
+  public Double getAveBaseToPeakRatio() {
+<span class="nc" id="L189">    return aveBaseToPeakRatio;</span>
+  }
+
+  /**
+   * Sets the average base to peak ratio.
+   *
+   * @param aveBaseToPeakRatio The new average base to peak ratio.
+   */
+  public void setAveBaseToPeakRatio(Double aveBaseToPeakRatio) {
+<span class="nc" id="L198">    this.aveBaseToPeakRatio = aveBaseToPeakRatio;</span>
+<span class="nc" id="L199">  }</span>
+
+  /**
+   * @return Any missing data in the Analysis period.
+   */
+  public ArrayList&lt;InterpolatedValue&gt; getMissingData() {
+<span class="nc" id="L205">    return missingData;</span>
+  }
+
+  /**
+   * Sets the missing data for the analysis period.
+   *
+   * @param missingData The missing data.
+   */
+  public void setMissingData(ArrayList&lt;InterpolatedValue&gt; missingData) {
+<span class="nc" id="L214">    this.missingData = missingData;</span>
+<span class="nc" id="L215">  }</span>
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

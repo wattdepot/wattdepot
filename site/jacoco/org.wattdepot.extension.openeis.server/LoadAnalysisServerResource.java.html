@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>LoadAnalysisServerResource.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.extension.openeis.server</a> &gt; <span class="el_source">LoadAnalysisServerResource.java</span></div><h1>LoadAnalysisServerResource.java</h1><pre class="source lang-java linenums">/*
+ * This file is part of WattDepot.
+ *
+ *  Copyright (C) 2015  Cam Moore
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package org.wattdepot.extension.openeis.server;
+
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.InterpolatedValue;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
+import org.wattdepot.common.domainmodel.InterpolatedValueValueComparator;
+import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.util.tstamp.Tstamp;
+import org.wattdepot.extension.openeis.OpenEISLabels;
+import org.wattdepot.extension.openeis.domainmodel.LoadAnalysis;
+import org.wattdepot.extension.openeis.http.api.LoadAnalysisResource;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.logging.Level;
+
+/**
+ * LoadAnalysisServerResource - Handles LoadAnalysis request.
+ *
+ * @author Cam Moore
+ *         Created by carletonmoore on 4/20/15.
+ */
+<span class="nc" id="L46">public class LoadAnalysisServerResource extends OpenEISServer implements LoadAnalysisResource {</span>
+  private String depositoryId;
+  private String sensorId;
+  private String startString;
+  private String endString;
+
+  /*
+ * (non-Javadoc)
+ *
+ * @see org.restlet.resource.Resource#doInit()
+ */
+  @Override
+  protected void doInit() throws ResourceException {
+<span class="nc" id="L59">    super.doInit();</span>
+<span class="nc" id="L60">    this.depositoryId = getQuery().getValues(Labels.DEPOSITORY);</span>
+<span class="nc" id="L61">    this.sensorId = getQuery().getValues(Labels.SENSOR);</span>
+<span class="nc" id="L62">    this.startString = getQuery().getValues(Labels.START);</span>
+<span class="nc" id="L63">    this.endString = getQuery().getValues(Labels.END);</span>
+<span class="nc" id="L64">  }</span>
+
+  @Override
+  public LoadAnalysis retrieve() {
+<span class="nc" id="L68">    getLogger().log(</span>
+        Level.INFO,
+        &quot;GET /wattdepot/{&quot; + orgId + &quot;}/&quot; + OpenEISLabels.OPENEIS + &quot;/&quot; + OpenEISLabels.LOAD_ANALYSIS +
+            &quot;/?&quot; + Labels.DEPOSITORY + &quot;={&quot; + depositoryId + &quot;}&amp;&quot; + Labels.SENSOR + &quot;={&quot; + sensorId + &quot;}&amp;&quot; +
+            Labels.START + &quot;={&quot; + startString + &quot;}&amp;&quot; + Labels.END + &quot;={&quot; + endString + &quot;}&quot;);
+    try {
+<span class="nc" id="L74">      Depository depository = depot.getDepository(depositoryId, orgId, true);</span>
+<span class="nc" id="L75">      Date start = Tstamp.makeTimestamp(startString).toGregorianCalendar().getTime();</span>
+<span class="nc" id="L76">      Date end = Tstamp.makeTimestamp(endString).toGregorianCalendar().getTime();</span>
+      InterpolatedValueList values;
+<span class="nc bnc" id="L78" title="All 2 branches missed.">      if (depository.getMeasurementType().getName().startsWith(&quot;Power&quot;)) {</span>
+<span class="nc" id="L79">        values = getHourlyPointData(depositoryId, sensorId, start, end, false);</span>
+      }
+<span class="nc bnc" id="L81" title="All 2 branches missed.">      else if (depository.getMeasurementType().getName().startsWith(&quot;Energy&quot;)) {</span>
+<span class="nc" id="L82">        values = getHourlyDifferenceData(depositoryId, sensorId, start, end, false);</span>
+      }
+      else {
+<span class="nc" id="L85">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + &quot; is not a Power Depository.&quot;);</span>
+<span class="nc" id="L86">        return null;</span>
+      }
+<span class="nc" id="L88">      InterpolatedValueValueComparator c = new InterpolatedValueValueComparator();</span>
+<span class="nc" id="L89">      Double peak = Collections.max(values.getInterpolatedValues(), c).getValue();</span>
+<span class="nc" id="L90">      int numValues = values.getInterpolatedValues().size();</span>
+<span class="nc" id="L91">      int numDays = numValues / 24;</span>
+<span class="nc" id="L92">      int hour = 0;</span>
+<span class="nc" id="L93">      Double dailyMax = Double.MIN_VALUE;</span>
+<span class="nc" id="L94">      Double dailyMin = Double.MAX_VALUE;</span>
+<span class="nc" id="L95">      Double aveDailyMax = 0.0;</span>
+<span class="nc" id="L96">      Double aveDailyMin = 0.0;</span>
+<span class="nc" id="L97">      Double aveDailyRange = 0.0;</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">      for (InterpolatedValue val : values.getInterpolatedValues()) {</span>
+<span class="nc" id="L99">        Double v = val.getValue();</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">        if (dailyMax &lt; v) {</span>
+<span class="nc" id="L101">          dailyMax = v;</span>
+        }
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        if (dailyMin &gt; v) {</span>
+<span class="nc" id="L104">          dailyMin = v;</span>
+        }
+<span class="nc bnc" id="L106" title="All 2 branches missed.">        if (hour == 23) {</span>
+<span class="nc" id="L107">          aveDailyMax += dailyMax;</span>
+<span class="nc" id="L108">          aveDailyMin += dailyMin;</span>
+<span class="nc" id="L109">          aveDailyRange += dailyMax - dailyMin;</span>
+<span class="nc" id="L110">          dailyMax = Double.MIN_VALUE;</span>
+<span class="nc" id="L111">          dailyMin = Double.MAX_VALUE;</span>
+<span class="nc" id="L112">          hour = 0;</span>
+        }
+<span class="nc" id="L114">        hour++;</span>
+<span class="nc" id="L115">      }</span>
+<span class="nc" id="L116">      aveDailyMax = aveDailyMax / numDays;</span>
+<span class="nc" id="L117">      aveDailyMin = aveDailyMin / numDays;</span>
+<span class="nc" id="L118">      aveDailyRange = aveDailyRange / numDays;</span>
+<span class="nc" id="L119">      ArrayList&lt;InterpolatedValue&gt; list = values.getInterpolatedValues();</span>
+<span class="nc" id="L120">      Collections.sort(list, c);</span>
+<span class="nc" id="L121">      int fifthPercentileIndex = (int) Math.round(numValues * 0.05);</span>
+<span class="nc" id="L122">      int nintyFifthPercentileIndex = (int) Math.round(numValues * 0.95);</span>
+<span class="nc" id="L123">      Double fifth = list.get(fifthPercentileIndex).getValue();</span>
+<span class="nc" id="L124">      Double nintyFifth = list.get(nintyFifthPercentileIndex).getValue();</span>
+<span class="nc" id="L125">      LoadAnalysis analysis = new LoadAnalysis(start, end, peak, aveDailyMax, aveDailyMin, aveDailyRange, fifth / nintyFifth);</span>
+<span class="nc" id="L126">      values.collapseMissingData();</span>
+<span class="nc" id="L127">      analysis.setMissingData(values.getMissingData());</span>
+<span class="nc" id="L128">      return analysis;</span>
+    }
+<span class="nc" id="L130">    catch (IdNotFoundException e) {</span>
+<span class="nc" id="L131">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="nc" id="L132">      return null;</span>
+    }
+<span class="nc" id="L134">    catch (Exception e) {</span>
+<span class="nc" id="L135">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="nc" id="L136">      return null;</span>
+    }
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

@@ -18,8 +18,10 @@
  */
 package org.wattdepot.server.http.api;
 
+import org.restlet.engine.header.Header;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
+import org.restlet.util.Series;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.server.WattDepotPersistence;
 
@@ -30,7 +32,7 @@ import org.wattdepot.server.WattDepotPersistence;
  * @author Cam Moore
  * 
  */
-<span class="fc" id="L33">public class WattDepotServerResource extends ServerResource {</span>
+<span class="fc" id="L35">public class WattDepotServerResource extends ServerResource {</span>
   /** The WattDepot instance. */
   protected WattDepotPersistence depot;
   /** The orgId in the request. */
@@ -42,11 +44,18 @@ import org.wattdepot.server.WattDepotPersistence;
    * 
    * @see org.restlet.resource.Resource#doInit()
    */
+  @SuppressWarnings(&quot;unchecked&quot;)
   @Override
   protected void doInit() throws ResourceException {
-<span class="fc" id="L47">    WattDepotApplication app = (WattDepotApplication) getApplication();</span>
-<span class="fc" id="L48">    this.depot = app.getDepot();</span>
-<span class="fc" id="L49">    this.orgId = getAttribute(Labels.ORGANIZATION_ID);</span>
-<span class="fc" id="L50">  }</span>
+<span class="fc" id="L50">    WattDepotApplication app = (WattDepotApplication) getApplication();</span>
+<span class="fc" id="L51">    this.depot = app.getDepot();</span>
+<span class="fc" id="L52">    this.orgId = getAttribute(Labels.ORGANIZATION_ID);</span>
+<span class="fc" id="L53">    Series&lt;Header&gt; responseHeaders = (Series&lt;Header&gt;) getResponse().getAttributes().get(&quot;org.restlet.http.headers&quot;);</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">    if (responseHeaders == null) {</span>
+<span class="fc" id="L55">      responseHeaders = new Series(Header.class);</span>
+<span class="fc" id="L56">      getResponse().getAttributes().put(&quot;org.restlet.http.headers&quot;, responseHeaders);</span>
+    }
+<span class="fc" id="L58">    responseHeaders.add(new Header(&quot;X-Clacks-Overhead&quot;, &quot;GNU Terry Pratchett&quot;));</span>
+<span class="fc" id="L59">  }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

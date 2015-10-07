@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DepositoryLatestValuesServerResource.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">DepositoryLatestValuesServerResource.java</span></div><h1>DepositoryLatestValuesServerResource.java</h1><pre class="source lang-java linenums">package org.wattdepot.server.http.api;
+
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.InterpolatedValue;
+import org.wattdepot.common.domainmodel.InterpolatedValueList;
+import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
+import org.wattdepot.common.exception.NoMeasurementException;
+import org.wattdepot.common.http.api.DepositoryLatestValuesResource;
+
+import java.util.Date;
+import java.util.logging.Level;
+
+/**
+ * DepositoryLatestValuesServerResource - Returns the latest value for the sensor or sensor group stored in the
+ * depository as an InterpolatedValueList.
+ *
+ * @author Cam Moore
+ */
+
+<span class="nc" id="L26">public class DepositoryLatestValuesServerResource extends WattDepotServerResource implements DepositoryLatestValuesResource {</span>
+  private String depositoryId;
+  private String sensorId;
+
+  /*
+ * (non-Javadoc)
+ *
+ * @see org.restlet.resource.Resource#doInit()
+ */
+  @Override
+  protected void doInit() throws ResourceException {
+<span class="nc" id="L37">    super.doInit();</span>
+<span class="nc" id="L38">    this.sensorId = getQuery().getValues(Labels.SENSOR);</span>
+<span class="nc" id="L39">    this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);</span>
+<span class="nc" id="L40">  }</span>
+
+  @Override
+  public InterpolatedValueList retrieve() {
+<span class="nc" id="L44">    getLogger().log(</span>
+        Level.INFO,
+        &quot;GET /wattdepot/{&quot; + orgId + &quot;}/&quot; + Labels.DEPOSITORY + &quot;/{&quot; + depositoryId + &quot;}/&quot;
+            + Labels.VALUES + &quot;/&quot; + Labels.LATEST + &quot;/?&quot; + Labels.SENSOR + &quot;={&quot; + sensorId + &quot;}&quot;);
+<span class="nc bnc" id="L48" title="All 2 branches missed.">    if (isInRole(orgId)) {</span>
+      try {
+<span class="nc" id="L50">        InterpolatedValueList list = new InterpolatedValueList();</span>
+<span class="nc" id="L51">        Depository depository = depot.getDepository(depositoryId, orgId, true);</span>
+<span class="nc" id="L52">        Sensor sensor = depot.getSensor(sensorId, orgId, false);</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        if (sensor != null) {</span>
+<span class="nc" id="L54">          InterpolatedValue value = null;</span>
+          try {
+<span class="nc" id="L56">            value = depot.getLatestMeasuredValue(depositoryId, orgId, sensorId, false);</span>
+<span class="nc" id="L57">            list.getInterpolatedValues().add(value);</span>
+          }
+<span class="nc" id="L59">          catch (NoMeasurementException e) {</span>
+<span class="nc" id="L60">            value = new InterpolatedValue(sensorId, Double.NaN, depository.getMeasurementType(), new Date());</span>
+<span class="nc" id="L61">            list.getInterpolatedValues().add(value); // adding null to the list?</span>
+<span class="nc" id="L62">          }</span>
+<span class="nc" id="L63">        }</span>
+        else {
+<span class="nc" id="L65">          SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">          if (group != null) {</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">            for (String s : group.getSensors()) {</span>
+<span class="nc" id="L68">              sensor = depot.getSensor(s, orgId, false);</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">              if (sensor != null) {</span>
+<span class="nc" id="L70">                InterpolatedValue value = null;</span>
+                try {
+<span class="nc" id="L72">                  value = depot.getLatestMeasuredValue(depositoryId, orgId, s, false);</span>
+<span class="nc" id="L73">                  list.getInterpolatedValues().add(value);</span>
+                }
+<span class="nc" id="L75">                catch (NoMeasurementException e) {</span>
+<span class="nc" id="L76">                  value = new InterpolatedValue(s, Double.NaN, depository.getMeasurementType(), new Date());</span>
+<span class="nc" id="L77">                  list.getInterpolatedValues().add(value); // adding null to the list?</span>
+<span class="nc" id="L78">                }</span>
+              }
+<span class="nc" id="L80">            }</span>
+          }
+        }
+<span class="nc" id="L83">        return list;</span>
+      }
+<span class="nc" id="L85">      catch (IdNotFoundException e) {</span>
+<span class="nc" id="L86">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + &quot; is not a Depository id.&quot;);</span>
+<span class="nc" id="L87">        return null;</span>
+      }
+<span class="nc" id="L89">      catch (MisMatchedOwnerException e) {</span>
+<span class="nc" id="L90">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + &quot; is not in organization &quot; + orgId + &quot;.&quot;);</span>
+<span class="nc" id="L91">        return null;</span>
+      }
+
+    }
+    else {
+<span class="nc" id="L96">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Bad credentials.&quot;);</span>
+<span class="nc" id="L97">      return null;</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

@@ -145,31 +145,31 @@ import org.wattdepot.server.ServerProperties;
                   }
 <span class="fc" id="L146">                }</span>
 <span class="fc" id="L147">              }</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">              else if (latest != null) {</span>
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">              else if (latest != null) {</span>
                 // find the first 'latest' time
-<span class="fc" id="L150">                Date time = null;</span>
-<span class="fc bfc" id="L151" title="All 2 branches covered.">                for (String s : group.getSensors()) {</span>
-<span class="fc" id="L152">                  InterpolatedValue v = calculateValue(s, start, end, timestamp, earliest, latest);</span>
-<span class="fc bfc" id="L153" title="All 2 branches covered.">                  if (time == null) {</span>
-<span class="fc" id="L154">                    time = v.getEnd();</span>
+<span class="nc" id="L150">                Date time = null;</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">                for (String s : group.getSensors()) {</span>
+<span class="nc" id="L152">                  InterpolatedValue v = calculateValue(s, start, end, timestamp, earliest, latest);</span>
+<span class="nc bnc" id="L153" title="All 2 branches missed.">                  if (time == null) {</span>
+<span class="nc" id="L154">                    time = v.getEnd();</span>
                   }
-<span class="pc bpc" id="L156" title="1 of 2 branches missed.">                  else if (time.after(v.getEnd())) {</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">                  else if (time.after(v.getEnd())) {</span>
 <span class="nc" id="L157">                    time = v.getEnd();</span>
                   }
-<span class="fc" id="L159">                }</span>
+<span class="nc" id="L159">                }</span>
                 // have the time get the value at time
-<span class="fc bfc" id="L161" title="All 2 branches covered.">                for (String s : group.getSensors()) {</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">                  if (val == null) {</span>
-<span class="fc" id="L163">                    val = calculateValue(s, null, null, DateConvert.convertDate(time).toString(),</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">                for (String s : group.getSensors()) {</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">                  if (val == null) {</span>
+<span class="nc" id="L163">                    val = calculateValue(s, null, null, DateConvert.convertDate(time).toString(),</span>
                         null, null);
                   }
                   else {
-<span class="fc" id="L167">                    val.setValue(val.getValue()</span>
+<span class="nc" id="L167">                    val.setValue(val.getValue()</span>
                         + calculateValue(s, null, null, DateConvert.convertDate(time).toString(),
                             null, null).getValue());
                   }
-<span class="fc" id="L171">                }</span>
-<span class="fc" id="L172">              }</span>
+<span class="nc" id="L171">                }</span>
+<span class="nc" id="L172">              }</span>
               else {
 <span class="fc bfc" id="L174" title="All 2 branches covered.">                for (String s : group.getSensors()) {</span>
 <span class="fc bfc" id="L175" title="All 2 branches covered.">                  if (val == null) {</span>
@@ -207,8 +207,8 @@ import org.wattdepot.server.ServerProperties;
 <span class="nc" id="L207">      catch (MisMatchedOwnerException e) {</span>
 <span class="nc" id="L208">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
       }
-<span class="nc" id="L210">      catch (NoMeasurementException e1) {</span>
-<span class="nc" id="L211">        setStatus(Status.SERVER_ERROR_INTERNAL, e1.getMessage());</span>
+<span class="fc" id="L210">      catch (NoMeasurementException e1) {</span>
+<span class="fc" id="L211">        setStatus(Status.SERVER_ERROR_INTERNAL, e1.getMessage());</span>
       }
 <span class="nc" id="L213">      catch (NumberFormatException e) {</span>
 <span class="nc" id="L214">        setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());</span>
@@ -266,35 +266,47 @@ import org.wattdepot.server.ServerProperties;
 <span class="fc" id="L266">    InterpolatedValue val = null;</span>
 
 <span class="fc bfc" id="L268" title="All 2 branches covered.">    if (earliest != null) {</span>
-<span class="fc" id="L269">      return depot.getEarliestMeasuredValue(depositoryId, orgId, sensorId, true);</span>
+<span class="fc" id="L269">      val = depot.getEarliestMeasuredValue(depositoryId, orgId, sensorId, true);</span>
+<span class="fc" id="L270">      val.addDefinedSensor(sensorId);</span>
+<span class="fc" id="L271">      val.addReportingSensor(sensorId);</span>
+<span class="fc" id="L272">      return val;</span>
     }
-<span class="fc bfc" id="L271" title="All 2 branches covered.">    else if (latest != null) {</span>
-<span class="fc" id="L272">      return depot.getLatestMeasuredValue(depositoryId, orgId, sensorId, true);</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">    else if (latest != null) {</span>
+<span class="fc" id="L275">      val = depot.getLatestMeasuredValue(depositoryId, orgId, sensorId, true);</span>
+<span class="fc" id="L276">      val.addDefinedSensor(sensorId);</span>
+<span class="fc" id="L277">      val.addReportingSensor(sensorId);</span>
+<span class="fc" id="L278">      return val;</span>
     }
-<span class="fc bfc" id="L274" title="All 2 branches covered.">    else if (timestamp != null) {</span>
-<span class="fc" id="L275">      time = DateConvert.parseCalStringToDate(timestamp);</span>
-<span class="fc bfc" id="L276" title="All 2 branches covered.">      if (gapSeconds != null) {</span>
-<span class="fc" id="L277">        value = depot.getValue(depositoryId, orgId, sensor.getId(), time,</span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">    else if (timestamp != null) {</span>
+<span class="fc" id="L281">      time = DateConvert.parseCalStringToDate(timestamp);</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">      if (gapSeconds != null) {</span>
+<span class="fc" id="L283">        value = depot.getValue(depositoryId, orgId, sensor.getId(), time,</span>
             Long.parseLong(gapSeconds), true);
       }
       else {
-<span class="fc" id="L281">        value = depot.getValue(depositoryId, orgId, sensor.getId(), time, true);</span>
+<span class="fc" id="L287">        value = depot.getValue(depositoryId, orgId, sensor.getId(), time, true);</span>
       }
-<span class="fc" id="L283">      val = new InterpolatedValue(sensorId, value, deposit.getMeasurementType(), time);</span>
+<span class="fc" id="L289">      val = new InterpolatedValue(sensorId, value, deposit.getMeasurementType(), time);</span>
     }
-<span class="pc bpc" id="L285" title="2 of 4 branches missed.">    else if (start != null &amp;&amp; end != null) {</span>
-<span class="fc" id="L286">      startDate = DateConvert.parseCalStringToDate(start);</span>
-<span class="fc" id="L287">      endDate = DateConvert.parseCalStringToDate(end);</span>
-<span class="fc bfc" id="L288" title="All 2 branches covered.">      if (gapSeconds != null) {</span>
-<span class="fc" id="L289">        value = depot.getValue(depositoryId, orgId, sensor.getId(), startDate, endDate,</span>
+<span class="pc bpc" id="L291" title="2 of 4 branches missed.">    else if (start != null &amp;&amp; end != null) {</span>
+<span class="fc" id="L292">      startDate = DateConvert.parseCalStringToDate(start);</span>
+<span class="fc" id="L293">      endDate = DateConvert.parseCalStringToDate(end);</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">      if (gapSeconds != null) {</span>
+<span class="fc" id="L295">        value = depot.getValue(depositoryId, orgId, sensor.getId(), startDate, endDate,</span>
             Long.parseLong(gapSeconds), true);
       }
       else {
-<span class="fc" id="L293">        value = depot.getValue(depositoryId, orgId, sensor.getId(), startDate, endDate, true);</span>
+<span class="fc" id="L299">        value = depot.getValue(depositoryId, orgId, sensor.getId(), startDate, endDate, true);</span>
       }
-<span class="fc" id="L295">      val = new InterpolatedValue(sensorId, value, deposit.getMeasurementType(), startDate, endDate);</span>
+<span class="fc" id="L301">      val = new InterpolatedValue(sensorId, value, deposit.getMeasurementType(), startDate, endDate);</span>
     }
-<span class="fc" id="L297">    return val;</span>
+<span class="pc bpc" id="L303" title="1 of 2 branches missed.">    if (val != null) {</span>
+<span class="fc" id="L304">      val.addDefinedSensor(sensorId);</span>
+<span class="pc bpc" id="L305" title="1 of 2 branches missed.">      if (value != null) {</span>
+<span class="fc" id="L306">        val.addReportingSensor(sensorId);</span>
+      }
+    }
+<span class="fc" id="L309">    return val;</span>
   }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MeasurementTypeImpl.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.depository.impl.hibernate</a> &gt; <span class="el_source">MeasurementTypeImpl.java</span></div><h1>MeasurementTypeImpl.java</h1><pre class="source lang-java linenums">/**
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MeasurementTypeImpl.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.source.html" class="el_package">org.wattdepot.server.depository.impl.hibernate</a> &gt; <span class="el_source">MeasurementTypeImpl.java</span></div><h1>MeasurementTypeImpl.java</h1><pre class="source lang-java linenums">/**
  * MeasurementTypeImpl.java This file is part of WattDepot.
  *
  * Copyright (C) 2014  Cam Moore
@@ -72,63 +72,63 @@ public class MeasurementTypeImpl {
    */
   @Override
   public boolean equals(Object obj) {
-<span class="nc bnc" id="L75" title="All 2 branches missed.">    if (this == obj) {</span>
-<span class="nc" id="L76">      return true;</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">    if (this == obj) {</span>
+<span class="fc" id="L76">      return true;</span>
     }
-<span class="nc bnc" id="L78" title="All 2 branches missed.">    if (obj == null) {</span>
-<span class="nc" id="L79">      return false;</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">    if (obj == null) {</span>
+<span class="fc" id="L79">      return false;</span>
     }
-<span class="nc bnc" id="L81" title="All 2 branches missed.">    if (getClass() != obj.getClass()) {</span>
-<span class="nc" id="L82">      return false;</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">    if (getClass() != obj.getClass()) {</span>
+<span class="fc" id="L82">      return false;</span>
     }
-<span class="nc" id="L84">    MeasurementTypeImpl other = (MeasurementTypeImpl) obj;</span>
-<span class="nc bnc" id="L85" title="All 2 branches missed.">    if (id == null) {</span>
-<span class="nc bnc" id="L86" title="All 2 branches missed.">      if (other.id != null) {</span>
-<span class="nc" id="L87">        return false;</span>
+<span class="fc" id="L84">    MeasurementTypeImpl other = (MeasurementTypeImpl) obj;</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">    if (id == null) {</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">      if (other.id != null) {</span>
+<span class="fc" id="L87">        return false;</span>
       }
     }
-<span class="nc bnc" id="L90" title="All 2 branches missed.">    else if (!id.equals(other.id)) {</span>
-<span class="nc" id="L91">      return false;</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">    else if (!id.equals(other.id)) {</span>
+<span class="fc" id="L91">      return false;</span>
     }
-<span class="nc bnc" id="L93" title="All 2 branches missed.">    if (name == null) {</span>
-<span class="nc bnc" id="L94" title="All 2 branches missed.">      if (other.name != null) {</span>
-<span class="nc" id="L95">        return false;</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">    if (name == null) {</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">      if (other.name != null) {</span>
+<span class="fc" id="L95">        return false;</span>
       }
     }
-<span class="nc bnc" id="L98" title="All 2 branches missed.">    else if (!name.equals(other.name)) {</span>
-<span class="nc" id="L99">      return false;</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">    else if (!name.equals(other.name)) {</span>
+<span class="fc" id="L99">      return false;</span>
     }
-<span class="nc bnc" id="L101" title="All 2 branches missed.">    if (pk == null) {</span>
-<span class="nc bnc" id="L102" title="All 2 branches missed.">      if (other.pk != null) {</span>
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">    if (pk == null) {</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">      if (other.pk != null) {</span>
 <span class="nc" id="L103">        return false;</span>
       }
     }
 <span class="nc bnc" id="L106" title="All 2 branches missed.">    else if (!pk.equals(other.pk)) {</span>
 <span class="nc" id="L107">      return false;</span>
     }
-<span class="nc bnc" id="L109" title="All 2 branches missed.">    if (units == null) {</span>
-<span class="nc bnc" id="L110" title="All 2 branches missed.">      if (other.units != null) {</span>
-<span class="nc" id="L111">        return false;</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">    if (units == null) {</span>
+<span class="pc bpc" id="L110" title="1 of 2 branches missed.">      if (other.units != null) {</span>
+<span class="fc" id="L111">        return false;</span>
       }
     }
-<span class="nc bnc" id="L114" title="All 2 branches missed.">    else if (!units.equals(other.units)) {</span>
-<span class="nc" id="L115">      return false;</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">    else if (!units.equals(other.units)) {</span>
+<span class="fc" id="L115">      return false;</span>
     }
-<span class="nc" id="L117">    return true;</span>
+<span class="fc" id="L117">    return true;</span>
   }
 
   /**
    * @return the id
    */
   public String getId() {
-<span class="nc" id="L124">    return id;</span>
+<span class="fc" id="L124">    return id;</span>
   }
 
   /**
    * @return the name
    */
   public String getName() {
-<span class="nc" id="L131">    return name;</span>
+<span class="fc" id="L131">    return name;</span>
   }
 
   /**
@@ -152,21 +152,21 @@ public class MeasurementTypeImpl {
    */
   @Override
   public int hashCode() {
-<span class="nc" id="L155">    final int prime = 31;</span>
-<span class="nc" id="L156">    int result = 1;</span>
-<span class="nc bnc" id="L157" title="All 2 branches missed.">    result = prime * result + ((id == null) ? 0 : id.hashCode());</span>
-<span class="nc bnc" id="L158" title="All 2 branches missed.">    result = prime * result + ((name == null) ? 0 : name.hashCode());</span>
-<span class="nc bnc" id="L159" title="All 2 branches missed.">    result = prime * result + ((pk == null) ? 0 : pk.hashCode());</span>
-<span class="nc bnc" id="L160" title="All 2 branches missed.">    result = prime * result + ((units == null) ? 0 : units.hashCode());</span>
-<span class="nc" id="L161">    return result;</span>
+<span class="fc" id="L155">    final int prime = 31;</span>
+<span class="fc" id="L156">    int result = 1;</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">    result = prime * result + ((id == null) ? 0 : id.hashCode());</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">    result = prime * result + ((name == null) ? 0 : name.hashCode());</span>
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">    result = prime * result + ((pk == null) ? 0 : pk.hashCode());</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">    result = prime * result + ((units == null) ? 0 : units.hashCode());</span>
+<span class="fc" id="L161">    return result;</span>
   }
 
   /**
    * @param id the id to set
    */
   public void setId(String id) {
-<span class="nc" id="L168">    this.id = id;</span>
-<span class="nc" id="L169">  }</span>
+<span class="fc" id="L168">    this.id = id;</span>
+<span class="fc" id="L169">  }</span>
 
   /**
    * @param name the name to set
@@ -206,9 +206,9 @@ public class MeasurementTypeImpl {
    */
   @Override
   public String toString() {
-<span class="nc" id="L209">    return &quot;MeasurementTypeImpl [pk=&quot; + pk + &quot;, id=&quot; + id + &quot;, name=&quot; + name + &quot;, units=&quot; + units</span>
+<span class="fc" id="L209">    return &quot;MeasurementTypeImpl [pk=&quot; + pk + &quot;, id=&quot; + id + &quot;, name=&quot; + name + &quot;, units=&quot; + units</span>
         + &quot;]&quot;;
   }
 
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

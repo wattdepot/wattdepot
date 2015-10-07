@@ -274,37 +274,49 @@
 <span class="sourceLineNo">266</span>    InterpolatedValue val = null;<a name="line.266"></a>
 <span class="sourceLineNo">267</span><a name="line.267"></a>
 <span class="sourceLineNo">268</span>    if (earliest != null) {<a name="line.268"></a>
-<span class="sourceLineNo">269</span>      return depot.getEarliestMeasuredValue(depositoryId, orgId, sensorId, true);<a name="line.269"></a>
-<span class="sourceLineNo">270</span>    }<a name="line.270"></a>
-<span class="sourceLineNo">271</span>    else if (latest != null) {<a name="line.271"></a>
-<span class="sourceLineNo">272</span>      return depot.getLatestMeasuredValue(depositoryId, orgId, sensorId, true);<a name="line.272"></a>
+<span class="sourceLineNo">269</span>      val = depot.getEarliestMeasuredValue(depositoryId, orgId, sensorId, true);<a name="line.269"></a>
+<span class="sourceLineNo">270</span>      val.addDefinedSensor(sensorId);<a name="line.270"></a>
+<span class="sourceLineNo">271</span>      val.addReportingSensor(sensorId);<a name="line.271"></a>
+<span class="sourceLineNo">272</span>      return val;<a name="line.272"></a>
 <span class="sourceLineNo">273</span>    }<a name="line.273"></a>
-<span class="sourceLineNo">274</span>    else if (timestamp != null) {<a name="line.274"></a>
-<span class="sourceLineNo">275</span>      time = DateConvert.parseCalStringToDate(timestamp);<a name="line.275"></a>
-<span class="sourceLineNo">276</span>      if (gapSeconds != null) {<a name="line.276"></a>
-<span class="sourceLineNo">277</span>        value = depot.getValue(depositoryId, orgId, sensor.getId(), time,<a name="line.277"></a>
-<span class="sourceLineNo">278</span>            Long.parseLong(gapSeconds), true);<a name="line.278"></a>
-<span class="sourceLineNo">279</span>      }<a name="line.279"></a>
-<span class="sourceLineNo">280</span>      else {<a name="line.280"></a>
-<span class="sourceLineNo">281</span>        value = depot.getValue(depositoryId, orgId, sensor.getId(), time, true);<a name="line.281"></a>
-<span class="sourceLineNo">282</span>      }<a name="line.282"></a>
-<span class="sourceLineNo">283</span>      val = new InterpolatedValue(sensorId, value, deposit.getMeasurementType(), time);<a name="line.283"></a>
-<span class="sourceLineNo">284</span>    }<a name="line.284"></a>
-<span class="sourceLineNo">285</span>    else if (start != null &amp;&amp; end != null) {<a name="line.285"></a>
-<span class="sourceLineNo">286</span>      startDate = DateConvert.parseCalStringToDate(start);<a name="line.286"></a>
-<span class="sourceLineNo">287</span>      endDate = DateConvert.parseCalStringToDate(end);<a name="line.287"></a>
-<span class="sourceLineNo">288</span>      if (gapSeconds != null) {<a name="line.288"></a>
-<span class="sourceLineNo">289</span>        value = depot.getValue(depositoryId, orgId, sensor.getId(), startDate, endDate,<a name="line.289"></a>
-<span class="sourceLineNo">290</span>            Long.parseLong(gapSeconds), true);<a name="line.290"></a>
-<span class="sourceLineNo">291</span>      }<a name="line.291"></a>
-<span class="sourceLineNo">292</span>      else {<a name="line.292"></a>
-<span class="sourceLineNo">293</span>        value = depot.getValue(depositoryId, orgId, sensor.getId(), startDate, endDate, true);<a name="line.293"></a>
-<span class="sourceLineNo">294</span>      }<a name="line.294"></a>
-<span class="sourceLineNo">295</span>      val = new InterpolatedValue(sensorId, value, deposit.getMeasurementType(), startDate, endDate);<a name="line.295"></a>
-<span class="sourceLineNo">296</span>    }<a name="line.296"></a>
-<span class="sourceLineNo">297</span>    return val;<a name="line.297"></a>
-<span class="sourceLineNo">298</span>  }<a name="line.298"></a>
-<span class="sourceLineNo">299</span>}<a name="line.299"></a>
+<span class="sourceLineNo">274</span>    else if (latest != null) {<a name="line.274"></a>
+<span class="sourceLineNo">275</span>      val = depot.getLatestMeasuredValue(depositoryId, orgId, sensorId, true);<a name="line.275"></a>
+<span class="sourceLineNo">276</span>      val.addDefinedSensor(sensorId);<a name="line.276"></a>
+<span class="sourceLineNo">277</span>      val.addReportingSensor(sensorId);<a name="line.277"></a>
+<span class="sourceLineNo">278</span>      return val;<a name="line.278"></a>
+<span class="sourceLineNo">279</span>    }<a name="line.279"></a>
+<span class="sourceLineNo">280</span>    else if (timestamp != null) {<a name="line.280"></a>
+<span class="sourceLineNo">281</span>      time = DateConvert.parseCalStringToDate(timestamp);<a name="line.281"></a>
+<span class="sourceLineNo">282</span>      if (gapSeconds != null) {<a name="line.282"></a>
+<span class="sourceLineNo">283</span>        value = depot.getValue(depositoryId, orgId, sensor.getId(), time,<a name="line.283"></a>
+<span class="sourceLineNo">284</span>            Long.parseLong(gapSeconds), true);<a name="line.284"></a>
+<span class="sourceLineNo">285</span>      }<a name="line.285"></a>
+<span class="sourceLineNo">286</span>      else {<a name="line.286"></a>
+<span class="sourceLineNo">287</span>        value = depot.getValue(depositoryId, orgId, sensor.getId(), time, true);<a name="line.287"></a>
+<span class="sourceLineNo">288</span>      }<a name="line.288"></a>
+<span class="sourceLineNo">289</span>      val = new InterpolatedValue(sensorId, value, deposit.getMeasurementType(), time);<a name="line.289"></a>
+<span class="sourceLineNo">290</span>    }<a name="line.290"></a>
+<span class="sourceLineNo">291</span>    else if (start != null &amp;&amp; end != null) {<a name="line.291"></a>
+<span class="sourceLineNo">292</span>      startDate = DateConvert.parseCalStringToDate(start);<a name="line.292"></a>
+<span class="sourceLineNo">293</span>      endDate = DateConvert.parseCalStringToDate(end);<a name="line.293"></a>
+<span class="sourceLineNo">294</span>      if (gapSeconds != null) {<a name="line.294"></a>
+<span class="sourceLineNo">295</span>        value = depot.getValue(depositoryId, orgId, sensor.getId(), startDate, endDate,<a name="line.295"></a>
+<span class="sourceLineNo">296</span>            Long.parseLong(gapSeconds), true);<a name="line.296"></a>
+<span class="sourceLineNo">297</span>      }<a name="line.297"></a>
+<span class="sourceLineNo">298</span>      else {<a name="line.298"></a>
+<span class="sourceLineNo">299</span>        value = depot.getValue(depositoryId, orgId, sensor.getId(), startDate, endDate, true);<a name="line.299"></a>
+<span class="sourceLineNo">300</span>      }<a name="line.300"></a>
+<span class="sourceLineNo">301</span>      val = new InterpolatedValue(sensorId, value, deposit.getMeasurementType(), startDate, endDate);<a name="line.301"></a>
+<span class="sourceLineNo">302</span>    }<a name="line.302"></a>
+<span class="sourceLineNo">303</span>    if (val != null) {<a name="line.303"></a>
+<span class="sourceLineNo">304</span>      val.addDefinedSensor(sensorId);<a name="line.304"></a>
+<span class="sourceLineNo">305</span>      if (value != null) {<a name="line.305"></a>
+<span class="sourceLineNo">306</span>        val.addReportingSensor(sensorId);<a name="line.306"></a>
+<span class="sourceLineNo">307</span>      }<a name="line.307"></a>
+<span class="sourceLineNo">308</span>    }<a name="line.308"></a>
+<span class="sourceLineNo">309</span>    return val;<a name="line.309"></a>
+<span class="sourceLineNo">310</span>  }<a name="line.310"></a>
+<span class="sourceLineNo">311</span>}<a name="line.311"></a>
 
 
 

@@ -108,9 +108,9 @@ import org.wattdepot.common.http.api.OrganizationResource;
 <span class="fc" id="L108">          realm.findRoles(user).remove(role);</span>
 <span class="fc" id="L109">        }</span>
       }
-<span class="nc" id="L111">      catch (IdNotFoundException e) {</span>
-<span class="nc" id="L112">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
-<span class="pc" id="L113">      }</span>
+<span class="fc" id="L111">      catch (IdNotFoundException e) {</span>
+<span class="fc" id="L112">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="fc" id="L113">      }</span>
     }
     else {
 <span class="nc" id="L116">      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, &quot;Only administrators can delete Organizations.&quot;);</span>

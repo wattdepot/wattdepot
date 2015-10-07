@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DescriptiveStats.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.common.domainmodel</a> &gt; <span class="el_source">DescriptiveStats.java</span></div><h1>DescriptiveStats.java</h1><pre class="source lang-java linenums">/*
+ * This file is part of WattDepot.
+ *
+ *  Copyright (C) 2015  Cam Moore
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package org.wattdepot.common.domainmodel;
+
+import java.util.ArrayList;
+import java.util.Date;
+
+/**
+ * DescriptiveStats - A simple calculated historical min, average, and max for a depository, sensor, timestamp
+ * and number of samples.
+ *
+ * @author Cam Moore
+ */
+public class DescriptiveStats {
+  String depositoryId;
+  String sensorId;
+  Integer numSamples;
+  Double average;
+  Double minimum;
+  Double maximum;
+  Double lowerQuartile;
+  Double upperQuartile;
+  Date timestamp;
+  String windowWidth;
+  String valueType;
+  ArrayList&lt;String&gt; reportingSensors;
+  ArrayList&lt;String&gt; definedSensors;
+  ArrayList&lt;String&gt; missingSensors;
+
+  /**
+   * Default constructor. Initializes the ArrayLists.
+   */
+<span class="nc" id="L50">  public DescriptiveStats() {</span>
+<span class="nc" id="L51">    this.reportingSensors = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L52">    this.definedSensors = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L53">    this.missingSensors = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L54">  }</span>
+
+  /**
+   * @return The reporting sensors as an ArrayList of SensorIds.
+   */
+  public ArrayList&lt;String&gt; getReportingSensors() {
+<span class="nc" id="L60">    return reportingSensors;</span>
+  }
+
+  /**
+   * Sets the reporting sensors.
+   * @param reportingSensors the new list of reporting sensors.
+   */
+  public void setReportingSensors(ArrayList&lt;String&gt; reportingSensors) {
+<span class="nc" id="L68">    this.reportingSensors = reportingSensors;</span>
+<span class="nc" id="L69">  }</span>
+
+  /**
+   * Adds the given sensor id to the list of reporting sensors.
+   * @param sensorId the sensor id to add.
+   */
+  public void addReportingSensor(String sensorId) {
+<span class="nc bnc" id="L76" title="All 2 branches missed.">    if (!reportingSensors.contains(sensorId)) {</span>
+<span class="nc" id="L77">      reportingSensors.add(sensorId);</span>
+    }
+<span class="nc" id="L79">  }</span>
+
+  /**
+   * @return the list of defined sensors.
+   */
+  public ArrayList&lt;String&gt; getDefinedSensors() {
+<span class="nc" id="L85">    return definedSensors;</span>
+  }
+
+  /**
+   * Sets the list of defined sensors.
+   * @param definedSensors the new list of defined sensors.
+   */
+  public void setDefinedSensors(ArrayList&lt;String&gt; definedSensors) {
+<span class="nc" id="L93">    this.definedSensors = definedSensors;</span>
+<span class="nc" id="L94">  }</span>
+
+  /**
+   * Adds the sensor id to the list of defined sensors.
+   * @param sensorId the sensor id to add.
+   */
+  public void addDefinedSensor(String sensorId) {
+<span class="nc bnc" id="L101" title="All 2 branches missed.">    if (!definedSensors.contains(sensorId)) {</span>
+<span class="nc" id="L102">      definedSensors.add(sensorId);</span>
+    }
+<span class="nc" id="L104">  }</span>
+
+  /**
+   * @return the list of missing sensors.
+   */
+  public ArrayList&lt;String&gt; getMissingSensors() {
+<span class="nc" id="L110">    return missingSensors;</span>
+  }
+
+  /**
+   * Sets the list of missing sensors.
+   * @param missingSensors the new list of missing sensors.
+   */
+  public void setMissingSensors(ArrayList&lt;String&gt; missingSensors) {
+<span class="nc" id="L118">    this.missingSensors = missingSensors;</span>
+<span class="nc" id="L119">  }</span>
+
+  /**
+   * Adds the given sensor id to the list of missing sensors. Supports duplicates.
+   * @param sensorId the sensor id.
+   */
+  public void addMissingSensor(String sensorId) {
+<span class="nc" id="L126">    this.missingSensors.add(sensorId);</span>
+<span class="nc" id="L127">  }</span>
+
+  /**
+   * @return The Depository id.
+   */
+  public String getDepositoryId() {
+<span class="nc" id="L133">    return depositoryId;</span>
+  }
+
+  /**
+   * Sets the depository id.
+   *
+   * @param depositoryId the new depository id.
+   */
+  public void setDepositoryId(String depositoryId) {
+<span class="nc" id="L142">    this.depositoryId = depositoryId;</span>
+<span class="nc" id="L143">  }</span>
+
+  /**
+   * @return the sensor id.
+   */
+  public String getSensorId() {
+<span class="nc" id="L149">    return sensorId;</span>
+  }
+
+  /**
+   * Sets the sensor id.
+   *
+   * @param sensorId the new sensor id.
+   */
+  public void setSensorId(String sensorId) {
+<span class="nc" id="L158">    this.sensorId = sensorId;</span>
+<span class="nc" id="L159">  }</span>
+
+  /**
+   * @return the number of weeks of data used to calculate the values.
+   */
+  public Integer getNumSamples() {
+<span class="nc" id="L165">    return numSamples;</span>
+  }
+
+  /**
+   * Sets the number of samples used.
+   *
+   * @param numSamples the new number of samples used.
+   */
+  public void setNumSamples(Integer numSamples) {
+<span class="nc" id="L174">    this.numSamples = numSamples;</span>
+<span class="nc" id="L175">  }</span>
+
+  /**
+   * @return The average value of the samples.
+   */
+  public Double getAverage() {
+<span class="nc" id="L181">    return average;</span>
+  }
+
+  /**
+   * Sets the average value.
+   *
+   * @param average the new average value.
+   */
+  public void setAverage(Double average) {
+<span class="nc" id="L190">    this.average = average;</span>
+<span class="nc" id="L191">  }</span>
+
+  /**
+   * @return the minimum sample value.
+   */
+  public Double getMinimum() {
+<span class="nc" id="L197">    return minimum;</span>
+  }
+
+  /**
+   * Sets the minimum value.
+   *
+   * @param minimum the new minimum value.
+   */
+  public void setMinimum(Double minimum) {
+<span class="nc" id="L206">    this.minimum = minimum;</span>
+<span class="nc" id="L207">  }</span>
+
+  /**
+   * @return the maximum sample value.
+   */
+  public Double getMaximum() {
+<span class="nc" id="L213">    return maximum;</span>
+  }
+
+  /**
+   * Sets the maximum value.
+   *
+   * @param maximum the new maximum value.
+   */
+  public void setMaximum(Double maximum) {
+<span class="nc" id="L222">    this.maximum = maximum;</span>
+<span class="nc" id="L223">  }</span>
+
+  /**
+   * @return the time of the historical values.
+   */
+  public Date getTimestamp() {
+<span class="nc" id="L229">    return new Date(timestamp.getTime());</span>
+  }
+
+  /**
+   * Sets the time of the historical values.
+   *
+   * @param timestamp the new time.
+   */
+  public void setTimestamp(Date timestamp) {
+<span class="nc" id="L238">    this.timestamp = new Date(timestamp.getTime());</span>
+<span class="nc" id="L239">  }</span>
+
+  /**
+   * @return the width of the window, hourly or daily.
+   */
+  public String getWindowWidth() {
+<span class="nc" id="L245">    return windowWidth;</span>
+  }
+
+  /**
+   * Sets the window width.
+   *
+   * @param windowWidth the new window width.
+   */
+  public void setWindowWidth(String windowWidth) {
+<span class="nc" id="L254">    this.windowWidth = windowWidth;</span>
+<span class="nc" id="L255">  }</span>
+
+  /**
+   * @return point or difference.
+   */
+  public String getValueType() {
+<span class="nc" id="L261">    return valueType;</span>
+  }
+
+  /**
+   * Sets the value type, point or difference.
+   *
+   * @param valueType the new value type.
+   */
+  public void setValueType(String valueType) {
+<span class="nc" id="L270">    this.valueType = valueType;</span>
+<span class="nc" id="L271">  }</span>
+
+  /**
+   * @return the lower quartile.
+   */
+  public Double getLowerQuartile() {
+<span class="nc" id="L277">    return lowerQuartile;</span>
+  }
+
+  /**
+   * Sets the lower quartile.
+   *
+   * @param lowerQuartile the new lower quartile.
+   */
+  public void setLowerQuartile(Double lowerQuartile) {
+<span class="nc" id="L286">    this.lowerQuartile = lowerQuartile;</span>
+<span class="nc" id="L287">  }</span>
+
+  /**
+   * @return the upper quartile.
+   */
+  public Double getUpperQuartile() {
+<span class="nc" id="L293">    return upperQuartile;</span>
+  }
+
+  /**
+   * Sets the upper quartile.
+   *
+   * @param upperQuartile the new upper quartile.
+   */
+  public void setUpperQuartile(Double upperQuartile) {
+<span class="nc" id="L302">    this.upperQuartile = upperQuartile;</span>
+<span class="nc" id="L303">  }</span>
+
+  @Override
+  public boolean equals(Object o) {
+<span class="nc bnc" id="L307" title="All 2 branches missed.">    if (this == o) {</span>
+<span class="nc" id="L308">      return true;</span>
+    }
+<span class="nc bnc" id="L310" title="All 2 branches missed.">    if (!(o instanceof DescriptiveStats)) {</span>
+<span class="nc" id="L311">      return false;</span>
+    }
+
+<span class="nc" id="L314">    DescriptiveStats that = (DescriptiveStats) o;</span>
+
+<span class="nc bnc" id="L316" title="All 6 branches missed.">    if (depositoryId != null ? !depositoryId.equals(that.depositoryId) : that.depositoryId != null) {</span>
+<span class="nc" id="L317">      return false;</span>
+    }
+<span class="nc bnc" id="L319" title="All 6 branches missed.">    if (sensorId != null ? !sensorId.equals(that.sensorId) : that.sensorId != null) {</span>
+<span class="nc" id="L320">      return false;</span>
+    }
+<span class="nc bnc" id="L322" title="All 6 branches missed.">    if (numSamples != null ? !numSamples.equals(that.numSamples) : that.numSamples != null) {</span>
+<span class="nc" id="L323">      return false;</span>
+    }
+<span class="nc bnc" id="L325" title="All 6 branches missed.">    if (average != null ? !average.equals(that.average) : that.average != null) {</span>
+<span class="nc" id="L326">      return false;</span>
+    }
+<span class="nc bnc" id="L328" title="All 6 branches missed.">    if (minimum != null ? !minimum.equals(that.minimum) : that.minimum != null) {</span>
+<span class="nc" id="L329">      return false;</span>
+    }
+<span class="nc bnc" id="L331" title="All 6 branches missed.">    if (maximum != null ? !maximum.equals(that.maximum) : that.maximum != null) {</span>
+<span class="nc" id="L332">      return false;</span>
+    }
+<span class="nc bnc" id="L334" title="All 6 branches missed.">    if (timestamp != null ? !timestamp.equals(that.timestamp) : that.timestamp != null) {</span>
+<span class="nc" id="L335">      return false;</span>
+    }
+<span class="nc bnc" id="L337" title="All 6 branches missed.">    if (windowWidth != null ? !windowWidth.equals(that.windowWidth) : that.windowWidth != null) {</span>
+<span class="nc" id="L338">      return false;</span>
+    }
+<span class="nc bnc" id="L340" title="All 6 branches missed.">    return !(valueType != null ? !valueType.equals(that.valueType) : that.valueType != null);</span>
+
+  }
+
+  @Override
+  public int hashCode() {
+<span class="nc bnc" id="L346" title="All 2 branches missed.">    int result = depositoryId != null ? depositoryId.hashCode() : 0;</span>
+<span class="nc bnc" id="L347" title="All 2 branches missed.">    result = 31 * result + (sensorId != null ? sensorId.hashCode() : 0);</span>
+<span class="nc bnc" id="L348" title="All 2 branches missed.">    result = 31 * result + (numSamples != null ? numSamples.hashCode() : 0);</span>
+<span class="nc bnc" id="L349" title="All 2 branches missed.">    result = 31 * result + (average != null ? average.hashCode() : 0);</span>
+<span class="nc bnc" id="L350" title="All 2 branches missed.">    result = 31 * result + (minimum != null ? minimum.hashCode() : 0);</span>
+<span class="nc bnc" id="L351" title="All 2 branches missed.">    result = 31 * result + (maximum != null ? maximum.hashCode() : 0);</span>
+<span class="nc bnc" id="L352" title="All 2 branches missed.">    result = 31 * result + (timestamp != null ? timestamp.hashCode() : 0);</span>
+<span class="nc bnc" id="L353" title="All 2 branches missed.">    result = 31 * result + (windowWidth != null ? windowWidth.hashCode() : 0);</span>
+<span class="nc bnc" id="L354" title="All 2 branches missed.">    result = 31 * result + (valueType != null ? valueType.hashCode() : 0);</span>
+<span class="nc" id="L355">    return result;</span>
+  }
+
+  @Override
+  public String toString() {
+<span class="nc" id="L360">    return &quot;DescriptiveStats{&quot; +</span>
+        &quot;depositoryId='&quot; + depositoryId + '\'' +
+        &quot;, sensorId='&quot; + sensorId + '\'' +
+        &quot;, numSamples=&quot; + numSamples +
+        &quot;, average=&quot; + average +
+        &quot;, minimum=&quot; + minimum +
+        &quot;, maximum=&quot; + maximum +
+        &quot;, timestamp=&quot; + timestamp +
+        &quot;, windowWidth='&quot; + windowWidth + '\'' +
+        &quot;, valueType='&quot; + valueType + '\'' +
+        '}';
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

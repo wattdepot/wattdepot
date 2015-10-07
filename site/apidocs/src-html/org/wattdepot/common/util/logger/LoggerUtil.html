@@ -43,156 +43,159 @@
 <span class="sourceLineNo">035</span>        .hasMoreElements();) {<a name="line.35"></a>
 <span class="sourceLineNo">036</span>      String logName = en.nextElement();<a name="line.36"></a>
 <span class="sourceLineNo">037</span>      Logger logger = logManager.getLogger(logName);<a name="line.37"></a>
-<span class="sourceLineNo">038</span>      if (logger != null) {<a name="line.38"></a>
-<span class="sourceLineNo">039</span>        // remove the old handlers<a name="line.39"></a>
-<span class="sourceLineNo">040</span>        Handler[] handlers = logger.getHandlers();<a name="line.40"></a>
-<span class="sourceLineNo">041</span>        for (Handler handler : handlers) {<a name="line.41"></a>
-<span class="sourceLineNo">042</span>          logger.removeHandler(handler);<a name="line.42"></a>
-<span class="sourceLineNo">043</span>        }<a name="line.43"></a>
-<span class="sourceLineNo">044</span>      }<a name="line.44"></a>
-<span class="sourceLineNo">045</span>    }<a name="line.45"></a>
-<span class="sourceLineNo">046</span>    Logger logger = logManager.getLogger("");<a name="line.46"></a>
-<span class="sourceLineNo">047</span>    ConsoleHandler handler = new ConsoleHandler();<a name="line.47"></a>
-<span class="sourceLineNo">048</span>    logger.addHandler(handler);<a name="line.48"></a>
-<span class="sourceLineNo">049</span>  }<a name="line.49"></a>
-<span class="sourceLineNo">050</span><a name="line.50"></a>
-<span class="sourceLineNo">051</span>  /**<a name="line.51"></a>
-<span class="sourceLineNo">052</span>   * Removes all the handlers from all the defined loggers. This should<a name="line.52"></a>
-<span class="sourceLineNo">053</span>   */<a name="line.53"></a>
-<span class="sourceLineNo">054</span>  public static void disableLogging() {<a name="line.54"></a>
-<span class="sourceLineNo">055</span>    Logger base = LogManager.getLogManager().getLogger(<a name="line.55"></a>
-<span class="sourceLineNo">056</span>        Logger.GLOBAL_LOGGER_NAME);<a name="line.56"></a>
-<span class="sourceLineNo">057</span>    base = base.getParent();<a name="line.57"></a>
-<span class="sourceLineNo">058</span>    base.setLevel(Level.SEVERE);<a name="line.58"></a>
-<span class="sourceLineNo">059</span>  }<a name="line.59"></a>
-<span class="sourceLineNo">060</span><a name="line.60"></a>
-<span class="sourceLineNo">061</span>  /**<a name="line.61"></a>
-<span class="sourceLineNo">062</span>   * Adjusts the Restlet Loggers so that they send their output to a file, not<a name="line.62"></a>
-<span class="sourceLineNo">063</span>   * the console.<a name="line.63"></a>
-<span class="sourceLineNo">064</span>   * <a name="line.64"></a>
-<span class="sourceLineNo">065</span>   * @param serverHome Home directory for this server. Logging files are placed<a name="line.65"></a>
-<span class="sourceLineNo">066</span>   *        in [serverHome]/logs. If null, an IllegalArgumentException is<a name="line.66"></a>
-<span class="sourceLineNo">067</span>   *        thrown.<a name="line.67"></a>
-<span class="sourceLineNo">068</span>   * @throws IllegalArgumentException If serverHome is null.<a name="line.68"></a>
-<span class="sourceLineNo">069</span>   * @throws RuntimeException If there are problems creating directories or<a name="line.69"></a>
-<span class="sourceLineNo">070</span>   *         opening log file.<a name="line.70"></a>
-<span class="sourceLineNo">071</span>   */<a name="line.71"></a>
-<span class="sourceLineNo">072</span>  public static void useFileHandler(String serverHome) {<a name="line.72"></a>
-<span class="sourceLineNo">073</span>    LogManager logManager = LogManager.getLogManager();<a name="line.73"></a>
-<span class="sourceLineNo">074</span>    // System.out.println("In useFileHandler");<a name="line.74"></a>
-<span class="sourceLineNo">075</span>    for (Enumeration&lt;String&gt; en = logManager.getLoggerNames(); en<a name="line.75"></a>
-<span class="sourceLineNo">076</span>        .hasMoreElements();) {<a name="line.76"></a>
-<span class="sourceLineNo">077</span>      String logName = en.nextElement();<a name="line.77"></a>
-<span class="sourceLineNo">078</span>      if ((logName.startsWith("com.noelios")<a name="line.78"></a>
-<span class="sourceLineNo">079</span>          || logName.startsWith("org.restlet") || "global".equals(logName))<a name="line.79"></a>
-<span class="sourceLineNo">080</span>          &amp;&amp; logManager.getLogger(logName) != null) {<a name="line.80"></a>
-<span class="sourceLineNo">081</span>        // First, get rid of current Handlers<a name="line.81"></a>
-<span class="sourceLineNo">082</span>        Logger logger = logManager.getLogger(logName);<a name="line.82"></a>
-<span class="sourceLineNo">083</span>        logger.setFilter(new HTTPClientHelperFilter());<a name="line.83"></a>
-<span class="sourceLineNo">084</span>        // System.out.println("logger is: " + logger + " name = " + logName);<a name="line.84"></a>
-<span class="sourceLineNo">085</span>        logger = logger.getParent();<a name="line.85"></a>
-<span class="sourceLineNo">086</span>        // System.out.println("parent logger is: " + logger);<a name="line.86"></a>
-<span class="sourceLineNo">087</span>        Handler[] handlers = logger.getHandlers();<a name="line.87"></a>
-<span class="sourceLineNo">088</span>        for (Handler handler : handlers) {<a name="line.88"></a>
-<span class="sourceLineNo">089</span>          logger.removeHandler(handler);<a name="line.89"></a>
-<span class="sourceLineNo">090</span>        }<a name="line.90"></a>
-<span class="sourceLineNo">091</span>        // System.out.println("Removed handlers.");<a name="line.91"></a>
-<span class="sourceLineNo">092</span>        // Define a handler that writes to the ~/.wattdepot3/&lt;service&gt;/logs<a name="line.92"></a>
-<span class="sourceLineNo">093</span>        // directory<a name="line.93"></a>
-<span class="sourceLineNo">094</span>        // Define a file handler that writes to the logs directory, creating it<a name="line.94"></a>
-<span class="sourceLineNo">095</span>        // if nec.<a name="line.95"></a>
-<span class="sourceLineNo">096</span>        if (serverHome == null) {<a name="line.96"></a>
-<span class="sourceLineNo">097</span>          throw new IllegalArgumentException(<a name="line.97"></a>
-<span class="sourceLineNo">098</span>              "Attempt to change Restlet logging to null filename");<a name="line.98"></a>
-<span class="sourceLineNo">099</span>        }<a name="line.99"></a>
-<span class="sourceLineNo">100</span>        else {<a name="line.100"></a>
-<span class="sourceLineNo">101</span>          File logDir = new File(serverHome + "/logs/");<a name="line.101"></a>
-<span class="sourceLineNo">102</span>          boolean dirsOk = logDir.mkdirs();<a name="line.102"></a>
-<span class="sourceLineNo">103</span>          if (!dirsOk &amp;&amp; !logDir.exists()) {<a name="line.103"></a>
-<span class="sourceLineNo">104</span>            throw new RuntimeException("mkdirs() failed");<a name="line.104"></a>
-<span class="sourceLineNo">105</span>          }<a name="line.105"></a>
-<span class="sourceLineNo">106</span>          // System.out.println("Made this directory: " + logDir);<a name="line.106"></a>
-<span class="sourceLineNo">107</span>          String fileName = logDir + "/" + logName + ".%u.log";<a name="line.107"></a>
-<span class="sourceLineNo">108</span>          FileHandler fileHandler;<a name="line.108"></a>
-<span class="sourceLineNo">109</span>          try {<a name="line.109"></a>
-<span class="sourceLineNo">110</span>            fileHandler = new FileHandler(fileName, 500000, 10, true);<a name="line.110"></a>
-<span class="sourceLineNo">111</span>            fileHandler.setFormatter(new SimpleFormatter());<a name="line.111"></a>
-<span class="sourceLineNo">112</span>            logger.addHandler(fileHandler);<a name="line.112"></a>
-<span class="sourceLineNo">113</span>          }<a name="line.113"></a>
-<span class="sourceLineNo">114</span>          catch (IOException e) {<a name="line.114"></a>
-<span class="sourceLineNo">115</span>            // throw new RuntimeException<a name="line.115"></a>
-<span class="sourceLineNo">116</span>            // ("Could not open the log file for this WattDepot service.", e);<a name="line.116"></a>
-<span class="sourceLineNo">117</span>            System.out.println("Could not open log file: " + fileName + " "<a name="line.117"></a>
-<span class="sourceLineNo">118</span>                + e.getMessage());<a name="line.118"></a>
-<span class="sourceLineNo">119</span>          }<a name="line.119"></a>
-<span class="sourceLineNo">120</span>        }<a name="line.120"></a>
-<span class="sourceLineNo">121</span>      }<a name="line.121"></a>
-<span class="sourceLineNo">122</span>    }<a name="line.122"></a>
-<span class="sourceLineNo">123</span>  }<a name="line.123"></a>
-<span class="sourceLineNo">124</span><a name="line.124"></a>
-<span class="sourceLineNo">125</span>  /**<a name="line.125"></a>
-<span class="sourceLineNo">126</span>   * Adjusts the Restlet Loggers so that they dump their output rather than<a name="line.126"></a>
-<span class="sourceLineNo">127</span>   * sending it to the console.<a name="line.127"></a>
-<span class="sourceLineNo">128</span>   */<a name="line.128"></a>
-<span class="sourceLineNo">129</span>  public static void removeRestletLoggers() {<a name="line.129"></a>
-<span class="sourceLineNo">130</span>    LogManager logManager = LogManager.getLogManager();<a name="line.130"></a>
-<span class="sourceLineNo">131</span>    for (Enumeration&lt;String&gt; en = logManager.getLoggerNames(); en<a name="line.131"></a>
-<span class="sourceLineNo">132</span>        .hasMoreElements();) {<a name="line.132"></a>
-<span class="sourceLineNo">133</span>      String logName = en.nextElement();<a name="line.133"></a>
-<span class="sourceLineNo">134</span>      if ((logName.startsWith("com.noelios")<a name="line.134"></a>
-<span class="sourceLineNo">135</span>          || logName.startsWith("org.restlet") || "global".equals(logName) || logName<a name="line.135"></a>
-<span class="sourceLineNo">136</span>            .startsWith("org.hibernate"))<a name="line.136"></a>
-<span class="sourceLineNo">137</span>          &amp;&amp; logManager.getLogger(logName) != null) {<a name="line.137"></a>
-<span class="sourceLineNo">138</span>        Logger logger = logManager.getLogger(logName);<a name="line.138"></a>
-<span class="sourceLineNo">139</span>        logger = logger.getParent();<a name="line.139"></a>
-<span class="sourceLineNo">140</span>        Handler[] handlers = logger.getHandlers();<a name="line.140"></a>
-<span class="sourceLineNo">141</span>        for (Handler handler : handlers) {<a name="line.141"></a>
-<span class="sourceLineNo">142</span>          logger.removeHandler(handler);<a name="line.142"></a>
-<span class="sourceLineNo">143</span>        }<a name="line.143"></a>
-<span class="sourceLineNo">144</span>      }<a name="line.144"></a>
-<span class="sourceLineNo">145</span>    }<a name="line.145"></a>
-<span class="sourceLineNo">146</span>  }<a name="line.146"></a>
-<span class="sourceLineNo">147</span><a name="line.147"></a>
-<span class="sourceLineNo">148</span>  /**<a name="line.148"></a>
-<span class="sourceLineNo">149</span>   * Sets the logging level to be used for this WattDepot logger. If the passed<a name="line.149"></a>
-<span class="sourceLineNo">150</span>   * string cannot be parsed into a Level, then INFO is set by default.<a name="line.150"></a>
-<span class="sourceLineNo">151</span>   * <a name="line.151"></a>
-<span class="sourceLineNo">152</span>   * @param logger The logger whose level is to be set.<a name="line.152"></a>
-<span class="sourceLineNo">153</span>   * @param level The new Level.<a name="line.153"></a>
-<span class="sourceLineNo">154</span>   */<a name="line.154"></a>
-<span class="sourceLineNo">155</span>  public static void setLoggingLevel(Logger logger, String level) {<a name="line.155"></a>
-<span class="sourceLineNo">156</span>    Level newLevel = Level.INFO;<a name="line.156"></a>
-<span class="sourceLineNo">157</span>    try {<a name="line.157"></a>
-<span class="sourceLineNo">158</span>      newLevel = Level.parse(level);<a name="line.158"></a>
-<span class="sourceLineNo">159</span>    }<a name="line.159"></a>
-<span class="sourceLineNo">160</span>    catch (Exception e) {<a name="line.160"></a>
-<span class="sourceLineNo">161</span>      logger.info("Couldn't set Logging level to: " + level);<a name="line.161"></a>
+<span class="sourceLineNo">038</span>//      if (logName.startsWith("org.restlet")) {<a name="line.38"></a>
+<span class="sourceLineNo">039</span>//        logger.setLevel(Level.SEVERE);<a name="line.39"></a>
+<span class="sourceLineNo">040</span>//      }<a name="line.40"></a>
+<span class="sourceLineNo">041</span>      if (logger != null) {<a name="line.41"></a>
+<span class="sourceLineNo">042</span>        // remove the old handlers<a name="line.42"></a>
+<span class="sourceLineNo">043</span>        Handler[] handlers = logger.getHandlers();<a name="line.43"></a>
+<span class="sourceLineNo">044</span>        for (Handler handler : handlers) {<a name="line.44"></a>
+<span class="sourceLineNo">045</span>          logger.removeHandler(handler);<a name="line.45"></a>
+<span class="sourceLineNo">046</span>        }<a name="line.46"></a>
+<span class="sourceLineNo">047</span>      }<a name="line.47"></a>
+<span class="sourceLineNo">048</span>    }<a name="line.48"></a>
+<span class="sourceLineNo">049</span>    Logger logger = logManager.getLogger("");<a name="line.49"></a>
+<span class="sourceLineNo">050</span>    ConsoleHandler handler = new ConsoleHandler();<a name="line.50"></a>
+<span class="sourceLineNo">051</span>    logger.addHandler(handler);<a name="line.51"></a>
+<span class="sourceLineNo">052</span>  }<a name="line.52"></a>
+<span class="sourceLineNo">053</span><a name="line.53"></a>
+<span class="sourceLineNo">054</span>  /**<a name="line.54"></a>
+<span class="sourceLineNo">055</span>   * Removes all the handlers from all the defined loggers. This should<a name="line.55"></a>
+<span class="sourceLineNo">056</span>   */<a name="line.56"></a>
+<span class="sourceLineNo">057</span>  public static void disableLogging() {<a name="line.57"></a>
+<span class="sourceLineNo">058</span>    Logger base = LogManager.getLogManager().getLogger(<a name="line.58"></a>
+<span class="sourceLineNo">059</span>        Logger.GLOBAL_LOGGER_NAME);<a name="line.59"></a>
+<span class="sourceLineNo">060</span>    base = base.getParent();<a name="line.60"></a>
+<span class="sourceLineNo">061</span>    base.setLevel(Level.SEVERE);<a name="line.61"></a>
+<span class="sourceLineNo">062</span>  }<a name="line.62"></a>
+<span class="sourceLineNo">063</span><a name="line.63"></a>
+<span class="sourceLineNo">064</span>  /**<a name="line.64"></a>
+<span class="sourceLineNo">065</span>   * Adjusts the Restlet Loggers so that they send their output to a file, not<a name="line.65"></a>
+<span class="sourceLineNo">066</span>   * the console.<a name="line.66"></a>
+<span class="sourceLineNo">067</span>   * <a name="line.67"></a>
+<span class="sourceLineNo">068</span>   * @param serverHome Home directory for this server. Logging files are placed<a name="line.68"></a>
+<span class="sourceLineNo">069</span>   *        in [serverHome]/logs. If null, an IllegalArgumentException is<a name="line.69"></a>
+<span class="sourceLineNo">070</span>   *        thrown.<a name="line.70"></a>
+<span class="sourceLineNo">071</span>   * @throws IllegalArgumentException If serverHome is null.<a name="line.71"></a>
+<span class="sourceLineNo">072</span>   * @throws RuntimeException If there are problems creating directories or<a name="line.72"></a>
+<span class="sourceLineNo">073</span>   *         opening log file.<a name="line.73"></a>
+<span class="sourceLineNo">074</span>   */<a name="line.74"></a>
+<span class="sourceLineNo">075</span>  public static void useFileHandler(String serverHome) {<a name="line.75"></a>
+<span class="sourceLineNo">076</span>    LogManager logManager = LogManager.getLogManager();<a name="line.76"></a>
+<span class="sourceLineNo">077</span>    // System.out.println("In useFileHandler");<a name="line.77"></a>
+<span class="sourceLineNo">078</span>    for (Enumeration&lt;String&gt; en = logManager.getLoggerNames(); en<a name="line.78"></a>
+<span class="sourceLineNo">079</span>        .hasMoreElements();) {<a name="line.79"></a>
+<span class="sourceLineNo">080</span>      String logName = en.nextElement();<a name="line.80"></a>
+<span class="sourceLineNo">081</span>      if ((logName.startsWith("com.noelios")<a name="line.81"></a>
+<span class="sourceLineNo">082</span>          || logName.startsWith("org.restlet") || "global".equals(logName))<a name="line.82"></a>
+<span class="sourceLineNo">083</span>          &amp;&amp; logManager.getLogger(logName) != null) {<a name="line.83"></a>
+<span class="sourceLineNo">084</span>        // First, get rid of current Handlers<a name="line.84"></a>
+<span class="sourceLineNo">085</span>        Logger logger = logManager.getLogger(logName);<a name="line.85"></a>
+<span class="sourceLineNo">086</span>        logger.setFilter(new HTTPClientHelperFilter());<a name="line.86"></a>
+<span class="sourceLineNo">087</span>        // System.out.println("logger is: " + logger + " name = " + logName);<a name="line.87"></a>
+<span class="sourceLineNo">088</span>        logger = logger.getParent();<a name="line.88"></a>
+<span class="sourceLineNo">089</span>        // System.out.println("parent logger is: " + logger);<a name="line.89"></a>
+<span class="sourceLineNo">090</span>        Handler[] handlers = logger.getHandlers();<a name="line.90"></a>
+<span class="sourceLineNo">091</span>        for (Handler handler : handlers) {<a name="line.91"></a>
+<span class="sourceLineNo">092</span>          logger.removeHandler(handler);<a name="line.92"></a>
+<span class="sourceLineNo">093</span>        }<a name="line.93"></a>
+<span class="sourceLineNo">094</span>        // System.out.println("Removed handlers.");<a name="line.94"></a>
+<span class="sourceLineNo">095</span>        // Define a handler that writes to the ~/.wattdepot3/&lt;service&gt;/logs<a name="line.95"></a>
+<span class="sourceLineNo">096</span>        // directory<a name="line.96"></a>
+<span class="sourceLineNo">097</span>        // Define a file handler that writes to the logs directory, creating it<a name="line.97"></a>
+<span class="sourceLineNo">098</span>        // if nec.<a name="line.98"></a>
+<span class="sourceLineNo">099</span>        if (serverHome == null) {<a name="line.99"></a>
+<span class="sourceLineNo">100</span>          throw new IllegalArgumentException(<a name="line.100"></a>
+<span class="sourceLineNo">101</span>              "Attempt to change Restlet logging to null filename");<a name="line.101"></a>
+<span class="sourceLineNo">102</span>        }<a name="line.102"></a>
+<span class="sourceLineNo">103</span>        else {<a name="line.103"></a>
+<span class="sourceLineNo">104</span>          File logDir = new File(serverHome + "/logs/");<a name="line.104"></a>
+<span class="sourceLineNo">105</span>          boolean dirsOk = logDir.mkdirs();<a name="line.105"></a>
+<span class="sourceLineNo">106</span>          if (!dirsOk &amp;&amp; !logDir.exists()) {<a name="line.106"></a>
+<span class="sourceLineNo">107</span>            throw new RuntimeException("mkdirs() failed");<a name="line.107"></a>
+<span class="sourceLineNo">108</span>          }<a name="line.108"></a>
+<span class="sourceLineNo">109</span>          // System.out.println("Made this directory: " + logDir);<a name="line.109"></a>
+<span class="sourceLineNo">110</span>          String fileName = logDir + "/" + logName + ".%u.log";<a name="line.110"></a>
+<span class="sourceLineNo">111</span>          FileHandler fileHandler;<a name="line.111"></a>
+<span class="sourceLineNo">112</span>          try {<a name="line.112"></a>
+<span class="sourceLineNo">113</span>            fileHandler = new FileHandler(fileName, 500000, 10, true);<a name="line.113"></a>
+<span class="sourceLineNo">114</span>            fileHandler.setFormatter(new SimpleFormatter());<a name="line.114"></a>
+<span class="sourceLineNo">115</span>            logger.addHandler(fileHandler);<a name="line.115"></a>
+<span class="sourceLineNo">116</span>          }<a name="line.116"></a>
+<span class="sourceLineNo">117</span>          catch (IOException e) {<a name="line.117"></a>
+<span class="sourceLineNo">118</span>            // throw new RuntimeException<a name="line.118"></a>
+<span class="sourceLineNo">119</span>            // ("Could not open the log file for this WattDepot service.", e);<a name="line.119"></a>
+<span class="sourceLineNo">120</span>            System.out.println("Could not open log file: " + fileName + " "<a name="line.120"></a>
+<span class="sourceLineNo">121</span>                + e.getMessage());<a name="line.121"></a>
+<span class="sourceLineNo">122</span>          }<a name="line.122"></a>
+<span class="sourceLineNo">123</span>        }<a name="line.123"></a>
+<span class="sourceLineNo">124</span>      }<a name="line.124"></a>
+<span class="sourceLineNo">125</span>    }<a name="line.125"></a>
+<span class="sourceLineNo">126</span>  }<a name="line.126"></a>
+<span class="sourceLineNo">127</span><a name="line.127"></a>
+<span class="sourceLineNo">128</span>  /**<a name="line.128"></a>
+<span class="sourceLineNo">129</span>   * Adjusts the Restlet Loggers so that they dump their output rather than<a name="line.129"></a>
+<span class="sourceLineNo">130</span>   * sending it to the console.<a name="line.130"></a>
+<span class="sourceLineNo">131</span>   */<a name="line.131"></a>
+<span class="sourceLineNo">132</span>  public static void removeRestletLoggers() {<a name="line.132"></a>
+<span class="sourceLineNo">133</span>    LogManager logManager = LogManager.getLogManager();<a name="line.133"></a>
+<span class="sourceLineNo">134</span>    for (Enumeration&lt;String&gt; en = logManager.getLoggerNames(); en<a name="line.134"></a>
+<span class="sourceLineNo">135</span>        .hasMoreElements();) {<a name="line.135"></a>
+<span class="sourceLineNo">136</span>      String logName = en.nextElement();<a name="line.136"></a>
+<span class="sourceLineNo">137</span>      if ((logName.startsWith("com.noelios")<a name="line.137"></a>
+<span class="sourceLineNo">138</span>          || logName.startsWith("org.restlet") || "global".equals(logName) || logName<a name="line.138"></a>
+<span class="sourceLineNo">139</span>            .startsWith("org.hibernate"))<a name="line.139"></a>
+<span class="sourceLineNo">140</span>          &amp;&amp; logManager.getLogger(logName) != null) {<a name="line.140"></a>
+<span class="sourceLineNo">141</span>        Logger logger = logManager.getLogger(logName);<a name="line.141"></a>
+<span class="sourceLineNo">142</span>        logger = logger.getParent();<a name="line.142"></a>
+<span class="sourceLineNo">143</span>        Handler[] handlers = logger.getHandlers();<a name="line.143"></a>
+<span class="sourceLineNo">144</span>        for (Handler handler : handlers) {<a name="line.144"></a>
+<span class="sourceLineNo">145</span>          logger.removeHandler(handler);<a name="line.145"></a>
+<span class="sourceLineNo">146</span>        }<a name="line.146"></a>
+<span class="sourceLineNo">147</span>      }<a name="line.147"></a>
+<span class="sourceLineNo">148</span>    }<a name="line.148"></a>
+<span class="sourceLineNo">149</span>  }<a name="line.149"></a>
+<span class="sourceLineNo">150</span><a name="line.150"></a>
+<span class="sourceLineNo">151</span>  /**<a name="line.151"></a>
+<span class="sourceLineNo">152</span>   * Sets the logging level to be used for this WattDepot logger. If the passed<a name="line.152"></a>
+<span class="sourceLineNo">153</span>   * string cannot be parsed into a Level, then INFO is set by default.<a name="line.153"></a>
+<span class="sourceLineNo">154</span>   * <a name="line.154"></a>
+<span class="sourceLineNo">155</span>   * @param logger The logger whose level is to be set.<a name="line.155"></a>
+<span class="sourceLineNo">156</span>   * @param level The new Level.<a name="line.156"></a>
+<span class="sourceLineNo">157</span>   */<a name="line.157"></a>
+<span class="sourceLineNo">158</span>  public static void setLoggingLevel(Logger logger, String level) {<a name="line.158"></a>
+<span class="sourceLineNo">159</span>    Level newLevel = Level.INFO;<a name="line.159"></a>
+<span class="sourceLineNo">160</span>    try {<a name="line.160"></a>
+<span class="sourceLineNo">161</span>      newLevel = Level.parse(level);<a name="line.161"></a>
 <span class="sourceLineNo">162</span>    }<a name="line.162"></a>
-<span class="sourceLineNo">163</span>    logger.setLevel(newLevel);<a name="line.163"></a>
-<span class="sourceLineNo">164</span>    for (Handler handler : logger.getHandlers()) {<a name="line.164"></a>
-<span class="sourceLineNo">165</span>      handler.setLevel(newLevel);<a name="line.165"></a>
-<span class="sourceLineNo">166</span>    }<a name="line.166"></a>
-<span class="sourceLineNo">167</span>  }<a name="line.167"></a>
-<span class="sourceLineNo">168</span><a name="line.168"></a>
-<span class="sourceLineNo">169</span>  /**<a name="line.169"></a>
-<span class="sourceLineNo">170</span>   * Utility for printing out the known/defined logger names.<a name="line.170"></a>
-<span class="sourceLineNo">171</span>   */<a name="line.171"></a>
-<span class="sourceLineNo">172</span>  public static void showLoggers() {<a name="line.172"></a>
-<span class="sourceLineNo">173</span>    LogManager logManager = LogManager.getLogManager();<a name="line.173"></a>
-<span class="sourceLineNo">174</span>    for (Enumeration&lt;String&gt; en = logManager.getLoggerNames(); en<a name="line.174"></a>
-<span class="sourceLineNo">175</span>        .hasMoreElements();) {<a name="line.175"></a>
-<span class="sourceLineNo">176</span>      String logName = en.nextElement();<a name="line.176"></a>
-<span class="sourceLineNo">177</span>      Logger logger = logManager.getLogger(logName);<a name="line.177"></a>
-<span class="sourceLineNo">178</span>      Logger parent = logger.getParent();<a name="line.178"></a>
-<span class="sourceLineNo">179</span>      System.out.print("logger name = '" + logName + "'");<a name="line.179"></a>
-<span class="sourceLineNo">180</span>      System.out.print(" level = '" + logger.getLevel() + "'");<a name="line.180"></a>
-<span class="sourceLineNo">181</span>      if (parent != null) {<a name="line.181"></a>
-<span class="sourceLineNo">182</span>        System.out.print(" parent = '" + parent.getName() + "'");<a name="line.182"></a>
-<span class="sourceLineNo">183</span>      }<a name="line.183"></a>
-<span class="sourceLineNo">184</span>      System.out.println();<a name="line.184"></a>
-<span class="sourceLineNo">185</span>    }<a name="line.185"></a>
-<span class="sourceLineNo">186</span>  }<a name="line.186"></a>
-<span class="sourceLineNo">187</span>}<a name="line.187"></a>
+<span class="sourceLineNo">163</span>    catch (Exception e) {<a name="line.163"></a>
+<span class="sourceLineNo">164</span>      logger.info("Couldn't set Logging level to: " + level);<a name="line.164"></a>
+<span class="sourceLineNo">165</span>    }<a name="line.165"></a>
+<span class="sourceLineNo">166</span>    logger.setLevel(newLevel);<a name="line.166"></a>
+<span class="sourceLineNo">167</span>    for (Handler handler : logger.getHandlers()) {<a name="line.167"></a>
+<span class="sourceLineNo">168</span>      handler.setLevel(newLevel);<a name="line.168"></a>
+<span class="sourceLineNo">169</span>    }<a name="line.169"></a>
+<span class="sourceLineNo">170</span>  }<a name="line.170"></a>
+<span class="sourceLineNo">171</span><a name="line.171"></a>
+<span class="sourceLineNo">172</span>  /**<a name="line.172"></a>
+<span class="sourceLineNo">173</span>   * Utility for printing out the known/defined logger names.<a name="line.173"></a>
+<span class="sourceLineNo">174</span>   */<a name="line.174"></a>
+<span class="sourceLineNo">175</span>  public static void showLoggers() {<a name="line.175"></a>
+<span class="sourceLineNo">176</span>    LogManager logManager = LogManager.getLogManager();<a name="line.176"></a>
+<span class="sourceLineNo">177</span>    for (Enumeration&lt;String&gt; en = logManager.getLoggerNames(); en<a name="line.177"></a>
+<span class="sourceLineNo">178</span>        .hasMoreElements();) {<a name="line.178"></a>
+<span class="sourceLineNo">179</span>      String logName = en.nextElement();<a name="line.179"></a>
+<span class="sourceLineNo">180</span>      Logger logger = logManager.getLogger(logName);<a name="line.180"></a>
+<span class="sourceLineNo">181</span>      Logger parent = logger.getParent();<a name="line.181"></a>
+<span class="sourceLineNo">182</span>      System.out.print("logger name = '" + logName + "'");<a name="line.182"></a>
+<span class="sourceLineNo">183</span>      System.out.print(" level = '" + logger.getLevel() + "'");<a name="line.183"></a>
+<span class="sourceLineNo">184</span>      if (parent != null) {<a name="line.184"></a>
+<span class="sourceLineNo">185</span>        System.out.print(" parent = '" + parent.getName() + "'");<a name="line.185"></a>
+<span class="sourceLineNo">186</span>      }<a name="line.186"></a>
+<span class="sourceLineNo">187</span>      System.out.println();<a name="line.187"></a>
+<span class="sourceLineNo">188</span>    }<a name="line.188"></a>
+<span class="sourceLineNo">189</span>  }<a name="line.189"></a>
+<span class="sourceLineNo">190</span>}<a name="line.190"></a>
 
 
 

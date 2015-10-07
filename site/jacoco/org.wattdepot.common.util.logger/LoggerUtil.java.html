@@ -35,28 +35,31 @@ public final class LoggerUtil {
 <span class="fc bfc" id="L35" title="All 2 branches covered.">        .hasMoreElements();) {</span>
 <span class="fc" id="L36">      String logName = en.nextElement();</span>
 <span class="fc" id="L37">      Logger logger = logManager.getLogger(logName);</span>
-<span class="pc bpc" id="L38" title="1 of 2 branches missed.">      if (logger != null) {</span>
+//      if (logName.startsWith(&quot;org.restlet&quot;)) {
+//        logger.setLevel(Level.SEVERE);
+//      }
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">      if (logger != null) {</span>
         // remove the old handlers
-<span class="fc" id="L40">        Handler[] handlers = logger.getHandlers();</span>
-<span class="fc bfc" id="L41" title="All 2 branches covered.">        for (Handler handler : handlers) {</span>
-<span class="fc" id="L42">          logger.removeHandler(handler);</span>
+<span class="fc" id="L43">        Handler[] handlers = logger.getHandlers();</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        for (Handler handler : handlers) {</span>
+<span class="fc" id="L45">          logger.removeHandler(handler);</span>
         }
       }
-<span class="fc" id="L45">    }</span>
-<span class="fc" id="L46">    Logger logger = logManager.getLogger(&quot;&quot;);</span>
-<span class="fc" id="L47">    ConsoleHandler handler = new ConsoleHandler();</span>
-<span class="fc" id="L48">    logger.addHandler(handler);</span>
-<span class="fc" id="L49">  }</span>
+<span class="fc" id="L48">    }</span>
+<span class="fc" id="L49">    Logger logger = logManager.getLogger(&quot;&quot;);</span>
+<span class="fc" id="L50">    ConsoleHandler handler = new ConsoleHandler();</span>
+<span class="fc" id="L51">    logger.addHandler(handler);</span>
+<span class="fc" id="L52">  }</span>
 
   /**
    * Removes all the handlers from all the defined loggers. This should
    */
   public static void disableLogging() {
-<span class="fc" id="L55">    Logger base = LogManager.getLogManager().getLogger(</span>
+<span class="fc" id="L58">    Logger base = LogManager.getLogManager().getLogger(</span>
         Logger.GLOBAL_LOGGER_NAME);
-<span class="fc" id="L57">    base = base.getParent();</span>
-<span class="fc" id="L58">    base.setLevel(Level.SEVERE);</span>
-<span class="fc" id="L59">  }</span>
+<span class="fc" id="L60">    base = base.getParent();</span>
+<span class="fc" id="L61">    base.setLevel(Level.SEVERE);</span>
+<span class="fc" id="L62">  }</span>
 
   /**
    * Adjusts the Restlet Loggers so that they send their output to a file, not
@@ -70,80 +73,80 @@ public final class LoggerUtil {
    *         opening log file.
    */
   public static void useFileHandler(String serverHome) {
-<span class="nc" id="L73">    LogManager logManager = LogManager.getLogManager();</span>
+<span class="nc" id="L76">    LogManager logManager = LogManager.getLogManager();</span>
     // System.out.println(&quot;In useFileHandler&quot;);
-<span class="nc" id="L75">    for (Enumeration&lt;String&gt; en = logManager.getLoggerNames(); en</span>
-<span class="nc bnc" id="L76" title="All 2 branches missed.">        .hasMoreElements();) {</span>
-<span class="nc" id="L77">      String logName = en.nextElement();</span>
-<span class="nc bnc" id="L78" title="All 8 branches missed.">      if ((logName.startsWith(&quot;com.noelios&quot;)</span>
+<span class="nc" id="L78">    for (Enumeration&lt;String&gt; en = logManager.getLoggerNames(); en</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        .hasMoreElements();) {</span>
+<span class="nc" id="L80">      String logName = en.nextElement();</span>
+<span class="nc bnc" id="L81" title="All 8 branches missed.">      if ((logName.startsWith(&quot;com.noelios&quot;)</span>
           || logName.startsWith(&quot;org.restlet&quot;) || &quot;global&quot;.equals(logName))
           &amp;&amp; logManager.getLogger(logName) != null) {
         // First, get rid of current Handlers
-<span class="nc" id="L82">        Logger logger = logManager.getLogger(logName);</span>
-<span class="nc" id="L83">        logger.setFilter(new HTTPClientHelperFilter());</span>
+<span class="nc" id="L85">        Logger logger = logManager.getLogger(logName);</span>
+<span class="nc" id="L86">        logger.setFilter(new HTTPClientHelperFilter());</span>
         // System.out.println(&quot;logger is: &quot; + logger + &quot; name = &quot; + logName);
-<span class="nc" id="L85">        logger = logger.getParent();</span>
+<span class="nc" id="L88">        logger = logger.getParent();</span>
         // System.out.println(&quot;parent logger is: &quot; + logger);
-<span class="nc" id="L87">        Handler[] handlers = logger.getHandlers();</span>
-<span class="nc bnc" id="L88" title="All 2 branches missed.">        for (Handler handler : handlers) {</span>
-<span class="nc" id="L89">          logger.removeHandler(handler);</span>
+<span class="nc" id="L90">        Handler[] handlers = logger.getHandlers();</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        for (Handler handler : handlers) {</span>
+<span class="nc" id="L92">          logger.removeHandler(handler);</span>
         }
         // System.out.println(&quot;Removed handlers.&quot;);
         // Define a handler that writes to the ~/.wattdepot3/&lt;service&gt;/logs
         // directory
         // Define a file handler that writes to the logs directory, creating it
         // if nec.
-<span class="nc bnc" id="L96" title="All 2 branches missed.">        if (serverHome == null) {</span>
-<span class="nc" id="L97">          throw new IllegalArgumentException(</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">        if (serverHome == null) {</span>
+<span class="nc" id="L100">          throw new IllegalArgumentException(</span>
               &quot;Attempt to change Restlet logging to null filename&quot;);
         }
         else {
-<span class="nc" id="L101">          File logDir = new File(serverHome + &quot;/logs/&quot;);</span>
-<span class="nc" id="L102">          boolean dirsOk = logDir.mkdirs();</span>
-<span class="nc bnc" id="L103" title="All 4 branches missed.">          if (!dirsOk &amp;&amp; !logDir.exists()) {</span>
-<span class="nc" id="L104">            throw new RuntimeException(&quot;mkdirs() failed&quot;);</span>
+<span class="nc" id="L104">          File logDir = new File(serverHome + &quot;/logs/&quot;);</span>
+<span class="nc" id="L105">          boolean dirsOk = logDir.mkdirs();</span>
+<span class="nc bnc" id="L106" title="All 4 branches missed.">          if (!dirsOk &amp;&amp; !logDir.exists()) {</span>
+<span class="nc" id="L107">            throw new RuntimeException(&quot;mkdirs() failed&quot;);</span>
           }
           // System.out.println(&quot;Made this directory: &quot; + logDir);
-<span class="nc" id="L107">          String fileName = logDir + &quot;/&quot; + logName + &quot;.%u.log&quot;;</span>
+<span class="nc" id="L110">          String fileName = logDir + &quot;/&quot; + logName + &quot;.%u.log&quot;;</span>
           FileHandler fileHandler;
           try {
-<span class="nc" id="L110">            fileHandler = new FileHandler(fileName, 500000, 10, true);</span>
-<span class="nc" id="L111">            fileHandler.setFormatter(new SimpleFormatter());</span>
-<span class="nc" id="L112">            logger.addHandler(fileHandler);</span>
+<span class="nc" id="L113">            fileHandler = new FileHandler(fileName, 500000, 10, true);</span>
+<span class="nc" id="L114">            fileHandler.setFormatter(new SimpleFormatter());</span>
+<span class="nc" id="L115">            logger.addHandler(fileHandler);</span>
           }
-<span class="nc" id="L114">          catch (IOException e) {</span>
+<span class="nc" id="L117">          catch (IOException e) {</span>
             // throw new RuntimeException
             // (&quot;Could not open the log file for this WattDepot service.&quot;, e);
-<span class="nc" id="L117">            System.out.println(&quot;Could not open log file: &quot; + fileName + &quot; &quot;</span>
+<span class="nc" id="L120">            System.out.println(&quot;Could not open log file: &quot; + fileName + &quot; &quot;</span>
                 + e.getMessage());
-<span class="nc" id="L119">          }</span>
+<span class="nc" id="L122">          }</span>
         }
       }
-<span class="nc" id="L122">    }</span>
-<span class="nc" id="L123">  }</span>
+<span class="nc" id="L125">    }</span>
+<span class="nc" id="L126">  }</span>
 
   /**
    * Adjusts the Restlet Loggers so that they dump their output rather than
    * sending it to the console.
    */
   public static void removeRestletLoggers() {
-<span class="nc" id="L130">    LogManager logManager = LogManager.getLogManager();</span>
-<span class="nc" id="L131">    for (Enumeration&lt;String&gt; en = logManager.getLoggerNames(); en</span>
-<span class="nc bnc" id="L132" title="All 2 branches missed.">        .hasMoreElements();) {</span>
-<span class="nc" id="L133">      String logName = en.nextElement();</span>
-<span class="nc bnc" id="L134" title="All 10 branches missed.">      if ((logName.startsWith(&quot;com.noelios&quot;)</span>
+<span class="nc" id="L133">    LogManager logManager = LogManager.getLogManager();</span>
+<span class="nc" id="L134">    for (Enumeration&lt;String&gt; en = logManager.getLoggerNames(); en</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">        .hasMoreElements();) {</span>
+<span class="nc" id="L136">      String logName = en.nextElement();</span>
+<span class="nc bnc" id="L137" title="All 10 branches missed.">      if ((logName.startsWith(&quot;com.noelios&quot;)</span>
           || logName.startsWith(&quot;org.restlet&quot;) || &quot;global&quot;.equals(logName) || logName
             .startsWith(&quot;org.hibernate&quot;))
           &amp;&amp; logManager.getLogger(logName) != null) {
-<span class="nc" id="L138">        Logger logger = logManager.getLogger(logName);</span>
-<span class="nc" id="L139">        logger = logger.getParent();</span>
-<span class="nc" id="L140">        Handler[] handlers = logger.getHandlers();</span>
-<span class="nc bnc" id="L141" title="All 2 branches missed.">        for (Handler handler : handlers) {</span>
-<span class="nc" id="L142">          logger.removeHandler(handler);</span>
+<span class="nc" id="L141">        Logger logger = logManager.getLogger(logName);</span>
+<span class="nc" id="L142">        logger = logger.getParent();</span>
+<span class="nc" id="L143">        Handler[] handlers = logger.getHandlers();</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">        for (Handler handler : handlers) {</span>
+<span class="nc" id="L145">          logger.removeHandler(handler);</span>
         }
       }
-<span class="nc" id="L145">    }</span>
-<span class="nc" id="L146">  }</span>
+<span class="nc" id="L148">    }</span>
+<span class="nc" id="L149">  }</span>
 
   /**
    * Sets the logging level to be used for this WattDepot logger. If the passed
@@ -153,36 +156,36 @@ public final class LoggerUtil {
    * @param level The new Level.
    */
   public static void setLoggingLevel(Logger logger, String level) {
-<span class="fc" id="L156">    Level newLevel = Level.INFO;</span>
+<span class="fc" id="L159">    Level newLevel = Level.INFO;</span>
     try {
-<span class="fc" id="L158">      newLevel = Level.parse(level);</span>
+<span class="fc" id="L161">      newLevel = Level.parse(level);</span>
     }
-<span class="nc" id="L160">    catch (Exception e) {</span>
-<span class="nc" id="L161">      logger.info(&quot;Couldn't set Logging level to: &quot; + level);</span>
-<span class="fc" id="L162">    }</span>
-<span class="fc" id="L163">    logger.setLevel(newLevel);</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">    for (Handler handler : logger.getHandlers()) {</span>
-<span class="fc" id="L165">      handler.setLevel(newLevel);</span>
+<span class="nc" id="L163">    catch (Exception e) {</span>
+<span class="nc" id="L164">      logger.info(&quot;Couldn't set Logging level to: &quot; + level);</span>
+<span class="fc" id="L165">    }</span>
+<span class="fc" id="L166">    logger.setLevel(newLevel);</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">    for (Handler handler : logger.getHandlers()) {</span>
+<span class="fc" id="L168">      handler.setLevel(newLevel);</span>
     }
-<span class="fc" id="L167">  }</span>
+<span class="fc" id="L170">  }</span>
 
   /**
    * Utility for printing out the known/defined logger names.
    */
   public static void showLoggers() {
-<span class="nc" id="L173">    LogManager logManager = LogManager.getLogManager();</span>
-<span class="nc" id="L174">    for (Enumeration&lt;String&gt; en = logManager.getLoggerNames(); en</span>
-<span class="nc bnc" id="L175" title="All 2 branches missed.">        .hasMoreElements();) {</span>
-<span class="nc" id="L176">      String logName = en.nextElement();</span>
-<span class="nc" id="L177">      Logger logger = logManager.getLogger(logName);</span>
-<span class="nc" id="L178">      Logger parent = logger.getParent();</span>
-<span class="nc" id="L179">      System.out.print(&quot;logger name = '&quot; + logName + &quot;'&quot;);</span>
-<span class="nc" id="L180">      System.out.print(&quot; level = '&quot; + logger.getLevel() + &quot;'&quot;);</span>
-<span class="nc bnc" id="L181" title="All 2 branches missed.">      if (parent != null) {</span>
-<span class="nc" id="L182">        System.out.print(&quot; parent = '&quot; + parent.getName() + &quot;'&quot;);</span>
+<span class="nc" id="L176">    LogManager logManager = LogManager.getLogManager();</span>
+<span class="nc" id="L177">    for (Enumeration&lt;String&gt; en = logManager.getLoggerNames(); en</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">        .hasMoreElements();) {</span>
+<span class="nc" id="L179">      String logName = en.nextElement();</span>
+<span class="nc" id="L180">      Logger logger = logManager.getLogger(logName);</span>
+<span class="nc" id="L181">      Logger parent = logger.getParent();</span>
+<span class="nc" id="L182">      System.out.print(&quot;logger name = '&quot; + logName + &quot;'&quot;);</span>
+<span class="nc" id="L183">      System.out.print(&quot; level = '&quot; + logger.getLevel() + &quot;'&quot;);</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">      if (parent != null) {</span>
+<span class="nc" id="L185">        System.out.print(&quot; parent = '&quot; + parent.getName() + &quot;'&quot;);</span>
       }
-<span class="nc" id="L184">      System.out.println();</span>
-<span class="nc" id="L185">    }</span>
-<span class="nc" id="L186">  }</span>
+<span class="nc" id="L187">      System.out.println();</span>
+<span class="nc" id="L188">    }</span>
+<span class="nc" id="L189">  }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>

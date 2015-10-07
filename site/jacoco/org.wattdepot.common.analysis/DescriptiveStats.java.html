@@ -75,25 +75,27 @@ public class DescriptiveStats {
 <span class="nc" id="L75">  public DescriptiveStats(InterpolatedValueList meas) {</span>
 <span class="nc" id="L76">    this.data = new DescriptiveStatistics();</span>
 <span class="nc bnc" id="L77" title="All 2 branches missed.">    for (InterpolatedValue v : meas.getInterpolatedValues()) {</span>
-<span class="nc" id="L78">      data.addValue(v.getValue());</span>
-<span class="nc" id="L79">    }</span>
-<span class="nc" id="L80">  }</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">      if (v.getValue() != null) {</span>
+<span class="nc" id="L79">        data.addValue(v.getValue());</span>
+      }
+<span class="nc" id="L81">    }</span>
+<span class="nc" id="L82">  }</span>
 
   /**
    * @param v the value to add.
    * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#addValue(double)
    */
   public void addValue(double v) {
-<span class="nc" id="L87">    data.addValue(v);</span>
-<span class="nc" id="L88">  }</span>
+<span class="nc" id="L89">    data.addValue(v);</span>
+<span class="nc" id="L90">  }</span>
 
   /**
    * 
    * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#clear()
    */
   public void clear() {
-<span class="nc" id="L95">    data.clear();</span>
-<span class="nc" id="L96">  }</span>
+<span class="nc" id="L97">    data.clear();</span>
+<span class="nc" id="L98">  }</span>
 
   /**
    * @param index the index.
@@ -101,7 +103,7 @@ public class DescriptiveStats {
    * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#getElement(int)
    */
   public double getElement(int index) {
-<span class="nc" id="L104">    return data.getElement(index);</span>
+<span class="nc" id="L106">    return data.getElement(index);</span>
   }
 
   /**
@@ -109,7 +111,7 @@ public class DescriptiveStats {
    * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#getGeometricMean()
    */
   public double getGeometricMean() {
-<span class="nc" id="L112">    return data.getGeometricMean();</span>
+<span class="nc" id="L114">    return data.getGeometricMean();</span>
   }
 
   /**
@@ -117,7 +119,7 @@ public class DescriptiveStats {
    * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#getKurtosis()
    */
   public double getKurtosis() {
-<span class="nc" id="L120">    return data.getKurtosis();</span>
+<span class="nc" id="L122">    return data.getKurtosis();</span>
   }
 
   /**
@@ -125,7 +127,7 @@ public class DescriptiveStats {
    * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#getMax()
    */
   public double getMax() {
-<span class="nc" id="L128">    return data.getMax();</span>
+<span class="nc" id="L130">    return data.getMax();</span>
   }
 
   /**
@@ -133,7 +135,7 @@ public class DescriptiveStats {
    * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#getMean()
    */
   public double getMean() {
-<span class="nc" id="L136">    return data.getMean();</span>
+<span class="nc" id="L138">    return data.getMean();</span>
   }
 
   /**
@@ -141,7 +143,7 @@ public class DescriptiveStats {
    * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#getMin()
    */
   public double getMin() {
-<span class="nc" id="L144">    return data.getMin();</span>
+<span class="nc" id="L146">    return data.getMin();</span>
   }
 
   /**
@@ -149,7 +151,17 @@ public class DescriptiveStats {
    * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#getN()
    */
   public long getN() {
-<span class="nc" id="L152">    return data.getN();</span>
+<span class="nc" id="L154">    return data.getN();</span>
+  }
+
+  /**
+   * Returns an estimate for the pth percentile of the values.
+   * @param p the requested percentile scaled from 0 to 100.
+   * @return An estimate for the pth percentile.
+   * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#getPercentile(double)
+   */
+  public double getPercentile(double p) {
+<span class="nc" id="L164">    return data.getPercentile(p);</span>
   }
 
   /**
@@ -157,7 +169,7 @@ public class DescriptiveStats {
    * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#getPopulationVariance()
    */
   public double getPopulationVariance() {
-<span class="nc" id="L160">    return data.getPopulationVariance();</span>
+<span class="nc" id="L172">    return data.getPopulationVariance();</span>
   }
 
   /**
@@ -165,7 +177,7 @@ public class DescriptiveStats {
    * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#getSkewness()
    */
   public double getSkewness() {
-<span class="nc" id="L168">    return data.getSkewness();</span>
+<span class="nc" id="L180">    return data.getSkewness();</span>
   }
 
   /**
@@ -173,7 +185,7 @@ public class DescriptiveStats {
    * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#getSortedValues()
    */
   public double[] getSortedValues() {
-<span class="nc" id="L176">    return data.getSortedValues();</span>
+<span class="nc" id="L188">    return data.getSortedValues();</span>
   }
 
   /**
@@ -181,7 +193,7 @@ public class DescriptiveStats {
    * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#getStandardDeviation()
    */
   public double getStandardDeviation() {
-<span class="nc" id="L184">    return data.getStandardDeviation();</span>
+<span class="nc" id="L196">    return data.getStandardDeviation();</span>
   }
 
   /**
@@ -189,7 +201,7 @@ public class DescriptiveStats {
    * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#getSum()
    */
   public double getSum() {
-<span class="nc" id="L192">    return data.getSum();</span>
+<span class="nc" id="L204">    return data.getSum();</span>
   }
 
   /**
@@ -197,7 +209,7 @@ public class DescriptiveStats {
    * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#getSumsq()
    */
   public double getSumsq() {
-<span class="nc" id="L200">    return data.getSumsq();</span>
+<span class="nc" id="L212">    return data.getSumsq();</span>
   }
 
   /**
@@ -205,7 +217,7 @@ public class DescriptiveStats {
    * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#getValues()
    */
   public double[] getValues() {
-<span class="nc" id="L208">    return data.getValues();</span>
+<span class="nc" id="L220">    return data.getValues();</span>
   }
 
   /**
@@ -213,7 +225,7 @@ public class DescriptiveStats {
    * @see org.apache.commons.math3.stat.descriptive.DescriptiveStatistics#getVariance()
    */
   public double getVariance() {
-<span class="nc" id="L216">    return data.getVariance();</span>
+<span class="nc" id="L228">    return data.getVariance();</span>
   }
   
   

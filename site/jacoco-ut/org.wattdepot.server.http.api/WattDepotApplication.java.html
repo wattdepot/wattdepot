@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>WattDepotApplication.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="right"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">WattDepotApplication.java</span></div><h1>WattDepotApplication.java</h1><pre class="source lang-java linenums">/**
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>WattDepotApplication.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.source.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">WattDepotApplication.java</span></div><h1>WattDepotApplication.java</h1><pre class="source lang-java linenums">/**
  * UserServerApplication.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
@@ -18,9 +18,6 @@
  */
 package org.wattdepot.server.http.api;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
@@ -28,7 +25,13 @@ import org.restlet.resource.Directory;
 import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
 import org.wattdepot.common.http.api.API;
+import org.wattdepot.extension.WattDepotExtension;
+import org.wattdepot.server.ServerProperties;
 import org.wattdepot.server.WattDepotPersistence;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * UserServerApplication Server app.
@@ -41,23 +44,25 @@ public class WattDepotApplication extends Application {
   private WattDepotPersistence depot;
   private WattDepotComponent component;
   private Map&lt;String, WebSession&gt; sessions;
+  private Map&lt;String, WattDepotExtension&gt; extensionMap;
 
   /**
    * Default constructor.
    */
-<span class="fc" id="L48">  public WattDepotApplication() {</span>
-<span class="fc" id="L49">    setName(&quot;WattDepot Application&quot;);</span>
-<span class="fc" id="L50">    setDescription(&quot;WattDepot HTTP API implementation&quot;);</span>
-<span class="fc" id="L51">    setAuthor(&quot;Cam Moore&quot;);</span>
-<span class="fc" id="L52">    sessions = new HashMap&lt;String, WebSession&gt;();</span>
-<span class="fc" id="L53">  }</span>
+<span class="fc" id="L52">  public WattDepotApplication() {</span>
+<span class="fc" id="L53">    setName(&quot;WattDepot Application&quot;);</span>
+<span class="fc" id="L54">    setDescription(&quot;WattDepot HTTP API implementation&quot;);</span>
+<span class="fc" id="L55">    setAuthor(&quot;Cam Moore&quot;);</span>
+<span class="fc" id="L56">    sessions = new HashMap&lt;String, WebSession&gt;();</span>
+<span class="fc" id="L57">    extensionMap = new HashMap&lt;String, WattDepotExtension&gt;();</span>
+<span class="fc" id="L58">  }</span>
 
   /**
    * @param id The WebSession id.
    * @return The WebSession with the given id or null.
    */
   public WebSession getWebSession(String id) {
-<span class="nc" id="L60">    return sessions.get(id);</span>
+<span class="nc" id="L65">    return sessions.get(id);</span>
   }
 
   /**
@@ -70,7 +75,7 @@ public class WattDepotApplication extends Application {
    *         in the persistent store.
    */
   public WebSession createWebSession(String username, String password) {
-<span class="nc" id="L73">    WebSession ret = null;</span>
+<span class="nc" id="L78">    WebSession ret = null;</span>
     // UserInfo info = depot.getUser(username);
     // if (info != null) {
     // UserGroup group = depot.getUsersGroup(info);
@@ -83,7 +88,7 @@ public class WattDepotApplication extends Application {
     // }
     // }
     // }
-<span class="nc" id="L86">    return ret;</span>
+<span class="nc" id="L91">    return ret;</span>
   }
 
   /**
@@ -93,36 +98,36 @@ public class WattDepotApplication extends Application {
    * @return The old WebSession if it existed or null.
    */
   public WebSession removeWebSession(String id) {
-<span class="nc" id="L96">    return sessions.remove(id);</span>
+<span class="nc" id="L101">    return sessions.remove(id);</span>
   }
 
   /**
    * @return the depot
    */
   public WattDepotPersistence getDepot() {
-<span class="fc" id="L103">    return depot;</span>
+<span class="fc" id="L108">    return depot;</span>
   }
 
   /**
    * @param depot the depot to set
    */
   public void setDepot(WattDepotPersistence depot) {
-<span class="fc" id="L110">    this.depot = depot;</span>
-<span class="fc" id="L111">  }</span>
+<span class="fc" id="L115">    this.depot = depot;</span>
+<span class="fc" id="L116">  }</span>
 
   /**
    * @return the component
    */
   public WattDepotComponent getComponent() {
-<span class="fc" id="L117">    return component;</span>
+<span class="fc" id="L122">    return component;</span>
   }
 
   /**
    * @param component the component to set
    */
   public void setComponent(WattDepotComponent component) {
-<span class="fc" id="L124">    this.component = component;</span>
-<span class="fc" id="L125">  }</span>
+<span class="fc" id="L129">    this.component = component;</span>
+<span class="fc" id="L130">  }</span>
 
   /**
    * Creates a root Router to dispatch call to server resources.
@@ -131,83 +136,106 @@ public class WattDepotApplication extends Application {
    */
   @Override
   public Restlet createInboundRoot() {
-<span class="fc" id="L134">    Router router = new Router(getContext());</span>
+<span class="fc" id="L139">    Router router = new Router(getContext());</span>
 
     // Use CLAP (ClassLoader Access Protocol) to access SPA directory from
     // filesystem or JAR
-<span class="fc" id="L138">    Directory directory = new Directory(getContext(), &quot;clap://dist/&quot;);</span>
-<span class="fc" id="L139">    directory.setListingAllowed(true);</span>
-<span class="fc" id="L140">    router.attach(&quot;/webroot/&quot;, directory);</span>
+<span class="fc" id="L143">    Directory directory = new Directory(getContext(), &quot;clap://dist/&quot;);</span>
+<span class="fc" id="L144">    directory.setListingAllowed(true);</span>
+<span class="fc" id="L145">    router.attach(&quot;/webroot/&quot;, directory);</span>
 
-<span class="fc" id="L142">    router.attach(API.BASE_URI, IsAliveServerResource.class);</span>
+<span class="fc" id="L147">    router.attach(API.BASE_URI, IsAliveServerResource.class);</span>
     // router.attach(&quot;/wattdepot/&quot;, LoginPageServerResource.class);
     // router.attach(&quot;/wattdepot/login/&quot;, LoginServerResource.class);
     // Group administration UI.
-<span class="fc" id="L146">    router.attach(API.ADMIN_URI, AdminServerResource.class);</span>
-<span class="fc" id="L147">    router.attach(API.ORGANIZATION_SUMMARY_URI, OrgSummaryServerResource.class);</span>
-<span class="fc" id="L148">    router.attach(API.ORGANIZATION_VISUALIZE_URI, OrgVisualizerServerResource.class);</span>
+<span class="fc" id="L151">    router.attach(API.ADMIN_URI, AdminServerResource.class);</span>
+<span class="fc" id="L152">    router.attach(API.ORGANIZATION_SUMMARY_URI, OrgSummaryServerResource.class);</span>
+<span class="fc" id="L153">    router.attach(API.ORGANIZATION_VISUALIZE_URI, OrgVisualizerServerResource.class);</span>
     // CollectorProcessDefinition
-<span class="fc" id="L150">    router.attach(API.COLLECTOR_PROCESS_DEFINITION_PUT_URI,</span>
+<span class="fc" id="L155">    router.attach(API.COLLECTOR_PROCESS_DEFINITION_PUT_URI,</span>
         CollectorProcessDefinitionPutServerResource.class);
-<span class="fc" id="L152">    router.attach(API.COLLECTOR_PROCESS_DEFINITION_URI,</span>
+<span class="fc" id="L157">    router.attach(API.COLLECTOR_PROCESS_DEFINITION_URI,</span>
         CollectorProcessDefinitionServerResource.class);
-<span class="fc" id="L154">    router.attach(API.COLLECTOR_PROCESS_DEFINITIONS_URI,</span>
+<span class="fc" id="L159">    router.attach(API.COLLECTOR_PROCESS_DEFINITIONS_URI,</span>
         CollectorProcessDefinitionsServerResource.class);
     // Depositories and Measurements
-<span class="fc" id="L157">    router.attach(API.DEPOSITORY_PUT_URI, DepositoryPutServerResource.class);</span>
-<span class="fc" id="L158">    router.attach(API.DEPOSITORY_URI, DepositoryServerResource.class);</span>
-<span class="fc" id="L159">    router.attach(API.DEPOSITORIES_URI, DepositoriesServerResource.class);</span>
-<span class="fc" id="L160">    router.attach(API.DEPOSITORY_SENSORS_URI, DepositorySensorsServerResource.class);</span>
-<span class="fc" id="L161">    router.attach(API.DEPOSITORY_SENSOR_SUMMARY_URI, DepositorySensorSummaryServerResource.class);</span>
-<span class="fc" id="L162">    router.attach(API.MEASUREMENT_PRUNING_DEFINITION_PUT_URI, MeasurementPruningDefinitionPutServerResource.class);</span>
-<span class="fc" id="L163">    router.attach(API.MEASUREMENT_PRUNING_DEFINITION_URI, MeasurementPruningDefinitionServerResource.class);</span>
-<span class="fc" id="L164">    router.attach(API.MEASUREMENT_PRUNING_DEFINITIONS_URI, MeasurementPruningDefinitionsServerResource.class);</span>
-<span class="fc" id="L165">    router.attach(API.MEASUREMENT_PUT_URI, DepositoryMeasurementPutServerResource.class);</span>
-<span class="fc" id="L166">    router.attach(API.MEASUREMENTS_PUT_URI, DepositoryMeasurementsPutServerResource.class);</span>
-<span class="fc" id="L167">    router.attach(API.MEASUREMENT_URI, DepositoryMeasurementServerResource.class);</span>
-<span class="fc" id="L168">    router.attach(API.MEASUREMENTS_URI, DepositoryMeasurementsServerResource.class);</span>
-<span class="fc" id="L169">    router.attach(API.MEASUREMENTS_GVIZ_URI, GvizDepositoryMeasurementsServerResource.class);</span>
-<span class="fc" id="L170">    router.attach(API.VALUE_URI, DepositoryValueServerResource.class);</span>
-<span class="fc" id="L171">    router.attach(API.VALUE_GVIZ_URI, GvizDepositoryValueServerResource.class);</span>
-<span class="fc" id="L172">    router.attach(API.VALUES_URI, DepositoryValuesServerResource.class);</span>
-<span class="fc" id="L173">    router.attach(API.VALUES_GVIZ_URI, GvizDepositoryValuesServerResource.class);</span>
-<span class="fc" id="L174">    router.attach(API.VALUES_AVERAGE_URI, DepositoryAverageValuesServerResource.class);</span>
-<span class="fc" id="L175">    router.attach(API.VALUES_AVERAGE_GVIZ_URI, GvizDepositoryAverageValuesServerResource.class);</span>
-<span class="fc" id="L176">    router.attach(API.VALUES_MAXIMUM_URI, DepositoryMaximumValuesServerResource.class);</span>
-<span class="fc" id="L177">    router.attach(API.VALUES_MINIMUM_URI, DepositoryMinimumValuesServerResource.class);</span>
+<span class="fc" id="L162">    router.attach(API.DEPOSITORY_PUT_URI, DepositoryPutServerResource.class);</span>
+<span class="fc" id="L163">    router.attach(API.DEPOSITORY_URI, DepositoryServerResource.class);</span>
+<span class="fc" id="L164">    router.attach(API.DEPOSITORIES_URI, DepositoriesServerResource.class);</span>
+<span class="fc" id="L165">    router.attach(API.DEPOSITORY_SENSORS_URI, DepositorySensorsServerResource.class);</span>
+<span class="fc" id="L166">    router.attach(API.DEPOSITORY_SENSOR_SUMMARY_URI, DepositorySensorSummaryServerResource.class);</span>
+<span class="fc" id="L167">    router.attach(API.MEASUREMENT_PRUNING_DEFINITION_PUT_URI, MeasurementPruningDefinitionPutServerResource.class);</span>
+<span class="fc" id="L168">    router.attach(API.MEASUREMENT_PRUNING_DEFINITION_URI, MeasurementPruningDefinitionServerResource.class);</span>
+<span class="fc" id="L169">    router.attach(API.MEASUREMENT_PRUNING_DEFINITIONS_URI, MeasurementPruningDefinitionsServerResource.class);</span>
+<span class="fc" id="L170">    router.attach(API.MEASUREMENT_PUT_URI, DepositoryMeasurementPutServerResource.class);</span>
+<span class="fc" id="L171">    router.attach(API.MEASUREMENTS_PUT_URI, DepositoryMeasurementsPutServerResource.class);</span>
+<span class="fc" id="L172">    router.attach(API.MEASUREMENT_URI, DepositoryMeasurementServerResource.class);</span>
+<span class="fc" id="L173">    router.attach(API.MEASUREMENTS_URI, DepositoryMeasurementsServerResource.class);</span>
+<span class="fc" id="L174">    router.attach(API.MEASUREMENTS_GVIZ_URI, GvizDepositoryMeasurementsServerResource.class);</span>
+<span class="fc" id="L175">    router.attach(API.VALUE_URI, DepositoryValueServerResource.class);</span>
+<span class="fc" id="L176">    router.attach(API.VALUE_GVIZ_URI, GvizDepositoryValueServerResource.class);</span>
+<span class="fc" id="L177">    router.attach(API.VALUES_URI, DepositoryValuesServerResource.class);</span>
+<span class="fc" id="L178">    router.attach(API.VALUES_CSV_URI, CsvDepositoryValuesServerResource.class);</span>
+<span class="fc" id="L179">    router.attach(API.VALUES_GVIZ_URI, GvizDepositoryValuesServerResource.class);</span>
+<span class="fc" id="L180">    router.attach(API.VALUES_AVERAGE_URI, DepositoryAverageValuesServerResource.class);</span>
+<span class="fc" id="L181">    router.attach(API.VALUES_AVERAGE_GVIZ_URI, GvizDepositoryAverageValuesServerResource.class);</span>
+<span class="fc" id="L182">    router.attach(API.VALUES_MAXIMUM_URI, DepositoryMaximumValuesServerResource.class);</span>
+<span class="fc" id="L183">    router.attach(API.VALUES_MINIMUM_URI, DepositoryMinimumValuesServerResource.class);</span>
+<span class="fc" id="L184">    router.attach(API.DAILY_VALUES_URI, DepositoryDailyValuesServerResource.class);</span>
+<span class="fc" id="L185">    router.attach(API.DAY_HOURLY_VALUES_URI, DepositoryDayHourlyValuesServerResource.class);</span>
+<span class="fc" id="L186">    router.attach(API.HOURLY_VALUES_URI, DepositoryHourlyValuesServerResource.class);</span>
+<span class="fc" id="L187">    router.attach(API.VALUES_LATEST_URI, DepositoryLatestValuesServerResource.class);</span>
+<span class="fc" id="L188">    router.attach(API.SENSOR_STATUS_URI, DepositorySensorStatusServerResource.class);</span>
+<span class="fc" id="L189">    router.attach(API.LATEST_VALUE_URI, DepositoryLatestValueServerResource.class);</span>
+<span class="fc" id="L190">    router.attach(API.DESCRIPTIVE_STATS_URI, DepositoryDescriptiveStatsServerResource.class);</span>
+<span class="fc" id="L191">    router.attach(API.HISTORICAL_VALUES_URI, DepositoryHistoricalValuesServer.class);</span>
     // MeasurementTypes
-<span class="fc" id="L179">    router.attach(API.MEASUREMENT_TYPE_PUT_URI, MeasurementTypePutServerResource.class);</span>
-<span class="fc" id="L180">    router.attach(API.MEASUREMENT_TYPE_URI, MeasurementTypeServerResource.class);</span>
-<span class="fc" id="L181">    router.attach(API.MEASUREMENT_TYPES_URI, MeasurementTypesServerResource.class);</span>
+<span class="fc" id="L193">    router.attach(API.MEASUREMENT_TYPE_PUT_URI, MeasurementTypePutServerResource.class);</span>
+<span class="fc" id="L194">    router.attach(API.MEASUREMENT_TYPE_URI, MeasurementTypeServerResource.class);</span>
+<span class="fc" id="L195">    router.attach(API.MEASUREMENT_TYPES_URI, MeasurementTypesServerResource.class);</span>
     // Sensors
-<span class="fc" id="L183">    router.attach(API.SENSOR_PUT_URI, SensorPutServerResource.class);</span>
-<span class="fc" id="L184">    router.attach(API.SENSOR_URI, SensorServerResource.class);</span>
-<span class="fc" id="L185">    router.attach(API.SENSORS_URI, SensorsServerResource.class);</span>
+<span class="fc" id="L197">    router.attach(API.SENSOR_PUT_URI, SensorPutServerResource.class);</span>
+<span class="fc" id="L198">    router.attach(API.SENSOR_URI, SensorServerResource.class);</span>
+<span class="fc" id="L199">    router.attach(API.SENSORS_URI, SensorsServerResource.class);</span>
     // Sensor Measurement Summary
-<span class="fc" id="L187">    router.attach(API.SENSOR_MEASUREMENT_SUMMARY_URI, SensorMeasurementServerResource.class);</span>
+<span class="fc" id="L201">    router.attach(API.SENSOR_MEASUREMENT_SUMMARY_URI, SensorMeasurementServerResource.class);</span>
     // SensorGroups
-<span class="fc" id="L189">    router.attach(API.SENSOR_GROUP_PUT_URI, SensorGroupPutServerResource.class);</span>
-<span class="fc" id="L190">    router.attach(API.SENSOR_GROUP_URI, SensorGroupServerResource.class);</span>
-<span class="fc" id="L191">    router.attach(API.SENSOR_GROUPS_URI, SensorGroupsServerResource.class);</span>
+<span class="fc" id="L203">    router.attach(API.SENSOR_GROUP_PUT_URI, SensorGroupPutServerResource.class);</span>
+<span class="fc" id="L204">    router.attach(API.SENSOR_GROUP_URI, SensorGroupServerResource.class);</span>
+<span class="fc" id="L205">    router.attach(API.SENSOR_GROUPS_URI, SensorGroupsServerResource.class);</span>
     // SensorModels
-<span class="fc" id="L193">    router.attach(API.SENSOR_MODEL_PUT_URI, SensorModelPutServerResource.class);</span>
-<span class="fc" id="L194">    router.attach(API.SENSOR_MODEL_URI, SensorModelServerResource.class);</span>
-<span class="fc" id="L195">    router.attach(API.SENSOR_MODELS_URI, SensorModelsServerResource.class);</span>
+<span class="fc" id="L207">    router.attach(API.SENSOR_MODEL_PUT_URI, SensorModelPutServerResource.class);</span>
+<span class="fc" id="L208">    router.attach(API.SENSOR_MODEL_URI, SensorModelServerResource.class);</span>
+<span class="fc" id="L209">    router.attach(API.SENSOR_MODELS_URI, SensorModelsServerResource.class);</span>
     // Users, UserGroups, and UserPasswords
-<span class="fc" id="L197">    router.attach(API.USER_PUT_URI, UserInfoPutServerResource.class);</span>
-<span class="fc" id="L198">    router.attach(API.USER_URI, UserInfoServerResource.class);</span>
-<span class="fc" id="L199">    router.attach(API.USERS_URI, UserInfosServerResource.class);</span>
-<span class="fc" id="L200">    router.attach(API.USER_PASSWORD_URI, UserPasswordServerResource.class);</span>
-<span class="fc" id="L201">    router.attach(API.ORGANIZATION_PUT_URI, OrganizationPutServerResource.class);</span>
-<span class="fc" id="L202">    router.attach(API.ORGANIZATION_URI, OrganizationServerResource.class);</span>
-<span class="fc" id="L203">    router.attach(API.ORGANIZATIONS_URI, OrganizationsServerResource.class);</span>
+<span class="fc" id="L211">    router.attach(API.USER_PUT_URI, UserInfoPutServerResource.class);</span>
+<span class="fc" id="L212">    router.attach(API.USER_URI, UserInfoServerResource.class);</span>
+<span class="fc" id="L213">    router.attach(API.USERS_URI, UserInfosServerResource.class);</span>
+<span class="fc" id="L214">    router.attach(API.USER_PASSWORD_URI, UserPasswordServerResource.class);</span>
+<span class="fc" id="L215">    router.attach(API.ORGANIZATION_PUT_URI, OrganizationPutServerResource.class);</span>
+<span class="fc" id="L216">    router.attach(API.ORGANIZATION_URI, OrganizationServerResource.class);</span>
+<span class="fc" id="L217">    router.attach(API.ORGANIZATIONS_URI, OrganizationsServerResource.class);</span>
+<span class="fc" id="L218">    ServerProperties properties = depot.getServerProperties();</span>
+    @SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L220">    List&lt;WattDepotExtension&gt; extensions = (List&lt;WattDepotExtension&gt;) properties.getPropertyInstance(ServerProperties.WATTDEPOT_EXTENSIONS);</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">    for (WattDepotExtension extension : extensions) {</span>
+<span class="fc" id="L222">      getLogger().info(&quot;Loading extension &quot; + extension.getBaseURI());</span>
+<span class="fc" id="L223">      String baseURI = extension.getBaseURI();</span>
+<span class="pc bpc" id="L224" title="1 of 2 branches missed.">      if (!extensionMap.containsKey(baseURI)) {</span>
+<span class="fc" id="L225">        extensionMap.put(baseURI, extension);</span>
+<span class="fc" id="L226">        Map&lt;String, Class&lt;? extends WattDepotServerResource&gt;&gt; resourceMap = extension.getServerResourceMapping();</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">        for (Map.Entry&lt;String, Class&lt;? extends WattDepotServerResource&gt;&gt; entry : resourceMap.entrySet()) {</span>
+<span class="fc" id="L228">          router.attach(entry.getKey(), entry.getValue());</span>
+<span class="fc" id="L229">        }</span>
+      }
+<span class="fc" id="L231">    }</span>
 
-<span class="fc" id="L205">    ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(),</span>
+<span class="fc" id="L233">    ChallengeAuthenticator authenticator = new ChallengeAuthenticator(getContext(),</span>
         ChallengeScheme.HTTP_BASIC, &quot;WattDepot Realm&quot;);
-<span class="fc" id="L207">    authenticator.setNext(router);</span>
-<span class="fc" id="L208">    return authenticator;</span>
+<span class="fc" id="L235">    authenticator.setNext(router);</span>
+<span class="fc" id="L236">    return authenticator;</span>
 
     // return router;
   }
 }
-</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.6.3.201306030806</span></div></body></html>
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>

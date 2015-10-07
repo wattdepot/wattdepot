@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DepositoryDescriptiveStatsServer.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">WattDepot</a> &gt; <a href="index.source.html" class="el_package">org.wattdepot.server.http.api</a> &gt; <span class="el_source">DepositoryDescriptiveStatsServer.java</span></div><h1>DepositoryDescriptiveStatsServer.java</h1><pre class="source lang-java linenums">/*
+ * This file is part of WattDepot.
+ *
+ *  Copyright (C) 2015  Cam Moore
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+ */
+
+package org.wattdepot.server.http.api;
+
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.DescriptiveStats;
+import org.wattdepot.common.domainmodel.Labels;
+import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
+import org.wattdepot.common.exception.NoMeasurementException;
+import org.wattdepot.common.util.DateConvert;
+import org.wattdepot.common.util.tstamp.Tstamp;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.text.ParseException;
+import java.util.List;
+import java.util.logging.Level;
+
+/**
+ * DepositoryDescriptiveStatsServer - Base class for handling historical values HTTP requests.
+ *
+ * @author Cam Moore
+ */
+<span class="nc" id="L48">public class DepositoryDescriptiveStatsServer extends WattDepotServerResource {</span>
+  private String depositoryId;
+  private String hourlyDailyChoice;
+  private String sensorId;
+  private String timestamp;
+  private String valueType;
+  private Integer samples;
+
+  /**
+   * @return the DescriptiveStats for the given request.
+   */
+  public DescriptiveStats doRetrieve() {
+<span class="nc" id="L60">    getLogger().log(</span>
+        Level.INFO,
+        &quot;GET /wattdepot/{&quot; + orgId + &quot;}/&quot; + Labels.DEPOSITORY + &quot;/{&quot; + depositoryId + &quot;}/&quot; + Labels.DESCRIPTIVE_STATS + &quot;/&quot;
+            + hourlyDailyChoice + &quot;/?&quot; + Labels.SENSOR + &quot;={&quot; + sensorId + &quot;}&amp;&quot; + Labels.TIMESTAMP + &quot;={&quot;
+            + timestamp + &quot;}&amp;&quot; + Labels.VALUE_TYPE + &quot;={&quot; + valueType + &quot;}&amp;&quot; + Labels.SAMPLES + &quot;={&quot; + samples + &quot;}&quot;);
+<span class="nc bnc" id="L65" title="All 2 branches missed.">    if (isInRole(orgId)) {</span>
+<span class="nc" id="L66">      DescriptiveStats ret = new DescriptiveStats();</span>
+      try {
+<span class="nc" id="L68">        Depository depository = depot.getDepository(depositoryId, orgId, true);</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (depository != null) {</span>
+<span class="nc" id="L70">          XMLGregorianCalendar time = DateConvert.parseCalString(timestamp);</span>
+<span class="nc" id="L71">          XMLGregorianCalendar begin = DateConvert.getBeginning(time, hourlyDailyChoice);</span>
+<span class="nc" id="L72">          XMLGregorianCalendar end = DateConvert.getEnding(time, hourlyDailyChoice);</span>
+<span class="nc" id="L73">          Double minimum = Double.MAX_VALUE; // for this time period</span>
+<span class="nc" id="L74">          Double maximum = Double.MIN_VALUE; // for this time period</span>
+<span class="nc" id="L75">          Double average = 0.0;</span>
+<span class="nc" id="L76">          Double upQuartile = 0.0;</span>
+<span class="nc" id="L77">          Double lowQuartile = 0.0;</span>
+<span class="nc" id="L78">          DescriptiveStatistics statistics = new DescriptiveStatistics();</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">          for (int i = 0; i &lt; samples; i++) {</span>
+<span class="nc" id="L80">            begin = Tstamp.incrementDays(begin, -7); // back it up a week</span>
+<span class="nc" id="L81">            end = Tstamp.incrementDays(end, -7);</span>
+<span class="nc" id="L82">            Sensor sensor = depot.getSensor(sensorId, orgId, false);</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">            if (valueType.equals(Labels.POINT)) { // since it is point data must calculate the average of the measurements</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">              if (sensor != null) {</span>
+<span class="nc" id="L85">                ret.addDefinedSensor(sensorId);</span>
+<span class="nc" id="L86">                statistics = updateStatistics(depositoryId, sensorId, begin, end, statistics);</span>
+<span class="nc" id="L87">                ret.addReportingSensor(sensorId);</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">                if (statistics.getMin() &lt; minimum) {</span>
+<span class="nc" id="L89">                  minimum = statistics.getMin();</span>
+                }
+<span class="nc bnc" id="L91" title="All 2 branches missed.">                if (statistics.getMax() &gt; maximum) {</span>
+<span class="nc" id="L92">                  maximum = statistics.getMax();</span>
+                }
+<span class="nc" id="L94">                average += statistics.getMean();</span>
+<span class="nc" id="L95">                upQuartile += statistics.getPercentile(75.0);</span>
+<span class="nc" id="L96">                lowQuartile += statistics.getPercentile(25.0);</span>
+              }
+              else {
+<span class="nc" id="L99">                SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">                if (group != null) {</span>
+<span class="nc" id="L101">                  Double groupMin = 0.0;</span>
+<span class="nc" id="L102">                  Double groupMax = 0.0;</span>
+<span class="nc" id="L103">                  Double groupAve = 0.0;</span>
+<span class="nc" id="L104">                  Double lowerQuartile = 0.0;</span>
+<span class="nc" id="L105">                  Double upperQuartile = 0.0;</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">                  for (String s : group.getSensors()) {</span>
+<span class="nc" id="L107">                    ret.addDefinedSensor(s);</span>
+                    try {
+<span class="nc" id="L109">                      statistics = getStatistics(depositoryId, s, begin, end);</span>
+<span class="nc" id="L110">                      ret.addReportingSensor(s);</span>
+<span class="nc" id="L111">                      groupMin += statistics.getMin();</span>
+<span class="nc" id="L112">                      groupMax += statistics.getMax();</span>
+<span class="nc" id="L113">                      groupAve += statistics.getMean();</span>
+<span class="nc" id="L114">                      lowerQuartile += statistics.getPercentile(0.25);</span>
+<span class="nc" id="L115">                      upperQuartile += statistics.getPercentile(0.75);</span>
+                    }
+<span class="nc" id="L117">                    catch (NoMeasurementException nme) {</span>
+                      // skip this sensor
+<span class="nc" id="L119">                      ret.addMissingSensor(s);</span>
+<span class="nc" id="L120">                    }</span>
+<span class="nc" id="L121">                  }</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">                  if (maximum &lt; groupMax) {</span>
+<span class="nc" id="L123">                    maximum = groupMax;</span>
+                  }
+<span class="nc bnc" id="L125" title="All 2 branches missed.">                  if (minimum &gt; groupMin) {</span>
+<span class="nc" id="L126">                    minimum = groupMin;</span>
+                  }
+<span class="nc" id="L128">                  average += groupAve;</span>
+<span class="nc" id="L129">                  upQuartile += upperQuartile;</span>
+<span class="nc" id="L130">                  lowQuartile += lowerQuartile;</span>
+                }
+<span class="nc" id="L132">              }</span>
+            }
+            else { // difference values
+<span class="nc bnc" id="L135" title="All 2 branches missed.">              if (sensor != null) {</span>
+<span class="nc" id="L136">                ret.addDefinedSensor(sensorId);</span>
+<span class="nc" id="L137">                statistics.addValue(depot.getValue(depositoryId, orgId, sensorId, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false));</span>
+<span class="nc" id="L138">                ret.addReportingSensor(sensorId);</span>
+              }
+              else {
+<span class="nc" id="L141">                SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">                if (group != null) {</span>
+<span class="nc" id="L143">                  Double d = 0.0;</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">                  for (String s : group.getSensors()) {</span>
+                    try {
+<span class="nc" id="L146">                      ret.addDefinedSensor(s);</span>
+<span class="nc" id="L147">                      d += depot.getValue(depositoryId, orgId, s, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false);</span>
+<span class="nc" id="L148">                      ret.addReportingSensor(s);</span>
+                    }
+<span class="nc" id="L150">                    catch (NoMeasurementException nme) {</span>
+                      // just skip this sensor.
+<span class="nc" id="L152">                      ret.addMissingSensor(s);</span>
+<span class="nc" id="L153">                    }</span>
+<span class="nc" id="L154">                  }</span>
+<span class="nc" id="L155">                  statistics.addValue(d);</span>
+                }
+              }
+            }
+          }
+<span class="nc bnc" id="L160" title="All 2 branches missed.">          if (valueType.equals(Labels.POINT)) {</span>
+<span class="nc" id="L161">            average /= samples;</span>
+<span class="nc" id="L162">            lowQuartile /= samples;</span>
+<span class="nc" id="L163">            upQuartile /= samples;</span>
+          }
+          else {
+<span class="nc" id="L166">            average = statistics.getMean();</span>
+<span class="nc" id="L167">            minimum = statistics.getMin();</span>
+<span class="nc" id="L168">            maximum = statistics.getMax();</span>
+<span class="nc" id="L169">            lowQuartile = statistics.getPercentile(25.0);</span>
+<span class="nc" id="L170">            upQuartile = statistics.getPercentile(75.0);</span>
+          }
+<span class="nc" id="L172">          ret.setDepositoryId(depositoryId);</span>
+<span class="nc" id="L173">          ret.setSensorId(sensorId);</span>
+<span class="nc" id="L174">          ret.setAverage(average);</span>
+<span class="nc" id="L175">          ret.setMaximum(maximum);</span>
+<span class="nc" id="L176">          ret.setMinimum(minimum);</span>
+<span class="nc" id="L177">          ret.setLowerQuartile(lowQuartile);</span>
+<span class="nc" id="L178">          ret.setUpperQuartile(upQuartile);</span>
+<span class="nc" id="L179">          ret.setNumSamples(samples);</span>
+<span class="nc" id="L180">          ret.setWindowWidth(hourlyDailyChoice);</span>
+<span class="nc" id="L181">          ret.setValueType(valueType);</span>
+<span class="nc" id="L182">          ret.setTimestamp(DateConvert.parseCalStringToDate(timestamp));</span>
+<span class="nc" id="L183">          return ret;</span>
+        }
+      }
+<span class="nc" id="L186">      catch (IdNotFoundException e) {</span>
+<span class="nc" id="L187">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="nc" id="L188">        return null;</span>
+      }
+<span class="nc" id="L190">      catch (DatatypeConfigurationException e) {</span>
+<span class="nc" id="L191">        setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());</span>
+<span class="nc" id="L192">        return null;</span>
+      }
+<span class="nc" id="L194">      catch (ParseException e) {</span>
+<span class="nc" id="L195">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="nc" id="L196">        return null;</span>
+      }
+<span class="nc" id="L198">      catch (MisMatchedOwnerException e) {</span>
+<span class="nc" id="L199">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="nc" id="L200">        return null;</span>
+      }
+<span class="nc" id="L202">      catch (NoMeasurementException e) {</span>
+<span class="nc" id="L203">        setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());</span>
+<span class="nc" id="L204">        return null;</span>
+<span class="nc" id="L205">      }</span>
+<span class="nc" id="L206">      return null;</span>
+    }
+<span class="nc" id="L208">    return null;</span>
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.restlet.resource.Resource#doInit()
+   */
+  @Override
+  protected void doInit() throws ResourceException {
+<span class="nc" id="L218">    super.doInit();</span>
+<span class="nc" id="L219">    this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);</span>
+<span class="nc" id="L220">    this.hourlyDailyChoice = getAttribute(Labels.HOURLY_DAILY);</span>
+<span class="nc" id="L221">    this.sensorId = getQuery().getValues(Labels.SENSOR);</span>
+<span class="nc" id="L222">    this.timestamp = getQuery().getValues(Labels.TIMESTAMP);</span>
+<span class="nc" id="L223">    this.valueType = getQuery().getValues(Labels.VALUE_TYPE);</span>
+<span class="nc" id="L224">    this.samples = Integer.parseInt(getQuery().getValues(Labels.SAMPLES));</span>
+<span class="nc" id="L225">  }</span>
+
+  /**
+   * @param depositoryId the depository id.
+   * @param sensorId     the sensor id.
+   * @param begin        the begin time.
+   * @param end          the end time.
+   * @return DescriptiveStatistics of the measurements for the peroiod.
+   * @throws IdNotFoundException    if there is a problem with the sensorId.
+   * @throws NoMeasurementException if there are no measurements during the period.
+   */
+  private DescriptiveStatistics getStatistics(String depositoryId, String sensorId, XMLGregorianCalendar begin, XMLGregorianCalendar end) throws IdNotFoundException, NoMeasurementException {
+<span class="nc" id="L237">    List&lt;Measurement&gt; measurements = depot.getMeasurements(depositoryId, orgId, sensorId, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false);</span>
+<span class="nc bnc" id="L238" title="All 4 branches missed.">    if (measurements == null || measurements.size() == 0) {</span>
+<span class="nc" id="L239">      throw new NoMeasurementException(&quot;No measurements for &quot; + sensorId + &quot; from &quot; + begin.toString() + &quot; to &quot; + end.toString());</span>
+    }
+<span class="nc" id="L241">    DescriptiveStatistics ret = new DescriptiveStatistics();</span>
+<span class="nc bnc" id="L242" title="All 2 branches missed.">    for (Measurement m : measurements) {</span>
+<span class="nc" id="L243">      ret.addValue(m.getValue());</span>
+<span class="nc" id="L244">    }</span>
+<span class="nc" id="L245">    return ret;</span>
+  }
+
+  /**
+   * @param depositoryId the depository id.
+   * @param sensorId     the sensor id.
+   * @param begin        the begin time.
+   * @param end          the end time.
+   * @param statistics   the statistics object to update.
+   * @return the updated object.
+   * @throws IdNotFoundException if there is a problem with the sensorId.
+   */
+  private DescriptiveStatistics updateStatistics(String depositoryId, String sensorId, XMLGregorianCalendar begin, XMLGregorianCalendar end, DescriptiveStatistics statistics) throws IdNotFoundException {
+<span class="nc" id="L258">    List&lt;Measurement&gt; measurements = depot.getMeasurements(depositoryId, orgId, sensorId, DateConvert.convertXMLCal(begin), DateConvert.convertXMLCal(end), false);</span>
+<span class="nc bnc" id="L259" title="All 2 branches missed.">    for (Measurement m : measurements) {</span>
+<span class="nc" id="L260">      statistics.addValue(m.getValue());</span>
+<span class="nc" id="L261">    }</span>
+<span class="nc" id="L262">    return statistics;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.2.201409121644</span></div></body></html>
