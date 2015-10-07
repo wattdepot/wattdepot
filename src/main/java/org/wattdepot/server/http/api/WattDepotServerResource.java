@@ -44,15 +44,15 @@ public class WattDepotServerResource extends ServerResource {
    * 
    * @see org.restlet.resource.Resource#doInit()
    */
-  @SuppressWarnings("unchecked")
   @Override
+  @SuppressWarnings("unchecked")
   protected void doInit() throws ResourceException {
+    Series<Header> responseHeaders = (Series<Header>) getResponse().getAttributes().get("org.restlet.http.headers");
     WattDepotApplication app = (WattDepotApplication) getApplication();
     this.depot = app.getDepot();
     this.orgId = getAttribute(Labels.ORGANIZATION_ID);
-    Series<Header> responseHeaders = (Series<Header>) getResponse().getAttributes().get("org.restlet.http.headers");
     if (responseHeaders == null) {
-      responseHeaders = new Series(Header.class);
+      responseHeaders = new Series<Header>(Header.class);
       getResponse().getAttributes().put("org.restlet.http.headers", responseHeaders);
     }
     responseHeaders.add(new Header("X-Clacks-Overhead", "GNU Terry Pratchett"));
