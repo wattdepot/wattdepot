@@ -106,15 +106,16 @@ public class DepositoryAverageValuesServer extends WattDepotServerResource {
                   endInterval);
               DescriptiveStatistics stats = new DescriptiveStatistics();
               Date previous = null;
+              InterpolatedValue interpolatedValue = new InterpolatedValue(sensorId, 0.0, depository.getMeasurementType(), valueDate);
               for (int j = 0; j < intervalList.size(); j++) {
                 Date timestamp = DateConvert.convertXMLCal(intervalList.get(j));
                 Double value = null;
                 if ("point".equals(dataType)) {
-                  value = getValue(depositoryId, orgId, sensorId, timestamp);
+                  value = getValue(depositoryId, orgId, sensorId, timestamp, interpolatedValue);
                 }
                 else {
                   if (previous != null) {
-                    value = getValue(depositoryId, orgId, sensorId, previous, timestamp);
+                    value = getValue(depositoryId, orgId, sensorId, previous, timestamp, interpolatedValue);
                   }
                   previous = timestamp;
                 }
@@ -124,24 +125,23 @@ public class DepositoryAverageValuesServer extends WattDepotServerResource {
               }
 
               if (!Double.isNaN(stats.getMean())) {
-                ret.getInterpolatedValues().add(
-                    new InterpolatedValue(sensorId, stats.getMean(), depository
-                        .getMeasurementType(), valueDate));
+                interpolatedValue.setValue(stats.getMean());
+                ret.getInterpolatedValues().add(interpolatedValue);
               }
             }
           }
         }
         catch (IdNotFoundException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          return null;
         }
         catch (ParseException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+          return null;
         }
         catch (DatatypeConfigurationException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+          return null;
         }
         return ret;
       }
@@ -161,15 +161,18 @@ public class DepositoryAverageValuesServer extends WattDepotServerResource {
    * @param orgId The organization.
    * @param sensorId The sensor.
    * @param timestamp When to get the value.
+   * @param interpolatedValue the interpolated value used to update definedSensors and reportingSensors.
    * @return The value.
    */
-  private Double getValue(String depositoryId, String orgId, String sensorId, Date timestamp) {
+  private Double getValue(String depositoryId, String orgId, String sensorId, Date timestamp, InterpolatedValue interpolatedValue) {
     try {
       Sensor sensor = depot.getSensor(sensorId, orgId, false);
       Double value = 0.0;
       if (sensor != null) { // just get sensor value
+        interpolatedValue.addDefinedSensor(sensorId);
         try {
           value = depot.getValue(depositoryId, orgId, sensor.getId(), timestamp, true);
+          interpolatedValue.addReportingSensor(sensorId);
         }
         catch (NoMeasurementException e) {
           return null;
@@ -180,7 +183,9 @@ public class DepositoryAverageValuesServer extends WattDepotServerResource {
         if (group != null) {
           for (String s : group.getSensors()) {
             try {
+              interpolatedValue.addDefinedSensor(s);
               value += depot.getValue(depositoryId, orgId, s, timestamp, true);
+              interpolatedValue.addReportingSensor(s);
             }
             catch (NoMeasurementException e) { // NOPMD
               // add 0 to value so do nothing.
@@ -204,15 +209,18 @@ public class DepositoryAverageValuesServer extends WattDepotServerResource {
    * @param sensorId The sensor.
    * @param start The start of the interval.
    * @param end The end of the interval.
+   * @param interpolatedValue the value used to update the defined and reporting sensors.
    * @return The value.
    */
-  private Double getValue(String depositoryId, String orgId, String sensorId, Date start, Date end) {
+  private Double getValue(String depositoryId, String orgId, String sensorId, Date start, Date end, InterpolatedValue interpolatedValue) {
     try {
       Sensor sensor = depot.getSensor(sensorId, orgId, false);
       Double value = 0.0;
       if (sensor != null) { // just get sensor value
+        interpolatedValue.addDefinedSensor(sensorId);
         try {
           value = depot.getValue(depositoryId, orgId, sensor.getId(), start, end, true);
+          interpolatedValue.addReportingSensor(sensorId);
         }
         catch (NoMeasurementException e) {
           return null;
@@ -222,8 +230,10 @@ public class DepositoryAverageValuesServer extends WattDepotServerResource {
         SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
         if (group != null) {
           for (String s : group.getSensors()) {
+            interpolatedValue.addDefinedSensor(s);
             try {
               value += depot.getValue(depositoryId, orgId, s, start, end, true);
+              interpolatedValue.addReportingSensor(s);
             }
             catch (NoMeasurementException e) { // NOPMD
               // add 0 to value so do nothing.

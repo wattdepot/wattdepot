@@ -1,18 +1,18 @@
 /**
  * API.java created This file is part of WattDepot.
- *
+ * <p>
  * Copyright (C) 2013  Cam Moore
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -22,9 +22,9 @@ import org.wattdepot.common.domainmodel.Labels;
 
 /**
  * API - Defines the Strings that make up the HTTP API.
- * 
+ *
  * @author Cam Moore
- * 
+ *
  */
 public class API {
 
@@ -108,6 +108,13 @@ public class API {
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.DAY_HOURLY + "/" + Labels.VALUES + "/";
 
   /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/daily/values/</b> URI for getting daily samples.
+   * Use GET requests.
+   */
+  public static final String DAILY_VALUES_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.DAILY + "/" + Labels.VALUES + "/";
+
+  /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/hourly/values/</b> URI for
    * getting hourly samples. Use GET requests.
    */
@@ -151,7 +158,7 @@ public class API {
   public static final String MEASUREMENTS_PUT_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.MEASUREMENTS + "/" + Labels.BULK + "/";
 
-    /**
+  /**
    * <b>/wattdepot/public/measurement-type/</b> URI for storing new
    * MeasurmentTypes. Use PUT requests.
    */
@@ -376,7 +383,7 @@ public class API {
       + Labels.CSV + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/average/</b> URI
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/maximum/</b> URI
    * to get all the average value for an interval of measurements. Use GET
    * requests.
    */
@@ -385,7 +392,7 @@ public class API {
       + Labels.MAXIMUM + "/";
 
   /**
-   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/average/</b> URI
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/minimum/</b> URI
    * to get all the average value for an interval of measurements. Use GET
    * requests.
    */
@@ -399,5 +406,45 @@ public class API {
    */
   public static final String VALUES_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
       + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/values/latest/</b> URI
+   * to get the latest value(s) for a sensor or sensor group. Use GET
+   * requests.
+   */
+  public static final String VALUES_LATEST_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.VALUES + "/"
+      + Labels.LATEST + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/sensor-status/</b> URI
+   * to get the latest status for a sensor or sensor group. Use GET
+   * requests.
+   */
+  public static final String SENSOR_STATUS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.SENSOR_STATUS + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/latest/value/</b> URI
+   * to get the latest value(s) for a sensor or sensor group. Use GET
+   * requests.
+   */
+  public static final String LATEST_VALUE_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.LATEST + "/"
+      + Labels.VALUE + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/descriptive-stats/{hourly-daily}/</b>
+   * URI to get the historical values for a sensor or sensor group. Use GET requests.
+   */
+  public static final String DESCRIPTIVE_STATS_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.DESCRIPTIVE_STATS + "/" + Labels.HOURLY_DAILY_VAR + "/";
+
+  /**
+   * <b>/wattdepot/{org-id}/depository/{depository-id}/historical-values/{hourly-daily}/</b>
+   * URI to get the historical values for a sensor or sensor group. Use GET requests.
+   */
+  public static final String HISTORICAL_VALUES_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.HISTORICAL_VALUES + "/" + Labels.HOURLY_DAILY_VAR + "/";
 
 }

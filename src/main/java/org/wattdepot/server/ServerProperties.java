@@ -1,66 +1,85 @@
 /**
  * ServerProperties.java This file is part of WattDepot.
- *
+ * <p/>
  * Copyright (C) 2013  Cam Moore
- *
+ * <p/>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p/>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p/>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.wattdepot.server;
 
+import org.wattdepot.common.domainmodel.UserInfo;
+import org.wattdepot.common.domainmodel.UserPassword;
+import org.wattdepot.common.util.UserHome;
+import org.wattdepot.extension.WattDepotExtension;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
-import org.wattdepot.common.domainmodel.UserInfo;
-import org.wattdepot.common.domainmodel.UserPassword;
-import org.wattdepot.common.util.UserHome;
-
 /**
  * ServerProperties - Provides access to the values stored in the
  * wattdepot-server.properties file.
- * 
+ *
  * @author Cam Moore
- * 
  */
 public class ServerProperties {
-  /** The full path to the server's home directory. */
+  /**
+   * The full path to the server's home directory.
+   */
   public static final String SERVER_HOME_DIR = "wattdepot-server.homedir";
-  /** The hostname key. */
+  /**
+   * The hostname key.
+   */
   public static final String HOSTNAME_KEY = "wattdepot-server.hostname";
-  /** Name of property used to store the admin username. */
+  /**
+   * Name of property used to store the admin username.
+   */
   public static final String ADMIN_USER_NAME = "wattdepot-server.admin.name";
-  /** The environment variable for storing the admin's name. */
+  /**
+   * The environment variable for storing the admin's name.
+   */
   public static final String ADMIN_USER_NAME_ENV = "WATTDEPOT_ADMIN_NAME";
-  /** Name of property used to store the admin password. */
+  /**
+   * Name of property used to store the admin password.
+   */
   public static final String ADMIN_USER_PASSWORD = "wattdepot-server.admin.password";
-  /** The environment variable for storing the admin's password. */
+  /**
+   * The environment variable for storing the admin's password.
+   */
   public static final String ADMIN_USER_PASSWORD_ENV = "WATTDEPOT_ADMIN_PASSWORD";
   /**
    * The environment variable name that holds the salt used for encrypting
    * passwords in WattDepot.
    */
   public static final String WATTDEPOT_SALT_ENV = "WATTDEPOT_SALT";
-  /** The WattDepot implementation class. */
+  /**
+   * The WattDepot implementation class.
+   */
   public static final String WATT_DEPOT_IMPL_KEY = "wattdepot-server.wattdepot.impl";
-  /** The wattdepot server port key. */
+  /**
+   * The wattdepot server port key.
+   */
   public static final String PORT_KEY = "wattdepot-server.port";
-  /** The context root key. */
+  /**
+   * The context root key.
+   */
   public static final String CONTEXT_ROOT_KEY = "wattdepot-server.context.root";
 
   /** The option to enable SSL. */
@@ -76,17 +95,29 @@ public class ServerProperties {
 
   /** The database connection driver class. */
   public static final String DB_CONNECTION_DRIVER = "wattdepot-server.db.connection.driver";
-  /** The database connection driver url. */
+  /**
+   * The database connection driver url.
+   */
   public static final String DB_CONNECTION_URL = "wattdepot-server.db.connection.url";
-  /** The database connection driver url environment variable. */
+  /**
+   * The database connection driver url environment variable.
+   */
   public static final String DB_CONNECTION_URL_ENV = "WATTDEPOT_DATABASE_URL";
-  /** The database url. */
+  /**
+   * The database url.
+   */
   public static final String DATABASE_URL = "wattdepot-server.database.url";
-  /** The database username. */
+  /**
+   * The database username.
+   */
   public static final String DB_USER_NAME = "wattdepot-server.db.username";
-  /** The database password. */
+  /**
+   * The database password.
+   */
   public static final String DB_PASSWORD = "wattdepot-server.db.password";
-  /** The database show sql. */
+  /**
+   * The database show sql.
+   */
   public static final String DB_SHOW_SQL = "wattdepot-server.db.show.sql";
   /**
    * The database drop&create tables. valid values are 'validate' | 'update' |
@@ -98,36 +129,70 @@ public class ServerProperties {
    * True for production.
    */
   public static final String ENABLE_LOGGING_KEY = "wattdepot-server.enable.logging";
-  /** Check the Session opens vs close. */
+  /**
+   * Check the Session opens vs close.
+   */
   public static final String CHECK_SESSIONS = "wattdepot-server.check.sessions";
-  /** The logging level key. */
+  /**
+   * The logging level key.
+   */
   public static final String LOGGING_LEVEL_KEY = "wattdepot-server.logging.level";
-  /** Enable timing of Server operations. */
+  /**
+   * Enable timing of Server operations.
+   */
   public static final String SERVER_TIMING_KEY = "wattdepot-server.enable.timing";
-  /** The WattDepot implementation class during testing. */
+  /**
+   * The WattDepot implementation class during testing.
+   */
   public static final String TEST_WATT_DEPOT_IMPL_KEY = "wattdepot-server.test.wattdepot.impl";
-  /** The wattdepot server port key during testing. */
+  /**
+   * The wattdepot server port key during testing.
+   */
   public static final String TEST_PORT_KEY = "wattdepot-server.test.port";
-  /** Heroku key. */
+  /**
+   * Heroku key.
+   */
   public static final String USE_HEROKU_KEY = "wattdepot-server.heroku";
-  /** Heroku test key. */
+  /**
+   * Heroku test key.
+   */
   public static final String TEST_HEROKU_KEY = "wattdepot-server.test.heroku";
-  /** The hostname for Heroku. */
+  /**
+   * The hostname for Heroku.
+   */
   public static final String HEROKU_HOSTNAME_KEY = "wattdepot-server.heroku.hostname";
-  /** The heroku database URL. */
+  /**
+   * The heroku database URL.
+   */
   public static final String HEROKU_DATABASE_URL_KEY = "wattdepot-server.heroku.db.url";
 
-  /** String for false. */
+  /**
+   * String for false.
+   */
   public static final String FALSE = "false";
-  /** String for true. */
+  /**
+   * String for true.
+   */
   public static final String TRUE = "true";
 
-  /** Where we store the properties. */
+  /**
+   * String for the beginning of the WattDepotServer extension definitions.
+   */
+  public static final String WATTDEPOT_EXTENSION = "wattdepot-server.extension";
+  /**
+   * Property key that holds all the WattDepotServer extensions defined in the properties file.
+   */
+  public static final String WATTDEPOT_EXTENSIONS = WATTDEPOT_EXTENSION + "s";
+
+  /**
+   * Where we store the properties.
+   */
   private Properties properties;
 
   /**
    * Creates a new ServerProperties instance using the default filename. Prints
    * an error to the console if problems occur on loading.
+   *
    * @throws Exception if errors occur.
    */
   public ServerProperties() throws Exception {
@@ -137,9 +202,9 @@ public class ServerProperties {
   /**
    * Creates a new ServerProperties instance loaded from the given filename.
    * Prints an error to the console if problems occur on loading.
-   * 
+   *
    * @param serverSubdir The name of the subdirectory used to store all files
-   *        for this server.
+   *                     for this server.
    * @throws Exception if errors occur.
    */
   public ServerProperties(String serverSubdir) throws Exception {
@@ -168,7 +233,7 @@ public class ServerProperties {
    * than their actual value for security reasons. This is not super
    * sophisticated - other properties such as database URLs might benefit from
    * being hidden too - but it should work for now.
-   * 
+   *
    * @return A string with the properties.
    */
   public String echoProperties() {
@@ -178,8 +243,8 @@ public class ServerProperties {
     // Adding them to a treemap has the effect of alphabetizing them.
     TreeMap<String, String> alphaProps = new TreeMap<String, String>();
     for (Map.Entry<Object, Object> entry : this.properties.entrySet()) {
-      String propName = (String) entry.getKey();
-      String propValue = (String) entry.getValue();
+      String propName = entry.getKey().toString();
+      String propValue = entry.getValue().toString();
       alphaProps.put(propName, propValue);
     }
     StringBuffer buff = new StringBuffer(25);
@@ -197,7 +262,7 @@ public class ServerProperties {
 
   /**
    * Returns the value of the Server Property specified by the key.
-   * 
+   *
    * @param key Should be one of the public static final strings in this class.
    * @return The value of the key, or null if not found.
    */
@@ -206,26 +271,38 @@ public class ServerProperties {
   }
 
   /**
+   * Returns the instance.
+   *
+   * @param key The key.
+   * @return The Object associated with the key.
+   */
+  public Object getPropertyInstance(Object key) {
+    return this.properties.get(key);
+  }
+
+  /**
    * Sets the given property.
-   * @param key the key.
+   *
+   * @param key   the key.
    * @param value the value
    */
   public void set(String key, String value) {
     this.properties.setProperty(key, value);
   }
-  
+
   /**
    * Ensures that the there is no leading or trailing whitespace in the property
    * values. The fact that we need to do this indicates a bug in Java's
    * Properties implementation to me.
-   *
    */
   public void trimProperties() {
     // Have to do this iteration in a Java 5 compatible manner. no
     // stringPropertyNames().
     for (Map.Entry<Object, Object> entry : properties.entrySet()) {
       String propName = (String) entry.getKey();
-      properties.setProperty(propName, properties.getProperty(propName).trim());
+      if (properties.getProperty(propName) != null) {
+        properties.setProperty(propName, properties.getProperty(propName).trim());
+      }
     }
   }
 
@@ -234,9 +311,9 @@ public class ServerProperties {
    * if this file exists, and provides default values for all properties not
    * mentioned in this file. Will also add any pre-existing System properties
    * that start with "wattdepot-server.".
-   * 
+   *
    * @param serverSubdir The name of the subdirectory used to store all files
-   *        for this server.
+   *                     for this server.
    * @throws Exception if errors occur.
    */
   private void initializeProperties(String serverSubdir) throws Exception {
@@ -269,6 +346,7 @@ public class ServerProperties {
       }
     }
     processDatabaseURL(properties.getProperty(DATABASE_URL));
+    processWattDepotExtensions(properties);
 //    processDatabaseURL(properties.getProperty(DB_CONNECTION_URL));
     // grab all of the properties in the environment
     Map<String, String> systemProps = System.getenv();
@@ -393,7 +471,7 @@ public class ServerProperties {
       URI dbUri = new URI(databaseURL);
       String username = dbUri.getUserInfo().split(":")[0];
       String password = dbUri.getUserInfo().split(":")[1];
-      String dbUrl = "jdbc:postgresql://" + dbUri.getHost() +  dbUri.getPath();
+      String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + dbUri.getPath();
       properties.setProperty(DB_USER_NAME, username);
       properties.setProperty(DB_PASSWORD, password);
       properties.setProperty(DB_CONNECTION_URL, dbUrl);
@@ -402,7 +480,36 @@ public class ServerProperties {
   }
 
   /**
+   * Consolidates all the WattDepotServer extensions.
+   *
+   * @param properties The ServerProperties.
+   */
+  private void processWattDepotExtensions(Properties properties) {
+    ArrayList<WattDepotExtension> extensions = new ArrayList<WattDepotExtension>();
+    for (Object key : properties.keySet()) {
+      if (key.toString().startsWith(WATTDEPOT_EXTENSION)) {
+        String extensionClass = properties.getProperty(key.toString());
+        try {
+          WattDepotExtension extension = (WattDepotExtension) Class.forName(extensionClass).newInstance();
+          extensions.add(extension);
+        }
+        catch (InstantiationException e) {
+          e.printStackTrace();
+        }
+        catch (IllegalAccessException e) {
+          e.printStackTrace();
+        }
+        catch (ClassNotFoundException e) {
+          e.printStackTrace();
+        }
+      }
+    }
+    properties.put(WATTDEPOT_EXTENSIONS, extensions);
+  }
+
+  /**
    * Parses the given database url to set the database username, password, and connection url.
+   *
    * @param url the database url.
    * @throws java.net.URISyntaxException if there is a problem with the url.
    */
@@ -415,7 +522,7 @@ public class ServerProperties {
         properties.setProperty(DB_USER_NAME, username);
         properties.setProperty(DB_PASSWORD, password);
       }
-      String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ":" + dbUri.getPort() +  dbUri.getPath();
+      String dbUrl = "jdbc:postgresql://" + dbUri.getHost() + ":" + dbUri.getPort() + dbUri.getPath();
       properties.setProperty(DB_CONNECTION_URL, dbUrl);
     }
 
@@ -425,7 +532,7 @@ public class ServerProperties {
    * Returns the fully qualified host name, such as
    * "http://localhost:9876/wattdepot/". Note, the String will end with "/", so
    * there is no need to append another if you are constructing a URI.
-   * 
+   *
    * @return The fully qualified host name.
    */
   public String getFullHost() {

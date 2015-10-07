@@ -33,9 +33,8 @@ import org.wattdepot.common.domainmodel.MeasurementList;
 public interface DepositoryMeasurementsResource {
 
   /**
-   * Defines GET <br/>
-   * /wattdepot/{org-id}/depository/{depository-id}/measurements/?
-   *    sensor={sensorId}&start={start}&end={end}.
+   * Defines GET <br>
+   * /wattdepot/{org-id}/depository/{depository-id}/measurements/?sensor={sensorId}&start={start}&end={end}.
    * 
    * @return An ArrayList of the Measurements that have sent measurements to the
    *         depository.

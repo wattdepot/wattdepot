@@ -266,10 +266,16 @@ public class DepositoryValueServer extends WattDepotServerResource {
     InterpolatedValue val = null;
 
     if (earliest != null) {
-      return depot.getEarliestMeasuredValue(depositoryId, orgId, sensorId, true);
+      val = depot.getEarliestMeasuredValue(depositoryId, orgId, sensorId, true);
+      val.addDefinedSensor(sensorId);
+      val.addReportingSensor(sensorId);
+      return val;
     }
     else if (latest != null) {
-      return depot.getLatestMeasuredValue(depositoryId, orgId, sensorId, true);
+      val = depot.getLatestMeasuredValue(depositoryId, orgId, sensorId, true);
+      val.addDefinedSensor(sensorId);
+      val.addReportingSensor(sensorId);
+      return val;
     }
     else if (timestamp != null) {
       time = DateConvert.parseCalStringToDate(timestamp);
@@ -293,6 +299,12 @@ public class DepositoryValueServer extends WattDepotServerResource {
         value = depot.getValue(depositoryId, orgId, sensor.getId(), startDate, endDate, true);
       }
       val = new InterpolatedValue(sensorId, value, deposit.getMeasurementType(), startDate, endDate);
+    }
+    if (val != null) {
+      val.addDefinedSensor(sensorId);
+      if (value != null) {
+        val.addReportingSensor(sensorId);
+      }
     }
     return val;
   }

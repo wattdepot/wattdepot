@@ -44,6 +44,12 @@ public class Labels {
   /** The label for all CollectorProcessDefinition. */
   public static final String COLLECTOR_PROCESS_DEFINITIONS = "collector-process-definitions";
 
+  /** The label for getting daily data. */
+  public static final String DAILY = "daily";
+
+  /** The label for getting data. */
+  public static final String DATA = "data";
+
   /** The label for all the Depositories. */
   public static final String DEPOSITORIES = "depositories";
 
@@ -87,8 +93,23 @@ public class Labels {
   /** The label for hourly samples for a single data. */
   public static final String DAY_HOURLY = "day-hourly";
 
+  /** The label for descriptive statistics. */
+  public static final String DESCRIPTIVE_STATS = "descriptive-stats";
+
+  /** The label for the sensor property indicating the sensor can generate power. */
+  public static final String GENERATE_POWER = "generatePower";
+
+  /** The label for historical values. */
+  public static final String HISTORICAL_VALUES = "historical-values";
+
   /** The label for hourly values or samples. */
   public static final String HOURLY = "hourly";
+
+  /** The label for hourly or daily choice. */
+  public static final String HOURLY_DAILY = "hourly-daily";
+
+  /** The label for the hourly-daily choice. */
+  public static final String HOURLY_DAILY_VAR = "{" + HOURLY_DAILY + "}";
 
   /** The label for sampling internal or interval values. */
   public static final String INTERVAL = "interval";
@@ -165,6 +186,12 @@ public class Labels {
   /** The label/group for public objects. */
   public static final String PUBLIC = "public";
 
+  /** The label for samples. */
+  public static final String SAMPLES = "samples";
+
+  /** The label for the sample var. */
+  public static final String SAMPLES_VAR = "{" + SAMPLES + "}";
+
   /** The label for a given Sensor. */
   public static final String SENSOR = "sensor";
 
@@ -200,6 +227,9 @@ public class Labels {
 
   /** The label for all Sensors. */
   public static final String SENSORS = "sensors";
+
+  /** The label for Sensor Status. */
+  public static final String SENSOR_STATUS = "sensor-status";
 
   /** The label for the start timestamp. */
   public static final String START = "start";
@@ -245,6 +275,9 @@ public class Labels {
 
   /** The base label used for WattDepot. */
   public static final String WATTDEPOT = "wattdepot";
+
+  /** The label used for determining a window. */
+  public static final String WINDOW = "window";
 
   /** The label used for getting csv values. */
   public static final String CSV = "csv";

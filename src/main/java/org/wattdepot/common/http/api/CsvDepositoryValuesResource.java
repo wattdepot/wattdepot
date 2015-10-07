@@ -32,9 +32,8 @@ import org.restlet.resource.Get;
 public interface CsvDepositoryValuesResource {
 
   /**
-   * Defines GET <br/>
-   * /wattdepot/{org-id}/depository/{depository-id}/values/csv/?
-   *   sensor={sensor_id}&start={start}&end={end}&interval={interval}.
+   * Defines GET <br>
+   * /wattdepot/{org-id}/depository/{depository-id}/values/csv/?sensor={sensor_id}&start={start}&end={end}&interval={interval}.
    * 
    * @return Export csv data file.
    */

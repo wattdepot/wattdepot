@@ -63,6 +63,8 @@ public class UnitsHelper {
     quantities.put(buildName("Humidity", NonSI.PERCENT), NonSI.PERCENT);
     quantities.put(buildName("Concentration", SI.MICRO(SI.GRAM.divide(NonSI.LITER))), SI.MICRO(SI.GRAM.divide(NonSI.LITER)));
     quantities.put(buildName("Cloud Coverage", NonSI.PERCENT), NonSI.PERCENT);
+    quantities.put(buildName("Area", SI.SQUARE_METRE), SI.SQUARE_METRE);
+    quantities.put(buildName("Area", NonSI.FOOT.times(NonSI.FOOT)), NonSI.FOOT.times(NonSI.FOOT));
 
   }
 

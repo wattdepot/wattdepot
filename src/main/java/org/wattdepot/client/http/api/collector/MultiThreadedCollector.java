@@ -21,7 +21,7 @@ package org.wattdepot.client.http.api.collector;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.commons.validator.UrlValidator;
 import org.wattdepot.client.http.api.WattDepotClient;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;

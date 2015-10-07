@@ -26,7 +26,10 @@ import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.Sensor;
+import org.wattdepot.common.domainmodel.SensorGroup;
 import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.DateConvert;
 import org.wattdepot.common.util.tstamp.Tstamp;
@@ -39,7 +42,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 /**
- * DepositoryHourlyServer - Base class for handling hourly sample HTTP requests.
+ * DepositoryHourlyValuesServer - Base class for handling hourly sample HTTP requests.
  *
  * @author Cam Moore
  */
@@ -84,38 +87,59 @@ public class DepositoryHourlyValuesServer extends WattDepotServerResource {
           Depository depository = depot.getDepository(depositoryId, orgId, true);
           if (depository != null) {
             XMLGregorianCalendar startTime = DateConvert.parseCalString(start);
-            startTime.setTime(0, 0, 0, 0); // beginning of the day
+            // set start time to beginning of hour.
+            startTime.setMinute(0);
+            startTime.setSecond(0);
+            startTime.setMillisecond(0);
             XMLGregorianCalendar endTime = DateConvert.parseCalString(end);
-            endTime = Tstamp.incrementDays(endTime, 1);
-            endTime.setTime(0, 0, 0, 0); // beginning of the next day.
+            // set end time to beginning of hour.
+            endTime.setMinute(0);
+            endTime.setSecond(0);
+            endTime.setMillisecond(0);
             List<XMLGregorianCalendar> times = Tstamp.getTimestampList(startTime, endTime, 60);
-            for (int i = 1; i < times.size(); i++) {
-              XMLGregorianCalendar begin = times.get(i - 1);
-              Date beginDate = begin.toGregorianCalendar().getTime();
-              XMLGregorianCalendar end = times.get(i);
-              Date endDate = end.toGregorianCalendar().getTime();
-              Double val = 0.0;
-              if (dataType.equals("point")) {  // need to calculate the average value for the hourly intervals
-                List<Measurement> measurements = depot.getMeasurements(depositoryId, orgId, sensorId, beginDate, endDate, false);
-                if (measurements.size() > 0) {
-                  for (Measurement m : measurements) {
-                    val += m.getValue();
+            if (times != null) {
+              for (int i = 1; i < times.size(); i++) {
+                XMLGregorianCalendar begin = times.get(i - 1);
+                Date beginDate = begin.toGregorianCalendar().getTime();
+                XMLGregorianCalendar end = times.get(i);
+                Date endDate = end.toGregorianCalendar().getTime();
+                Sensor sensor = depot.getSensor(sensorId, orgId, false);
+                Double val = 0.0;
+                InterpolatedValue value = new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate);
+                value.addDefinedSensor(sensorId);
+                if (sensor != null) {
+                  try {
+                    val = getValueForSensor(depositoryId, orgId, sensorId, beginDate, endDate, dataType);
+                    value.addReportingSensor(sensorId);
                   }
-                  val = val / measurements.size();
+                  catch (NoMeasurementException e) {
+                    val = Double.NaN;
+                  }
+                  value.setValue(val);
+                  ret.getInterpolatedValues().add(value);
                 }
-                else {
-                  val = Double.NaN;
+                else { // try SensorGroup.
+                  SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
+                  if (group != null) {
+                    value = new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate);
+                    for (String s : group.getSensors()) {
+                      value.addDefinedSensor(s);
+                      sensor = depot.getSensor(s, orgId, false);
+                      if (sensor != null) {
+                        try {
+                          value.setValue(value.getValue() + getValueForSensor(depositoryId, orgId, s, beginDate, endDate, dataType));
+                          value.addReportingSensor(s);
+                        }
+                        catch (IdNotFoundException e) { // NOPMD
+                        }
+                        catch (NoMeasurementException e) { // NOPMD
+                        }
+                      }
+                    }
+                    ret.getInterpolatedValues().add(value);
+                  }
                 }
               }
-              else {  // calculate the difference
-                try {
-                  val = depot.getValue(depositoryId, orgId, sensorId, beginDate, endDate, false);
-                }
-                catch (NoMeasurementException nme) {
-                  val = Double.NaN;
-                }
-              }
-              ret.getInterpolatedValues().add(new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate));
             }
           }
         }
@@ -131,6 +155,10 @@ public class DepositoryHourlyValuesServer extends WattDepotServerResource {
           setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
           return null;
         }
+        catch (MisMatchedOwnerException e) {
+          setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+          return null;
+        }
         return ret;
       }
       else {
@@ -142,5 +170,38 @@ public class DepositoryHourlyValuesServer extends WattDepotServerResource {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
       return null;
     }
+  }
+
+  /**
+   * Gets the value for the Sensor or SensorGroup.
+   *
+   * @param depositoryId The depository id.
+   * @param orgId        The organization id.
+   * @param sensorId     The sensor or sensor group id.
+   * @param beginDate    The beginning date.
+   * @param endDate      The ending date.
+   * @param dataType     Either 'point' or difference.
+   * @return The average for point values or the difference for difference values.
+   * @throws IdNotFoundException    If the sensor or depository are not defined.
+   * @throws NoMeasurementException If there are no measurements for the time period.
+   */
+  private Double getValueForSensor(String depositoryId, String orgId, String sensorId, Date beginDate, Date endDate, String dataType) throws IdNotFoundException, NoMeasurementException {
+    Double val = 0.0;
+    if (dataType.equals("point")) {  // need to calculate the average value for the hourly intervals
+      List<Measurement> measurements = depot.getMeasurements(depositoryId, orgId, sensorId, beginDate, endDate, false);
+      if (measurements.size() > 0) {
+        for (Measurement m : measurements) {
+          val += m.getValue();
+        }
+        val = val / measurements.size();
+      }
+      else {
+        val = Double.NaN;
+      }
+    }
+    else {  // calculate the difference
+      val = depot.getValue(depositoryId, orgId, sensorId, beginDate, endDate, false);
+    }
+    return val;
   }
 }

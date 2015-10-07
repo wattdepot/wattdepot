@@ -3,11 +3,12 @@
  * 
  * @param url, the full url to the server including the organization id. (e.g. http://server.wattdepot.org:8192/wattdepot/uh/).
  */
-if (typeof (org) != "Object") {
+// setup namespace if not already defined
+if (!org) {
   var org = {
     WattDepot : {}
   };
-} else if (typeof (org.WattDepot) != "Object") {
+} else if (!org.WattDepot) {
   org.WattDepot = {};
 }
 

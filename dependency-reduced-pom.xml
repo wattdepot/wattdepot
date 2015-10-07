@@ -4,7 +4,7 @@
   <groupId>org.wattdepot</groupId>
   <artifactId>wattdepot</artifactId>
   <name>WattDepot</name>
-  <version>3.0.3-SNAPSHOT</version>
+  <version>3.1.0-SNAPSHOT</version>
   <description>WattDepot is an open source, RESTful web service that collects electricity data (such as current power utilization or cumulative power utilization) from meters and stores it in a database.</description>
   <url>https://github.com/wattdepot/wattdepot/</url>
   <prerequisites>
@@ -80,7 +80,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.6.3.201306030806</version>
+        <version>${jacoco.version}</version>
         <executions>
           <execution>
             <id>pre-unit-test</id>
@@ -483,7 +483,6 @@
     <commons-math.version>3.4.1</commons-math.version>
     <appassembler.plugin.version>1.9</appassembler.plugin.version>
     <junit.version>4.12</junit.version>
-    <targetJdk>1.7</targetJdk>
     <dependency.plugin.version>2.9</dependency.plugin.version>
     <checkstyle.plugin.version>2.13</checkstyle.plugin.version>
     <assembly.plugin.version>2.4</assembly.plugin.version>

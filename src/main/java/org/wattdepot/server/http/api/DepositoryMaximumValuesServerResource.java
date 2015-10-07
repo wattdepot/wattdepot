@@ -26,6 +26,8 @@ import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.MeasurementList;
+import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.DepositoryMaximumValuesResource;
 
 /**
@@ -53,23 +55,29 @@ public class DepositoryMaximumValuesServerResource extends DepositoryMeasurement
     try {
       Depository deposit = depot.getDepository(depositoryId, orgId, true);
       while (tempEnd.before(endDate)) {
-        MeasurementList meas = getMeasurements(depositoryId, orgId, sensorId, tempStart, tempEnd);
+        InterpolatedValue interpolatedValue = new InterpolatedValue(sensorId, 0.0, deposit.getMeasurementType(),
+            tempStart);
+        MeasurementList meas = getMeasurements(depositoryId, orgId, sensorId, tempStart, tempEnd, interpolatedValue);
         DescriptiveStats stat = new DescriptiveStats(meas, valueType);
         Double value = stat.getMax();
         if (Double.isNaN(value)) {
           value = 0.0;
         }
-        ret.getInterpolatedValues()
-            .add(
-                new InterpolatedValue(sensorId, value, deposit.getMeasurementType(),
-                    tempStart));
+        interpolatedValue.setValue(value);
+        ret.getInterpolatedValues().add(interpolatedValue);
         tempStart = tempEnd;
         tempEnd = incrementMinutes(tempStart, interval);
       }
     }
-    catch (Exception e) {
+    catch (IdNotFoundException e) {
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      return null;
     }
+    catch (MisMatchedOwnerException e) {
+      setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+      return null;
+    }
+
     return ret;
   }
 

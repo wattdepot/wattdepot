@@ -37,6 +37,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.MeasurementList;
 import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
@@ -1430,8 +1431,8 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   }
 
   /**
-   * @param id The MeasurementPruningDefinition's id.
    * @param orgId The Organization's id.
+   * @param id The MeasurementPruningDefinition's id.
    * @return The MeasurementPruningDefinition with the given id and orgId, or
    *         null if not defined.
    */
@@ -1517,9 +1518,56 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       endTime = System.nanoTime();
       diff = endTime - startTime;
       padding = padding.substring(0, padding.length() - 2);
-      timingLogger.log(Level.SEVERE, padding + "getEarliestMeasuredValue(" + depotId + ", " + orgId
+      timingLogger.log(Level.SEVERE, padding + "getLatestMeasuredValue(" + depotId + ", " + orgId
           + ", " + sensorId + ") took " + (diff / 1E9) + " secs.");
     }
+    value.addReportingSensor(sensorId);
+    value.addDefinedSensor(sensorId);
+    return value;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see
+   * org.wattdepot.server.WattDepotPersistence#getLatestMeasuredValue(java.lang
+   * .String, java.lang.String)
+   */
+  @Override
+  public InterpolatedValue getLatestMeasuredValue(String depotId, String orgId, String sensorId, Long window,
+                                                  boolean check) throws NoMeasurementException, IdNotFoundException {
+    Long startTime = 0l;
+    Long endTime = 0l;
+    Long diff = 0l;
+    if (timingp) {
+      timingLogger.log(Level.SEVERE, padding + "Start getLatestMeasuredValue(" + depotId + ", "
+          + orgId + ", " + sensorId + ")");
+      padding += "  ";
+      startTime = System.nanoTime();
+    }
+    if (check) {
+      getOrganization(orgId, check);
+      getDepository(depotId, orgId, check);
+      getSensor(sensorId, orgId, check);
+    }
+    InterpolatedValue value = getLatestMeasuredValueNoCheck(depotId, orgId, sensorId);
+    if (value == null) {
+      throw new NoMeasurementException("No " + depotId + " measurements for " + sensorId);
+    }
+    Date now = new Date();
+    Long deltaT = now.getTime() - value.getEnd().getTime();
+    if (Math.abs(deltaT) > window * 1000) {
+      throw new NoMeasurementException("No recent " + depotId + " measurements for " + sensorId);
+    }
+    if (timingp) {
+      endTime = System.nanoTime();
+      diff = endTime - startTime;
+      padding = padding.substring(0, padding.length() - 2);
+      timingLogger.log(Level.SEVERE, padding + "getLatestMeasuredValue(" + depotId + ", " + orgId
+          + ", " + sensorId + ") took " + (diff / 1E9) + " secs.");
+    }
+    value.addDefinedSensor(sensorId);
+    value.addReportingSensor(sensorId);
     return value;
   }
 
@@ -2996,10 +3044,37 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   @Override
   public Double getValue(String depotId, String orgId, String sensorId, Date start, Date end,
       boolean check) throws NoMeasurementException, IdNotFoundException {
+    Boolean generatePower = false;
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    session.beginTransaction();
+    SensorImpl sensor = retrieveSensor(session, sensorId, orgId);
+    for (PropertyImpl p : sensor.getProperties()) {
+      if (p.getKey().equals(Labels.GENERATE_POWER)) {
+        generatePower = Boolean.parseBoolean(p.getValue());
+      }
+    }
+    session.getTransaction().commit();
+    session.close();
     Double endVal = getValue(depotId, orgId, sensorId, end, check);
     Double startVal = getValue(depotId, orgId, sensorId, start, check);
     if (endVal != null && startVal != null) {
-      return endVal - startVal;
+      Double returnVal = endVal - startVal;
+      if (returnVal < 0 && !generatePower) {
+        Double max = Double.MIN_NORMAL;
+        Double min = Double.MAX_VALUE;
+        List<Measurement> measurements = getMeasurements(depotId, orgId, sensorId, start, end, false);
+        for (Measurement m : measurements) {
+          Double value = m.getValue();
+          if (max < value) {
+            max = value;
+          }
+          if (min > value) {
+            min = value;
+          }
+          returnVal = endVal - startVal + max - min;
+        }
+      }
+      return returnVal;
     }
     return null;
   }
@@ -3014,10 +3089,37 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
   public Double getValue(String depotId, String orgId, String sensorId, Date start, Date end,
       Long gapSeconds, boolean check) throws NoMeasurementException, MeasurementGapException,
       IdNotFoundException {
+    Boolean generatePower = false;
+    Session session = Manager.getFactory(getServerProperties()).openSession();
+    session.beginTransaction();
+    SensorImpl sensor = retrieveSensor(session, sensorId, orgId);
+    for (PropertyImpl p : sensor.getProperties()) {
+      if (p.getKey().equals(Labels.GENERATE_POWER)) {
+        generatePower = Boolean.parseBoolean(p.getValue());
+      }
+    }
+    session.getTransaction().commit();
+    session.close();
     Double endVal = getValue(depotId, orgId, sensorId, end, gapSeconds, check);
     Double startVal = getValue(depotId, orgId, sensorId, start, gapSeconds, check);
     if (endVal != null && startVal != null) {
-      return endVal - startVal;
+      Double returnVal = endVal - startVal;
+      if (returnVal < 0 && !generatePower) {
+        Double max = Double.MIN_NORMAL;
+        Double min = Double.MAX_VALUE;
+        List<Measurement> measurements = getMeasurements(depotId, orgId, sensorId, start, end, false);
+        for (Measurement m : measurements) {
+          Double value = m.getValue();
+          if (max < value) {
+            max = value;
+          }
+          if (min > value) {
+            min = value;
+          }
+          returnVal = endVal - startVal + max - min;
+        }
+      }
+      return returnVal;
     }
     return null;
   }

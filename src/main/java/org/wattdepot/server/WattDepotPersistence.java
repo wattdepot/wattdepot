@@ -245,22 +245,22 @@ public abstract class WattDepotPersistence {
       MisMatchedOwnerException;
 
   /**
-   * Deletes the given MeasurementPruningDefinition.
-   * 
-   * @param id The id of the MeasurementPruningDefinition to delete.
-   * @param orgId The Organization's id.
-   * @throws IdNotFoundException if the id is not defined.
-   */
-  public abstract void deleteMeasurementPruningDefinition(String id, String orgId)
-      throws IdNotFoundException;
-
-  /**
    * @param depotId the id of the Depository storing the measurement.
    * @param orgId the id of the Organization.
    * @param measId The id of the measurement to delete.
    * @throws IdNotFoundException if there is a problem with the ids.
    */
   public abstract void deleteMeasurement(String depotId, String orgId, String measId)
+      throws IdNotFoundException;
+
+  /**
+   * Deletes the given MeasurementPruningDefinition.
+   *
+   * @param id The id of the MeasurementPruningDefinition to delete.
+   * @param orgId The Organization's id.
+   * @throws IdNotFoundException if the id is not defined.
+   */
+  public abstract void deleteMeasurementPruningDefinition(String id, String orgId)
       throws IdNotFoundException;
 
   /**
@@ -394,6 +394,44 @@ public abstract class WattDepotPersistence {
       String sensorId, boolean check) throws NoMeasurementException, IdNotFoundException;
 
   /**
+   * @param depotId the id of the Depository.
+   * @param orgId the Organziation's id.
+   * @param sensorId The id of the Sensor making the measurements.
+   * @param check true if want to check the ids.
+   * @return The latest measurement Value
+   * @throws NoMeasurementException If there aren't any measurements around the
+   *         time.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract InterpolatedValue getLatestMeasuredValue(String depotId, String orgId,
+                                                           String sensorId, boolean check) throws NoMeasurementException, IdNotFoundException;
+
+  /**
+   * @param depotId the id of the Depository.
+   * @param orgId the Organziation's id.
+   * @param sensorId The id of the Sensor making the measurements.
+   * @param window The number of seconds to consider for latest.
+   * @param check true if want to check the ids.
+   * @return The latest measurement Value
+   * @throws NoMeasurementException If there aren't any measurements around the
+   *         time.
+   * @throws IdNotFoundException if there is a problem with the ids.
+   */
+  public abstract InterpolatedValue getLatestMeasuredValue(String depotId, String orgId,
+      String sensorId, Long window, boolean check) throws NoMeasurementException, IdNotFoundException;
+
+  /**
+   * @param depotId the id of the Depository storing the measurements.
+   * @param orgId the Organziation's id.
+   * @param measId The measurement id.
+   * @param check true if want to check the ids.
+   * @return The Measurement with the given id or null.
+   * @throws IdNotFoundException if there are problems with the ids.
+   */
+  public abstract Measurement getMeasurement(String depotId, String orgId, String measId,
+      boolean check) throws IdNotFoundException;
+
+  /**
    * @param id The id of the MeasurementPruningDefinition.
    * @param orgId The Organization's id.
    * @param check true if want to check the ids.
@@ -422,28 +460,18 @@ public abstract class WattDepotPersistence {
       boolean check) throws IdNotFoundException;
 
   /**
-   * @param depotId the id of the Depository.
-   * @param orgId the Organziation's id.
-   * @param sensorId The id of the Sensor making the measurements.
+   * @param id The unique id for the MeasurementType.
    * @param check true if want to check the ids.
-   * @return The latest measurement Value
-   * @throws NoMeasurementException If there aren't any measurements around the
-   *         time.
-   * @throws IdNotFoundException if there is a problem with the ids.
+   * @return The MeasurementType with the given id.
+   * @throws IdNotFoundException if the id is not defined.
    */
-  public abstract InterpolatedValue getLatestMeasuredValue(String depotId, String orgId,
-      String sensorId, boolean check) throws NoMeasurementException, IdNotFoundException;
+  public abstract MeasurementType getMeasurementType(String id, boolean check)
+      throws IdNotFoundException;
 
   /**
-   * @param depotId the id of the Depository storing the measurements.
-   * @param orgId the Organziation's id.
-   * @param measId The measurement id.
-   * @param check true if want to check the ids.
-   * @return The Measurement with the given id or null.
-   * @throws IdNotFoundException if there are problems with the ids.
+   * @return A List of the defined MeasurementTypes.
    */
-  public abstract Measurement getMeasurement(String depotId, String orgId, String measId,
-      boolean check) throws IdNotFoundException;
+  public abstract List<MeasurementType> getMeasurementTypes();
 
   /**
    * @param depotId the id of the Depository storing the measurements.
@@ -500,20 +528,6 @@ public abstract class WattDepotPersistence {
    */
   public abstract Long getMeasurementsCount(String depotId, String orgId, String sensorId,
       Date start, Date end, boolean check) throws IdNotFoundException;
-
-  /**
-   * @param id The unique id for the MeasurementType.
-   * @param check true if want to check the ids.
-   * @return The MeasurementType with the given id.
-   * @throws IdNotFoundException if the id is not defined.
-   */
-  public abstract MeasurementType getMeasurementType(String id, boolean check)
-      throws IdNotFoundException;
-
-  /**
-   * @return A List of the defined MeasurementTypes.
-   */
-  public abstract List<MeasurementType> getMeasurementTypes();
 
   /**
    * @param id the unique id for the Organization.
@@ -623,6 +637,13 @@ public abstract class WattDepotPersistence {
    */
   public ServerProperties getServerProperties() {
     return properties;
+  }
+
+  /**
+   * @param properties the properties to set
+   */
+  public void setServerProperties(ServerProperties properties) {
+    this.properties = properties;
   }
 
   /**
@@ -846,13 +867,6 @@ public abstract class WattDepotPersistence {
    */
   public abstract void putMeasurementList(String depotId, String orgId, MeasurementList measurementList)
       throws MeasurementTypeException, IdNotFoundException;
-
-  /**
-   * @param properties the properties to set
-   */
-  public void setServerProperties(ServerProperties properties) {
-    this.properties = properties;
-  }
 
   /**
    * Cleans up the persistence layer.

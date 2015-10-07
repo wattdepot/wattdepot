@@ -33,10 +33,8 @@ import org.wattdepot.common.domainmodel.InterpolatedValueList;
 public interface DepositoryMaximumValuesResource {
 
   /**
-   * Defines GET <br/>
-   * /wattdepot/{org-id}/depository/{depository-id}/values/maximum/?
-   * sensor={sensor_id
-   * }&start={start}&end={end}&interval={interval}&value-type={type}.
+   * Defines GET <br>
+   * /wattdepot/{org-id}/depository/{depository-id}/values/maximum/?sensor={sensor_id}&start={start}&end={end}&interval={interval}&value-type={type}.
    * 
    * @return The MeasuredValueList.
    */
