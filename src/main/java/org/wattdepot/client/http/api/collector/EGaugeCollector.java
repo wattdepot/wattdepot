@@ -37,10 +37,10 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.jscience.physics.amount.Amount;
 import org.w3c.dom.Document;
 import org.wattdepot.common.domainmodel.Depository;
@@ -332,7 +332,7 @@ public class EGaugeCollector extends MultiThreadedCollector {
     String collectorId = null;
     boolean debug = false;
 
-    CommandLineParser parser = new PosixParser();
+    CommandLineParser parser = new DefaultParser();
     HelpFormatter formatter = new HelpFormatter();
     try {
       cmd = parser.parse(options, args);

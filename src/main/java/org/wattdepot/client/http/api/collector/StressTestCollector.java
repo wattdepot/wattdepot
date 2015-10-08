@@ -27,10 +27,10 @@ import javax.measure.unit.Unit;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.wattdepot.client.http.api.WattDepotClient;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
@@ -139,7 +139,7 @@ public class StressTestCollector extends TimerTask {
     Integer milliSeconds = null;
     boolean debug = false;
 
-    CommandLineParser parser = new PosixParser();
+    CommandLineParser parser = new DefaultParser();
     HelpFormatter formatter = new HelpFormatter();
     try {
       cmd = parser.parse(options, args);

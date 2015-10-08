@@ -62,7 +62,7 @@ public class UserInfoPutServerResource extends WattDepotServerResource implement
               WattDepotApplication app = (WattDepotApplication) getApplication();
               Role role = app.getRole(user.getOrganizationId());
               if (role == null) {
-                role = new Role(user.getOrganizationId());
+                role = new Role(app, user.getOrganizationId());
                 app.getRoles().add(role);
               }
               MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");

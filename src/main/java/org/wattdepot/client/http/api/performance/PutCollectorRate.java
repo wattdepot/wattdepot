@@ -22,10 +22,10 @@ import java.util.Timer;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.BadSensorUriException;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -69,7 +69,7 @@ public class PutCollectorRate {
         "Number of measurements to put per second.");
     options.addOption("cpd", "collector", true, "The collector process definition");
     options.addOption("d", "debug", false, "Displays statistics as the Measurements are stored.");
-    CommandLineParser parser = new PosixParser();
+    CommandLineParser parser = new DefaultParser();
     HelpFormatter formatter = new HelpFormatter();
     try {
       cmd = parser.parse(options, args);

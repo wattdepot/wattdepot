@@ -23,10 +23,10 @@ import java.util.TimerTask;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.BadSensorUriException;
@@ -124,7 +124,7 @@ public class GetEarliestValueThroughput extends TimerTask {
     options.addOption("p", "password", true, "Password");
     options.addOption("n", "numSamples", true, "Number of puts to sample.");
     options.addOption("d", "debug", false, "Displays statistics as the Measurements are stored.");
-    CommandLineParser parser = new PosixParser();
+    CommandLineParser parser = new DefaultParser();
     HelpFormatter formatter = new HelpFormatter();
     try {
       cmd = parser.parse(options, args);
