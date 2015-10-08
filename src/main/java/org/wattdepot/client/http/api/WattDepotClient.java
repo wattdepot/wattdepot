@@ -139,6 +139,7 @@ public class WattDepotClient implements WattDepotInterface {
     this.logger = Logger.getLogger("org.wattdepot.client");
     LoggerUtil.setLoggingLevel(this.logger, properties.get(ClientProperties.LOGGING_LEVEL_KEY));
     LoggerUtil.useConsoleHandler();
+    LoggerUtil.removeRestletLoggers();
     logger.finest("Client " + serverUri + ", " + username + ", " + password);
     this.authentication = new ChallengeResponse(this.scheme, username, password);
     if (serverUri == null) {

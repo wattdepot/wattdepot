@@ -18,7 +18,9 @@
  */
 package org.wattdepot.server;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
@@ -65,4 +67,16 @@ public class TestStrongAES {
     assertTrue(decrypt.equals(plain));
   }
 
+  /**
+   * Tests the static methods.
+   */
+  @Test
+  public void testStatic() {
+    String plain = "This is a test with lots of data";
+    String result = StrongAES.symmetricEncrypt(plain);
+    assertNotNull(result);
+    String decrypt = StrongAES.symmetricDecrypt(result);
+    assertEquals(plain, decrypt);
+
+  }
 }

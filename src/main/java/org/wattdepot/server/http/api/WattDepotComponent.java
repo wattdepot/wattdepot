@@ -59,6 +59,7 @@ public class WattDepotComponent extends Component {
    * @throws javax.crypto.BadPaddingException if there is a problem with the encryption.
    * @throws java.security.InvalidKeyException if there is a problem with the encryption.
    * @throws javax.crypto.IllegalBlockSizeException if there is a problem with the encryption.
+   * @throws java.io.IOException if there is a problem.
    */
   public WattDepotComponent(WattDepotPersistence depot) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException, IOException {
     setName("WattDepot HTTP API Server");
@@ -83,6 +84,7 @@ public class WattDepotComponent extends Component {
     @SuppressWarnings("rawtypes")
     ObjectMapper mapper = ((JacksonRepresentation) rep).getObjectMapper();
     mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+//    mapper.enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     getDefaultHost().attachDefault(app);
     app.setComponent(this);

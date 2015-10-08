@@ -18,7 +18,7 @@
  */
 package org.wattdepot.server.http.api;
 
-import org.restlet.engine.header.Header;
+import org.restlet.data.Header;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.ServerResource;
 import org.restlet.util.Series;
