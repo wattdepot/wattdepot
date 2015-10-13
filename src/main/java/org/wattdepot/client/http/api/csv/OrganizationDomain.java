@@ -19,11 +19,13 @@
 package org.wattdepot.client.http.api.csv;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.Set;
 
 import org.wattdepot.client.http.api.WattDepotClient;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
@@ -156,6 +158,47 @@ public class OrganizationDomain {
     for (CollectorProcessDefinition cpd : client.getCollectorProcessDefinitions().getDefinitions()) {
       writer.add(cpd);
     }
+    for (MeasurementPruningDefinition mpd : client.getMeasurementPruningDefinitions().getDefinitions()) {
+      writer.add(mpd);
+    }
     writer.writeFile();
+  }
+
+  public void exportData(Date start, Date end) throws IOException {
+    this.exportData(fileName, start, end);
+  }
+
+  public void exportData(String name, Date start, Date end) throws IOException {
+    DefinitionFileWriter writer = new DefinitionFileWriter(name);
+    for (Depository d : client.getDepositories().getDepositories()) {
+      writer.add(d);
+    }
+    for (Sensor s : client.getSensors().getSensors()) {
+      writer.add(s);
+    }
+    for (SensorGroup g : client.getSensorGroups().getGroups()) {
+      writer.add(g);
+    }
+    for (CollectorProcessDefinition cpd : client.getCollectorProcessDefinitions().getDefinitions()) {
+      writer.add(cpd);
+    }
+    for (MeasurementPruningDefinition mpd : client.getMeasurementPruningDefinitions().getDefinitions()) {
+      writer.add(mpd);
+    }
+    for (Depository d : client.getDepositories().getDepositories()) {
+      try {
+        for (Sensor s : client.getDepositorySensors(d.getId()).getSensors()) {
+          for (Measurement measurement : client.getMeasurements(d, s, start, end).getMeasurements()) {
+            writer.add(measurement);
+          }
+        }
+      }
+      catch (IdNotFoundException inf) {
+        // this is ok
+        // NOPMD
+      }
+    }
+    writer.writeFile();
+
   }
 }

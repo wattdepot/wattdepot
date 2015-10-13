@@ -21,11 +21,14 @@ package org.wattdepot.common.util.csv;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
@@ -45,6 +48,7 @@ public class DefinitionFileWriter {
   private Set<Sensor> sensors;
   private Set<CollectorProcessDefinition> cpds;
   private Set<MeasurementPruningDefinition> gcds;
+  private List<Measurement> measurements;
 
   /**
    * Creates a new DefinitionFileReader.
@@ -60,6 +64,7 @@ public class DefinitionFileWriter {
     this.sensors = new HashSet<Sensor>();
     this.cpds = new HashSet<CollectorProcessDefinition>();
     this.gcds = new HashSet<MeasurementPruningDefinition>();
+    this.measurements = new ArrayList<Measurement>();
   }
 
   /**
@@ -78,6 +83,15 @@ public class DefinitionFileWriter {
    */
   public boolean add(Depository arg0) {
     return depositories.add(arg0);
+  }
+
+  /**
+   * @param m The Measurement to add.
+   * @return true if it is added.
+   * @see java.util.Set#add(java.lang.Object)
+   */
+  public boolean add(Measurement m) {
+    return measurements.add(m);
   }
 
   /**
@@ -119,6 +133,13 @@ public class DefinitionFileWriter {
    */
   public Set<Depository> getDepositories() {
     return depositories;
+  }
+
+  /**
+   * @return the Measurements
+   */
+  public List<Measurement> getMeasurements() {
+    return measurements;
   }
 
   /**
@@ -192,34 +213,40 @@ public class DefinitionFileWriter {
     // Sensors
     writer
         .write("# Sensors: 'Sensor', Name, URI, ModelId, OrgId, num properties, prop1.key, prop1,value, ...,");
-    writer.newLine();
+    writer.write("\r\n");
     for (Sensor s : sensors) {
       writer.write(CSVObjectFactory.toCSV(s));
-      writer.newLine();
+      writer.write("\r\n");
     }
     // SensorGroups
     writer
         .write("# SensorGroups: 'SensorGroup', Name, OrgId, num sensors, sensorId1, sensorId2, ...,");
-    writer.newLine();
+    writer.write("\r\n");
     for (SensorGroup g : groups) {
       writer.write(CSVObjectFactory.toCSV(g));
-      writer.newLine();
+      writer.write("\r\n");
     }
     // CollectorProcessDefinitions
     writer
         .write("# CollectorProcessDefinitions: 'CollectorProcessDefinition', Name, SensorId, Polling, DepositoryId, OrgId, num properties, prop1.key, prop1.value, ...,");
-    writer.newLine();
+    writer.write("\r\n");
     for (CollectorProcessDefinition cpd : cpds) {
       writer.write(CSVObjectFactory.toCSV(cpd));
-      writer.newLine();
+      writer.write("\r\n");
     }
     // MeasurementPruningDefinitions
     writer
         .write("# MeasurementPruningDefinitions: 'MeasurementPruningDefinition', Name, DepositoryId, SensorId, OrgId, ignore window days, collect window days, minimum gap seconds");
-    writer.newLine();
+    writer.write("\r\n");
     for (MeasurementPruningDefinition gcd : gcds) {
       writer.write(CSVObjectFactory.toCSV(gcd));
-      writer.newLine();
+      writer.write("\r\n");
+    }
+    // Measurements
+    writer.write("# Measurements: 'Measurement', SensorId, Date, Value, Measurement Type, ");
+    for (Measurement m : measurements) {
+      writer.write(CSVObjectFactory.toCSV(m));
+      writer.write("\r\n");
     }
     writer.flush();
   }

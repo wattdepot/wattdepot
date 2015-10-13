@@ -1,5 +1,5 @@
 /**
- * OrganizationDomainMain.java This file is part of WattDepot.
+ * LoadOrganizationDomainMain.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -31,13 +31,13 @@ import org.wattdepot.common.exception.BadSensorUriException;
 import org.wattdepot.common.exception.IdNotFoundException;
 
 /**
- * OrganizationDomainMain - Reads in an Organization domain definition file and
+ * LoadOrganizationDomainMain - Reads in an Organization domain definition file and
  * ensures the WattDepot server has all the instances defined in the file.
  * 
  * @author Cam Moore
  * 
  */
-public class OrganizationDomainMain {
+public class LoadOrganizationDomainMain {
 
   /**
    * @param args command line arguments -s <server uri> -u <username> -p
@@ -60,7 +60,7 @@ public class OrganizationDomainMain {
     boolean debug = false;
 
     options.addOption("h", false,
-        "Usage: OrganizationDomainMain -s <server uri> -u <username>"
+        "Usage: LoadOrganizationDomainMain -s <server uri> -u <username>"
             + " -p <password> -o <orgId> -f <fileName> [-d]");
     options.addOption("s", "server", true,
         "WattDepot Server URI. (http://server.wattdepot.org)");
@@ -82,7 +82,7 @@ public class OrganizationDomainMain {
       System.exit(1);
     }
     if (cmd.hasOption("h")) {
-      formatter.printHelp("OrganizationDomainMain", options);
+      formatter.printHelp("LoadOrganizationDomainMain", options);
       System.exit(0);
     }
     if (cmd.hasOption("s")) {

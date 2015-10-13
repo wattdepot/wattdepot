@@ -20,6 +20,9 @@ package org.wattdepot.common.util.csv;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,6 +30,7 @@ import javax.measure.unit.Unit;
 
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.Property;
@@ -279,8 +283,8 @@ public class CSVObjectFactory {
   }
 
   /**
-   * @param csv The CSV representation of the SensorGroup
-   * @return The SensorGroup
+   * @param csv The CSV representation of the MeasurementPruningDefinition.
+   * @return The MeasurementPruningDefinition
    * @throws IOException if there is a problem parsing the String.
    */
   public static MeasurementPruningDefinition buildMeasurementPruningDefinition(String csv)
@@ -288,7 +292,7 @@ public class CSVObjectFactory {
     CSVReader reader = new CSVReader(new StringReader(csv));
     try {
       String[] line = reader.readNext();
-      if (line.length == 8 && MeasurementPruningDefinition.class.getSimpleName().equals(line[0])) {
+      if (line.length == 9 && MeasurementPruningDefinition.class.getSimpleName().equals(line[0])) {
         String name = line[1];
         String depositoryId = line[2];
         String sensorId = line[3];
@@ -305,6 +309,57 @@ public class CSVObjectFactory {
     }
     return null;
 
+  }
+
+  /**
+   * @param measurement the Measurement to convert.
+   * @return The CSV for the Measurement.
+   */
+  public static String toCSV(Measurement measurement) {
+    //RFC4180 CSV http://tools.ietf.org/html/rfc4180
+    StringBuffer buf = new StringBuffer();
+    // class name
+    buf.append(measurement.getClass().getSimpleName());
+    buf.append(",");
+    // sensorId
+    buf.append(measurement.getSensorId());
+    buf.append(",");
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+    // timestamp
+    buf.append(simpleDateFormat.format(measurement.getDate()));
+    buf.append(",");
+    // value
+    buf.append(measurement.getValue());
+    buf.append(",");
+    // measurement units
+    buf.append(measurement.getMeasurementType());
+    buf.append(",");
+    return buf.toString();
+  }
+
+  /**
+   * @param csv The CSV representation of a Measurement.
+   * @return The Measurement
+   * @throws IOException if there is a problem parsing the String.
+   * @throws ParseException if there is a problem parsing the date string.
+   */
+  public static Measurement buildMeasurement(String csv) throws IOException, ParseException {
+    CSVReader reader = new CSVReader(new StringReader(csv));
+    try {
+      String[] line = reader.readNext();
+      if (line.length == 6 && Measurement.class.getSimpleName().equals(line[0])) {
+        String sensorId = line[1];
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        Date timeStamp = simpleDateFormat.parse(line[2]);
+        Double value = Double.parseDouble(line[3]);
+        Unit<?> measUnit = Unit.valueOf(line[4]);
+        return new Measurement(sensorId, timeStamp, value, measUnit);
+      }
+    }
+    finally {
+      reader.close();
+    }
+    return null;
   }
 
   /**
