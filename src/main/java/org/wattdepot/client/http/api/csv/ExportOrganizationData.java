@@ -37,7 +37,8 @@ import java.util.Date;
 
 /**
  * Exports all the WattDepot data for an Organization into a CSV file.
- * @author  Cam Moore
+ *
+ * @author Cam Moore
  */
 public class ExportOrganizationData {
   /**
@@ -45,11 +46,13 @@ public class ExportOrganizationData {
    *
    * @param args command line arguments -s <server uri> -u <username> -p
    *             <password> -o <orgId> -f <fileName> -start <startDate> -end <endDate> [-d].
-   * @throws BadSensorUriException  if there is a problem with the WattDepot
-   *                                sensor definition.
-   * @throws IdNotFoundException    if there is a problem with the organization id.
-   * @throws BadCredentialException if the credentials are not valid.
-   * @throws IOException            if there is a problem with reading the file.
+   * @throws BadSensorUriException          if there is a problem with the WattDepot
+   *                                        sensor definition.
+   * @throws IdNotFoundException            if there is a problem with the organization id.
+   * @throws BadCredentialException         if the credentials are not valid.
+   * @throws IOException                    if there is a problem with reading the file.
+   * @throws java.text.ParseException       if there is a problem with the date format.
+   * @throws DatatypeConfigurationException if there is an internal issue.
    */
   public static void main(String[] args) throws BadCredentialException, IdNotFoundException, BadSensorUriException, IOException, java.text.ParseException, DatatypeConfigurationException {
     Options options = new Options();

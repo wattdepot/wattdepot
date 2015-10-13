@@ -164,10 +164,23 @@ public class OrganizationDomain {
     writer.writeFile();
   }
 
+  /**
+   * Exports the Organization's data from the start time to the end time.
+   * @param start The start Date.
+   * @param end The end Date.
+   * @throws IOException If there is a problem with the file.
+   */
   public void exportData(Date start, Date end) throws IOException {
     this.exportData(fileName, start, end);
   }
 
+  /**
+   * Exports the Organziation's data to the given file name, from start to end.
+   * @param name The name of the file.
+   * @param start The start Date.
+   * @param end The end Date.
+   * @throws IOException if there is a problem with the file.
+   */
   public void exportData(String name, Date start, Date end) throws IOException {
     DefinitionFileWriter writer = new DefinitionFileWriter(name);
     for (Depository d : client.getDepositories().getDepositories()) {
@@ -194,8 +207,7 @@ public class OrganizationDomain {
         }
       }
       catch (IdNotFoundException inf) {
-        // this is ok
-        // NOPMD
+        inf.printStackTrace();
       }
     }
     writer.writeFile();
