@@ -266,8 +266,7 @@ public class MeasurementImpl {
    *         MeasurementImpl.
    */
   public Measurement toMeasurement() {
-    Measurement ret = new Measurement(sensor.getId(), timestamp, value, Unit.valueOf(units));
-    return ret;
+    return new Measurement(sensor.getId(), timestamp, value, Unit.valueOf(units));
   }
 
   /* (non-Javadoc)

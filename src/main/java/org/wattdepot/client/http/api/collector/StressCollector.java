@@ -120,8 +120,7 @@ public class StressCollector extends MultiThreadedCollector {
   private Measurement generateFakeMeasurement() {
     Date now = new Date();
     Unit<?> unit = Unit.valueOf(this.depository.getMeasurementType().getUnits());
-    Measurement ret = new Measurement(this.definition.getSensorId(), now, wattHours++, unit);
-    return ret;
+    return new Measurement(this.definition.getSensorId(), now, wattHours++, unit);
   }
 
   /**

@@ -820,8 +820,7 @@ public class WattDepotClient implements WattDepotInterface {
     try {
       client = makeClient(stringBuilder.toString());
       DepositoryHistoricalValuesResource resource = client.wrap(DepositoryHistoricalValuesResource.class);
-      InterpolatedValueList ret = resource.retrieve();
-      return ret;
+      return resource.retrieve();
     }
     catch (ResourceException re) {
       throw re;
@@ -878,8 +877,7 @@ public class WattDepotClient implements WattDepotInterface {
     try {
       client = makeClient(stringBuilder.toString());
       DepositoryHistoricalValuesResource resource = client.wrap(DepositoryHistoricalValuesResource.class);
-      InterpolatedValueList ret = resource.retrieve();
-      return ret;
+      return resource.retrieve();
     }
     catch (ResourceException re) {
       throw re;

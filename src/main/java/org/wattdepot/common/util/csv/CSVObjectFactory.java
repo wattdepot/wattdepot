@@ -312,14 +312,18 @@ public class CSVObjectFactory {
   }
 
   /**
+   * @param d The Depository storing the Measurement.
    * @param measurement the Measurement to convert.
    * @return The CSV for the Measurement.
    */
-  public static String toCSV(Measurement measurement) {
+  public static String toCSV(Depository d, Measurement measurement) {
     //RFC4180 CSV http://tools.ietf.org/html/rfc4180
     StringBuffer buf = new StringBuffer();
     // class name
     buf.append(measurement.getClass().getSimpleName());
+    buf.append(",");
+    // depositoryId
+    buf.append(d.getId());
     buf.append(",");
     // sensorId
     buf.append(measurement.getSensorId());
@@ -343,17 +347,17 @@ public class CSVObjectFactory {
    * @throws IOException if there is a problem parsing the String.
    * @throws ParseException if there is a problem parsing the date string.
    */
-  public static Measurement buildMeasurement(String csv) throws IOException, ParseException {
+  public static DepositoryMeasurement buildMeasurement(String csv) throws IOException, ParseException {
     CSVReader reader = new CSVReader(new StringReader(csv));
     try {
       String[] line = reader.readNext();
-      if (line.length == 6 && Measurement.class.getSimpleName().equals(line[0])) {
-        String sensorId = line[1];
+      if (line.length == 7 && Measurement.class.getSimpleName().equals(line[0])) {
+        String sensorId = line[2];
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-        Date timeStamp = simpleDateFormat.parse(line[2]);
-        Double value = Double.parseDouble(line[3]);
-        Unit<?> measUnit = Unit.valueOf(line[4]);
-        return new Measurement(sensorId, timeStamp, value, measUnit);
+        Date timeStamp = simpleDateFormat.parse(line[3]);
+        Double value = Double.parseDouble(line[4]);
+        Unit<?> measUnit = Unit.valueOf(line[5]);
+        return new DepositoryMeasurement(line[1], new Measurement(sensorId, timeStamp, value, measUnit));
       }
     }
     finally {

@@ -188,17 +188,22 @@ public class TestCSVObjectFactory {
    */
   @Test
   public void testMeasurement() throws ParseException, DatatypeConfigurationException {
+    String name = "depository";
+    MeasurementType type = new MeasurementType("test", Unit.valueOf("W"));
+    String orgId = "orgId";
+    Depository depo = new Depository(name, type, orgId);
     String sensorId = "sensorId";
     Date timeStamp = DateConvert.parseCalStringToDate("2015-09-20T14:35:27.925-1000");
     Double value = 3.2;
-    Unit<?> unit = UnitsHelper.quantities.get("Flow Rate (gal/s)");
+    Unit<?> unit = type.unit();
     Measurement measurement = new Measurement(sensorId, timeStamp, value, unit);
-    String csv = CSVObjectFactory.toCSV(measurement);
+
+    String csv = CSVObjectFactory.toCSV(depo, measurement);
     assertNotNull(csv);
     try {
-      Measurement result = CSVObjectFactory.buildMeasurement(csv);
+      DepositoryMeasurement result = CSVObjectFactory.buildMeasurement(csv);
       assertNotNull(result);
-      assertTrue(result.equals(measurement));
+      assertTrue(result.getMeasurement().equals(measurement));
     }
     catch (IOException e) {
       e.printStackTrace();

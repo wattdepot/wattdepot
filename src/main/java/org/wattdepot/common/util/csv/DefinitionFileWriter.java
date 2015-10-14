@@ -22,8 +22,10 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
@@ -48,7 +50,7 @@ public class DefinitionFileWriter {
   private Set<Sensor> sensors;
   private Set<CollectorProcessDefinition> cpds;
   private Set<MeasurementPruningDefinition> gcds;
-  private List<Measurement> measurements;
+  private Map<Depository, List<Measurement>> measurementMap;
 
   /**
    * Creates a new DefinitionFileReader.
@@ -64,7 +66,7 @@ public class DefinitionFileWriter {
     this.sensors = new HashSet<Sensor>();
     this.cpds = new HashSet<CollectorProcessDefinition>();
     this.gcds = new HashSet<MeasurementPruningDefinition>();
-    this.measurements = new ArrayList<Measurement>();
+    this.measurementMap = new HashMap<Depository, List<Measurement>>();
   }
 
   /**
@@ -86,11 +88,17 @@ public class DefinitionFileWriter {
   }
 
   /**
+   * @param d The Depository holding the measurement.
    * @param m The Measurement to add.
-   * @return true if it is added.
-   * @see java.util.Set#add(java.lang.Object)
+   * @return the old value.
+   * @see java.util.Map#put(Object, Object)
    */
-  public boolean add(Measurement m) {
+  public boolean put(Depository d, Measurement m) {
+    List<Measurement> measurements = measurementMap.get(d);
+    if (measurements == null) {
+      measurements = new ArrayList<Measurement>();
+      measurementMap.put(d, measurements);
+    }
     return measurements.add(m);
   }
 
@@ -136,10 +144,11 @@ public class DefinitionFileWriter {
   }
 
   /**
+   * @param d The Depository to get the meaurements for.
    * @return the Measurements
    */
-  public List<Measurement> getMeasurements() {
-    return measurements;
+  public List<Measurement> getMeasurements(Depository d) {
+    return measurementMap.get(d);
   }
 
   /**
@@ -205,10 +214,10 @@ public class DefinitionFileWriter {
     // Write out the Depositories
     writer
         .write("# Depositories: 'Depository', Name, MeasurementType Name, MeasurementType Unit, OrgId");
-    writer.newLine();
+    writer.write("\r\n");
     for (Depository d : depositories) {
       writer.write(CSVObjectFactory.toCSV(d));
-      writer.newLine();
+      writer.write("\r\n");
     }
     // Sensors
     writer
@@ -243,10 +252,12 @@ public class DefinitionFileWriter {
       writer.write("\r\n");
     }
     // Measurements
-    writer.write("# Measurements: 'Measurement', SensorId, Date, Value, Measurement Type, ");
-    for (Measurement m : measurements) {
-      writer.write(CSVObjectFactory.toCSV(m));
-      writer.write("\r\n");
+    writer.write("# Measurements: 'Measurement', DepositoryId, SensorId, Date, Value, Measurement Type, ");
+    for (Depository d : measurementMap.keySet()) {
+      for (Measurement m : measurementMap.get(d)) {
+        writer.write(CSVObjectFactory.toCSV(d, m));
+        writer.write("\r\n");
+      }
     }
     writer.flush();
   }

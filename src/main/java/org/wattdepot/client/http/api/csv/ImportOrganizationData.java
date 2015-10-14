@@ -1,24 +1,23 @@
-/**
- * LoadOrganizationDomainMain.java This file is part of WattDepot.
+/*
+ * This file is part of WattDepot.
  *
- * Copyright (C) 2013  Cam Moore
+ *  Copyright (C) 2015  Cam Moore
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.wattdepot.client.http.api.csv;
 
-import java.io.IOException;
+package org.wattdepot.client.http.api.csv;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -29,28 +28,32 @@ import org.apache.commons.cli.ParseException;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.BadSensorUriException;
 import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MeasurementTypeException;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import java.io.IOException;
 
 /**
- * LoadOrganizationDomainMain - Reads in an Organization domain definition file and
- * ensures the WattDepot server has all the instances defined in the file.
- * 
+ * Imports an Organization's data that has been previously exported.  The user and organization must be defined in advance.
  * @author Cam Moore
- * 
  */
-public class LoadOrganizationDomainMain {
+public class ImportOrganizationData {
 
   /**
+   * Command line interface.
+   *
    * @param args command line arguments -s <server uri> -u <username> -p
-   *        <password> -o <orgId> -f <fileName> [-d].
-   * @throws BadSensorUriException if there is a problem with the WattDepot
-   *         sensor definition.
-   * @throws IdNotFoundException if there is a problem with the organization id.
-   * @throws BadCredentialException if the credentials are not valid.
-   * @throws IOException if there is a problem with reading the file.
-   * @throws java.text.ParseException if there is a problem reading the measurements.
+   *             <password> -o <orgId> -f <fileName> [-d].
+   * @throws BadSensorUriException          if there is a problem with the WattDepot
+   *                                        sensor definition.
+   * @throws IdNotFoundException            if there is a problem with the organization id.
+   * @throws BadCredentialException         if the credentials are not valid.
+   * @throws IOException                    if there is a problem with reading the file.
+   * @throws java.text.ParseException       if there is a problem with the date format.
+   * @throws DatatypeConfigurationException if there is an internal issue.
+   * @throws MeasurementTypeException       if there is a problem between the depository and measurements.
    */
-  public static void main(String[] args) throws BadCredentialException,
-      IdNotFoundException, BadSensorUriException, IOException, java.text.ParseException {
+  public static void main(String[] args) throws BadCredentialException, IdNotFoundException, BadSensorUriException, IOException, java.text.ParseException, DatatypeConfigurationException, MeasurementTypeException {
     Options options = new Options();
     CommandLine cmd = null;
     String serverUri = null;
@@ -61,7 +64,7 @@ public class LoadOrganizationDomainMain {
     boolean debug = false;
 
     options.addOption("h", false,
-        "Usage: LoadOrganizationDomainMain -s <server uri> -u <username>"
+        "Usage: SaveOrganizationDomainMain -s <server uri> -u <username>"
             + " -p <password> -o <orgId> -f <fileName> [-d]");
     options.addOption("s", "server", true,
         "WattDepot Server URI. (http://server.wattdepot.org)");
@@ -127,7 +130,6 @@ public class LoadOrganizationDomainMain {
     }
     OrganizationDomain od = new OrganizationDomain(serverUri, username,
         organizationId, password, fileName);
-    od.initializeFromFile();
+    od.importData();
   }
-
 }

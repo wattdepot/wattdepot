@@ -147,7 +147,12 @@ public class ExportOrganizationData {
     }
     OrganizationDomain od = new OrganizationDomain(serverUri, username,
         organizationId, password, fileName);
+    Date startTime = new Date();
     od.exportData(start, end);
+    Date endTime = new Date();
+    Long seconds = (endTime.getTime() - startTime.getTime()) / 1000;
+    Long measWindow = (end.getTime() - start.getTime()) / 1000;
+    System.out.println("It took " + seconds + " seconds to process " + measWindow + " seconds of window");
   }
 
 }
