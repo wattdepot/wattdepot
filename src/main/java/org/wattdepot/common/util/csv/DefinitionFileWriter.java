@@ -43,6 +43,8 @@ import org.wattdepot.common.domainmodel.SensorGroup;
  * 
  */
 public class DefinitionFileWriter {
+  /** The line ending according to RFC4180 CSV http://tools.ietf.org/html/rfc4180. */
+  public static final String LINE_END = "\r\n";
 
   private BufferedWriter writer;
   private Set<Depository> depositories;
@@ -214,49 +216,50 @@ public class DefinitionFileWriter {
     // Write out the Depositories
     writer
         .write("# Depositories: 'Depository', Name, MeasurementType Name, MeasurementType Unit, OrgId");
-    writer.write("\r\n");
+    writer.write(LINE_END);
     for (Depository d : depositories) {
       writer.write(CSVObjectFactory.toCSV(d));
-      writer.write("\r\n");
+      writer.write(LINE_END);
     }
     // Sensors
     writer
         .write("# Sensors: 'Sensor', Name, URI, ModelId, OrgId, num properties, prop1.key, prop1,value, ...,");
-    writer.write("\r\n");
+    writer.write(LINE_END);
     for (Sensor s : sensors) {
       writer.write(CSVObjectFactory.toCSV(s));
-      writer.write("\r\n");
+      writer.write(LINE_END);
     }
     // SensorGroups
     writer
         .write("# SensorGroups: 'SensorGroup', Name, OrgId, num sensors, sensorId1, sensorId2, ...,");
-    writer.write("\r\n");
+    writer.write(LINE_END);
     for (SensorGroup g : groups) {
       writer.write(CSVObjectFactory.toCSV(g));
-      writer.write("\r\n");
+      writer.write(LINE_END);
     }
     // CollectorProcessDefinitions
     writer
         .write("# CollectorProcessDefinitions: 'CollectorProcessDefinition', Name, SensorId, Polling, DepositoryId, OrgId, num properties, prop1.key, prop1.value, ...,");
-    writer.write("\r\n");
+    writer.write(LINE_END);
     for (CollectorProcessDefinition cpd : cpds) {
       writer.write(CSVObjectFactory.toCSV(cpd));
-      writer.write("\r\n");
+      writer.write(LINE_END);
     }
     // MeasurementPruningDefinitions
     writer
         .write("# MeasurementPruningDefinitions: 'MeasurementPruningDefinition', Name, DepositoryId, SensorId, OrgId, ignore window days, collect window days, minimum gap seconds");
-    writer.write("\r\n");
+    writer.write(LINE_END);
     for (MeasurementPruningDefinition gcd : gcds) {
       writer.write(CSVObjectFactory.toCSV(gcd));
-      writer.write("\r\n");
+      writer.write(LINE_END);
     }
     // Measurements
     writer.write("# Measurements: 'Measurement', DepositoryId, SensorId, Date, Value, Measurement Type, ");
+    writer.write(LINE_END);
     for (Depository d : measurementMap.keySet()) {
       for (Measurement m : measurementMap.get(d)) {
         writer.write(CSVObjectFactory.toCSV(d, m));
-        writer.write("\r\n");
+        writer.write(LINE_END);
       }
     }
     writer.flush();

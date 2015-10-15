@@ -2114,7 +2114,7 @@ public class WattDepotClient implements WattDepotInterface {
       throws MeasurementTypeException, MeasurementListSizeExceededException {
     List<Measurement> measurements = measurementList.getMeasurements();
 
-    if ( measurements.size() <= 10000) {
+    if ( measurements.size() <= DepositoryMeasurementsPutResource.MAX_NUM_MEASUREMENTS) {
       //Running through all the measurements to insure that they fit
       //with measurementType of the depository.
       for (Measurement measurement : measurements) {
@@ -2135,7 +2135,7 @@ public class WattDepotClient implements WattDepotInterface {
     }
     else {
       throw new MeasurementListSizeExceededException("MeasurementList size of: " + measurements.size() + " exceeds size "
-          + "limit of 10.000");
+          + "limit of " + DepositoryMeasurementsPutResource.MAX_NUM_MEASUREMENTS);
     }
   }
 

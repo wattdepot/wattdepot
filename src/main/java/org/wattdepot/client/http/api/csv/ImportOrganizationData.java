@@ -28,13 +28,16 @@ import org.apache.commons.cli.ParseException;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.BadSensorUriException;
 import org.wattdepot.common.exception.IdNotFoundException;
+import org.wattdepot.common.exception.MeasurementListSizeExceededException;
 import org.wattdepot.common.exception.MeasurementTypeException;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * Imports an Organization's data that has been previously exported.  The user and organization must be defined in advance.
+ *
  * @author Cam Moore
  */
 public class ImportOrganizationData {
@@ -44,16 +47,17 @@ public class ImportOrganizationData {
    *
    * @param args command line arguments -s <server uri> -u <username> -p
    *             <password> -o <orgId> -f <fileName> [-d].
-   * @throws BadSensorUriException          if there is a problem with the WattDepot
-   *                                        sensor definition.
-   * @throws IdNotFoundException            if there is a problem with the organization id.
-   * @throws BadCredentialException         if the credentials are not valid.
-   * @throws IOException                    if there is a problem with reading the file.
-   * @throws java.text.ParseException       if there is a problem with the date format.
-   * @throws DatatypeConfigurationException if there is an internal issue.
-   * @throws MeasurementTypeException       if there is a problem between the depository and measurements.
+   * @throws BadSensorUriException                if there is a problem with the WattDepot
+   *                                              sensor definition.
+   * @throws IdNotFoundException                  if there is a problem with the organization id.
+   * @throws BadCredentialException               if the credentials are not valid.
+   * @throws IOException                          if there is a problem with reading the file.
+   * @throws java.text.ParseException             if there is a problem with the date format.
+   * @throws DatatypeConfigurationException       if there is an internal issue.
+   * @throws MeasurementTypeException             if there is a problem between the depository and measurements.
+   * @throws MeasurementListSizeExceededException Should not happen.
    */
-  public static void main(String[] args) throws BadCredentialException, IdNotFoundException, BadSensorUriException, IOException, java.text.ParseException, DatatypeConfigurationException, MeasurementTypeException {
+  public static void main(String[] args) throws BadCredentialException, IdNotFoundException, BadSensorUriException, IOException, java.text.ParseException, DatatypeConfigurationException, MeasurementTypeException, MeasurementListSizeExceededException {
     Options options = new Options();
     CommandLine cmd = null;
     String serverUri = null;
@@ -130,6 +134,10 @@ public class ImportOrganizationData {
     }
     OrganizationDomain od = new OrganizationDomain(serverUri, username,
         organizationId, password, fileName);
-    od.importData();
+    Date start = new Date();
+    Integer count = od.importData();
+    Date end = new Date();
+    Long seconds = (end.getTime() - start.getTime()) / 1000;
+    System.out.println("It took " + seconds + " to load " + count + " items into WattDepot at " + serverUri);
   }
 }

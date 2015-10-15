@@ -770,8 +770,8 @@
               <assembleDirectory>target</assembleDirectory>
               <programs>
                 <program>
-                  <mainClass>org.wattdepot.server.Server</mainClass>
-                  <name>webapp</name>
+                  <mainClass>org.wattdepot.server.WattDepotServer</mainClass>
+                  <id>webapp</id>
                 </program>
               </programs>
             </configuration>
