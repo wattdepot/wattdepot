@@ -286,7 +286,7 @@ public class GvizHelper {
       String[] tqxArray = tqxString.split(";");
       for (String s : tqxArray) {
         if (s.contains("reqId")) {
-          reqId = s.substring(s.indexOf(":") + 1, s.length());
+          reqId = s.substring(s.indexOf(':') + 1, s.length());
         }
       }
     }

@@ -139,6 +139,7 @@ public class WattDepotClient implements WattDepotInterface {
     this.logger = Logger.getLogger("org.wattdepot.client");
     LoggerUtil.setLoggingLevel(this.logger, properties.get(ClientProperties.LOGGING_LEVEL_KEY));
     LoggerUtil.useConsoleHandler();
+    LoggerUtil.removeRestletLoggers();
     logger.finest("Client " + serverUri + ", " + username + ", " + password);
     this.authentication = new ChallengeResponse(this.scheme, username, password);
     if (serverUri == null) {
@@ -819,8 +820,7 @@ public class WattDepotClient implements WattDepotInterface {
     try {
       client = makeClient(stringBuilder.toString());
       DepositoryHistoricalValuesResource resource = client.wrap(DepositoryHistoricalValuesResource.class);
-      InterpolatedValueList ret = resource.retrieve();
-      return ret;
+      return resource.retrieve();
     }
     catch (ResourceException re) {
       throw re;
@@ -877,8 +877,7 @@ public class WattDepotClient implements WattDepotInterface {
     try {
       client = makeClient(stringBuilder.toString());
       DepositoryHistoricalValuesResource resource = client.wrap(DepositoryHistoricalValuesResource.class);
-      InterpolatedValueList ret = resource.retrieve();
-      return ret;
+      return resource.retrieve();
     }
     catch (ResourceException re) {
       throw re;
@@ -2115,7 +2114,7 @@ public class WattDepotClient implements WattDepotInterface {
       throws MeasurementTypeException, MeasurementListSizeExceededException {
     List<Measurement> measurements = measurementList.getMeasurements();
 
-    if ( measurements.size() <= 10000) {
+    if ( measurements.size() <= DepositoryMeasurementsPutResource.MAX_NUM_MEASUREMENTS) {
       //Running through all the measurements to insure that they fit
       //with measurementType of the depository.
       for (Measurement measurement : measurements) {
@@ -2136,7 +2135,7 @@ public class WattDepotClient implements WattDepotInterface {
     }
     else {
       throw new MeasurementListSizeExceededException("MeasurementList size of: " + measurements.size() + " exceeds size "
-          + "limit of 10.000");
+          + "limit of " + DepositoryMeasurementsPutResource.MAX_NUM_MEASUREMENTS);
     }
   }
 

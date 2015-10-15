@@ -344,6 +344,14 @@ public class MeasurementPruningDefinition implements IDomainModel {
   }
 
   /**
+   * Dummy setter for serialization.
+   * @param dur the fake duration
+   */
+  public void setDuration(Long dur) {
+    // NOPMD
+  }
+
+  /**
    * @param id the id to set
    */
   public void setId(String id) {

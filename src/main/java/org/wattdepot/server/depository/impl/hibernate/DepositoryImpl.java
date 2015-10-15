@@ -243,8 +243,7 @@ public class DepositoryImpl {
    * @return the Depository equivalent to this.
    */
   public Depository toDepository() {
-    Depository ret = new Depository(id, name, type.toMeasurementType(), org.getId());
-    return ret;
+    return new Depository(id, name, type.toMeasurementType(), org.getId());
   }
 
   /*

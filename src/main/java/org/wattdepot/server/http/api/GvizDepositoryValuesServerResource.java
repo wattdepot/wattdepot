@@ -57,6 +57,9 @@ public class GvizDepositoryValuesServerResource extends DepositoryValuesServer i
   @Override
   public String retrieve() {
     InterpolatedValueList mList = doRetrieve();
-    return GvizHelper.getGvizResponse(mList, tqxString, tqString);
+    if (mList != null) {
+      return GvizHelper.getGvizResponse(mList, tqxString, tqString);
+    }
+    return null;
   }
 }

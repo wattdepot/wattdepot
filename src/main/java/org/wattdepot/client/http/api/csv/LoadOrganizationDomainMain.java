@@ -1,5 +1,5 @@
 /**
- * OrganizationDomainMain.java This file is part of WattDepot.
+ * LoadOrganizationDomainMain.java This file is part of WattDepot.
  *
  * Copyright (C) 2013  Cam Moore
  *
@@ -22,22 +22,22 @@ import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.BadSensorUriException;
 import org.wattdepot.common.exception.IdNotFoundException;
 
 /**
- * OrganizationDomainMain - Reads in an Organization domain definition file and
+ * LoadOrganizationDomainMain - Reads in an Organization domain definition file and
  * ensures the WattDepot server has all the instances defined in the file.
  * 
  * @author Cam Moore
  * 
  */
-public class OrganizationDomainMain {
+public class LoadOrganizationDomainMain {
 
   /**
    * @param args command line arguments -s <server uri> -u <username> -p
@@ -47,9 +47,10 @@ public class OrganizationDomainMain {
    * @throws IdNotFoundException if there is a problem with the organization id.
    * @throws BadCredentialException if the credentials are not valid.
    * @throws IOException if there is a problem with reading the file.
+   * @throws java.text.ParseException if there is a problem reading the measurements.
    */
   public static void main(String[] args) throws BadCredentialException,
-      IdNotFoundException, BadSensorUriException, IOException {
+      IdNotFoundException, BadSensorUriException, IOException, java.text.ParseException {
     Options options = new Options();
     CommandLine cmd = null;
     String serverUri = null;
@@ -60,7 +61,7 @@ public class OrganizationDomainMain {
     boolean debug = false;
 
     options.addOption("h", false,
-        "Usage: OrganizationDomainMain -s <server uri> -u <username>"
+        "Usage: LoadOrganizationDomainMain -s <server uri> -u <username>"
             + " -p <password> -o <orgId> -f <fileName> [-d]");
     options.addOption("s", "server", true,
         "WattDepot Server URI. (http://server.wattdepot.org)");
@@ -71,7 +72,7 @@ public class OrganizationDomainMain {
     options.addOption("d", "debug", false,
         "Displays debugging information.");
 
-    CommandLineParser parser = new PosixParser();
+    CommandLineParser parser = new DefaultParser();
     HelpFormatter formatter = new HelpFormatter();
     try {
       cmd = parser.parse(options, args);
@@ -82,7 +83,7 @@ public class OrganizationDomainMain {
       System.exit(1);
     }
     if (cmd.hasOption("h")) {
-      formatter.printHelp("OrganizationDomainMain", options);
+      formatter.printHelp("LoadOrganizationDomainMain", options);
       System.exit(0);
     }
     if (cmd.hasOption("s")) {

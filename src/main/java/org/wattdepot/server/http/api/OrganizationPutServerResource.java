@@ -59,7 +59,7 @@ public class OrganizationPutServerResource extends WattDepotServerResource imple
           WattDepotApplication app = (WattDepotApplication) getApplication();
           // create the new Role for the group
           String roleName = defined.getId();
-          Role role = new Role(roleName);
+          Role role = new Role(app, roleName);
           app.getRoles().add(role);
           MemoryRealm realm = (MemoryRealm) app.getComponent().getRealm("WattDepot Security");
           for (User user : realm.getUsers()) { // loop through all the Restlet

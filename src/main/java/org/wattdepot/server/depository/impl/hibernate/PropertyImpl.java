@@ -175,8 +175,7 @@ public class PropertyImpl {
    * @return A Property equivalent to this PropertyImpl.
    */
   public Property toProperty() {
-    Property p = new Property(key, value);
-    return p;
+    return new Property(key, value);
   }
   /*
    * (non-Javadoc)

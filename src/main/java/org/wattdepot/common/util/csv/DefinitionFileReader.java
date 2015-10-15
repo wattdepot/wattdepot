@@ -18,17 +18,22 @@
  */
 package org.wattdepot.common.util.csv;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Set;
-import java.util.HashSet;
-
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * DefinitionFileReader reads in a WattDepot object definition file creating the
@@ -46,6 +51,7 @@ public class DefinitionFileReader {
   private Set<CollectorProcessDefinition> cpds;
   private Set<MeasurementPruningDefinition> gcds;
   private Set<String> orgIds;
+  private Map<String, ArrayList<Measurement>> measurementMap;
 
   /**
    * Creates a new DefinitionFileReader.
@@ -53,8 +59,9 @@ public class DefinitionFileReader {
    * @param fileName The name of the definition file, a CSV file of WattDepot
    *        object definitions.
    * @throws IOException if there is a problem reading the file.
+   * @throws ParseException if there is a problem with the measurements.
    */
-  public DefinitionFileReader(String fileName) throws IOException {
+  public DefinitionFileReader(String fileName) throws IOException, ParseException {
     this.reader = new BufferedReader(new FileReader(fileName));
     this.depositories = new HashSet<Depository>();
     this.groups = new HashSet<SensorGroup>();
@@ -62,6 +69,7 @@ public class DefinitionFileReader {
     this.cpds = new HashSet<CollectorProcessDefinition>();
     this.gcds = new HashSet<MeasurementPruningDefinition>();
     this.orgIds = new HashSet<String>();
+    this.measurementMap = new HashMap<String, ArrayList<Measurement>>();
     processFile();
   }
 
@@ -113,11 +121,19 @@ public class DefinitionFileReader {
     return sensors;
   }
 
+  /**
+   * @param depositoryId The depository to get the measurements from.
+   * @return the Measurements.
+   */
+  public ArrayList<Measurement> getMeasurements(String depositoryId) {
+    return measurementMap.get(depositoryId);
+  }
 
   /**
    * @throws IOException if there is a problem reading the file.
+   * @throws ParseException if there is a problem with the measurements.
    */
-  private void processFile() throws IOException {
+  private void processFile() throws IOException, ParseException {
     String line = reader.readLine();
     while (line != null) {
       line = line.trim();
@@ -147,6 +163,15 @@ public class DefinitionFileReader {
           MeasurementPruningDefinition mpd = CSVObjectFactory.buildMeasurementPruningDefinition(line);
           orgIds.add(mpd.getOrganizationId());
           gcds.add(mpd);
+        }
+        else if (line.startsWith("Measurement")) {
+          DepositoryMeasurement depoMeas = CSVObjectFactory.buildMeasurement(line);
+          ArrayList<Measurement> measurements = measurementMap.get(depoMeas.getDepositoryId());
+          if (measurements == null) {
+            measurements = new ArrayList<Measurement>();
+            measurementMap.put(depoMeas.getDepositoryId(), measurements);
+          }
+          measurements.add(depoMeas.getMeasurement());
         }
       }
       line = reader.readLine();

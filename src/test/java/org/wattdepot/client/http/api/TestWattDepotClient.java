@@ -712,12 +712,12 @@ public class TestWattDepotClient {
       test.putMeasurementPruningDefinition(data);
     }
     catch (ResourceException e) {
-      if (e.getStatus().equals(Status.CLIENT_ERROR_BAD_REQUEST)) {
+//      if (e.getStatus().equals(Status.CLIENT_ERROR_BAD_REQUEST)) {
         addSensorModel();
         addSensor();
         addDepository();
         test.putMeasurementPruningDefinition(data);
-      }
+//      }
     }
     list = test.getMeasurementPruningDefinitions();
     assertTrue(list.getDefinitions().size() == numMPD + 1);

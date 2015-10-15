@@ -19,9 +19,10 @@
 package org.wattdepot.server.http.api;
 
 
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.data.Protocol;
 import org.restlet.ext.jackson.JacksonRepresentation;
@@ -39,6 +40,7 @@ import org.wattdepot.server.depository.impl.hibernate.MeasurementImpl;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
+import java.io.IOException;
 import java.security.InvalidKeyException;
 
 /**
@@ -57,8 +59,9 @@ public class WattDepotComponent extends Component {
    * @throws javax.crypto.BadPaddingException if there is a problem with the encryption.
    * @throws java.security.InvalidKeyException if there is a problem with the encryption.
    * @throws javax.crypto.IllegalBlockSizeException if there is a problem with the encryption.
+   * @throws java.io.IOException if there is a problem.
    */
-  public WattDepotComponent(WattDepotPersistence depot) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException {
+  public WattDepotComponent(WattDepotPersistence depot) throws BadPaddingException, InvalidKeyException, IllegalBlockSizeException, IOException {
     setName("WattDepot HTTP API Server");
     setDescription("WattDepot RESTful server.");
     setAuthor("Cam Moore");
@@ -80,10 +83,9 @@ public class WattDepotComponent extends Component {
     Representation rep = app.getConverterService().toRepresentation(source);
     @SuppressWarnings("rawtypes")
     ObjectMapper mapper = ((JacksonRepresentation) rep).getObjectMapper();
-    mapper.configure(SerializationConfig.Feature.WRITE_DATES_AS_TIMESTAMPS,
-        false);
-    mapper.configure(DeserializationConfig.Feature.FAIL_ON_UNKNOWN_PROPERTIES,
-        false);
+    mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+//    mapper.enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     getDefaultHost().attachDefault(app);
     app.setComponent(this);
 
@@ -92,7 +94,7 @@ public class WattDepotComponent extends Component {
     realm.setName("WattDepot Security");
     getRealms().add(realm);
     for (Organization group : app.getDepot().getOrganizations()) {
-      app.getRoles().add(new Role(group.getId()));
+      app.getRoles().add(new Role((Application) app, group.getId()));
       if (Organization.ADMIN_GROUP.getName().equals(group.getName())) {
         // need to ensure the admin user is available.
         User user = new User(UserInfo.ROOT.getUid(), StrongAES.getInstance()

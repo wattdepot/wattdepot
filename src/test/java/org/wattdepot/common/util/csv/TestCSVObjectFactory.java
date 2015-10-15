@@ -20,24 +20,32 @@ package org.wattdepot.common.util.csv;
 
 
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.measure.unit.Unit;
+import javax.xml.datatype.DatatypeConfigurationException;
 
 import org.junit.Test;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.Depository;
+import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.MeasurementType;
 import org.wattdepot.common.domainmodel.Property;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.util.DateConvert;
 import org.wattdepot.common.util.Slug;
+import org.wattdepot.common.util.UnitsHelper;
 
 /**
  * TestObjectFactory test the ObjectFactory methods.
@@ -147,6 +155,59 @@ public class TestCSVObjectFactory {
       e.printStackTrace();
       fail(e.getMessage() + " should not happen");
     }
-    
+  }
+
+  /**
+   * Test method for MeasurementPruningDefinitions.
+   */
+  @Test
+  public void testMeasurementPruningDefinition() {
+    String name = "name";
+    String depositoryId = "depositoryId";
+    String sensorId = "sensorId";
+    String orgId = "orgId";
+    Integer ignoreWindow = 5;
+    Integer collectWindow = 10;
+    Integer gapSeconds = 300;
+    MeasurementPruningDefinition mpd = new MeasurementPruningDefinition(name, depositoryId, sensorId, orgId, ignoreWindow, collectWindow, gapSeconds);
+    String csv = CSVObjectFactory.toCSV(mpd);
+    assertNotNull(csv);
+    try {
+      MeasurementPruningDefinition result = CSVObjectFactory.buildMeasurementPruningDefinition(csv);
+      assertNotNull(result);
+      assertTrue(result.equals(mpd));
+    }
+    catch (IOException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen");
+    }
+  }
+
+  /**
+   * Test method for Measurements.
+   */
+  @Test
+  public void testMeasurement() throws ParseException, DatatypeConfigurationException {
+    String name = "depository";
+    MeasurementType type = new MeasurementType("test", Unit.valueOf("W"));
+    String orgId = "orgId";
+    Depository depo = new Depository(name, type, orgId);
+    String sensorId = "sensorId";
+    Date timeStamp = DateConvert.parseCalStringToDate("2015-09-20T14:35:27.925-1000");
+    Double value = 3.2;
+    Unit<?> unit = type.unit();
+    Measurement measurement = new Measurement(sensorId, timeStamp, value, unit);
+
+    String csv = CSVObjectFactory.toCSV(depo, measurement);
+    assertNotNull(csv);
+    try {
+      DepositoryMeasurement result = CSVObjectFactory.buildMeasurement(csv);
+      assertNotNull(result);
+      assertTrue(result.getMeasurement().equals(measurement));
+    }
+    catch (IOException e) {
+      e.printStackTrace();
+      fail(e.getMessage() + " should not happen");
+    }
   }
 }

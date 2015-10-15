@@ -195,8 +195,7 @@ public class MeasurementTypeImpl {
    *         MeasurementTypeImpl.
    */
   public MeasurementType toMeasurementType() {
-    MeasurementType ret = new MeasurementType(id, name, Unit.valueOf(getUnits()));
-    return ret;
+    return new MeasurementType(id, name, Unit.valueOf(getUnits()));
   }
 
   /*

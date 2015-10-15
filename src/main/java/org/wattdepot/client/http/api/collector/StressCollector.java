@@ -24,10 +24,10 @@ import javax.measure.unit.Unit;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.cli.PosixParser;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.Organization;
@@ -120,8 +120,7 @@ public class StressCollector extends MultiThreadedCollector {
   private Measurement generateFakeMeasurement() {
     Date now = new Date();
     Unit<?> unit = Unit.valueOf(this.depository.getMeasurementType().getUnits());
-    Measurement ret = new Measurement(this.definition.getSensorId(), now, wattHours++, unit);
-    return ret;
+    return new Measurement(this.definition.getSensorId(), now, wattHours++, unit);
   }
 
   /**
@@ -148,7 +147,7 @@ public class StressCollector extends MultiThreadedCollector {
     String collectorId = null;
     boolean debug = false;
 
-    CommandLineParser parser = new PosixParser();
+    CommandLineParser parser = new DefaultParser();
     HelpFormatter formatter = new HelpFormatter();
     try {
       cmd = parser.parse(options, args);

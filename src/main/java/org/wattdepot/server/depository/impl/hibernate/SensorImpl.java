@@ -289,8 +289,7 @@ public class SensorImpl {
     for (PropertyImpl i : properties) {
       prop.add(new Property(i.getKey(), i.getValue()));
     }
-    Sensor ret = new Sensor(id, name, uri, model.getId(), prop, org.getId());
-    return ret;
+    return new Sensor(id, name, uri, model.getId(), prop, org.getId());
   }
 
   /*

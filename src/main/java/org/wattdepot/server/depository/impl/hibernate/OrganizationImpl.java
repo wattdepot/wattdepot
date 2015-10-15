@@ -221,8 +221,7 @@ public class OrganizationImpl {
     for (UserInfoImpl i : users) {
       u.add(i.getUid());
     }
-    Organization ret = new Organization(id, name, u);
-    return ret;
+    return new Organization(id, name, u);
   }
 
   /*

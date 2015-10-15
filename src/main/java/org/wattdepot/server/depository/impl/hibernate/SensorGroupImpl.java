@@ -231,8 +231,7 @@ public class SensorGroupImpl {
     for (SensorImpl s : sensors) {
       sens.add(s.getId());
     }
-    SensorGroup ret = new SensorGroup(id, name, sens, org.getId());
-    return ret;
+    return new SensorGroup(id, name, sens, org.getId());
   }
 
   /*

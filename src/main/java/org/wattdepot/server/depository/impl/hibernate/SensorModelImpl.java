@@ -247,8 +247,7 @@ public class SensorModelImpl {
    * @return the equivalent SensorModel to this.
    */
   public SensorModel toSensorModel() {
-    SensorModel ret = new SensorModel(id, name, protocol, type, version);
-    return ret;
+    return new SensorModel(id, name, protocol, type, version);
   }
 
   /*
