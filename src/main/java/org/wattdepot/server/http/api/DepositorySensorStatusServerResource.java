@@ -48,6 +48,7 @@ import java.util.logging.Level;
 public class DepositorySensorStatusServerResource extends WattDepotServerResource implements DepositorySensorStatusResource {
   private String depositoryId;
   private String sensorId;
+  private Integer numDays;
 
   /*
    * (non-Javadoc)
@@ -59,6 +60,15 @@ public class DepositorySensorStatusServerResource extends WattDepotServerResourc
     super.doInit();
     this.sensorId = getQuery().getValues(Labels.SENSOR);
     this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);
+    String numStr = getAttribute(Labels.WINDOW);
+    if (numStr != null) {
+      try {
+        this.numDays = Integer.parseInt(numStr);
+      }
+      catch (NumberFormatException nfe) {
+        this.numDays = 7;
+      }
+    }
   }
 
   @Override
@@ -66,10 +76,9 @@ public class DepositorySensorStatusServerResource extends WattDepotServerResourc
     getLogger().log(
         Level.INFO,
         "GET /wattdepot/{" + orgId + "}/" + Labels.DEPOSITORY + "/{" + depositoryId + "}/"
-            + Labels.SENSOR_STATUS + "/?" + Labels.SENSOR + "={" + sensorId + "}");
+            + Labels.SENSOR_STATUS + "/?" + Labels.SENSOR + "={" + sensorId + "}&window={" + numDays + "}" );
     if (isInRole(orgId)) {
       SensorStatusList list = new SensorStatusList();
-      Integer numDays = 7;
       try {
         XMLGregorianCalendar now = Tstamp.makeTimestamp();
         XMLGregorianCalendar weekAgo = Tstamp.incrementDays(now, -1 * numDays);

@@ -14,7 +14,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.wattdepot</groupId>
   <artifactId>wattdepot</artifactId>
-  <version>3.2.0</version>
+  <version>3.2.1-SNAPSHOT</version>
   <name>WattDepot</name>
   <url>https://github.com/wattdepot/wattdepot/</url>
   <packaging>jar</packaging>
@@ -263,11 +263,11 @@
       <artifactId>hibernate-c3p0</artifactId>
       <version>${hibernate-core.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.jacoco</groupId>
-      <artifactId>jacoco-maven-plugin</artifactId>
-      <version>${jacoco.version}</version>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>org.jacoco</groupId>-->
+      <!--<artifactId>jacoco-maven-plugin</artifactId>-->
+      <!--<version>${jacoco.version}</version>-->
+    <!--</dependency>-->
     <dependency>
       <groupId>org.jasypt</groupId>
       <artifactId>jasypt</artifactId>
@@ -646,7 +646,7 @@
             <plugin>
               <groupId>org.jacoco</groupId>
               <artifactId>jacoco-maven-plugin</artifactId>
-              <version>0.6.3.201306030806</version>
+              <version>${jacoco.version}</version>
               <configuration>
                 <propertyName>surefireArgLine</propertyName>
                 <!-- Sets the path to the file which contains

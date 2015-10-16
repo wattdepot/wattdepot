@@ -4,7 +4,7 @@
   <groupId>org.wattdepot</groupId>
   <artifactId>wattdepot</artifactId>
   <name>WattDepot</name>
-  <version>3.2.0-SNAPSHOT</version>
+  <version>3.2.1-SNAPSHOT</version>
   <description>WattDepot is an open source, RESTful web service that collects electricity data (such as current power
     utilization or cumulative power utilization) from meters and stores it in a database.</description>
   <url>https://github.com/wattdepot/wattdepot/</url>
