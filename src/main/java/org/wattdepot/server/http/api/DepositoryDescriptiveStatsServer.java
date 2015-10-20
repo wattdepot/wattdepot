@@ -122,7 +122,7 @@ public class DepositoryDescriptiveStatsServer extends WattDepotServerResource {
                   if (maximum < groupMax) {
                     maximum = groupMax;
                   }
-                  if (minimum > groupMin) {
+                  if (minimum > groupMin && groupMin != 0.0) {
                     minimum = groupMin;
                   }
                   average += groupAve;
