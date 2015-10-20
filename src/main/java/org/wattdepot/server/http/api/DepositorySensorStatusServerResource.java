@@ -69,6 +69,9 @@ public class DepositorySensorStatusServerResource extends WattDepotServerResourc
         this.numDays = 7;
       }
     }
+    else {
+      this.numDays = 7;
+    }
   }
 
   @Override
