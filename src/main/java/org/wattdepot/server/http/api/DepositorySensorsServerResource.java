@@ -18,6 +18,7 @@
  */
 package org.wattdepot.server.http.api;
 
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import org.restlet.data.Status;
@@ -67,11 +68,15 @@ public class DepositorySensorsServerResource extends WattDepotServerResource imp
       try {
         depository = depot.getDepository(depositoryId, orgId, true);
         if (depository != null) {
+          ArrayList<Sensor> sensors = new ArrayList<Sensor>();
           ret = new SensorList();
           for (String sid : depot.listSensors(depositoryId, orgId, true)) {
             Sensor s = depot.getSensor(sid, orgId, true);
-            ret.getSensors().add(s);
+            if (!sensors.contains(s)) {
+              sensors.add(s);
+            }
           }
+          ret.setSensors(sensors);
         }
         else {
           setStatus(Status.CLIENT_ERROR_BAD_REQUEST, depositoryId + " not defined.");
