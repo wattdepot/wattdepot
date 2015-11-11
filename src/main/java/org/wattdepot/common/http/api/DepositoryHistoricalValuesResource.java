@@ -38,8 +38,6 @@ public interface DepositoryHistoricalValuesResource {
    * &timestamp={time}&value-type={value-type}&samples={samples}.
    *
    * @return The DescriptiveStats.
-   *
-   * @return
    */
   @Get("json")
   public InterpolatedValueList retrieve();

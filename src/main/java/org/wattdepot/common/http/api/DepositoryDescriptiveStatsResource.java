@@ -38,8 +38,6 @@ public interface DepositoryDescriptiveStatsResource {
    * &timestamp={time}&value-type={value-type}&samples={samples}.
    *
    * @return The DescriptiveStats.
-   *
-   * @return
    */
   @Get("json")
   public DescriptiveStats retrieve();
