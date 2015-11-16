@@ -34,6 +34,7 @@ import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.exception.CounterRollOverException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.NoMeasurementException;
@@ -114,6 +115,9 @@ public class DepositoryValuesServer extends WattDepotServerResource {
                     catch (NoMeasurementException e) { // NOPMD
                       // no measurements around the time so return 0?
                     }
+                    catch (CounterRollOverException e) {  // NOPMD
+                      // roll over no valid values
+                    }
                     mValue = new InterpolatedValue(sensor.getId(), value,
                         depository.getMeasurementType(), timestamp);
                     ret.getInterpolatedValues().add(mValue);
@@ -125,6 +129,9 @@ public class DepositoryValuesServer extends WattDepotServerResource {
                       }
                       catch (NoMeasurementException e) { // NOPMD
                         // No measurements so return 0,
+                      }
+                      catch (CounterRollOverException e) {  // NOPMD
+                        // roll over no valid values
                       }
                       mValue = new InterpolatedValue(sensor.getId(), value, depository.getMeasurementType(), previous, timestamp);
                       ret.getInterpolatedValues().add(mValue);
@@ -151,6 +158,9 @@ public class DepositoryValuesServer extends WattDepotServerResource {
                           catch (NoMeasurementException e) { // NOPMD
                             // No measurements so return 0;
                           }
+                          catch (CounterRollOverException e) {  // NOPMD
+                            // roll over no valid values
+                          }
                         }
                         else {
                           if (previous != null) {
@@ -160,6 +170,9 @@ public class DepositoryValuesServer extends WattDepotServerResource {
                             }
                             catch (NoMeasurementException e) { // NOPMD
                               // No measurements so return 0,
+                            }
+                            catch (CounterRollOverException e) {  // NOPMD
+                              // roll over no valid values
                             }
                           }
                         }

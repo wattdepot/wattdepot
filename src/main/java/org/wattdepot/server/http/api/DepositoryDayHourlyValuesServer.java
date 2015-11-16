@@ -26,6 +26,7 @@ import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.exception.CounterRollOverException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.DateConvert;
@@ -115,6 +116,9 @@ public class DepositoryDayHourlyValuesServer extends WattDepotServerResource {
                     interpolatedValue.addReportingSensor(sensorId);
                   }
                   catch (NoMeasurementException nme) {
+                    val = Double.NaN;
+                  }
+                  catch (CounterRollOverException e) {
                     val = Double.NaN;
                   }
                 }

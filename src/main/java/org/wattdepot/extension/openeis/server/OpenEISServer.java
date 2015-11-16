@@ -5,6 +5,7 @@ import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Measurement;
+import org.wattdepot.common.exception.CounterRollOverException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.tstamp.Tstamp;
@@ -100,6 +101,9 @@ public class OpenEISServer extends WattDepotServerResource {
           catch (NoMeasurementException e) {
             val = null;
           }
+          catch (CounterRollOverException e) {
+            val = null;
+          }
           InterpolatedValue v = new InterpolatedValue(sensorId, val, depository.getMeasurementType(), begin, end);
           if (val == null) {
             ret.getMissingData().add(v);
@@ -157,6 +161,9 @@ public class OpenEISServer extends WattDepotServerResource {
             val = depot.getValue(depositoryId, orgId, sensorId, beginDate, endDate, false);
           }
           catch (NoMeasurementException e) { // if there are no measurements just add null
+            val = null;
+          }
+          catch (CounterRollOverException e) { // if there was a roll over just add null
             val = null;
           }
           InterpolatedValue iv = new InterpolatedValue(sensorId, val, depository.getMeasurementType(), beginDate, endDate);

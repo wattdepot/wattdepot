@@ -35,6 +35,7 @@ import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.InterpolatedValueList;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.exception.CounterRollOverException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.NoMeasurementException;
@@ -177,6 +178,10 @@ public class DepositoryAverageValuesServer extends WattDepotServerResource {
         catch (NoMeasurementException e) {
           return null;
         }
+        catch (CounterRollOverException e) {
+          // don't have a valid value so
+          return null;
+        }
       }
       else { // check for sensor group
         SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
@@ -189,6 +194,9 @@ public class DepositoryAverageValuesServer extends WattDepotServerResource {
             }
             catch (NoMeasurementException e) { // NOPMD
               // add 0 to value so do nothing.
+            }
+            catch (CounterRollOverException e) {  // NOPMD
+              // no valid value so do nothing.
             }
           }
         }
@@ -225,6 +233,9 @@ public class DepositoryAverageValuesServer extends WattDepotServerResource {
         catch (NoMeasurementException e) {
           return null;
         }
+        catch (CounterRollOverException e) {
+          return null;
+        }
       }
       else { // check for sensor group
         SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
@@ -237,6 +248,9 @@ public class DepositoryAverageValuesServer extends WattDepotServerResource {
             }
             catch (NoMeasurementException e) { // NOPMD
               // add 0 to value so do nothing.
+            }
+            catch (CounterRollOverException e) {  // NOPMD
+              // no valid value so do nothing.
             }
           }
         }

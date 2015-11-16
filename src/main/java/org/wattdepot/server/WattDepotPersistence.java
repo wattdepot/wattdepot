@@ -39,6 +39,7 @@ import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.BadSlugException;
+import org.wattdepot.common.exception.CounterRollOverException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementGapException;
 import org.wattdepot.common.exception.MeasurementTypeException;
@@ -727,9 +728,10 @@ public abstract class WattDepotPersistence {
    * @throws NoMeasurementException If there aren't any measurements around the
    *         time.
    * @throws IdNotFoundException if there is a problem with the ids.
+   * @throws CounterRollOverException if the counter rolls over and the sensor doesn't produce power.
    */
   public abstract Double getValue(String depotId, String orgId, String sensorId, Date timestamp,
-      boolean check) throws NoMeasurementException, IdNotFoundException;
+      boolean check) throws NoMeasurementException, IdNotFoundException, CounterRollOverException;
 
   /**
    * @param depotId the id of the depository.
@@ -743,9 +745,10 @@ public abstract class WattDepotPersistence {
    * @throws NoMeasurementException if there are no measurements around the
    *         start or end time.
    * @throws IdNotFoundException if there is a problem with the ids.
+   * @throws CounterRollOverException if the counter rolls over and the sensor doesn't produce power.
    */
   public abstract Double getValue(String depotId, String orgId, String sensorId, Date start,
-      Date end, boolean check) throws NoMeasurementException, IdNotFoundException;
+      Date end, boolean check) throws NoMeasurementException, IdNotFoundException, CounterRollOverException;
 
   /**
    * @param depotId the id of the depository.

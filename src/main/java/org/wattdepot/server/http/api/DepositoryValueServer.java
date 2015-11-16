@@ -32,6 +32,7 @@ import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.InterpolatedValue;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.exception.CounterRollOverException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementGapException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
@@ -198,6 +199,12 @@ public class DepositoryValueServer extends WattDepotServerResource {
             catch (IdNotFoundException inf1) {
               setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Could not find sensor " + sensorId);
             }
+            catch (CounterRollOverException e) {
+              setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
+            }
+          }
+          catch (CounterRollOverException e) {
+            setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
           }
         }
         else {
@@ -252,11 +259,12 @@ public class DepositoryValueServer extends WattDepotServerResource {
    * @throws DatatypeConfigurationException if there is a server problem.
    * @throws NumberFormatException if there is a problem.
    * @throws MeasurementGapException if the measurements are too far apart.
+   * @throws CounterRollOverException if the counter rolls over and the sensor doesn't produce power.
    */
   private InterpolatedValue calculateValue(String sensorId, String start, String end,
       String timestamp, String earliest, String latest) throws IdNotFoundException,
       MisMatchedOwnerException, NoMeasurementException, ParseException,
-      DatatypeConfigurationException, NumberFormatException, MeasurementGapException {
+      DatatypeConfigurationException, NumberFormatException, MeasurementGapException, CounterRollOverException {
     Depository deposit = depot.getDepository(depositoryId, orgId, true);
     Sensor sensor = depot.getSensor(sensorId, orgId, true);
     Double value = null;

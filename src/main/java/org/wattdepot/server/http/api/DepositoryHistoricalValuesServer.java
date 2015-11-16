@@ -28,6 +28,7 @@ import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.exception.CounterRollOverException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.NoMeasurementException;
@@ -124,6 +125,9 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource im
                 catch (NoMeasurementException e) { // NOPMD
                   // ok.
                 }
+                catch (CounterRollOverException e) { // NOPMD
+                  // ok.
+                }
               }
               else {
                 SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
@@ -136,6 +140,9 @@ public class DepositoryHistoricalValuesServer extends WattDepotServerResource im
                       value.addReportingSensor(s);
                     }
                     catch (NoMeasurementException e) { // NOPMD
+                      // ok.
+                    }
+                    catch (CounterRollOverException e) { // NOPMD
                       // ok.
                     }
                   }

@@ -43,6 +43,7 @@ import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.BadSlugException;
+import org.wattdepot.common.exception.CounterRollOverException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementGapException;
 import org.wattdepot.common.exception.MeasurementTypeException;
@@ -713,6 +714,10 @@ public class TestWattDepotPersistenceImpl {
         e.printStackTrace();
         fail(e.getMessage() + " should not happen");
       }
+      catch (CounterRollOverException e) {
+        e.printStackTrace();
+        fail(e.getMessage() + " should not happen");
+      }
       try {
         impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId,
             InstanceFactory.getTimeBeforeM1(), true);
@@ -721,6 +726,10 @@ public class TestWattDepotPersistenceImpl {
       catch (NoMeasurementException e) {
         // expected
       }
+      catch (CounterRollOverException e) {
+        e.printStackTrace();
+        fail(e.getMessage() + " should not happen");
+      }
       try {
         impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId,
             InstanceFactory.getTimeAfterM3(), true);
@@ -728,6 +737,10 @@ public class TestWattDepotPersistenceImpl {
       }
       catch (NoMeasurementException e) {
         // expected
+      }
+      catch (CounterRollOverException e) {
+        e.printStackTrace();
+        fail(e.getMessage() + " should not happen");
       }
       try {
         impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId,
@@ -761,6 +774,10 @@ public class TestWattDepotPersistenceImpl {
       catch (NoMeasurementException e) {
         e.printStackTrace();
         fail(e.getMessage() + " shouldn't happen");
+      }
+      catch (CounterRollOverException e) {
+        e.printStackTrace();
+        fail(e.getMessage() + " should not happen");
       }
       try {
         Double val = impl.getValue(dep.getId(), dep.getOrganizationId(), sensorId,

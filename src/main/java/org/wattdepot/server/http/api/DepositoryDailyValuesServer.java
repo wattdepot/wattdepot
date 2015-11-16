@@ -28,6 +28,7 @@ import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.exception.CounterRollOverException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.NoMeasurementException;
@@ -113,6 +114,10 @@ public class DepositoryDailyValuesServer extends WattDepotServerResource {
                     val = Double.NaN;
                     value.setValue(val);
                   }
+                  catch (CounterRollOverException e) {
+                    val = Double.NaN;
+                    value.setValue(val);
+                  }
 
                   ret.getInterpolatedValues().add(value);
                 }
@@ -131,6 +136,8 @@ public class DepositoryDailyValuesServer extends WattDepotServerResource {
                         catch (IdNotFoundException e) { // NOPMD
                         }
                         catch (NoMeasurementException e) { // NOPMD
+                        }
+                        catch (CounterRollOverException e) { // NOPMD
                         }
                       }
                     }
@@ -181,8 +188,9 @@ public class DepositoryDailyValuesServer extends WattDepotServerResource {
    * @return The average for point values or the difference for difference values.
    * @throws IdNotFoundException If the sensor or depository are not defined.
    * @throws NoMeasurementException If there are no measurements for the time period.
+   * @throws CounterRollOverException If the sensor's counter has rolled over and it doesn't generate power.
    */
-  private Double getValueForSensor(String depositoryId, String orgId, String sensorId, Date beginDate, Date endDate, String dataType) throws IdNotFoundException, NoMeasurementException {
+  private Double getValueForSensor(String depositoryId, String orgId, String sensorId, Date beginDate, Date endDate, String dataType) throws IdNotFoundException, NoMeasurementException, CounterRollOverException {
     Double val = 0.0;
     if (dataType.equals("point")) {  // need to calculate the average value for the hourly intervals
       List<Measurement> measurements = depot.getMeasurements(depositoryId, orgId, sensorId, beginDate, endDate, false);

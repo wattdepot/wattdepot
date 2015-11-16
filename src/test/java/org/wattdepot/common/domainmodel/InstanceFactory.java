@@ -30,8 +30,7 @@ import org.wattdepot.common.util.DateConvert;
 import org.wattdepot.common.util.UnitsHelper;
 
 /**
- * InstanceFactory - Utility class that has static methods for creating
- * datamodel instances for testing.
+ * InstanceFactory - Utility class that has static methods for creating datamodel instances for testing.
  * 
  * @author Cam Moore
  * 

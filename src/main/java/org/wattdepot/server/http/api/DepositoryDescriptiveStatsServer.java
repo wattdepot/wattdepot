@@ -28,6 +28,7 @@ import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.exception.CounterRollOverException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.exception.NoMeasurementException;
@@ -201,6 +202,10 @@ public class DepositoryDescriptiveStatsServer extends WattDepotServerResource {
       }
       catch (NoMeasurementException e) {
         setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
+        return null;
+      }
+      catch (CounterRollOverException e) {
+        setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
         return null;
       }
       return null;

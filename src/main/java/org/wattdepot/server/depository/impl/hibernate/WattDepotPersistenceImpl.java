@@ -53,6 +53,7 @@ import org.wattdepot.common.domainmodel.SensorModel;
 import org.wattdepot.common.domainmodel.UserInfo;
 import org.wattdepot.common.domainmodel.UserPassword;
 import org.wattdepot.common.exception.BadSlugException;
+import org.wattdepot.common.exception.CounterRollOverException;
 import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementGapException;
 import org.wattdepot.common.exception.MeasurementTypeException;
@@ -2953,7 +2954,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    */
   @Override
   public Double getValue(String depotId, String orgId, String sensorId, Date timestamp,
-      boolean check) throws NoMeasurementException, IdNotFoundException {
+      boolean check) throws NoMeasurementException, IdNotFoundException, CounterRollOverException {
     if (check) {
       getOrganization(orgId, check);
       getDepository(depotId, orgId, check);
@@ -2964,6 +2965,12 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
     session.beginTransaction();
     DepositoryImpl depot = retrieveDepository(session, depotId, orgId);
     SensorImpl sensor = retrieveSensor(session, sensorId, orgId);
+    Boolean generatePower = false;
+    for (PropertyImpl p : sensor.getProperties()) {
+      if (p.getKey().equals(Labels.GENERATE_POWER)) {
+        generatePower = Boolean.parseBoolean(p.getValue());
+      }
+    }
     @SuppressWarnings("unchecked")
     List<MeasurementImpl> result = (List<MeasurementImpl>) session
         .createQuery(
@@ -3022,6 +3029,9 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
       Double val1 = justBefore.getValue();
       Double val2 = justAfter.getValue();
       Double deltaV = val2 - val1;
+      if (deltaV < 0 && !generatePower) {
+        throw new CounterRollOverException("Roll over from " + val1 + " to " + val2);
+      }
       Long t1 = justBefore.getTimestamp().getTime();
       Long t2 = justAfter.getTimestamp().getTime();
       Long deltaT = t2 - t1;
@@ -3043,7 +3053,7 @@ public class WattDepotPersistenceImpl extends WattDepotPersistence {
    */
   @Override
   public Double getValue(String depotId, String orgId, String sensorId, Date start, Date end,
-      boolean check) throws NoMeasurementException, IdNotFoundException {
+      boolean check) throws NoMeasurementException, IdNotFoundException, CounterRollOverException {
     Boolean generatePower = false;
     Session session = Manager.getFactory(getServerProperties()).openSession();
     session.beginTransaction();
