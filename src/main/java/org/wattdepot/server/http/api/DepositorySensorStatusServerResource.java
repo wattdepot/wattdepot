@@ -60,7 +60,7 @@ public class DepositorySensorStatusServerResource extends WattDepotServerResourc
     super.doInit();
     this.sensorId = getQuery().getValues(Labels.SENSOR);
     this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);
-    String numStr = getAttribute(Labels.WINDOW);
+    String numStr = getQuery().getValues(Labels.WINDOW);
     if (numStr != null) {
       try {
         this.numDays = Integer.parseInt(numStr);

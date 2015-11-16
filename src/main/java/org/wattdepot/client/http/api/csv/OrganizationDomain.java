@@ -26,6 +26,7 @@ import org.wattdepot.common.domainmodel.MeasurementList;
 import org.wattdepot.common.domainmodel.MeasurementPruningDefinition;
 import org.wattdepot.common.domainmodel.Sensor;
 import org.wattdepot.common.domainmodel.SensorGroup;
+import org.wattdepot.common.domainmodel.SensorList;
 import org.wattdepot.common.exception.BadCredentialException;
 import org.wattdepot.common.exception.BadSensorUriException;
 import org.wattdepot.common.exception.IdNotFoundException;
@@ -37,6 +38,7 @@ import org.wattdepot.common.util.csv.DefinitionFileWriter;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -145,13 +147,20 @@ public class OrganizationDomain {
    * @throws IOException if there is a problem with the file.
    */
   public void exportData(String name, Date start, Date end) throws IOException {
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+    System.out.println(sdf.format(new Date()) + " exportData");
     DefinitionFileWriter writer = new DefinitionFileWriter(name);
     saveDomainInfo(writer);
+    System.out.println(sdf.format(new Date()) + " get mpds");
     Set<MeasurementPruningDefinition> mpds = writer.getMeasurementPruningDefinitions();
     for (Depository d : client.getDepositories().getDepositories()) {
+      System.out.println(sdf.format(new Date()) + " processing " + d.getName());
       MeasurementPruningDefinition definition = findMDP(mpds, d);
       try {
-        for (Sensor s : client.getDepositorySensors(d.getId()).getSensors()) {
+        SensorList sensors = client.getDepositorySensors(d.getId());
+        System.out.println(sdf.format(new Date()) + " sensorList for " + d.getName() + " = " + sensors.getSensors());
+        for (Sensor s : sensors.getSensors()) {
+          System.out.println(sdf.format(new Date()) + " measurements for " + s.getName());
           List<Measurement> measurements = client.getMeasurements(d, s, start, end).getMeasurements();
           if (definition != null) {
             measurements = pruneMeasurements(measurements, definition.getMinGapSeconds());
@@ -249,21 +258,29 @@ public class OrganizationDomain {
    * @param writer The DefinitionFileWriter.
    */
   private void saveDomainInfo(DefinitionFileWriter writer) {
+    System.out.println("saveDomainInfo");
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+    System.out.println(sdf.format(new Date()) + " saveDomainInfo starting depositories");
     for (Depository d : client.getDepositories().getDepositories()) {
       writer.add(d);
     }
+    System.out.println(sdf.format(new Date()) + " saveDomainInfo starting sensors");
     for (Sensor s : client.getSensors().getSensors()) {
       writer.add(s);
     }
+    System.out.println(sdf.format(new Date()) + " saveDomainInfo starting groups");
     for (SensorGroup g : client.getSensorGroups().getGroups()) {
       writer.add(g);
     }
+    System.out.println(sdf.format(new Date()) + " saveDomainInfo starting cpds");
     for (CollectorProcessDefinition cpd : client.getCollectorProcessDefinitions().getDefinitions()) {
       writer.add(cpd);
     }
+    System.out.println(sdf.format(new Date()) + " saveDomainInfo starting mdps");
     for (MeasurementPruningDefinition mpd : client.getMeasurementPruningDefinitions().getDefinitions()) {
       writer.add(mpd);
     }
+    System.out.println(sdf.format(new Date()) + " saveDomainInfo done");
   }
 
   /**
