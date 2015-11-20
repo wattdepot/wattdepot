@@ -1392,9 +1392,19 @@ public class WattDepotClient implements WattDepotInterface {
   @Override
   public SensorStatus getSensorStatus(Depository depository, Sensor sensor) {
     ClientResource client = null;
+    StringBuilder sb = new StringBuilder();
+    sb.append(this.organizationId);
+    sb.append("/");
+    sb.append(Labels.DEPOSITORY);
+    sb.append("/");
+    sb.append(depository.getId());
+    sb.append("/");
+    sb.append(Labels.SENSOR_STATUS);
+    sb.append("/?sensor=");
+    sb.append(sensor.getId());
+    sb.append("&window=7");
     try {
-      client = makeClient(this.organizationId + "/" + Labels.DEPOSITORY + "/" + depository.getId()
-          + "/" + Labels.SENSOR_STATUS + "/" + "?sensor=" + sensor.getId());
+      client = makeClient(sb.toString());
       DepositorySensorStatusResource resource = client.wrap(DepositorySensorStatusResource.class);
       SensorStatusList list = resource.retrieve();
       client.release();

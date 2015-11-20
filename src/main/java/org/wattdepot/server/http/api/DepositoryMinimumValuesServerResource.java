@@ -54,15 +54,19 @@ public class DepositoryMinimumValuesServerResource extends DepositoryMeasurement
       Depository deposit = depot.getDepository(depositoryId, orgId, true);
       while (tempEnd.before(endDate)) {
         InterpolatedValue interpolatedValue = new InterpolatedValue(sensorId, 0.0, deposit.getMeasurementType(),
-            tempStart);
+            tempStart, tempEnd);
         MeasurementList meas = getMeasurements(depositoryId, orgId, sensorId, tempStart, tempEnd, interpolatedValue);
         DescriptiveStats stat = new DescriptiveStats(meas, valueType);
         Double value = stat.getMin();
         if (Double.isNaN(value)) {
-          value = 0.0;
+//          value = 0.0;
+          interpolatedValue.setValue(value);
+          ret.getMissingData().add(interpolatedValue);
         }
-        interpolatedValue.setValue(value);
-        ret.getInterpolatedValues().add(interpolatedValue);
+        else {
+          interpolatedValue.setValue(value);
+          ret.getInterpolatedValues().add(interpolatedValue);
+        }
         tempStart = tempEnd;
         tempEnd = incrementMinutes(tempStart, interval);
       }

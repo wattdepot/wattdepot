@@ -113,70 +113,74 @@ public class TestWattDepotAdminClient {
   @Test
   public void testOrganizations() {
     String orgName = "Organization ";
-    OrganizationList list = admin.getOrganizations();
-    int numOrganizations = list.getOrganizations().size();
     Organization one = new Organization(orgName + 1);
-    admin.putOrganization(one);
     Organization two = new Organization(orgName + 2);
-    admin.putOrganization(two);
     Organization three = new Organization(orgName + 3);
-    admin.putOrganization(three);
-    list = admin.getOrganizations();
-    assertNotNull(list);
-    assertTrue("Expecting " + (numOrganizations + 3) + " got " + list.getOrganizations().size(),
-        (numOrganizations + 3) == list.getOrganizations().size());
     try {
-      admin.deleteOrganization(three.getId());
-    }
-    catch (IdNotFoundException e) {
-      e.printStackTrace();
-      fail(e.getMessage() + " should delete defined organization " + three.getName());
-    }
-    try {
-      admin.deleteOrganization("bogus-org");
-      fail("Should not be able to delete a bogus organization.");
-    }
-    catch (IdNotFoundException e) {
-      // expected
-    }
-    list = admin.getOrganizations();
-    assertNotNull(list);
-    assertTrue(numOrganizations + 2 == list.getOrganizations().size());
-    two.setName("New organization name");
-    admin.updateOrganization(two);
-    try {
-      Organization defined = admin.getOrganization(two.getId());
-      assertNotNull(defined);
-      assertTrue(defined.equals(two));
-    }
-    catch (IdNotFoundException e) {
-      e.printStackTrace();
-      fail(e.getMessage() + " should be able to update " + two.getId());
-    }
-
-    // Clean up
-    if (admin.isDefinedOrganization(one.getId())) {
-      try {
-        admin.deleteOrganization(one.getId());
-      }
-      catch (IdNotFoundException e) {
-        e.printStackTrace();
-      }
-    }
-    if (admin.isDefinedOrganization(two.getId())) {
-      try {
-        admin.deleteOrganization(two.getId());
-      }
-      catch (IdNotFoundException e) {
-        e.printStackTrace();
-      }
-    }
-    if (admin.isDefinedOrganization(three.getId())) {
+      OrganizationList list = admin.getOrganizations();
+      int numOrganizations = list.getOrganizations().size();
+      admin.putOrganization(one);
+      admin.putOrganization(two);
+      admin.putOrganization(three);
+      list = admin.getOrganizations();
+      assertNotNull(list);
+      assertTrue("Expecting " + (numOrganizations + 3) + " got " + list.getOrganizations().size(),
+          (numOrganizations + 3) == list.getOrganizations().size());
       try {
         admin.deleteOrganization(three.getId());
       }
       catch (IdNotFoundException e) {
         e.printStackTrace();
+        fail(e.getMessage() + " should delete defined organization " + three.getName());
+      }
+      try {
+        admin.deleteOrganization("bogus-org");
+        fail("Should not be able to delete a bogus organization.");
+      }
+      catch (IdNotFoundException e) {
+        // expected
+      }
+      list = admin.getOrganizations();
+      assertNotNull(list);
+      assertTrue(numOrganizations + 2 == list.getOrganizations().size());
+      two.setName("New organization name");
+      admin.updateOrganization(two);
+      try {
+        Organization defined = admin.getOrganization(two.getId());
+        assertNotNull(defined);
+        assertTrue(defined.equals(two));
+      }
+      catch (IdNotFoundException e) {
+        e.printStackTrace();
+        fail(e.getMessage() + " should be able to update " + two.getId());
+      }
+
+    }
+    finally {
+      // Clean up
+      if (admin.isDefinedOrganization(one.getId())) {
+        try {
+          admin.deleteOrganization(one.getId());
+        }
+        catch (IdNotFoundException e) {
+          e.printStackTrace();
+        }
+      }
+      if (admin.isDefinedOrganization(two.getId())) {
+        try {
+          admin.deleteOrganization(two.getId());
+        }
+        catch (IdNotFoundException e) {
+          e.printStackTrace();
+        }
+      }
+      if (admin.isDefinedOrganization(three.getId())) {
+        try {
+          admin.deleteOrganization(three.getId());
+        }
+        catch (IdNotFoundException e) {
+          e.printStackTrace();
+        }
       }
     }
   }

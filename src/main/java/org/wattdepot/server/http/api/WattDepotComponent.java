@@ -109,8 +109,8 @@ public class WattDepotComponent extends Component {
         try {
           up = app.getDepot().getUserPassword(userId, group.getId(), true);
         }
-        catch (IdNotFoundException e) {
-          e.printStackTrace();
+        catch (IdNotFoundException e) { // NOPMD
+//          e.printStackTrace();
         }
         if (up != null) {
           User user = null;

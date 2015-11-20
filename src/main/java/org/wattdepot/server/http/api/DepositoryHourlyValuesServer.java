@@ -38,6 +38,7 @@ import org.wattdepot.common.util.tstamp.Tstamp;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -112,15 +113,19 @@ public class DepositoryHourlyValuesServer extends WattDepotServerResource {
                   try {
                     val = getValueForSensor(depositoryId, orgId, sensorId, beginDate, endDate, dataType);
                     value.addReportingSensor(sensorId);
+                    value.setValue(val);
+                    ret.getInterpolatedValues().add(value);
                   }
                   catch (NoMeasurementException e) {
                     val = Double.NaN;
+                    value.setValue(val);
+                    ret.getMissingData().add(value);
                   }
                   catch (CounterRollOverException e) {
                     val = Double.NaN;
+                    value.setValue(val);
+                    ret.getMissingData().add(value);
                   }
-                  value.setValue(val);
-                  ret.getInterpolatedValues().add(value);
                 }
                 else { // try SensorGroup.
                   SensorGroup group = depot.getSensorGroup(sensorId, orgId, false);
@@ -203,7 +208,8 @@ public class DepositoryHourlyValuesServer extends WattDepotServerResource {
         val = val / measurements.size();
       }
       else {
-        val = Double.NaN;
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        throw new NoMeasurementException("No measurements in " + depositoryId + " for " + sensorId + " from " + sdf.format(beginDate) + " to " + sdf.format(endDate));
       }
     }
     else {  // calculate the difference

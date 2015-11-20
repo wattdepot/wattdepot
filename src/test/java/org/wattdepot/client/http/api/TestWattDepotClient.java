@@ -1,18 +1,18 @@
 /**
  * TestWattDepotClient.java This file is part of WattDepot.
- *
+ * <p/>
  * Copyright (C) 2013  Cam Moore
- *
+ * <p/>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+ * <p/>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * <p/>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -34,6 +34,7 @@ import java.util.logging.Logger;
 
 import javax.measure.unit.Unit;
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -49,21 +50,24 @@ import org.wattdepot.common.exception.MeasurementListSizeExceededException;
 import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.NoMeasurementException;
 import org.wattdepot.common.util.DateConvert;
+import org.wattdepot.common.util.Slug;
 import org.wattdepot.common.util.UnitsHelper;
 import org.wattdepot.common.util.logger.LoggerUtil;
+import org.wattdepot.common.util.tstamp.Tstamp;
 import org.wattdepot.server.WattDepotServer;
 
 /**
  * TestWattDepotClient - Test cases for the WattDepotClient class.
- * 
+ *
  * @author Cam Moore
- * 
  */
 public class TestWattDepotClient {
 
   private static WattDepotServer server;
 
-  /** The handle on the client. */
+  /**
+   * The handle on the client.
+   */
   private static WattDepotAdminClient admin;
   private static WattDepotClient test;
   private static UserInfo testUser = null;
@@ -82,14 +86,18 @@ public class TestWattDepotClient {
   private static Measurement testMeasurement6 = null;
   private static MeasurementList testMeasurements456 = null;
 
-  /** The logger. */
+  /**
+   * The logger.
+   */
   private static Logger logger = null;
-  /** The serverUrl. */
+  /**
+   * The serverUrl.
+   */
   private static String serverURL = null;
 
   /**
    * Starts up a WattDepotServer to start the testing.
-   * 
+   *
    * @throws Exception if there is a problem starting the server.
    */
   @BeforeClass
@@ -112,7 +120,7 @@ public class TestWattDepotClient {
     testMeasurementType = new MeasurementType("Client Test MeasurementType Name",
         UnitsHelper.quantities.get("Flow Rate (gal/s)"));
     testDepository = new Depository("Client Test Depository", testMeasurementType, testOrg.getId());
-    testCPD = new CollectorProcessDefinition("TestWattDepotClient Collector Process Definition",
+    testCPD = new CollectorProcessDefinition(testSensor.getId() + "-" + testDepository.getId(),
         testSensor.getId(), 10L, testDepository.getId(), testOrg.getId());
     testMPD = new MeasurementPruningDefinition("TestWattDepotClient MPD", testDepository.getId(), testSensor.getId(),
         testOrg.getId(), 7, 10, 30);
@@ -131,11 +139,11 @@ public class TestWattDepotClient {
       testMeasurement3 = new Measurement(testSensor.getId(), measTime3, value,
           testMeasurementType.unit());
       testMeasurement4 = new Measurement(testSensor.getId(), measTime4, value,
-              testMeasurementType.unit());
+          testMeasurementType.unit());
       testMeasurement5 = new Measurement(testSensor.getId(), measTime5, value,
-              testMeasurementType.unit());
+          testMeasurementType.unit());
       testMeasurement6 = new Measurement(testSensor.getId(), measTime6, value,
-              testMeasurementType.unit());
+          testMeasurementType.unit());
       testMeasurements456 = new MeasurementList();
       testMeasurements456.getMeasurements().add(testMeasurement4);
       testMeasurements456.getMeasurements().add(testMeasurement5);
@@ -209,7 +217,7 @@ public class TestWattDepotClient {
 
   /**
    * Shuts down the WattDepotServer.
-   * 
+   *
    * @throws Exception if there is a problem.
    */
   @AfterClass
@@ -295,7 +303,7 @@ public class TestWattDepotClient {
    */
   @Test
   public void testDepository() {
-    Depository depo = new Depository("testDepository",  testMeasurementType, testOrg.getId());
+    Depository depo = new Depository("testDepository", testMeasurementType, testOrg.getId());
     assertFalse(test.isDefinedDepository(depo.getId()));
     // Get list
     DepositoryList list = test.getDepositories();
@@ -361,7 +369,7 @@ public class TestWattDepotClient {
       assertNotNull(mt);
     }
     catch (IdNotFoundException e) {
-      e.printStackTrace();
+      fail(e.getMessage() + " should not happen");
     }
     MeasurementType type = new MeasurementType("testMeasurementType Client", testMeasurementType.unit());
     assertFalse(test.isDefinedMeasurementType(type.getId()));
@@ -523,7 +531,6 @@ public class TestWattDepotClient {
     catch (ResourceException e) {
       if (e.getStatus().equals(Status.CLIENT_ERROR_BAD_REQUEST)) {
         addSensorModel();
-//        addSensor();
         test.putSensor(sensor);
         test.putSensorGroup(group);
       }
@@ -670,7 +677,7 @@ public class TestWattDepotClient {
       }
       list = test.getCollectorProcessDefinitions();
       assertNotNull(list);
-      assertTrue(list.getDefinitions().size() == 1);
+      assertTrue("Expecting " + (numCPD + 1) + " got " + list.getDefinitions().size(), list.getDefinitions().size() == numCPD + 1);
       // delete instance (DELETE)
       test.deleteCollectorProcessDefinition(data);
       try {
@@ -713,10 +720,10 @@ public class TestWattDepotClient {
     }
     catch (ResourceException e) {
 //      if (e.getStatus().equals(Status.CLIENT_ERROR_BAD_REQUEST)) {
-        addSensorModel();
-        addSensor();
-        addDepository();
-        test.putMeasurementPruningDefinition(data);
+      addSensorModel();
+      addSensor();
+      addDepository();
+      test.putMeasurementPruningDefinition(data);
 //      }
     }
     list = test.getMeasurementPruningDefinitions();
@@ -754,7 +761,8 @@ public class TestWattDepotClient {
       catch (IdNotFoundException e) {
         // this is what we want.
       }
-    } catch (IdNotFoundException e) {
+    }
+    catch (IdNotFoundException e) {
       fail("Should have " + data);
     }
     // error condistions
@@ -1023,7 +1031,7 @@ public class TestWattDepotClient {
     }
 
     Sensor sensor2 = new Sensor("TestValues Sensor2", "test_sensor_uri2",
-      testModel.getId(), testOrg.getId());
+        testModel.getId(), testOrg.getId());
     try {
       test.getSensor(sensor2.getId());
     }
@@ -1035,7 +1043,7 @@ public class TestWattDepotClient {
     sensors.add(sensor1.getId());
     sensors.add(sensor2.getId());
     SensorGroup group = new SensorGroup("TestWattDepotClient Value Sensor Group", sensors,
-      testOrg.getId());
+        testOrg.getId());
     test.putSensorGroup(group);
     try {
       Date measTime1 = DateConvert.parseCalStringToDate("2013-11-20T14:35:27.925-1000");
@@ -1083,7 +1091,8 @@ public class TestWattDepotClient {
       try {
         value = test.getValue(testDepository, group, between12, 5l);
         fail("Should throw MeasurementGapException.");
-      } catch (MeasurementGapException e) {
+      }
+      catch (MeasurementGapException e) {
         // expected
       }
       value = test.getValue(testDepository, group, measTime1, measTime3);
@@ -1109,42 +1118,50 @@ public class TestWattDepotClient {
       finally {
         try {
           test.deleteMeasurement(testDepository, m1);
-        } catch (IdNotFoundException e) {
+        }
+        catch (IdNotFoundException e) {
           e.printStackTrace();
         }
         try {
           test.deleteMeasurement(testDepository, m2);
-        } catch (IdNotFoundException e) {
+        }
+        catch (IdNotFoundException e) {
           e.printStackTrace();
         }
         try {
           test.deleteMeasurement(testDepository, m3);
-        } catch (IdNotFoundException e) {
+        }
+        catch (IdNotFoundException e) {
           e.printStackTrace();
         }
         try {
           test.deleteMeasurement(testDepository, m4);
-        } catch (IdNotFoundException e) {
+        }
+        catch (IdNotFoundException e) {
           e.printStackTrace();
         }
         try {
           test.deleteMeasurement(testDepository, m5);
-        } catch (IdNotFoundException e) {
+        }
+        catch (IdNotFoundException e) {
           e.printStackTrace();
         }
         try {
           test.deleteMeasurement(testDepository, m6);
-        } catch (IdNotFoundException e) {
+        }
+        catch (IdNotFoundException e) {
           e.printStackTrace();
         }
         try {
           test.deleteMeasurement(testDepository, m7);
-        } catch (IdNotFoundException e) {
+        }
+        catch (IdNotFoundException e) {
           e.printStackTrace();
         }
         try {
           test.deleteMeasurement(testDepository, m8);
-        } catch (IdNotFoundException e) {
+        }
+        catch (IdNotFoundException e) {
           e.printStackTrace();
         }
       }
@@ -1220,6 +1237,542 @@ public class TestWattDepotClient {
   }
 
   /**
+   * Tests the getSensorStatus method.
+   */
+  @Test
+  public void testSensorStatus() {
+    addInfrastructure("status");
+    try {
+      Sensor sensor = test.getSensor("status-s");
+      Depository depository = test.getDepository("status-d");
+      // no measurements so status should be black.
+      SensorStatus status = test.getSensorStatus(depository, sensor);
+      assertNotNull(status);
+      assertTrue(status.getStatus() == SensorStatusEnum.BLACK);
+      Measurement m1 = null;
+      XMLGregorianCalendar cal = Tstamp.makeTimestamp();
+      cal = Tstamp.incrementDays(cal, -1);
+      Date measTime1 = DateConvert.convertXMLCal(cal);
+      m1 = new Measurement(sensor.getId(), measTime1, 100.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m1);
+      status = test.getSensorStatus(depository, sensor);
+      assertNotNull(status);
+      assertTrue(status.getStatus() == SensorStatusEnum.RED);
+      test.deleteMeasurement(depository, m1);
+      removeInfrastructure("status");
+    }
+    catch (IdNotFoundException e) {
+      fail(e.getMessage() + " should not happen.");
+    }
+    catch (MeasurementTypeException e) {
+      fail(e.getMessage() + " should not happen.");
+    }
+  }
+
+  /**
+   * Tests the getSensorStatuses method.
+   */
+  @Test
+  public void testSensorStatuses() {
+    addInfrastructure("statuses");
+    try {
+      Sensor sensor = test.getSensor("statuses-s");
+      SensorGroup sensorGroup = test.getSensorGroup("statuses-sg");
+      Depository depository = test.getDepository("statuses-d");
+      SensorStatusList list = test.getSensorStatuses(depository, sensorGroup);
+      assertNotNull(list);
+      assertTrue(list.getStatuses().size() == 1);
+      assertTrue(list.getStatuses().get(0).getStatus() == SensorStatusEnum.BLACK);
+      Measurement m1 = null;
+      XMLGregorianCalendar cal = Tstamp.makeTimestamp();
+      cal = Tstamp.incrementDays(cal, -1);
+      Date measTime1 = DateConvert.convertXMLCal(cal);
+      m1 = new Measurement(sensor.getId(), measTime1, 100.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m1);
+      list = test.getSensorStatuses(depository, sensorGroup);
+      assertNotNull(list);
+      assertTrue(list.getStatuses().size() == 1);
+      assertTrue(list.getStatuses().get(0).getStatus() == SensorStatusEnum.RED);
+      test.deleteMeasurement(depository, m1);
+    }
+    catch (IdNotFoundException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    catch (MeasurementTypeException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    finally {
+      removeInfrastructure("statuses");
+    }
+  }
+
+  @Test
+  public void testMinimumValues() {
+    addInfrastructure("minimum");
+    try {
+      Sensor sensor = test.getSensor("minimum-s");
+      SensorGroup sensorGroup = test.getSensorGroup("minimum-sg");
+      Depository depository = test.getDepository("minimum-d");
+      XMLGregorianCalendar cal = Tstamp.makeTimestamp();
+      Date end = DateConvert.convertXMLCal(cal);
+      cal = Tstamp.incrementDays(cal, -1);
+      Date measTime = DateConvert.convertXMLCal(cal);
+      Measurement m1 = new Measurement(sensor.getId(), measTime, 100.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m1);
+      cal = Tstamp.incrementDays(cal, -1);
+      measTime = DateConvert.convertXMLCal(cal);
+      Measurement m2 = new Measurement(sensor.getId(), measTime, 50.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m2);
+      cal = Tstamp.incrementDays(cal, -1);
+      measTime = DateConvert.convertXMLCal(cal);
+      Measurement m3 = new Measurement(sensor.getId(), measTime, 150.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m3);
+      cal = Tstamp.incrementDays(cal, -1);
+      Date start = DateConvert.convertXMLCal(cal);
+      InterpolatedValueList list = test.getMinimumValues(depository, sensor, start, end, 3 * 24 * 60, true);
+      assertNotNull(list);
+      assertTrue(list.getInterpolatedValues().size() == 1);
+      assertTrue(list.getInterpolatedValues().get(0).getValue() == 50.0);
+
+      list = test.getMinimumValues(depository, sensorGroup, start, end, 3 * 24 * 60, true);
+      assertNotNull(list);
+      assertTrue(list.getInterpolatedValues().size() == 1);
+      assertTrue(list.getInterpolatedValues().get(0).getValue() == 50.0);
+      test.deleteMeasurement(depository, m1);
+      test.deleteMeasurement(depository, m2);
+      test.deleteMeasurement(depository, m3);
+    }
+    catch (IdNotFoundException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    catch (MeasurementTypeException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    catch (NoMeasurementException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    finally {
+      removeInfrastructure("minimum");
+    }
+  }
+
+  @Test
+  public void testMaximumValues() {
+    addInfrastructure("maximum");
+    try {
+      Sensor sensor = test.getSensor("maximum-s");
+      SensorGroup sensorGroup = test.getSensorGroup("maximum-sg");
+      Depository depository = test.getDepository("maximum-d");
+      XMLGregorianCalendar cal = Tstamp.makeTimestamp();
+      Date end = DateConvert.convertXMLCal(cal);
+      cal = Tstamp.incrementDays(cal, -1);
+      Date measTime = DateConvert.convertXMLCal(cal);
+      Measurement m1 = new Measurement(sensor.getId(), measTime, 100.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m1);
+      cal = Tstamp.incrementDays(cal, -1);
+      measTime = DateConvert.convertXMLCal(cal);
+      Measurement m2 = new Measurement(sensor.getId(), measTime, 50.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m2);
+      cal = Tstamp.incrementDays(cal, -1);
+      measTime = DateConvert.convertXMLCal(cal);
+      Measurement m3 = new Measurement(sensor.getId(), measTime, 150.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m3);
+      cal = Tstamp.incrementDays(cal, -1);
+      Date start = DateConvert.convertXMLCal(cal);
+      InterpolatedValueList list = test.getMaximumValues(depository, sensor, start, end, 3 * 24 * 60, true);
+      assertNotNull(list);
+      assertTrue(list.getInterpolatedValues().size() == 1);
+      assertTrue(list.getInterpolatedValues().get(0).getValue() == 150.0);
+
+      list = test.getMaximumValues(depository, sensorGroup, start, end, 3 * 24 * 60, true);
+      assertNotNull(list);
+      assertTrue(list.getInterpolatedValues().size() == 1);
+      assertTrue(list.getInterpolatedValues().get(0).getValue() == 150.0);
+      test.deleteMeasurement(depository, m1);
+      test.deleteMeasurement(depository, m2);
+      test.deleteMeasurement(depository, m3);
+    }
+    catch (IdNotFoundException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    catch (MeasurementTypeException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    catch (NoMeasurementException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    finally {
+      removeInfrastructure("maximum");
+    }
+  }
+
+  @Test
+  public void testAverageValues() {
+    addInfrastructure("average");
+    try {
+      Sensor sensor = test.getSensor("average-s");
+      SensorGroup sensorGroup = test.getSensorGroup("average-sg");
+      Depository depository = test.getDepository("average-d");
+      XMLGregorianCalendar cal = Tstamp.makeTimestamp();
+      Date end = DateConvert.convertXMLCal(cal);
+      cal = Tstamp.incrementDays(cal, -1);
+      Date measTime = DateConvert.convertXMLCal(cal);
+      Measurement m1 = new Measurement(sensor.getId(), measTime, 100.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m1);
+      cal = Tstamp.incrementDays(cal, -1);
+      measTime = DateConvert.convertXMLCal(cal);
+      Measurement m2 = new Measurement(sensor.getId(), measTime, 50.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m2);
+      cal = Tstamp.incrementDays(cal, -1);
+      measTime = DateConvert.convertXMLCal(cal);
+      Measurement m3 = new Measurement(sensor.getId(), measTime, 150.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m3);
+      cal = Tstamp.incrementDays(cal, -1);
+      Date start = DateConvert.convertXMLCal(cal);
+      InterpolatedValueList list = test.getAverageValues(depository, sensor, start, end, 4 * 24 * 60, true);
+      assertNotNull(list);
+//      assertTrue(list.getInterpolatedValues().size() == 1);
+//      assertTrue(list.getInterpolatedValues().get(0).getValue() == 100.0);
+
+      list = test.getAverageValues(depository, sensorGroup, start, end, 4 * 24 * 60, true);
+      assertNotNull(list);
+//      assertTrue(list.getInterpolatedValues().size() == 1);
+//      assertTrue(list.getInterpolatedValues().get(0).getValue() == 150.0);
+      test.deleteMeasurement(depository, m1);
+      test.deleteMeasurement(depository, m2);
+      test.deleteMeasurement(depository, m3);
+    }
+    catch (IdNotFoundException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    catch (MeasurementTypeException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    catch (NoMeasurementException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    finally {
+      removeInfrastructure("average");
+    }
+  }
+
+  @Test
+  public void testHistoricalValues() {
+    addInfrastructure("historical");
+    try {
+      Sensor sensor = test.getSensor("historical-s");
+      SensorGroup sensorGroup = test.getSensorGroup("historical-sg");
+      Depository depository = test.getDepository("historical-d");
+      XMLGregorianCalendar cal = Tstamp.makeTimestamp();
+      Date end = DateConvert.convertXMLCal(cal);
+      cal = Tstamp.incrementDays(cal, -7);
+      Date measTime = DateConvert.convertXMLCal(cal);
+      Measurement m1 = new Measurement(sensor.getId(), measTime, 100.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m1);
+      cal = Tstamp.incrementDays(cal, -7);
+      measTime = DateConvert.convertXMLCal(cal);
+      Measurement m2 = new Measurement(sensor.getId(), measTime, 50.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m2);
+      cal = Tstamp.incrementDays(cal, -7);
+      measTime = DateConvert.convertXMLCal(cal);
+      Measurement m3 = new Measurement(sensor.getId(), measTime, 150.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m3);
+      cal = Tstamp.incrementDays(cal, -1);
+      Date start = DateConvert.convertXMLCal(cal);
+      InterpolatedValueList list = test.getHistoricalValues(depository, sensor, end, true, 3, true);
+      assertNotNull(list);
+      assertTrue(list.getInterpolatedValues().size() == 3);
+      assertTrue(list.getInterpolatedValues().get(0).getValue() == 100.0);
+      assertTrue(list.getInterpolatedValues().get(1).getValue() == 50.0);
+      assertTrue(list.getInterpolatedValues().get(2).getValue() == 150.0);
+
+      list = test.getHistoricalValues(depository, sensor, end, false, 3, true);
+      assertNotNull(list);
+      assertTrue(list.getInterpolatedValues().size() == 3);
+      assertTrue(list.getInterpolatedValues().get(0).getValue() == 100.0);
+      assertTrue(list.getInterpolatedValues().get(1).getValue() == 50.0);
+      assertTrue(list.getInterpolatedValues().get(2).getValue() == 150.0);
+
+      list = test.getHistoricalValues(depository, sensorGroup, end, true, 3, true);
+      assertNotNull(list);
+      assertTrue(list.getInterpolatedValues().size() == 3);
+      assertTrue(list.getInterpolatedValues().get(0).getValue() == 100.0);
+      assertTrue(list.getInterpolatedValues().get(1).getValue() == 50.0);
+      assertTrue(list.getInterpolatedValues().get(2).getValue() == 150.0);
+
+      test.deleteMeasurement(depository, m1);
+      test.deleteMeasurement(depository, m2);
+      test.deleteMeasurement(depository, m3);
+    }
+    catch (IdNotFoundException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    catch (MeasurementTypeException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    finally {
+      removeInfrastructure("historical");
+    }
+  }
+
+  @Test
+  public void testDescriptiveStats() {
+    addInfrastructure("descriptive");
+    try {
+      Sensor sensor = test.getSensor("descriptive-s");
+      SensorGroup sensorGroup = test.getSensorGroup("descriptive-sg");
+      Depository depository = test.getDepository("descriptive-d");
+      XMLGregorianCalendar cal = Tstamp.makeTimestamp();
+      Date end = DateConvert.convertXMLCal(cal);
+      cal = Tstamp.incrementDays(cal, -7);
+      Date measTime = DateConvert.convertXMLCal(cal);
+      Measurement m1 = new Measurement(sensor.getId(), measTime, 100.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m1);
+      cal = Tstamp.incrementDays(cal, -7);
+      measTime = DateConvert.convertXMLCal(cal);
+      Measurement m2 = new Measurement(sensor.getId(), measTime, 50.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m2);
+      cal = Tstamp.incrementDays(cal, -7);
+      measTime = DateConvert.convertXMLCal(cal);
+      Measurement m3 = new Measurement(sensor.getId(), measTime, 150.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m3);
+      cal = Tstamp.incrementDays(cal, -1);
+      Date start = DateConvert.convertXMLCal(cal);
+      DescriptiveStats stats = test.getDescriptiveStats(depository, sensor, start, true, 3, true);
+      assertNotNull(stats);
+
+      stats = test.getDescriptiveStats(depository, sensorGroup, start, true, 3, true);
+      assertNotNull(stats);
+      test.deleteMeasurement(depository, m1);
+      test.deleteMeasurement(depository, m2);
+      test.deleteMeasurement(depository, m3);
+    }
+    catch (IdNotFoundException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    catch (MeasurementTypeException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    finally {
+      removeInfrastructure("descriptive");
+    }
+  }
+
+  @Test
+  public void testDailyValues() {
+    StackTraceElement[] traceElements = Thread.currentThread().getStackTrace();
+    String method = Slug.slugify(traceElements[1].getMethodName());
+    addInfrastructure(method);
+    try {
+      Sensor sensor = test.getSensor(method + "-s");
+      SensorGroup sensorGroup = test.getSensorGroup(method + "-sg");
+      Depository depository = test.getDepository(method + "-d");
+      XMLGregorianCalendar cal = Tstamp.makeTimestamp();
+      Date end = DateConvert.convertXMLCal(cal);
+      cal = Tstamp.incrementDays(cal, -1);
+      Date measTime = DateConvert.convertXMLCal(cal);
+      Measurement m1 = new Measurement(sensor.getId(), measTime, 100.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m1);
+      cal = Tstamp.incrementDays(cal, -1);
+      measTime = DateConvert.convertXMLCal(cal);
+      Measurement m2 = new Measurement(sensor.getId(), measTime, 50.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m2);
+      cal = Tstamp.incrementDays(cal, -1);
+      measTime = DateConvert.convertXMLCal(cal);
+      Measurement m3 = new Measurement(sensor.getId(), measTime, 150.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m3);
+      cal = Tstamp.incrementDays(cal, -1);
+      Date start = DateConvert.convertXMLCal(cal);
+      InterpolatedValueList list = test.getDailyValues(depository, sensor, start, end, true);
+      assertNotNull(list);
+      assertTrue(list.getInterpolatedValues().size() == 3);
+      assertTrue(list.getMissingData().size() == 1);
+
+      list = test.getDailyValues(depository, sensorGroup, start, end, true);
+      assertNotNull(list);
+      assertTrue(list.getInterpolatedValues().size() == 4);
+      assertTrue(list.getMissingData().size() == 0);
+
+      test.deleteMeasurement(depository, m1);
+      test.deleteMeasurement(depository, m2);
+      test.deleteMeasurement(depository, m3);
+    }
+    catch (IdNotFoundException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    catch (MeasurementTypeException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    finally {
+      removeInfrastructure(method);
+    }
+  }
+
+  @Test
+  public void testHourlyValues() {
+    StackTraceElement[] traceElements = Thread.currentThread().getStackTrace();
+    String method = Slug.slugify(traceElements[1].getMethodName());
+    addInfrastructure(method);
+    try {
+      Sensor sensor = test.getSensor(method + "-s");
+      SensorGroup sensorGroup = test.getSensorGroup(method + "-sg");
+      Depository depository = test.getDepository(method + "-d");
+      XMLGregorianCalendar cal = Tstamp.makeTimestamp();
+      Date end = DateConvert.convertXMLCal(cal);
+      cal = Tstamp.incrementHours(cal, -1);
+      Date measTime = DateConvert.convertXMLCal(cal);
+      Measurement m1 = new Measurement(sensor.getId(), measTime, 100.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m1);
+      cal = Tstamp.incrementHours(cal, -1);
+      measTime = DateConvert.convertXMLCal(cal);
+      Measurement m2 = new Measurement(sensor.getId(), measTime, 50.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m2);
+      cal = Tstamp.incrementHours(cal, -1);
+      measTime = DateConvert.convertXMLCal(cal);
+      Measurement m3 = new Measurement(sensor.getId(), measTime, 150.0, testMeasurementType.unit());
+      test.putMeasurement(depository, m3);
+      cal = Tstamp.incrementHours(cal, -1);
+      Date start = DateConvert.convertXMLCal(cal);
+      InterpolatedValueList list = test.getHourlyValues(depository, sensor, start, end, true);
+      assertNotNull(list);
+      assertTrue(list.getInterpolatedValues().size() == 3);
+      assertTrue(list.getMissingData().size() == 1);
+
+      list = test.getHourlyValues(depository, sensorGroup, start, end, true);
+      assertNotNull(list);
+      assertTrue(list.getInterpolatedValues().size() == 4);
+      assertTrue(list.getMissingData().size() == 0);
+
+      test.deleteMeasurement(depository, m1);
+      test.deleteMeasurement(depository, m2);
+      test.deleteMeasurement(depository, m3);
+    }
+    catch (IdNotFoundException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    catch (MeasurementTypeException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    finally {
+      removeInfrastructure(method);
+    }
+  }
+
+
+  /**
+   * Creates SensorModel, Sensor, Depository, CollectorProcessDefintion, and MeasurementPruningDefintion for testing. Uses
+   * the name to make them unique.
+   *
+   * @param name The name of the test.
+   */
+  private void addInfrastructure(String name) {
+    SensorModel sensorModel = new SensorModel(name + "-sm", "test_model_protocol",
+        "test_model_type", "test_model_version");
+    try {
+      test.getSensorModel(sensorModel.getId());
+    }
+    catch (IdNotFoundException e) {
+      // add sensor model to WattDepot
+      test.putSensorModel(sensorModel);
+    }
+    Sensor sensor = new Sensor(name + "-s", "test_sensor_uri", sensorModel.getId(),
+        testOrg.getId());
+    try {
+      test.getSensor(sensor.getId());
+    }
+    catch (IdNotFoundException e) {
+      // add the sensor
+      test.putSensor(sensor);
+    }
+    Set<String> sensors = new HashSet<String>();
+    sensors.add(sensor.getId());
+    SensorGroup sensorGroup = new SensorGroup(name + "-sg", sensors, testOrg.getId());
+    try {
+      test.getSensorGroup(sensorGroup.getId());
+    }
+    catch (IdNotFoundException e) {
+      test.putSensorGroup(sensorGroup);
+    }
+    Depository depository = new Depository(name + "-d", testMeasurementType, testOrg.getId());
+    try {
+      test.getDepository(depository.getId());
+    }
+    catch (IdNotFoundException e) {
+      // add depository
+      test.putDepository(depository);
+    }
+    CollectorProcessDefinition cPD = new CollectorProcessDefinition(sensor.getId() + "-" + depository.getId(),
+        sensor.getId(), 10L, depository.getId(), testOrg.getId());
+    try {
+      test.getCollectorProcessDefinition(cPD.getId());
+    }
+    catch (IdNotFoundException e) {
+      // add CPD
+      test.putCollectorProcessDefinition(cPD);
+    }
+    MeasurementPruningDefinition mPD = new MeasurementPruningDefinition(name + "-mpd", depository.getId(), sensor.getId(),
+        testOrg.getId(), 7, 10, 30);
+    try {
+      test.getMeasurementPruningDefinition(mPD.getId());
+    }
+    catch (IdNotFoundException e) {
+      test.putMeasurementPruningDefinition(mPD);
+    }
+  }
+
+  private void removeInfrastructure(String name) {
+    String slug = Slug.slugify(name + "-mpd");
+    try {
+      MeasurementPruningDefinition mpd = test.getMeasurementPruningDefinition(slug);
+      test.deleteMeasurementPruningDefinition(mpd);
+    }
+    catch (IdNotFoundException e) { // NOPMD
+      // this is ok.
+    }
+    slug = Slug.slugify(name + "-s") + "-" + Slug.slugify(name + "-d");
+    CollectorProcessDefinition cpd = null;
+    try {
+      cpd = test.getCollectorProcessDefinition(slug);
+      test.deleteCollectorProcessDefinition(cpd);
+    }
+    catch (IdNotFoundException e) { // NOPMD
+      // this is ok.
+    }
+    slug = Slug.slugify(name + "-sg");
+    try {
+      SensorGroup sensorGroup = test.getSensorGroup(slug);
+      test.deleteSensorGroup(sensorGroup);
+    }
+    catch (IdNotFoundException e) { // NOPMD
+      // this is ok.
+    }
+    slug = Slug.slugify(name + "-d");
+    try {
+      Depository depository = test.getDepository(slug);
+      test.deleteDepository(depository);
+    }
+    catch (IdNotFoundException e) { // NOPMD
+      // this is ok.
+    }
+    slug = Slug.slugify(name + "-s");
+    try {
+      Sensor sensor = test.getSensor(slug);
+      test.deleteSensor(sensor);
+    }
+    catch (IdNotFoundException e) { // NOPMD
+      // this is ok.
+    }
+    slug = Slug.slugify(name + "-sm");
+    try {
+      SensorModel sm = test.getSensorModel(slug);
+      test.deleteSensorModel(sm);
+    }
+    catch (IdNotFoundException e) { // NOPMD
+      // this is ok.
+    }
+  }
+
+  /**
    * Adds the test SensorModel to the WattDepotServer if it isn't defined.
    */
   private void addSensorModel() {
@@ -1269,6 +1822,19 @@ public class TestWattDepotClient {
     catch (IdNotFoundException e) {
       // doesn't exist so we can add it.
       test.putDepository(testDepository);
+    }
+  }
+
+  /**
+   * Adds the test CollectorProcessDefinition to the test server if it isn't defined.
+   */
+  private void addCPD() {
+    try {
+      test.getCollectorProcessDefinition(testCPD.getId());
+    }
+    catch (IdNotFoundException e) {
+      // doesn't exist so add it.
+      test.putCollectorProcessDefinition(testCPD);
     }
   }
 }
