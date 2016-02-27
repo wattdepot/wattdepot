@@ -25,6 +25,7 @@ import org.restlet.resource.Directory;
 import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
 import org.wattdepot.common.http.api.API;
+import org.wattdepot.common.http.api.DepositoryXMLMeasurementPutResource;
 import org.wattdepot.extension.WattDepotExtension;
 import org.wattdepot.server.ServerProperties;
 import org.wattdepot.server.WattDepotPersistence;
@@ -172,6 +173,7 @@ public class WattDepotApplication extends Application {
     router.attach(API.MEASUREMENT_URI, DepositoryMeasurementServerResource.class);
     router.attach(API.MEASUREMENTS_URI, DepositoryMeasurementsServerResource.class);
     router.attach(API.MEASUREMENTS_GVIZ_URI, GvizDepositoryMeasurementsServerResource.class);
+    router.attach(API.MEASUREMENT_PUT_XML_URI, DespositoryXMLMeasurementPutServerResource.class);
     router.attach(API.VALUE_URI, DepositoryValueServerResource.class);
     router.attach(API.VALUE_GVIZ_URI, GvizDepositoryValueServerResource.class);
     router.attach(API.VALUES_URI, DepositoryValuesServerResource.class);

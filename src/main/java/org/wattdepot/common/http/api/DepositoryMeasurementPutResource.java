@@ -41,4 +41,5 @@ public interface DepositoryMeasurementPutResource {
   @Put
   public void store(Measurement meas);
 
+
 }

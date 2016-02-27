@@ -279,6 +279,9 @@ public class Labels {
   /** The label used for determining a window. */
   public static final String WINDOW = "window";
 
+  /** The label for xml data. */
+  public static final String XML = "xml";
+
   /** The label used for getting csv values. */
   public static final String CSV = "csv";
 }

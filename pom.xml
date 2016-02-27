@@ -263,11 +263,11 @@
       <artifactId>hibernate-c3p0</artifactId>
       <version>${hibernate-core.version}</version>
     </dependency>
-    <!--<dependency>-->
-      <!--<groupId>org.jacoco</groupId>-->
-      <!--<artifactId>jacoco-maven-plugin</artifactId>-->
-      <!--<version>${jacoco.version}</version>-->
-    <!--</dependency>-->
+    <dependency>
+      <groupId>org.jacoco</groupId>
+      <artifactId>jacoco-maven-plugin</artifactId>
+      <version>${jacoco.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.jasypt</groupId>
       <artifactId>jasypt</artifactId>
@@ -324,6 +324,11 @@
       <artifactId>org.restlet.ext.ssl</artifactId>
       <!--<version>${restlet.version}</version>-->
       <version>2.1.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.restlet.jee</groupId>
+      <artifactId>org.restlet.ext.xml</artifactId>
+      <version>${restlet.version}</version>
     </dependency>
     <dependency>
       <groupId>org.jsslutils</groupId>
@@ -420,62 +425,62 @@
           </compilerArgs>
         </configuration>
       </plugin>
-      <!--<plugin>-->
-        <!--<groupId>org.jacoco</groupId>-->
-        <!--<artifactId>jacoco-maven-plugin</artifactId>-->
-        <!--<version>${jacoco.version}</version>-->
-        <!--<executions>-->
-          <!--&lt;!&ndash; Prepares the property pointing to the JaCoCo runtime-->
-              <!--agent which is passed as VM argument when Maven the Surefire plugin is executed. &ndash;&gt;-->
-          <!--<execution>-->
-            <!--<id>pre-unit-test</id>-->
-            <!--<goals>-->
-              <!--<goal>prepare-agent</goal>-->
-            <!--</goals>-->
-            <!--<configuration>-->
-              <!--&lt;!&ndash; Sets the path to the file which contains-->
-                  <!--the execution data. &ndash;&gt;-->
-              <!--<destFile>${jacoco.ut.execution.data.file}</destFile>-->
-              <!--&lt;!&ndash; Sets the name of the property containing-->
-                  <!--the settings for JaCoCo runtime agent. &ndash;&gt;-->
-              <!--<propertyName>surefireArgLine</propertyName>-->
-            <!--</configuration>-->
-          <!--</execution>-->
-          <!--&lt;!&ndash; Ensures that the code coverage report for unit tests-->
-              <!--is created after unit tests have been run. &ndash;&gt;-->
-          <!--<execution>-->
-            <!--<id>post-unit-test</id>-->
-            <!--<phase>test</phase>-->
-            <!--<goals>-->
-              <!--<goal>report</goal>-->
-            <!--</goals>-->
-            <!--<configuration>-->
-              <!--&lt;!&ndash; Sets the path to the file which contains-->
-                  <!--the execution data. &ndash;&gt;-->
-              <!--<dataFile>${jacoco.ut.execution.data.file}</dataFile>-->
-              <!--&lt;!&ndash; Sets the output directory for the code coverage-->
-                  <!--report. &ndash;&gt;-->
-              <!--<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>-->
-            <!--</configuration>-->
-          <!--</execution>-->
-          <!--<execution>-->
-            <!--&lt;!&ndash; Generate coverage report html in target/site/jacoco/ from target/jacoco.exec &ndash;&gt;-->
-            <!--<id>report</id>-->
-            <!--<phase>site</phase>-->
-            <!--<goals>-->
-              <!--<goal>report</goal>-->
-            <!--</goals>-->
-            <!--<configuration>-->
-              <!--&lt;!&ndash; Sets the path to the file which contains-->
-                  <!--the execution data. &ndash;&gt;-->
-              <!--<dataFile>${jacoco.ut.execution.data.file}</dataFile>-->
-              <!--&lt;!&ndash; Sets the output directory for the code coverage-->
-                  <!--report. &ndash;&gt;-->
-              <!--<outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>-->
-            <!--</configuration>-->
-          <!--</execution>-->
-        <!--</executions>-->
-      <!--</plugin>-->
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco.version}</version>
+        <executions>
+          <!-- Prepares the property pointing to the JaCoCo runtime
+              agent which is passed as VM argument when Maven the Surefire plugin is executed. -->
+          <execution>
+            <id>pre-unit-test</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+            <configuration>
+              <!-- Sets the path to the file which contains
+                  the execution data. -->
+              <destFile>${jacoco.ut.execution.data.file}</destFile>
+              <!-- Sets the name of the property containing
+                  the settings for JaCoCo runtime agent. -->
+              <propertyName>surefireArgLine</propertyName>
+            </configuration>
+          </execution>
+          <!-- Ensures that the code coverage report for unit tests
+              is created after unit tests have been run. -->
+          <execution>
+            <id>post-unit-test</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <configuration>
+              <!-- Sets the path to the file which contains
+                  the execution data. -->
+              <dataFile>${jacoco.ut.execution.data.file}</dataFile>
+              <!-- Sets the output directory for the code coverage
+                  report. -->
+              <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <!-- Generate coverage report html in target/site/jacoco/ from target/jacoco.exec -->
+            <id>report</id>
+            <phase>site</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+            <configuration>
+              <!-- Sets the path to the file which contains
+                  the execution data. -->
+              <dataFile>${jacoco.ut.execution.data.file}</dataFile>
+              <!-- Sets the output directory for the code coverage
+                  report. -->
+              <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 
       <!--
         <plugin>
@@ -584,7 +589,7 @@
         <configuration>
           <linksource>true</linksource>
           <!-- uncomment following line for Java8 -->
-          <!-- <additionalparam>-Xdoclint:none</additionalparam> -->
+          <additionalparam>-Xdoclint:none</additionalparam>
         </configuration>
         <executions>
           <execution>

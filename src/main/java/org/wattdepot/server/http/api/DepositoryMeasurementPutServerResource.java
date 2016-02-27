@@ -18,10 +18,15 @@
  */
 package org.wattdepot.server.http.api;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.logging.Level;
 
 import org.restlet.data.Status;
+import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.resource.ResourceException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.wattdepot.common.domainmodel.Depository;
 import org.wattdepot.common.domainmodel.Labels;
 import org.wattdepot.common.domainmodel.Measurement;
@@ -30,6 +35,9 @@ import org.wattdepot.common.exception.IdNotFoundException;
 import org.wattdepot.common.exception.MeasurementTypeException;
 import org.wattdepot.common.exception.MisMatchedOwnerException;
 import org.wattdepot.common.http.api.DepositoryMeasurementPutResource;
+import org.wattdepot.common.util.DateConvert;
+import org.wattdepot.common.util.UnitsHelper;
+import org.wattdepot.common.util.tstamp.Tstamp;
 
 /**
  * DepositoryMeasurementServerResource - Handles the Measurement HTTP API
@@ -97,4 +105,5 @@ public class DepositoryMeasurementPutServerResource extends WattDepotServerResou
       setStatus(Status.CLIENT_ERROR_BAD_REQUEST, "Bad credentials.");
     }
   }
+
 }
