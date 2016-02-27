@@ -25,6 +25,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -39,7 +40,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.restlet.data.MediaType;
 import org.restlet.data.Status;
+import org.restlet.ext.xml.DomRepresentation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.client.ClientProperties;
 import org.wattdepot.common.domainmodel.*;
@@ -1658,6 +1662,27 @@ public class TestWattDepotClient {
     }
   }
 
+  @Test
+  public void testXMLMeasurement() {
+    StackTraceElement[] traceElements = Thread.currentThread().getStackTrace();
+    String method = Slug.slugify(traceElements[1].getMethodName());
+    addInfrastructure(method);
+    try {
+      Depository depository = test.getDepository(method + "-d");
+      Sensor sensor = test.getSensor(method + "-s");
+      XMLGregorianCalendar now = Tstamp.makeTimestamp();
+      DomRepresentation measRep = new DomRepresentation(new StringRepresentation(
+          "<measurement><sensor>" + sensor.getId() + "</sensor><power>" + (Math.random() * 14000.0) + "</power><timestamp>" + now + "</timestamp></measurement>",
+          MediaType.TEXT_XML));
+      test.putXmlMeasurement(depository, measRep);
+    }
+    catch (IdNotFoundException e) {
+      fail(e.getMessage() + " should not happen");
+    }
+    finally {
+      removeInfrastructure(method);
+    }
+  }
 
   /**
    * Creates SensorModel, Sensor, Depository, CollectorProcessDefintion, and MeasurementPruningDefintion for testing. Uses

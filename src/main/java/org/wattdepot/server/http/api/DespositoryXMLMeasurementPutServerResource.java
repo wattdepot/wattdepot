@@ -34,6 +34,13 @@ import org.wattdepot.common.util.tstamp.Tstamp;
 import java.io.IOException;
 import java.util.logging.Level;
 
+/**
+ * DepositoryXMLMeasurementPutServerResource - Handles the Measurement HTTP API
+ * ("/wattdepot/{org-id}/depository/{depository_id}/xml/measurement/").
+ *
+ * @author Cam Moore
+ *
+ */
 public class DespositoryXMLMeasurementPutServerResource extends WattDepotServerResource implements DepositoryXMLMeasurementPutResource {
   private String depositoryId;
 
@@ -48,6 +55,10 @@ public class DespositoryXMLMeasurementPutServerResource extends WattDepotServerR
     this.depositoryId = getAttribute(Labels.DEPOSITORY_ID);
   }
 
+  /**
+   * Stores the xml representation of a measurement.
+   * @param measRep The XML representation of a measurement.
+   */
   @Override
   public void store(DomRepresentation measRep) {
     getLogger().log(

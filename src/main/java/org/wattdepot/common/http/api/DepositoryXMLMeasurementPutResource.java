@@ -21,7 +21,6 @@ package org.wattdepot.common.http.api;
 
 import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.resource.Post;
-import org.wattdepot.common.domainmodel.Measurement;
 
 /**
  * DepositoryMeasurementResource - HTTP Interface for storing xml Measurements.
@@ -29,10 +28,11 @@ import org.wattdepot.common.domainmodel.Measurement;
  * @author Cam Moore
  *
  */
+@SuppressWarnings("PMD.UnusedModifier")
 public interface DepositoryXMLMeasurementPutResource {
 
   /**
-   * Defines PUT /wattdepot/{org-id}/depository/{depository_id}/measurement/
+   * Defines POST /wattdepot/{org-id}/depository/{depository_id}/xml/measurement/
    * API call.
    *
    * @param measRep

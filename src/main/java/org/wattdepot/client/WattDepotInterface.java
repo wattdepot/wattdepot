@@ -20,6 +20,7 @@ package org.wattdepot.client;
 
 import java.util.Date;
 
+import org.restlet.ext.xml.DomRepresentation;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinition;
 import org.wattdepot.common.domainmodel.CollectorProcessDefinitionList;
 import org.wattdepot.common.domainmodel.Depository;
@@ -822,6 +823,15 @@ public interface WattDepotInterface {
    */
   @SuppressWarnings("PMD.UnusedModifier")
   public void putSensorModel(SensorModel model);
+
+  /**
+   * Stores the given XML measurement.
+   *
+   * @param depository The depository to store the measurement.
+   * @param measRep The XML measurement.
+   */
+  @SuppressWarnings("PMD.UnusedModifier")
+  public void putXmlMeasurement(Depository depository, DomRepresentation measRep);
 
   /**
    * Updates the given CollectorProcessDefinitionData in the WattDepot Server.

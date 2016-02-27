@@ -25,7 +25,6 @@ import org.restlet.resource.Directory;
 import org.restlet.routing.Router;
 import org.restlet.security.ChallengeAuthenticator;
 import org.wattdepot.common.http.api.API;
-import org.wattdepot.common.http.api.DepositoryXMLMeasurementPutResource;
 import org.wattdepot.extension.WattDepotExtension;
 import org.wattdepot.server.ServerProperties;
 import org.wattdepot.server.WattDepotPersistence;

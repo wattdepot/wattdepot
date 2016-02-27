@@ -27,6 +27,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Reference;
+import org.restlet.ext.xml.DomRepresentation;
 import org.restlet.resource.ClientResource;
 import org.restlet.resource.ResourceException;
 import org.wattdepot.client.ClientProperties;
@@ -76,6 +77,7 @@ import org.wattdepot.common.http.api.DepositorySensorStatusResource;
 import org.wattdepot.common.http.api.DepositorySensorsResource;
 import org.wattdepot.common.http.api.DepositoryValueResource;
 import org.wattdepot.common.http.api.DepositoryValuesResource;
+import org.wattdepot.common.http.api.DepositoryXMLMeasurementPutResource;
 import org.wattdepot.common.http.api.MeasurementPruningDefinitionPutResource;
 import org.wattdepot.common.http.api.MeasurementPruningDefinitionResource;
 import org.wattdepot.common.http.api.MeasurementPruningDefinitionsResource;
@@ -2198,6 +2200,29 @@ public class WattDepotClient implements WattDepotInterface {
     SensorModelPutResource resource = client.wrap(SensorModelPutResource.class);
     try {
       resource.store(model);
+    }
+    finally {
+      client.release();
+    }
+  }
+
+  @Override
+  public void putXmlMeasurement(Depository depository, DomRepresentation measRep) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(this.organizationId);
+    sb.append("/");
+    sb.append(Labels.DEPOSITORY);
+    sb.append("/");
+    sb.append(depository.getId());
+    sb.append("/");
+    sb.append(Labels.XML);
+    sb.append("/");
+    sb.append(Labels.MEASUREMENT);
+    sb.append("/");
+    ClientResource client = makeClient(sb.toString());
+    DepositoryXMLMeasurementPutResource resource = client.wrap(DepositoryXMLMeasurementPutResource.class);
+    try {
+      resource.store(measRep);
     }
     finally {
       client.release();
