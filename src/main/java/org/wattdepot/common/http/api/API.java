@@ -156,8 +156,8 @@ public class API {
    * an XML measurement into the depository. Use POST requests.
    */
   public static final String MEASUREMENT_PUT_XML_URI = BASE_URI + Labels.ORGANIZATION_ID_VAR + "/"
-      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.XML + "/"
-      + Labels.MEASUREMENT + "/";
+      + Labels.DEPOSITORY + "/" + Labels.DEPOSITORY_ID_VAR + "/" + Labels.MEASUREMENT + "/"
+      + Labels.XML + "/";
   /**
    * <b>/wattdepot/{org-id}/depository/{depository-id}/measurements/</b> URI for
    * putting measurements into the depository. Use PUT requests.

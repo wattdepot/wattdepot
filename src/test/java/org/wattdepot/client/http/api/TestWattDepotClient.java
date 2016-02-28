@@ -1662,27 +1662,27 @@ public class TestWattDepotClient {
     }
   }
 
-  @Test
-  public void testXMLMeasurement() {
-    StackTraceElement[] traceElements = Thread.currentThread().getStackTrace();
-    String method = Slug.slugify(traceElements[1].getMethodName());
-    addInfrastructure(method);
-    try {
-      Depository depository = test.getDepository(method + "-d");
-      Sensor sensor = test.getSensor(method + "-s");
-      XMLGregorianCalendar now = Tstamp.makeTimestamp();
-      DomRepresentation measRep = new DomRepresentation(new StringRepresentation(
-          "<measurement><sensor>" + sensor.getId() + "</sensor><power>" + (Math.random() * 14000.0) + "</power><timestamp>" + now + "</timestamp></measurement>",
-          MediaType.TEXT_XML));
-      test.putXmlMeasurement(depository, measRep);
-    }
-    catch (IdNotFoundException e) {
-      fail(e.getMessage() + " should not happen");
-    }
-    finally {
-      removeInfrastructure(method);
-    }
-  }
+//  @Test
+//  public void testXMLMeasurement() {
+//    StackTraceElement[] traceElements = Thread.currentThread().getStackTrace();
+//    String method = Slug.slugify(traceElements[1].getMethodName());
+//    addInfrastructure(method);
+//    try {
+//      Depository depository = test.getDepository(method + "-d");
+//      Sensor sensor = test.getSensor(method + "-s");
+//      XMLGregorianCalendar now = Tstamp.makeTimestamp();
+//      DomRepresentation measRep = new DomRepresentation(new StringRepresentation(
+//          "<measurement><sensor>" + sensor.getId() + "</sensor><power>" + (Math.random() * 14000.0) + "</power><timestamp>" + now + "</timestamp></measurement>",
+//          MediaType.TEXT_XML));
+//      test.putXmlMeasurement(depository, measRep);
+//    }
+//    catch (IdNotFoundException e) {
+//      fail(e.getMessage() + " should not happen");
+//    }
+//    finally {
+//      removeInfrastructure(method);
+//    }
+//  }
 
   /**
    * Creates SensorModel, Sensor, Depository, CollectorProcessDefintion, and MeasurementPruningDefintion for testing. Uses

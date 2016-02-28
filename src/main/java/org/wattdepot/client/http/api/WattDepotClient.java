@@ -2215,9 +2215,9 @@ public class WattDepotClient implements WattDepotInterface {
     sb.append("/");
     sb.append(depository.getId());
     sb.append("/");
-    sb.append(Labels.XML);
-    sb.append("/");
     sb.append(Labels.MEASUREMENT);
+    sb.append("/");
+    sb.append(Labels.XML);
     sb.append("/");
     ClientResource client = makeClient(sb.toString());
     DepositoryXMLMeasurementPutResource resource = client.wrap(DepositoryXMLMeasurementPutResource.class);
