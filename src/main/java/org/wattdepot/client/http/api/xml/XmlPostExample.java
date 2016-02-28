@@ -55,7 +55,7 @@ public class XmlPostExample {
         client.putXmlMeasurement(depository, measRep);
       }
       Long end = System.nanoTime();
-      System.out.println("It took " + ((end - start)/1e9) + " Seconds to store " + number + " measurements");
+      System.out.println("It took " + ((end - start) / 1e9) + " Seconds to store " + number + " measurements");
     }
     catch (BadCredentialException e) {
       e.printStackTrace();
